@@ -1,0 +1,3551 @@
+<!DOCTYPE html>
+<!-- WAN Architect: aplicación autónoma; no ejecuta comandos sobre equipos reales. -->
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>WAN Architect · Diseño empresarial</title>
+    <meta
+      name="description"
+      content="Diseño WAN local, VLSM, topología y propuestas Cisco IOS / Huawei VRP."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1830'/%3E%3Cpath d='M8 9h16v6H8zM8 22h16M16 15v7' fill='none' stroke='%235ee2c1' stroke-width='3'/%3E%3C/svg%3E"
+    />
+    <style>
+      /* Variables de color compartidas por todas las etapas. */
+      :root {
+        --bg: #f2f5fa;
+        --ink: #17273f;
+        --muted: #64748b;
+        --line: #dce3ed;
+        --nav: #101e35;
+        --accent: #087f71;
+        --blue: #2869b6;
+        --white: #fff;
+        --warn: #aa6200;
+        --red: #bb3543;
+      }
+      /* La estructura conserva el menú en escritorio y permite apilarlo en móvil. */
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          14px/1.55 system-ui,
+          -apple-system,
+          Segoe UI,
+          sans-serif;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.45;
+      }
+      a {
+        color: var(--blue);
+      }
+      aside {
+        position: fixed;
+        width: 240px;
+        inset: 0 auto 0 0;
+        background: var(--nav);
+        color: white;
+        padding: 28px 18px;
+        overflow: auto;
+      }
+      main {
+        margin-left: 240px;
+        max-width: 1700px;
+        padding: 26px 36px 80px;
+      }
+      .brand {
+        font-size: 22px;
+        font-weight: 750;
+        letter-spacing: -0.7px;
+      }
+      .brand b {
+        color: #61ddc3;
+      }
+      .subbrand {
+        color: #9bacc5;
+        font-size: 11px;
+        letter-spacing: 2px;
+        margin-bottom: 30px;
+      }
+      nav button {
+        border: 0;
+        background: transparent;
+        color: #bdcce0;
+        width: 100%;
+        text-align: left;
+        padding: 11px 12px;
+        border-radius: 7px;
+        margin: 2px 0;
+      }
+      nav button.active {
+        background: #233c55;
+        color: #74e3cf;
+      }
+      nav button span {
+        font: 11px monospace;
+        margin-right: 12px;
+        opacity: 0.6;
+      }
+      .local {
+        border-top: 1px solid #34445c;
+        margin-top: 25px;
+        padding: 18px 10px;
+        color: #9bacc5;
+        font-size: 12px;
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 30px;
+      }
+      .eyebrow {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        color: var(--accent);
+        text-transform: uppercase;
+      }
+      h1 {
+        font-size: 32px;
+        line-height: 1.2;
+        letter-spacing: -1px;
+        margin: 10px 0;
+      }
+      h2 {
+        font-size: 20px;
+        margin: 0 0 12px;
+      }
+      h3 {
+        font-size: 15px;
+        margin: 0 0 12px;
+      }
+      p {
+        color: var(--muted);
+        margin: 6px 0 18px;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      button,
+      .filebtn {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: white;
+        color: var(--ink);
+        padding: 8px 12px;
+        display: inline-block;
+        white-space: nowrap;
+      }
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: white;
+      }
+      button.danger {
+        color: var(--red);
+      }
+      button:hover,
+      .filebtn:hover {
+        filter: brightness(0.96);
+      }
+      button.small {
+        padding: 4px 9px;
+        font-size: 12px;
+      }
+      .card {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 22px;
+        margin: 18px 0;
+        box-shadow: 0 3px 9px #17273f03;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 16px;
+      }
+      .two {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+      label {
+        font-size: 12px;
+        font-weight: 650;
+        color: #465a73;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border: 1px solid #cfd9e6;
+        border-radius: 5px;
+        padding: 9px 10px;
+        color: var(--ink);
+        background: white;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: 2px solid #71c5b8;
+        outline-offset: 1px;
+      }
+      input[type="checkbox"] {
+        width: auto;
+        accent-color: var(--accent);
+      }
+      textarea {
+        min-height: 90px;
+      }
+      .check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 8px 0;
+      }
+      .hint,
+      small {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .notice {
+        border-left: 3px solid var(--accent);
+        background: #eef9f5;
+        border-radius: 3px;
+        padding: 12px 16px;
+        margin: 14px 0;
+      }
+      .notice.warn {
+        border-color: #df9a38;
+        background: #fff6e7;
+        color: #895820;
+      }
+      .notice.error {
+        border-color: var(--red);
+        background: #fff0f1;
+        color: var(--red);
+      }
+      .badge {
+        display: inline-block;
+        background: #e7f7f1;
+        color: var(--accent);
+        font-size: 11px;
+        border-radius: 20px;
+        padding: 3px 9px;
+      }
+      .badge.warn {
+        background: #fff0d9;
+        color: var(--warn);
+      }
+      .badge.dim {
+        background: #eaf0f7;
+        color: var(--muted);
+      }
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 14px;
+      }
+      .metric {
+        padding: 18px;
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+      }
+      .metric strong {
+        display: block;
+        font-size: 29px;
+        font-weight: 650;
+      }
+      .metric span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .tablewrap {
+        overflow: auto;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 12px;
+      }
+      th {
+        text-align: left;
+        background: #f6f8fc;
+        color: #617289;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        white-space: nowrap;
+      }
+      th,
+      td {
+        padding: 11px 10px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      td input,
+      td select {
+        padding: 5px;
+        min-width: 90px;
+      }
+      td .num {
+        min-width: 65px;
+        width: 72px;
+      }
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      }
+      .console {
+        background: #102139;
+        color: #d2e7ed;
+        font:
+          12px/1.6 ui-monospace,
+          Consolas,
+          monospace;
+        padding: 20px;
+        border-radius: 8px;
+        white-space: pre;
+        overflow: auto;
+        min-height: 220px;
+        max-height: 650px;
+      }
+      .empty {
+        text-align: center;
+        color: var(--muted);
+        padding: 45px;
+      }
+      .stepfoot {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 25px;
+      }
+      .sitehead {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 18px;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .chip {
+        background: #eef4fb;
+        padding: 7px 12px;
+        border-radius: 5px;
+        font-size: 12px;
+      }
+      .diagram {
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f8fbff;
+      }
+      .diagram svg {
+        display: block;
+        min-width: 650px;
+      }
+      svg text {
+        font-family: system-ui, sans-serif;
+      }
+      svg .node {
+        cursor: grab;
+      }
+      svg .node:hover rect {
+        stroke: #087f71;
+        stroke-width: 2;
+      }
+      .imageframe {
+        position: relative;
+        overflow: auto;
+        max-height: 650px;
+        background: #e8edf5;
+      }
+      .imageframe img {
+        display: block;
+        max-width: 100%;
+        max-height: 600px;
+      }
+      .imageframe svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .progressline {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 25px;
+      }
+      .progressline div {
+        height: 4px;
+        flex: 1;
+        background: #dbe5ef;
+        border-radius: 8px;
+      }
+      .progressline div.done {
+        background: var(--accent);
+      }
+      details {
+        margin: 10px 0;
+      }
+      summary {
+        cursor: pointer;
+        color: var(--blue);
+        font-weight: 600;
+      }
+      .toast {
+        position: fixed;
+        right: 25px;
+        bottom: 25px;
+        background: var(--nav);
+        color: white;
+        padding: 14px 22px;
+        border-radius: 8px;
+        z-index: 100;
+        max-width: 500px;
+      }
+      .toast.error {
+        background: #a32e3c;
+      }
+      .headingrow {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        gap: 10px;
+      }
+      .quote {
+        border-left: 2px solid #cee5de;
+        padding-left: 16px;
+      }
+      dialog {
+        border: 0;
+        border-radius: 12px;
+        width: min(700px, 94vw);
+        max-height: 90vh;
+        box-shadow: 0 15px 70px #001a4c44;
+        padding: 24px;
+      }
+      dialog::backdrop {
+        background: #101e3570;
+      }
+      dialog .actions {
+        margin-top: 20px;
+      }
+      .statuslist {
+        display: grid;
+        gap: 8px;
+      }
+      .statusrow {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+      }
+      .port {
+        font-size: 10px;
+        color: var(--muted);
+      }
+      .toolbar {
+        background: #edf3f9;
+        padding: 12px;
+        border-radius: 8px;
+        margin: 12px 0;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .sitecount {
+        min-width: 190px;
+      }
+      ul {
+        padding-left: 20px;
+      }
+      li {
+        margin: 5px 0;
+      }
+      /* Impresión genera un informe sin la navegación ni las acciones interactivas. */
+      @media (max-width: 950px) {
+        aside {
+          position: static;
+          width: auto;
+          padding: 15px;
+        }
+        aside .subbrand,
+        aside .local {
+          display: none;
+        }
+        nav {
+          display: flex;
+          overflow: auto;
+          margin-top: 10px;
+        }
+        nav button {
+          width: auto;
+          white-space: nowrap;
+        }
+        main {
+          margin: 0;
+          padding: 20px;
+        }
+        .two {
+          grid-template-columns: 1fr;
+        }
+        .topbar {
+          flex-wrap: wrap;
+        }
+        h1 {
+          font-size: 27px;
+        }
+      }
+      @media print {
+        aside,
+        .topbar,
+        .stepfoot,
+        button,
+        .filebtn {
+          display: none !important;
+        }
+        main {
+          margin: 0;
+          padding: 0;
+        }
+        .card {
+          break-inside: avoid;
+        }
+        .console {
+          max-height: none;
+          white-space: pre-wrap;
+          color: black;
+          background: white;
+        }
+        .diagram {
+          overflow: visible;
+        }
+        body {
+          background: white;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Menú: cada etapa consume los datos validados de las anteriores. -->
+    <aside>
+      <div class="brand">WAN <b>Architect</b></div>
+      <div class="subbrand">DISEÑO · PLAN · CONFIGURACIÓN</div>
+      <nav id="nav"></nav>
+      <div class="local">
+        ● Aplicación local y autónoma<br />Los comandos se revisan y aplican
+        manualmente.<br /><br />Segundo corte · Telecomunicaciones
+      </div>
+    </aside>
+    <main>
+      <header class="topbar">
+        <div>
+          <span class="eyebrow">Workspace de ingeniería</span>
+          <div id="projectLabel">Proyecto sin guardar</div>
+        </div>
+        <div class="actions">
+          <button onclick="saveLocal()">Guardar proyecto</button
+          ><button onclick="loadLocal()">Cargar guardado</button
+          ><button onclick="exportJSON()">Exportar JSON</button
+          ><label class="filebtn"
+            >Importar JSON<input
+              type="file"
+              accept=".json,application/json"
+              class="hidden"
+              onchange="importJSON(this)" /></label
+          ><button onclick="newProject()">Nuevo</button>
+        </div>
+      </header>
+      <div id="progress" class="progressline"></div>
+      <section id="view"></section>
+      <footer id="stepfoot" class="stepfoot"></footer>
+    </main>
+    <!-- Un único diálogo sirve para editar equipos, enlaces y confirmar datos. -->
+    <dialog id="modal"><div id="modalbody"></div></dialog>
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+    <script>
+      "use strict"; // Impide variables globales accidentales y mantiene errores visibles durante desarrollo.
+      /* =================== Estado, validadores y aritmética IPv4 =================== */
+      const $ = (id) => document.getElementById(id); // Acceso centralizado a elementos por ID.
+      const esc = (s) =>
+        String(s ?? "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        ); // Evita inyectar HTML desde nombres y JSON importados.
+      const steps = [
+        "Resumen",
+        "Datos del proyecto",
+        "Estimación e infraestructura",
+        "VLAN y VLSM",
+        "Subnetting IPv4",
+        "Topología",
+        "Configuración Cisco",
+        "Configuración Huawei",
+        "Comparación",
+        "Ciberdefensa y uso de IA",
+        "Evidencias Corte 2",
+      ]; // Etapas visibles del flujo.
+      const kinds = [
+        "Router",
+        "Switch",
+        "Switch capa 3",
+        "Firewall",
+        "Access Point",
+        "Servidor",
+        "PC",
+        "ISP",
+      ]; // Tipos de nodos admitidos.
+      const roles = [
+        "Datos",
+        "WiFi",
+        "VoIP",
+        "CCTV",
+        "Impresoras",
+        "Servidores",
+        "Gestión",
+        "Invitados",
+        "Clínica",
+      ]; // Categorías de segmentación.
+      const countKeys = [
+        "pc",
+        "mobile",
+        "phones",
+        "printers",
+        "ap",
+        "cameras",
+        "servers",
+      ]; // Inventario de terminales, sin duplicar teléfonos móviles.
+      const countLabels = {
+        pc: "Computadores",
+        mobile: "Móviles / teléfonos personales",
+        phones: "Teléfonos IP",
+        printers: "Impresoras",
+        ap: "Access Points",
+        cameras: "Cámaras IP",
+        servers: "Servidores",
+      }; // Etiquetas del inventario.
+      let page = 0,
+        selectedSite = 0,
+        selectedNode = "",
+        imageData = "",
+        imageMode = false; // Preferencias temporales de la interfaz.
+      let state = fresh(); // Se inicia vacío; los datos de demostración solo se cargan por acción explícita.
+      function fresh() {
+        return {
+          version: 2,
+          project: {
+            name: "",
+            company: "",
+            activity: "",
+            type: "Oficina",
+            interconnect: true,
+            segmentation: "Servicios",
+            base: "10.20.0.0/16",
+            growth: 20,
+            dns: "1.1.1.1",
+          },
+          sites: [siteDefault(1)],
+          vlans: [],
+          plan: [],
+          nodes: [],
+          links: [],
+          approved: false,
+          configs: {},
+          opts: {
+            basic: true,
+            ssh: true,
+            vlans: true,
+            interfaces: true,
+            ospf: true,
+            dhcp: true,
+            relay: false,
+            static: false,
+          },
+          relay: "",
+          staticNext: "",
+          staticReason: "",
+          revision: 0,
+        };
+      } // Esquema exportable, sin credenciales.
+      function siteDefault(n) {
+        return {
+          id: "s" + n,
+          name: "Sede " + n,
+          floors: 1,
+          users: 25,
+          ratio: 2,
+          busy: "1",
+          areas: "Administración, Operaciones",
+          wifi: true,
+          voip: false,
+          cctv: false,
+          printing: true,
+          server: false,
+          redundant: false,
+          bandwidth: 0,
+          counts: null,
+        };
+      } // Valores iniciales editables y explícitos.
+      function fail(msg) {
+        throw Error(msg);
+      } // Todas las validaciones fallan antes de modificar el estado.
+      function num(v, min, max, label, integer = true) {
+        const n = Number(v);
+        if (
+          v === "" ||
+          !Number.isFinite(n) ||
+          n < min ||
+          n > max ||
+          (integer && !Number.isInteger(n))
+        )
+          fail(
+            label +
+              ": valor entre " +
+              min +
+              " y " +
+              max +
+              (integer ? " (entero)." : "."),
+          );
+        return n;
+      } // Límites numéricos compartidos.
+      function text(v, label, max = 100) {
+        v = String(v ?? "").trim();
+        if (!v || v.length > max || /[\u0000-\u001f]/.test(v))
+          fail(label + ": texto obligatorio, máximo " + max + " caracteres.");
+        return v;
+      } // Valida texto; el render siempre lo escapa.
+      function hostname(v) {
+        v = text(v, "Hostname", 63);
+        if (!/^[A-Za-z][A-Za-z0-9-]*$/.test(v) || v.endsWith("-"))
+          fail("Hostname: iniciar con letra y usar letras, números o guiones.");
+        return v;
+      } // También evita introducir comandos nuevos.
+      function commandName(v) {
+        return (
+          String(v)
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-zA-Z0-9_-]/g, "_")
+            .slice(0, 32) || "RED"
+        );
+      } // Convierte etiquetas humanas a identificadores de CLI.
+      function ipNum(ip) {
+        if (typeof ip !== "string" || !/^\d{1,3}(\.\d{1,3}){3}$/.test(ip))
+          fail("IPv4 inválida: " + ip);
+        const a = ip.split(".").map(Number);
+        if (a.some((n) => n > 255)) fail("IPv4 inválida: " + ip);
+        return a.reduce((n, o) => n * 256 + o, 0);
+      } // Aritmética de enteros sin signo, segura incluso con /0.
+      function ipStr(n) {
+        return [24, 16, 8, 0]
+          .map((b) => Math.floor(n / 2 ** b) % 256)
+          .join(".");
+      } // Convierte un número de 32 bits a decimal con puntos.
+      function ipType(n) {
+        const a = Math.floor(n / 16777216),
+          b = Math.floor(n / 65536) % 256;
+        if (a === 127) return "Loopback";
+        if (
+          a === 10 ||
+          (a === 172 && b >= 16 && b <= 31) ||
+          (a === 192 && b === 168)
+        )
+          return "Privada RFC 1918";
+        if (a === 169 && b === 254) return "Link-local";
+        if (a >= 224 && a <= 239) return "Multicast";
+        if (a === 0 || a >= 240 || n === 4294967295) return "Reservada";
+        if (a === 100 && b >= 64 && b <= 127) return "Compartida CGNAT";
+        const third = Math.floor(n / 256) % 256;
+        if (
+          (a === 192 && b === 0 && (third === 0 || third === 2)) ||
+          (a === 198 &&
+            (b === 18 || b === 19 || (b === 51 && third === 100))) ||
+          (a === 203 && b === 0 && third === 113)
+        )
+          return "Especial / documentación (ver IANA)";
+        return "Pública (clasificación preliminar)";
+      } // No confunde multicast ni loopback con IP privada.
+      function subnet(value) {
+        const m = String(value)
+          .trim()
+          .match(/^([^/]+)\/(\d{1,2})$/);
+        if (!m) fail("Ingrese IPv4/CIDR, por ejemplo 192.168.10.50/26.");
+        const ip = ipNum(m[1]),
+          p = num(m[2], 0, 32, "CIDR"),
+          size = 2 ** (32 - p),
+          net = Math.floor(ip / size) * size,
+          last = net + size - 1,
+          mask = 4294967296 - size;
+        return {
+          ip: ipStr(ip),
+          prefix: p,
+          mask: ipStr(mask),
+          binary: ipStr(mask)
+            .split(".")
+            .map((x) => (+x).toString(2).padStart(8, "0"))
+            .join("."),
+          network: ipStr(net),
+          broadcast: p >= 31 ? "No aplica (/31 o /32)" : ipStr(last),
+          first: ipStr(net + (p < 31 ? 1 : 0)),
+          last: ipStr(last - (p < 31 ? 1 : 0)),
+          hosts: p < 31 ? size - 2 : size,
+          total: size,
+          net,
+          end: last,
+          type: ipType(ip),
+          hostbits: 32 - p,
+        };
+      } // /31 se interpreta solo como punto a punto; /32 es una única dirección.
+      function isHost(ip, row) {
+        const n = ipNum(ip);
+        return n > row.net && n < row.end;
+      } // Las VLAN de esta herramienta siempre utilizan /30 o redes mayores.
+      function safe(fn) {
+        try {
+          return fn();
+        } catch (e) {
+          toast(e.message, true);
+          return false;
+        }
+      } // Las acciones muestran errores comprensibles sin dejar mutaciones parciales.
+      function toast(msg, error = false) {
+        $("toast").textContent = msg;
+        $("toast").className = "toast" + (error ? " error" : "");
+        clearTimeout(toast.timer);
+        toast.timer = setTimeout(
+          () => $("toast").classList.add("hidden"),
+          6000,
+        );
+      } // Aviso accesible de guardado, validación o error.
+      function invalidate(level = "project") {
+        state.revision++;
+        state.configs = {};
+        if (level === "project") {
+          state.vlans = [];
+          state.plan = [];
+          state.nodes = [];
+          state.links = [];
+          state.approved = false;
+        } else if (level === "plan") {
+          state.plan = [];
+          state.nodes = [];
+          state.links = [];
+          state.approved = false;
+        } else if (level === "topology") {
+          state.configs = {};
+        }
+      } // Evita que configuraciones antiguas sobrevivan a datos nuevos.
+      function optsHTML(arr, val) {
+        return arr
+          .map(
+            (x) => `<option ${x === val ? "selected" : ""}>${esc(x)}</option>`,
+          )
+          .join("");
+      } // Solo inserta texto escapado en selectores.
+      function field(label, id, value, type = "text", extra = "") {
+        return `<div class="field"><label for="${id}">${label}</label><input id="${id}" type="${type}" value="${esc(value)}" ${extra}></div>`;
+      } // Formularios con asociación label-input.
+      function badge(ok, yes = "Cumplido", no = "Pendiente") {
+        return `<span class="badge ${ok ? "" : "warn"}">${ok ? yes : no}</span>`;
+      } // Estado comprobable, sin inventar evidencias externas.
+      function go(i) {
+        page = i;
+        render();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } // Navegación conservando el estado confirmado.
+      function title(n, desc) {
+        return `<div class="eyebrow">${String(page).padStart(2, "0")} / Flujo de diseño</div><h1>${n}</h1><p>${desc}</p>`;
+      } // Encabezado contextual de cada fase.
+      function render() {
+        $("nav").innerHTML = steps
+          .map(
+            (s, i) =>
+              `<button class="${page === i ? "active" : ""}" onclick="go(${i})"><span>${String(i).padStart(2, "0")}</span>${s}</button>`,
+          )
+          .join("");
+        $("progress").innerHTML = steps
+          .map((_, i) => `<div class="${i <= page ? "done" : ""}"></div>`)
+          .join("");
+        $("projectLabel").textContent =
+          state.project.name || "Proyecto sin guardar";
+        $("view").innerHTML = [
+          dashboard,
+          projectView,
+          estimateView,
+          vlanView,
+          subnetView,
+          topologyView,
+          () => configView("Cisco"),
+          () => configView("Huawei"),
+          compareView,
+          securityView,
+          evidenceView,
+        ][page]();
+        $("stepfoot").innerHTML =
+          `<button ${page === 0 ? "disabled" : ""} onclick="go(${page - 1})">← Anterior</button><button class="primary" ${page === steps.length - 1 ? "disabled" : ""} onclick="go(${page + 1})">Siguiente →</button>`;
+        if (page === 5) bindDrag();
+      } // Solo se reconstruye la etapa visible.
+      /* =================== Datos por sede y estimación explicable =================== */
+      function estimated(s) {
+        const users = s.users,
+          ap = s.wifi
+            ? Math.max(
+                s.floors,
+                Math.ceil((users * Math.max(s.ratio - 1, 0.5)) / 25),
+              )
+            : 0;
+        return {
+          pc: users,
+          mobile: s.wifi ? Math.ceil(users * Math.max(0, s.ratio - 1)) : 0,
+          phones: s.voip ? users : 0,
+          printers: s.printing ? Math.max(1, Math.ceil(users / 20)) : 0,
+          ap,
+          cameras: s.cctv ? s.floors * 4 : 0,
+          servers: s.server ? 2 : 0,
+        };
+      } // AP: 25 clientes por AP; cámaras: cuatro por piso, supuesto editable.
+      function counts(s) {
+        return s.counts || estimated(s);
+      } // Las correcciones manuales prevalecen sobre las estimaciones.
+      function proposal(s) {
+        const c = counts(s),
+          ports = c.pc + c.phones + c.printers + c.ap + c.cameras + c.servers,
+          access = Math.max(s.floors, Math.ceil(ports / 44)),
+          core = s.redundant ? 2 : 1,
+          distribution = s.floors > 3 ? Math.ceil(s.floors / 3) : 0;
+        return {
+          routers: 1,
+          access,
+          distribution,
+          core,
+          firewalls: 1,
+          ap: c.ap,
+          servers: c.servers,
+          ports,
+          bandwidth:
+            s.bandwidth ||
+            Math.max(
+              20,
+              Math.ceil((s.users * 2 * 0.4 + c.mobile * 0.3) / 10) * 10,
+            ),
+        };
+      } // 44 puertos útiles por switch de 48 deja cuatro para uplinks y expansión.
+      function projectValid() {
+        text(state.project.name, "Nombre del proyecto");
+        text(state.project.company, "Empresa");
+        text(state.project.activity, "Actividad");
+        if (!state.sites.length) fail("Añada al menos una sede.");
+      } // Evita generar propuestas sin datos obligatorios.
+      function projectView() {
+        const s = state.sites[selectedSite] || state.sites[0];
+        selectedSite = state.sites.indexOf(s);
+        return (
+          title(
+            "Datos del proyecto",
+            "Registre cada sede por separado. Confirme los cambios para que estimación, VLAN, direccionamiento y topología utilicen la misma información.",
+          ) +
+          `<div class="notice">Flujo: datos → estimación → confirmar VLAN → VLSM → topología → configuraciones. Cambiar datos confirmados invalida las etapas dependientes.</div><div class="card"><h2>Identificación y alcance</h2><div class="grid">${field("Nombre del proyecto *", "pname", state.project.name)}${field("Empresa *", "pcompany", state.project.company)}${field("Actividad * (ej. clínica, educación, comercio)", "pactivity", state.project.activity)}<div class="field"><label for="ptype">Infraestructura</label><select id="ptype">${optsHTML(["Casa", "Oficina", "Edificio", "Campus", "Varias sedes"], state.project.type)}</select></div><div class="field"><label for="psegment">Criterio de segmentación</label><select id="psegment">${optsHTML(["Servicios", "Departamentos"], state.project.segmentation)}</select></div>${field("Número de sedes (1–12)", "sitecount", state.sites.length, "number", 'min="1" max="12"')}</div><label class="check"><input id="pinter" type="checkbox" ${state.project.interconnect ? "checked" : ""}>Interconectar las sedes mediante enlaces WAN enrutados</label><div class="actions"><button class="primary" onclick="saveProject()">Confirmar datos del proyecto</button><button onclick="resizeSites()">Aplicar número de sedes</button><button onclick="demo()">Cargar ejemplo de laboratorio</button></div></div><div class="card"><div class="sitehead"><h2>Ficha individual de la sede</h2><div class="actions"><select class="sitecount" aria-label="Sede activa" onchange="selectedSite=+this.value;render()">${state.sites.map((x, i) => `<option value="${i}" ${i === selectedSite ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select><button class="danger" onclick="removeSite()">Eliminar sede</button></div></div><div class="grid">${field("Nombre de sede *", "sname", s.name)}${field("Número de pisos", "sfloors", s.floors, "number", 'min="1" max="50"')}${field("Usuarios", "susers", s.users, "number", 'min="1" max="100000"')}${field("Dispositivos personales por usuario", "sratio", s.ratio, "number", 'min="1" max="10" step="0.1"')}${field("Pisos más concurridos (separados por coma)", "sbusy", s.busy)}${field("Áreas / departamentos (separados por coma)", "sareas", s.areas)}${field("Ancho de banda Mbps (0 = sugerir)", "sbw", s.bandwidth, "number", 'min="0" max="100000"')}</div><div class="grid" style="margin-top:16px">${[
+            ["wifi", "WiFi"],
+            ["voip", "Telefonía IP"],
+            ["cctv", "Cámaras IP"],
+            ["printing", "Impresoras"],
+            ["server", "Servidores"],
+            ["redundant", "Dos cores con HSRP / VRRP"],
+          ]
+            .map(
+              ([k, l]) =>
+                `<label class="check"><input id="s${k}" type="checkbox" ${s[k] ? "checked" : ""}>${l}</label>`,
+            )
+            .join(
+              "",
+            )}</div><div class="hint">La redundancia reserva un gateway virtual y dos IP físicas por VLAN. Los pisos concurridos se usan para identificar prioridad de cobertura; la cantidad de AP requiere luego un estudio RF.</div><div class="actions" style="margin-top:16px"><button class="primary" onclick="saveSite()">Confirmar esta sede</button></div></div>`
+        );
+      }
+      function saveProject() {
+        safe(() => {
+          const p = {
+            ...state.project,
+            name: text($("pname").value, "Proyecto"),
+            company: text($("pcompany").value, "Empresa"),
+            activity: text($("pactivity").value, "Actividad"),
+            type: $("ptype").value,
+            segmentation: $("psegment").value,
+            interconnect: $("pinter").checked,
+          };
+          state.project = p;
+          invalidate();
+          render();
+          toast("Datos confirmados. Continúe con las fichas de sede.");
+        });
+      } // Confirmación atómica del formulario general.
+      function resizeSites() {
+        safe(() => {
+          const n = num($("sitecount").value, 1, 12, "Sedes");
+          if (
+            n < state.sites.length &&
+            !confirm(
+              "Se eliminarán las últimas sedes y sus diseños. ¿Continuar?",
+            )
+          )
+            return;
+          while (state.sites.length < n) {
+            let i = 1;
+            while (state.sites.some((s) => s.id === "s" + i)) i++;
+            state.sites.push(siteDefault(i));
+          }
+          state.sites = state.sites.slice(0, n);
+          selectedSite = 0;
+          invalidate();
+          render();
+        });
+      } // Cantidad e identidad de sedes permanecen coherentes.
+      function removeSite() {
+        if (state.sites.length === 1)
+          return toast("Se requiere al menos una sede.", true);
+        if (
+          confirm("¿Eliminar esta sede y los datos de diseño dependientes?")
+        ) {
+          state.sites.splice(selectedSite, 1);
+          selectedSite = 0;
+          invalidate();
+          render();
+        }
+      } // Nunca elimina datos sin confirmar.
+      function saveSite() {
+        safe(() => {
+          const old = state.sites[selectedSite],
+            s = {
+              ...old,
+              name: text($("sname").value, "Sede"),
+              floors: num($("sfloors").value, 1, 50, "Pisos"),
+              users: num($("susers").value, 1, 100000, "Usuarios"),
+              ratio: num(
+                $("sratio").value,
+                1,
+                10,
+                "Dispositivos por usuario",
+                false,
+              ),
+              busy: text($("sbusy").value, "Pisos concurridos"),
+              areas: text($("sareas").value, "Áreas", 500),
+              bandwidth: num($("sbw").value, 0, 100000, "Mbps"),
+              counts: null,
+            };
+          const floors = s.busy
+            .split(",")
+            .map((x) => num(x.trim(), 1, s.floors, "Piso concurrido"));
+          if (!floors.length) fail("Indique los pisos concurridos.");
+          for (const k of [
+            "wifi",
+            "voip",
+            "cctv",
+            "printing",
+            "server",
+            "redundant",
+          ])
+            s[k] = $("s" + k).checked;
+          if (state.sites.some((x) => x.id !== s.id && x.name === s.name))
+            fail("Use un nombre de sede único.");
+          state.sites[selectedSite] = s;
+          invalidate();
+          render();
+          toast("Sede confirmada; estimaciones recalculadas.");
+        });
+      } // Valida pisos, usuarios y nombres antes de reemplazar una ficha.
+      function estimateView() {
+        return (
+          title(
+            "Estimación e infraestructura",
+            "Las cantidades son hipótesis de planificación editables. No representan una medición real ni un estudio de cobertura.",
+          ) +
+          state.sites
+            .map((s, i) => {
+              const c = counts(s),
+                p = proposal(s);
+              return `<div class="card"><h2>${esc(s.name)}</h2><p>${s.users} usuarios · ${s.floors} pisos · prioridad de cobertura: pisos ${esc(s.busy)}</p><div class="grid">${countKeys.map((k) => field(countLabels[k], `c${i}_${k}`, c[k], "number", 'min="0" max="1000000"')).join("")}</div><div class="actions" style="margin-top:16px"><button class="primary" onclick="saveCounts(${i})">Confirmar inventario de esta sede</button><button onclick="resetCounts(${i})">Restaurar estimación</button></div><div class="notice">Criterios: 1 PC por usuario; móviles = usuarios × (dispositivos personales − 1); telefonía IP = usuarios si se solicita; impresoras = 1/20 usuarios; AP = máximo entre pisos y clientes/25; cámaras = 4/piso; servidores = 2 si se solicitan. Todos pueden corregirse según el levantamiento.</div><div class="chips">${Object.entries(
+                {
+                  Routers: p.routers,
+                  "Switches de acceso": p.access,
+                  Distribución: p.distribution,
+                  "Cores capa 3": p.core,
+                  "Firewalls recomendados": p.firewalls,
+                  AP: p.ap,
+                  Servidores: p.servers,
+                  "Mbps sugeridos": p.bandwidth,
+                },
+              )
+                .map(
+                  ([k, v]) =>
+                    `<span class="chip"><strong>${v}</strong> ${k}</span>`,
+                )
+                .join(
+                  "",
+                )}</div><p style="margin-top:12px">Acceso: ${p.ports} puertos cableados / 44 puertos útiles, mínimo un switch por piso. Distribución: uno por tres pisos si hay más de tres. Core: uno o dos según redundancia. Firewall recomendado: uno por sede; su política depende del equipo y proveedor. Banda: 40% de usuarios simultáneos a 2 Mbps + 0,3 Mbps por móvil, mínimo 20 Mbps. No incluye vídeo masivo ni enlaces de respaldo.</p></div>`;
+            })
+            .join("") +
+          `<button class="primary" onclick="proposeVlans()">Proponer segmentación y continuar →</button>`
+        );
+      }
+      function saveCounts(i) {
+        safe(() => {
+          const c = {};
+          for (const k of countKeys)
+            c[k] = num($(`c${i}_${k}`).value, 0, 1000000, countLabels[k]);
+          if (!state.sites[i].wifi && (c.ap || c.mobile))
+            fail("Habilite WiFi en la ficha antes de asignar AP o móviles.");
+          state.sites[i].counts = c;
+          invalidate();
+          render();
+          toast("Inventario confirmado.");
+        });
+      } // Un inventario editado alimenta la propuesta y sus VLAN.
+      function resetCounts(i) {
+        if (
+          confirm(
+            "¿Restaurar estimaciones de esta sede y reiniciar el diseño dependiente?",
+          )
+        ) {
+          state.sites[i].counts = null;
+          invalidate();
+          render();
+        }
+      } // Restauración explícita, sin sobrescribir correcciones silenciosamente.
+      function proposeVlans() {
+        safe(() => {
+          projectValid();
+          if (
+            state.vlans.length &&
+            !confirm(
+              "¿Reemplazar VLAN y diseño actual por una nueva propuesta?",
+            )
+          )
+            return;
+          const out = [];
+          for (const s of state.sites) {
+            const c = counts(s),
+              p = proposal(s);
+            let id = 10;
+            const add = (name, role, hosts) => {
+              if (hosts > 0) {
+                out.push({
+                  key: "v" + out.length,
+                  site: s.id,
+                  id,
+                  name,
+                  role,
+                  hosts,
+                  dhcp: ["Datos", "WiFi", "Invitados", "Clínica"].includes(
+                    role,
+                  ),
+                  gateway: "",
+                });
+                id += 10;
+              }
+            };
+            if (state.project.segmentation === "Departamentos") {
+              const areas = [
+                ...new Set(
+                  s.areas
+                    .split(",")
+                    .map((x) => x.trim())
+                    .filter(Boolean),
+                ),
+              ];
+              let remaining = c.pc;
+              areas.forEach((a, i) => {
+                const n =
+                  Math.floor(c.pc / areas.length) +
+                  (i < c.pc % areas.length ? 1 : 0);
+                add(
+                  a,
+                  /cl[ií]nica|salud|hospital|m[eé]dic/i.test(
+                    state.project.activity,
+                  )
+                    ? "Clínica"
+                    : "Datos",
+                  n,
+                );
+                remaining -= n;
+              });
+            } else add("Usuarios", "Datos", c.pc);
+            add("WiFi corporativo", "WiFi", c.mobile);
+            add("Telefonía", "VoIP", c.phones);
+            add("Videovigilancia", "CCTV", c.cameras);
+            add("Impresoras", "Impresoras", c.printers);
+            add("Servidores", "Servidores", c.servers);
+            add(
+              "Gestión de red",
+              "Gestión",
+              p.routers + p.access + p.distribution + p.core + c.ap + 2,
+            );
+            if (
+              /cl[ií]nica|salud|hospital|educa|colegio|universidad|hotel/i.test(
+                state.project.activity,
+              ) &&
+              s.wifi
+            )
+              add("WiFi invitados", "Invitados", Math.ceil(s.users * 0.25));
+          }
+          state.vlans = out;
+          invalidate("plan");
+          go(3);
+          toast("Revise la propuesta y confirme las VLAN.");
+        });
+      } // El tipo de actividad modifica invitados y clasificación clínica.
+      /* =================== VLAN, VLSM y gateway =================== */
+      function siteName(id) {
+        return state.sites.find((s) => s.id === id)?.name || "WAN";
+      } // Traduce referencias estables a nombres visibles.
+      function vlanView() {
+        return (
+          title(
+            "VLAN y plan de direccionamiento",
+            "Confirme los segmentos; el VLSM los ordena por tamaño y asigna redes sin solaparse. Incluye tránsito router–core y WAN entre sedes.",
+          ) +
+          `<div class="card"><div class="grid">${field("Bloque IPv4 base", "base", state.project.base)}${field("Reserva de crecimiento (%)", "growth", state.project.growth, "number", 'min="0" max="100"')}${field("DNS para DHCP", "dns", state.project.dns)}</div><div class="notice">Hosts solicitados son terminales; el cálculo añade crecimiento y una IP de gateway, o tres IP si hay dos cores. El gateway no cuenta como host disponible para terminales. Las redes de tránsito son /30 y no usan VLAN.</div><div class="actions"><button onclick="proposeVlans()">Volver a proponer</button><button onclick="addVlan()">Agregar VLAN</button><button class="primary" onclick="confirmVlans()">Confirmar VLAN y calcular VLSM</button></div></div><div class="card"><h2>Segmentos editables por sede</h2>${state.vlans.length ? `<div class="tablewrap"><table><thead><tr><th>Sede</th><th>VLAN</th><th>Nombre</th><th>Servicio</th><th>Hosts terminales</th><th>DHCP local</th><th>Acción</th></tr></thead><tbody>${state.vlans.map((v, i) => `<tr><td><select id="vs${i}" aria-label="Sede de VLAN">${state.sites.map((s) => `<option value="${s.id}" ${s.id === v.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></td><td><input class="num" aria-label="VLAN" id="vi${i}" value="${v.id}" type="number" min="2" max="4094"></td><td><input aria-label="Nombre VLAN" id="vn${i}" value="${esc(v.name)}"></td><td><select aria-label="Servicio" id="vr${i}">${optsHTML(roles, v.role)}</select></td><td><input class="num" aria-label="Hosts" id="vh${i}" type="number" value="${v.hosts}"></td><td><input aria-label="DHCP local" id="vd${i}" type="checkbox" ${v.dhcp ? "checked" : ""}></td><td><button class="small danger" onclick="deleteVlan(${i})">Eliminar</button></td></tr>`).join("")}</tbody></table></div>` : '<div class="empty">Confirme los datos y genere una propuesta desde Estimación, o agregue sus segmentos manualmente.</div>'}</div>${planTable()}<details class="card"><summary>¿Qué significan VLSM, CIDR y gateway?</summary><p>VLSM asigna tamaños diferentes a las subredes. CIDR /n indica cuántos bits identifican la red. El gateway es la dirección del equipo que lleva el tráfico fuera de la VLAN. Una VLAN separa dominios de broadcast; necesita políticas de acceso para aportar aislamiento de seguridad.</p></details>`
+        );
+      }
+      function addVlan() {
+        const i = state.vlans.length;
+        state.vlans.push({
+          key: "v" + Date.now(),
+          site: state.sites[selectedSite]?.id || state.sites[0].id,
+          id: Math.min(4094, 10 * (i + 1)),
+          name: "Nuevo segmento",
+          role: "Datos",
+          hosts: 20,
+          dhcp: true,
+          gateway: "",
+        });
+        invalidate("plan");
+        render();
+        toast("VLAN añadida a " + siteName(state.vlans.at(-1).site) + ".");
+      } // Los segmentos nuevos pertenecen a la sede activa.
+      function deleteVlan(i) {
+        if (
+          confirm("¿Eliminar esta VLAN y reiniciar las etapas dependientes?")
+        ) {
+          state.vlans.splice(i, 1);
+          invalidate("plan");
+          render();
+        }
+      } // Elimina también el plan que dependía del segmento.
+      function readVlans() {
+        const vlans = state.vlans.map((v, i) => ({
+          ...v,
+          site: $("vs" + i).value,
+          id: num($("vi" + i).value, 2, 4094, "VLAN"),
+          name: text($("vn" + i).value, "Nombre VLAN", 60),
+          role: $("vr" + i).value,
+          hosts: num($("vh" + i).value, 1, 1000000, "Hosts"),
+          dhcp: $("vd" + i).checked,
+        }));
+        for (const s of state.sites) {
+          const rows = vlans.filter((v) => v.site === s.id);
+          if (new Set(rows.map((v) => v.id)).size !== rows.length)
+            fail("VLAN duplicada en " + s.name);
+          if (rows.filter((v) => v.role === "Gestión").length > 1)
+            fail("Use una sola VLAN de gestión por sede.");
+          if (!rows.length) fail("Se requiere al menos una VLAN en " + s.name);
+        }
+        return vlans;
+      } // Permite repetir VLAN entre sedes, pero no dentro de una.
+      function initialTransits() {
+        const req = [];
+        for (const s of state.sites) {
+          for (let k = 0; k < (s.redundant ? 2 : 1); k++)
+            req.push({
+              key: "t-" + s.id + "-" + k,
+              site: s.id,
+              name: "Router ↔ Core " + (k + 1),
+              kind: "transit",
+              hosts: 2,
+            });
+        }
+        if (state.project.interconnect)
+          state.sites
+            .slice(1)
+            .forEach((s) =>
+              req.push({
+                key: "w-" + s.id,
+                site: "WAN",
+                name: state.sites[0].name + " ↔ " + s.name,
+                kind: "wan",
+                hosts: 2,
+              }),
+            );
+        return req;
+      } // WAN en estrella; sedes desconectadas no reciben enlaces entre sí.
+      function allocate(vlans, base, growth, transits) {
+        const b = subnet(base);
+        if (b.prefix > 30) fail("El bloque base debe ser /30 o mayor.");
+        if (
+          !b.type.startsWith("Privada") ||
+          !ipType(b.end).startsWith("Privada") ||
+          Math.floor(b.net / 16777216) !== Math.floor(b.end / 16777216)
+        )
+          fail(
+            "Use un bloque completo privado RFC1918 para el plan de laboratorio.",
+          );
+        const req = vlans
+          .map((v) => {
+            const s = state.sites.find((s) => s.id === v.site),
+              reserve = s.redundant ? 3 : 1,
+              need = Math.ceil(v.hosts * (1 + growth / 100)) + reserve;
+            const bits = Math.max(2, Math.ceil(Math.log2(need + 2)));
+            return {
+              ...v,
+              kind: "vlan",
+              reserve,
+              required: need,
+              prefix: 32 - bits,
+              size: 2 ** bits,
+            };
+          })
+          .concat(
+            transits.map((t) => ({
+              ...t,
+              reserve: 0,
+              required: 2,
+              prefix: 30,
+              size: 4,
+            })),
+          )
+          .sort((a, b) => b.size - a.size || a.key.localeCompare(b.key));
+        let cursor = b.net;
+        const result = [];
+        for (const r of req) {
+          cursor = Math.ceil(cursor / r.size) * r.size;
+          if (cursor + r.size - 1 > b.end)
+            fail(
+              "El bloque base no tiene espacio suficiente. Amplíelo o reduzca hosts.",
+            );
+          const info = subnet(ipStr(cursor) + "/" + r.prefix);
+          const row = {
+            ...r,
+            ...info,
+            key: r.key,
+            site: r.site,
+            kind: r.kind,
+            hostsRequested: r.hosts,
+            available: info.hosts - r.reserve,
+            gateway: r.kind === "vlan" ? r.gateway || info.first : "",
+            reserve: r.reserve,
+          };
+          if (row.gateway && !isHost(row.gateway, row))
+            fail(
+              "Gateway de " +
+                r.name +
+                " fuera de su nueva subred. Bórrelo antes de recalcular.",
+            );
+          result.push(row);
+          cursor += r.size;
+        }
+        return result;
+      } // Alineación matemática al tamaño del bloque, con límite de capacidad.
+      function confirmVlans() {
+        safe(() => {
+          projectValid();
+          if (!state.vlans.length) fail("Añada VLAN antes de calcular.");
+          const vlans = readVlans(),
+            base = $("base").value.trim(),
+            growth = num($("growth").value, 0, 100, "Reserva"),
+            dns = ipStr(ipNum($("dns").value.trim()));
+          const plan = allocate(vlans, base, growth, initialTransits());
+          state.project = { ...state.project, base, growth, dns };
+          state.vlans = vlans;
+          state.plan = plan;
+          state.nodes = [];
+          state.links = [];
+          state.configs = {};
+          state.approved = true;
+          state.revision++;
+          render();
+          toast("VLSM validado y confirmado. Continúe con la topología.");
+        });
+      } // Nada se guarda si una VLAN o el bloque resultan inválidos.
+      function planTable() {
+        if (!state.plan.length) return "";
+        return `<div class="card"><div class="headingrow"><h2>Plan confirmado · ${state.project.base}</h2><button onclick="downloadPlan()">Descargar CSV</button></div><div class="tablewrap"><table><thead><tr><th>Sede</th><th>VLAN / enlace</th><th>Nombre</th><th>Solicitados</th><th>Disponibles terminales</th><th>Red</th><th>Prefijo</th><th>Máscara</th><th>Gateway</th><th>Primera IP</th><th>Última IP</th><th>Broadcast</th><th>Verificar</th></tr></thead><tbody>${state.plan.map((r, i) => `<tr><td>${esc(siteName(r.site))}</td><td>${r.kind === "vlan" ? r.id : r.kind.toUpperCase()}</td><td>${esc(r.name)}</td><td>${r.hostsRequested}</td><td>${r.available}</td><td class="mono">${r.network}</td><td>/${r.prefix}</td><td class="mono">${r.mask}</td><td>${r.gateway ? `<button class="small mono" onclick="editGateway('${r.key}')">${r.gateway}</button>` : "—"}</td><td class="mono">${r.first}</td><td class="mono">${r.last}</td><td class="mono">${r.broadcast}</td><td><button class="small" onclick="inspectSubnet(${i})">Validar</button></td></tr>`).join("")}</tbody></table></div><small>Disponible = capacidad utilizable menos las direcciones de gateway/cores. El rango utilizable muestra también las IP reservadas; DHCP las excluye.</small></div>`;
+      } // Las mismas filas alimentan subnetting, topología y CLI.
+      function editGateway(key) {
+        safe(() => {
+          const r = state.plan.find((r) => r.key === key),
+            v = prompt(
+              "Nuevo gateway dentro de " +
+                r.network +
+                "/" +
+                r.prefix +
+                " (vacío = selección automática)",
+              r.gateway,
+            );
+          if (v === null) return;
+          const custom = v.trim();
+          const actual = custom || r.first;
+          if (!isHost(actual, r))
+            fail("Gateway fuera de la subred o reservado como red/broadcast.");
+          if (state.nodes.some((n) => n.site === r.site && n.ip === actual))
+            fail("La dirección ya está asignada a un equipo.");
+          r.gateway = ipStr(ipNum(actual));
+          state.vlans.find((v) => v.key === key).gateway = custom
+            ? r.gateway
+            : "";
+          state.nodes = [];
+          state.links = [];
+          state.configs = {};
+          state.revision++;
+          render();
+          toast("Gateway confirmado; regenere la topología.");
+        });
+      } // Un cambio de gateway nunca deja interfaces antiguas activas.
+      function inspectSubnet(i) {
+        state.calc = state.plan[i].network + "/" + state.plan[i].prefix;
+        go(4);
+      } // Verificación integrada de una fila del plan.
+      function subnetView() {
+        const val = state.calc || "192.168.10.50/26";
+        let result = "";
+        try {
+          const r = subnet(val);
+          result = subnetResult(r);
+        } catch (e) {
+          result = `<div class="notice error">${esc(e.message)}</div>`;
+        }
+        return (
+          title(
+            "Subnetting IPv4",
+            "Compruebe una IP/CIDR o una red del plan. /31 utiliza ambas direcciones para punto a punto; /32 representa una sola dirección.",
+          ) +
+          `<div class="card"><div class="grid">${field("Dirección IPv4 / prefijo CIDR", "calc", val)}<div class="field"><label>Acciones</label><div class="actions"><button class="primary" onclick="calculate()">Calcular</button><button onclick="state.calc='192.168.10.50/26';render()">Ejemplo obligatorio /26</button></div></div></div></div><div id="calcResult">${result}</div>${state.plan.length ? `<div class="card"><h3>Validar una red del proyecto</h3><div class="chips">${state.plan.map((r, i) => `<button onclick="inspectSubnet(${i})">${esc(siteName(r.site))} · ${esc(r.name)} · ${r.network}/${r.prefix}</button>`).join("")}</div></div>` : ""}<details class="card"><summary>Interpretación</summary><p>La dirección de red identifica la subred. Broadcast alcanza todos sus hosts en redes convencionales. La máscara separa bits de red y de host. /0 tiene 4.294.967.296 direcciones; no debe confundirse con una política que permita todo tráfico.</p></details>`
+        );
+      }
+      function subnetResult(r) {
+        const rows = {
+          "IP ingresada": r.ip,
+          "Prefijo CIDR": "/" + r.prefix,
+          "Máscara decimal": r.mask,
+          "Máscara binaria": r.binary,
+          "Dirección de red": r.network,
+          Broadcast: r.broadcast,
+          "Primer host": r.first,
+          "Último host": r.last,
+          "Direcciones totales": r.total,
+          "Hosts utilizables": r.hosts,
+          "Bits de red": r.prefix,
+          "Bits de host": r.hostbits,
+          "Tipo de IP": r.type,
+        };
+        return `<div class="card"><h2>Resultado calculado</h2><div class="metrics">${[
+          ["Red", r.network],
+          ["Broadcast", r.broadcast],
+          ["Hosts", r.hosts],
+          ["Máscara", r.mask],
+        ]
+          .map(
+            ([k, v]) =>
+              `<div class="metric"><strong style="font-size:20px">${v}</strong><span>${k}</span></div>`,
+          )
+          .join(
+            "",
+          )}</div><div class="tablewrap" style="margin-top:16px"><table>${Object.entries(
+          rows,
+        )
+          .map(([k, v]) => `<tr><td>${k}</td><td class="mono">${v}</td></tr>`)
+          .join("")}</table></div></div>`;
+      } // El ejemplo /26 resulta en red .0 y broadcast .63, por la misma fórmula.
+      function calculate() {
+        safe(() => {
+          const value = $("calc").value.trim(),
+            r = subnet(value);
+          state.calc = value;
+          state.subnetOK = true;
+          $("calcResult").innerHTML = subnetResult(r);
+        });
+      } // El estado de la rúbrica solo cambia tras cálculo válido.
+      /* =================== Topología y asignación de interfaces =================== */
+      function row(key) {
+        return state.plan.find((r) => r.key === key);
+      } // Referencias por clave, sin duplicar direccionamiento.
+      function node(id) {
+        return state.nodes.find((n) => n.id === id);
+      } // Búsqueda de nodo.
+      function routed(n) {
+        return n && ["Router", "Switch capa 3"].includes(n.type);
+      } // Solo roles soportados reciben comandos de enrutamiento.
+      function switching(n) {
+        return n && ["Switch", "Switch capa 3"].includes(n.type);
+      } // Roles con VLAN y puertos de switching.
+      function configurable(n) {
+        return routed(n) || switching(n);
+      } // Firewalls y endpoints necesitan software específico, no IOS/VRP genérico.
+      function availableIPs(r, n, excluded = []) {
+        const skip = new Set([r.gateway, ...excluded].filter(Boolean));
+        const out = [];
+        for (let x = r.net + 1; x < r.end && out.length < n; x++) {
+          const ip = ipStr(x);
+          if (!skip.has(ip)) out.push(ip);
+        }
+        if (out.length < n) fail("No hay suficientes IP libres en " + r.name);
+        return out;
+      } // Respeta gateway virtual y direcciones ya reservadas.
+      function coreAddress(n, r) {
+        const cores = state.nodes
+          .filter((x) => x.site === n.site && x.type === "Switch capa 3")
+          .sort((a, b) => a.id.localeCompare(b.id));
+        if (cores.length > 2)
+          fail("Este diseño admite máximo dos cores por sede.");
+        return cores.length === 2
+          ? availableIPs(r, 2)[cores.indexOf(n)]
+          : r.gateway;
+      } // Los dos cores jamás comparten la IP física, a diferencia del ejemplo del prompt.
+      function buildTopology() {
+        safe(() => {
+          if (!state.approved || !state.plan.length)
+            fail("Confirme primero VLAN y VLSM.");
+          if (
+            state.nodes.length &&
+            !confirm("¿Reemplazar toda la topología y las ediciones manuales?")
+          )
+            return;
+          const estimatedNodes = state.sites.reduce((total, s) => {
+            const p = proposal(s),
+              c = counts(s);
+            return (
+              total +
+              1 +
+              p.core +
+              p.distribution +
+              p.access +
+              c.ap +
+              c.servers +
+              Math.min(c.pc, 3)
+            );
+          }, 0);
+          if (estimatedNodes > 500)
+            fail(
+              "El inventario supera 500 nodos gráficos. Reduzca AP/servidores del laboratorio o diseñe menos sedes por archivo.",
+            );
+          const nodes = [],
+            links = [];
+          let nid = 1,
+            lid = 1;
+          const add = (name, type, site, x, y, extra = {}) => {
+            const n = {
+              id: "n" + nid++,
+              name: hostname(name),
+              type,
+              vendor: "Cisco",
+              site,
+              ip: "",
+              network: "",
+              x,
+              y,
+              ...extra,
+            };
+            nodes.push(n);
+            return n;
+          };
+          const connect = (a, b, type, key = "", vlan = 0) => {
+            const ia =
+                links.filter((l) => l.a === a.id || l.b === a.id).length + 1,
+              ib = links.filter((l) => l.a === b.id || l.b === b.id).length + 1;
+            links.push({
+              id: "l" + lid++,
+              a: a.id,
+              b: b.id,
+              type,
+              network: key,
+              vlan,
+              bundle: 0,
+              ac: "GigabitEthernet0/" + ia,
+              bc: "GigabitEthernet0/" + ib,
+              ah: "GigabitEthernet0/0/" + ia,
+              bh: "GigabitEthernet0/0/" + ib,
+            });
+          };
+          const routers = [];
+          let maxHeight = 600;
+          for (let i = 0; i < state.sites.length; i++) {
+            const s = state.sites[i],
+              p = proposal(s),
+              c = counts(s),
+              x = 40 + i * 600,
+              router = add("R-" + (i + 1), "Router", s.id, x + 220, 85);
+            routers.push(router);
+            const cores = [];
+            for (let k = 0; k < p.core; k++) {
+              const core = add(
+                "CORE-" + (i + 1) + "-" + (k + 1),
+                "Switch capa 3",
+                s.id,
+                x + 120 + k * 220,
+                220,
+              );
+              cores.push(core);
+              connect(router, core, "routed", "t-" + s.id + "-" + k);
+            }
+            if (cores.length === 2) connect(cores[0], cores[1], "trunk");
+            const dist = [];
+            for (let k = 0; k < p.distribution; k++) {
+              const d = add(
+                "DIST-" + (i + 1) + "-" + (k + 1),
+                "Switch",
+                s.id,
+                x + 40 + (k % 3) * 175,
+                360 + Math.floor(k / 3) * 100,
+              );
+              dist.push(d);
+              cores.forEach((core) => connect(core, d, "trunk"));
+            }
+            const acc = [];
+            let accessY = dist.length
+              ? 480 + Math.floor((dist.length - 1) / 3) * 100
+              : 370;
+            for (let k = 0; k < p.access; k++) {
+              const a = add(
+                "ACC-" + (i + 1) + "-" + (k + 1),
+                "Switch",
+                s.id,
+                x + 20 + (k % 3) * 180,
+                accessY + Math.floor(k / 3) * 100,
+              );
+              acc.push(a);
+              if (dist.length) connect(dist[k % dist.length], a, "trunk");
+              else cores.forEach((core) => connect(core, a, "trunk"));
+            }
+            const endpointY = accessY + Math.ceil(acc.length / 3) * 100 + 20;
+            let ek = 0;
+            const endpoint = (name, type, role, quantity) => {
+              const nets = state.plan.filter(
+                (r) => r.site === s.id && r.kind === "vlan" && r.role === role,
+              );
+              if (!nets.length || !quantity) return;
+              for (let k = 0; k < quantity; k++) {
+                const r = nets[k % nets.length],
+                  n = add(
+                    name + "-" + (i + 1) + "-" + (k + 1),
+                    type,
+                    s.id,
+                    x + 20 + (ek % 3) * 180,
+                    endpointY + Math.floor(ek / 3) * 100,
+                    { network: r.key },
+                  );
+                connect(
+                  acc[ek % acc.length],
+                  n,
+                  type === "Access Point" ? "trunk" : "access",
+                  "",
+                  r.id,
+                );
+                ek++;
+              }
+            };
+            endpoint("AP", "Access Point", "Gestión", c.ap);
+            endpoint("SRV", "Servidor", "Servidores", c.servers);
+            endpoint(
+              "PC",
+              "PC",
+              state.plan.some((r) => r.site === s.id && r.role === "Clínica")
+                ? "Clínica"
+                : "Datos",
+              Math.min(c.pc, 3),
+            );
+            const nets = state.plan.filter(
+              (r) => r.site === s.id && r.kind === "vlan",
+            );
+            for (const r of nets) {
+              const assigned = nodes.filter(
+                (n) =>
+                  n.site === s.id &&
+                  (n.network === r.key ||
+                    (r.role === "Gestión" && n.type === "Switch")),
+              );
+              const physical =
+                cores.length === 2 ? availableIPs(r, 2) : [r.gateway];
+              const ips = availableIPs(r, assigned.length, physical);
+              assigned.forEach((n, j) => {
+                n.ip = ips[j];
+                n.network = r.key;
+              });
+            }
+            maxHeight = Math.max(
+              maxHeight,
+              endpointY + Math.ceil(ek / 3) * 100 + 60,
+            );
+          }
+          if (nodes.length > 500)
+            fail(
+              "Más de 500 equipos: reduzca inventario para representar esta topología en pantalla.",
+            );
+          if (state.project.interconnect)
+            routers
+              .slice(1)
+              .forEach((r, i) =>
+                connect(routers[0], r, "routed", "w-" + state.sites[i + 1].id),
+              );
+          state.nodes = nodes;
+          state.links = links;
+          state.configs = {};
+          state.revision++;
+          selectedNode = "";
+          render();
+          toast("Topología construida con las VLAN y subredes confirmadas.");
+        });
+      } // Cada enlace routed consume exactamente una red /30 del plan.
+      function topologyView() {
+        return (
+          title(
+            "Topología de red",
+            "El gráfico muestra sedes, equipos, VLAN y redes del plan. Arrastre un equipo para moverlo; haga clic para editarlo. Los enlaces WAN representan un laboratorio enrutado.",
+          ) +
+          `<div class="card"><div class="actions"><button class="primary" onclick="buildTopology()">Generar desde el plan</button><button onclick="editNode()">Agregar equipo</button><button onclick="editLink()">Crear enlace</button><button onclick="downloadSVG()">Descargar topología SVG</button><button onclick="imageMode=false;render()">Vista automática</button><label class="filebtn">Cargar imagen<input type="file" class="hidden" accept="image/png,image/jpeg,image/webp" onchange="loadImage(this)"></label>${imageData ? '<button onclick="imageMode=!imageMode;render()">Ver / ocultar imagen</button>' : ""}</div><div class="notice warn">Diseño preliminar: se recomiendan ${state.sites.length} firewalls; el gráfico base se centra en switching y enrutamiento de laboratorio. La conexión WAN privada no crea VPN, cifrado ni un servicio del ISP. PC son representativos; el inventario completo está en Estimación. Los AP empresariales reciben trunks de gestión/WiFi/invitados; su configuración SSID y mapeo VLAN se completa en el controlador del fabricante.</div>${imageData && imageMode ? `<div class="notice">Interpretación asistida manual: marque equipos y enlaces con los editores usando esta imagen como referencia. El HTML local no incluye un modelo de visión ni OCR y no afirma haber reconocido dispositivos automáticamente. La imagen no se transmite a ningún servidor.</div><div class="imageframe"><img src="${imageData}" alt="Topología importada como referencia"></div>` : ""}<div class="diagram">${state.nodes.length ? svgTopology() : '<div class="empty">Confirme el VLSM y pulse «Generar desde el plan», o agregue equipos manualmente.</div>'}</div></div><div class="two"><div class="card"><h2>Equipos · ${state.nodes.length}</h2><div class="tablewrap"><table><thead><tr><th>Nombre / sede</th><th>Tipo</th><th>Fabricante / IP</th><th>Acción</th></tr></thead><tbody>${state.nodes
+            .map(
+              (n) =>
+                `<tr><td>${esc(n.name)}<br><small>${esc(siteName(n.site))}</small></td><td>${n.type}</td><td>${n.vendor}<br><span class="mono">${esc(
+                  n.ip ||
+                    connected(n)
+                      .filter((l) => l.type === "routed")
+                      .map((l) => endpoint(l, n, n.vendor).ip)
+                      .join(" · ") ||
+                    "Interfaces / SVI",
+                )}</span></td><td><button class="small" onclick="editNode('${n.id}')">Editar</button> <button class="small danger" onclick="deleteNode('${n.id}')">×</button></td></tr>`,
+            )
+            .join(
+              "",
+            )}</tbody></table></div></div><div class="card"><h2>Enlaces · ${state.links.length}</h2><div class="tablewrap"><table><thead><tr><th>Extremos</th><th>Tipo / red</th><th>Acción</th></tr></thead><tbody>${state.links.map((l) => `<tr><td>${esc(node(l.a)?.name)} ↔ ${esc(node(l.b)?.name)}</td><td>${l.type}${l.bundle ? " · LACP " + l.bundle : ""}<br><small>${l.network ? row(l.network)?.network + "/" + row(l.network)?.prefix : l.type === "access" ? "VLAN " + l.vlan : "VLAN permitidas de sede"}</small></td><td><button class="small" onclick="editLink('${l.id}')">Editar</button> <button class="small danger" onclick="deleteLink('${l.id}')">×</button></td></tr>`).join("")}</tbody></table></div></div></div>`
+        );
+      }
+      function svgTopology() {
+        const w = Math.max(
+            650,
+            state.sites.length * 600 + 40,
+            ...state.nodes.map((n) => n.x + 180),
+          ),
+          h = Math.max(500, ...state.nodes.map((n) => n.y + 160));
+        let out = `<svg id="toposvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#d7e3ed"/></pattern></defs><rect width="100%" height="100%" fill="url(#dots)"/>`;
+        state.sites.forEach((s, i) => {
+          out += `<rect x="${i * 600 + 10}" y="10" width="590" height="${h - 20}" rx="12" fill="#edf4fa" fill-opacity=".6" stroke="#d2dfeb"/><text x="${i * 600 + 30}" y="40" font-size="16" fill="#263e59" font-weight="700">${esc(s.name)}</text>`;
+        });
+        for (const l of state.links) {
+          const a = node(l.a),
+            b = node(l.b);
+          if (!a || !b) continue;
+          const x1 = a.x + 75,
+            y1 = a.y + 28,
+            x2 = b.x + 75,
+            y2 = b.y + 28,
+            label =
+              l.type === "routed"
+                ? row(l.network)?.network + "/" + row(l.network)?.prefix
+                : l.type === "access"
+                  ? "VLAN " + l.vlan
+                  : "TRUNK" + (l.bundle ? " · LACP " + l.bundle : "");
+          out += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${l.type === "routed" ? "#338fa0" : "#a8bacd"}" stroke-width="${l.type === "routed" ? 3 : 2}" ${l.type === "routed" ? 'stroke-dasharray="7 4"' : ""}/><rect x="${(x1 + x2) / 2 - 65}" y="${(y1 + y2) / 2 - 10}" width="130" height="18" rx="3" fill="#f8fbff"/><text x="${(x1 + x2) / 2}" y="${(y1 + y2) / 2 + 3}" text-anchor="middle" font-size="9" fill="#376080">${esc(label)}</text>`;
+        }
+        for (const n of state.nodes) {
+          const vl = state.plan.filter(
+            (r) => r.site === n.site && r.kind === "vlan",
+          );
+          out += `<g class="node" data-id="${n.id}" transform="translate(${n.x},${n.y})"><rect width="150" height="62" rx="7" fill="${routed(n) ? "#16354f" : "white"}" stroke="#94b4c9"/><text x="75" y="22" text-anchor="middle" font-size="12" font-weight="700" fill="${routed(n) ? "#fff" : "#19324e"}">${esc(n.name)}</text><text x="75" y="39" text-anchor="middle" font-size="10" fill="${routed(n) ? "#9ed8d7" : "#637e95"}">${n.type} · ${n.vendor}</text><text x="75" y="54" text-anchor="middle" font-size="9" fill="${routed(n) ? "#9ed8d7" : "#637e95"}">${esc(n.ip || "Ver interfaces")}</text>${n.type === "Switch capa 3" ? `<text x="75" y="76" text-anchor="middle" font-size="9" fill="#376080">${esc(vl.map((r) => "V" + r.id + " " + r.gateway + "/" + r.prefix).join(" · "))}</text>` : ""}</g>`;
+        }
+        return out + "</svg>";
+      } // El SVG es exportable; etiquetas provienen del plan real.
+      function bindDrag() {
+        const svg = $("toposvg");
+        if (!svg) return;
+        let drag = null,
+          moved = false;
+        const point = (e) => {
+          const p = svg.createSVGPoint();
+          p.x = e.clientX;
+          p.y = e.clientY;
+          return p.matrixTransform(svg.getScreenCTM().inverse());
+        };
+        svg.onpointerdown = (e) => {
+          const g = e.target.closest(".node");
+          if (!g) return;
+          const n = node(g.dataset.id),
+            p = point(e);
+          drag = { n, g, dx: p.x - n.x, dy: p.y - n.y };
+          moved = false;
+          svg.setPointerCapture(e.pointerId);
+        };
+        svg.onpointermove = (e) => {
+          if (!drag) return;
+          const p = point(e),
+            x = Math.max(0, p.x - drag.dx),
+            y = Math.max(55, p.y - drag.dy);
+          if (Math.abs(x - drag.n.x) + Math.abs(y - drag.n.y) > 2) moved = true;
+          drag.n.x = x;
+          drag.n.y = y;
+          drag.g.setAttribute("transform", `translate(${x},${y})`);
+        };
+        svg.onpointerup = (e) => {
+          if (!drag) return;
+          const id = drag.n.id;
+          drag = null;
+          if (moved) {
+            render();
+          } else editNode(id);
+        };
+      } // El arrastre solo cambia posición, sin invalidar las configuraciones.
+      function modal(content) {
+        $("modalbody").innerHTML = content;
+        $("modal").showModal();
+      } // Edición modal; confirmación guarda y cierra.
+      function closeModal() {
+        $("modal").close();
+      } // Cierre accesible mediante botón o Escape nativo.
+      function editNode(id = "") {
+        const n = id
+          ? node(id)
+          : {
+              name: "Equipo-" + (state.nodes.length + 1),
+              type: "Switch",
+              vendor: "Cisco",
+              site: state.sites[0].id,
+              ip: "",
+              network: "",
+              x: 50,
+              y: 100,
+            };
+        modal(
+          `<h2>${id ? "Editar" : "Agregar"} equipo</h2><div class="grid">${field("Hostname *", "nname", n.name)}<div class="field"><label>Tipo</label><select id="ntype">${optsHTML(kinds, n.type)}</select></div><div class="field"><label>Fabricante</label><select id="nvendor">${optsHTML(["Cisco", "Huawei"], n.vendor)}</select></div><div class="field"><label>Sede</label><select id="nsite">${state.sites.map((s) => `<option value="${s.id}" ${s.id === n.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></div>${field("IP de gestión / endpoint (opcional)", "nip", n.ip)}<div class="field"><label>VLAN de gestión / endpoint</label><select id="nnetwork"><option value="">Sin asignar</option>${state.plan
+            .filter((r) => r.kind === "vlan")
+            .map(
+              (r) =>
+                `<option value="${r.key}" ${r.key === n.network ? "selected" : ""}>${esc(siteName(r.site))} · V${r.id} ${esc(r.name)}</option>`,
+            )
+            .join(
+              "",
+            )}</select></div></div><p>Las IP de interfaces enrutadas y SVI se toman del plan. Para los equipos manuales, asigne una VLAN e IP si requieren administración. Los nombres no pueden contener comandos.</p><div class="actions"><button class="primary" onclick="saveNode('${id}')">Confirmar equipo</button><button onclick="closeModal()">Cancelar</button></div>`,
+        );
+      } // Editor permite los siete atributos solicitados.
+      function saveNode(id) {
+        safe(() => {
+          const n = {
+            ...(id ? node(id) : { id: "n" + Date.now(), x: 50, y: 100 }),
+            name: hostname($("nname").value),
+            type: $("ntype").value,
+            vendor: $("nvendor").value,
+            site: $("nsite").value,
+            ip: $("nip").value.trim(),
+            network: $("nnetwork").value,
+          };
+          if (state.nodes.some((x) => x.id !== id && x.name === n.name))
+            fail("Hostname duplicado.");
+          const r = row(n.network);
+          if (n.ip) {
+            n.ip = ipStr(ipNum(n.ip));
+            if (
+              !r ||
+              r.site !== n.site ||
+              !isHost(n.ip, r) ||
+              n.ip === r.gateway
+            )
+              fail(
+                "La IP debe pertenecer a la VLAN seleccionada y no ser el gateway.",
+              );
+            if (state.nodes.some((x) => x.id !== id && x.ip === n.ip))
+              fail("IP duplicada.");
+            const physical = state.sites.find((s) => s.id === r.site).redundant
+              ? availableIPs(r, 2)
+              : [r.gateway];
+            if (physical.includes(n.ip)) fail("IP reservada para un core.");
+          }
+          if (r && r.site !== n.site)
+            fail("VLAN y equipo deben pertenecer a la misma sede.");
+          const connected = state.links.filter((l) => l.a === id || l.b === id);
+          for (const l of connected) {
+            if (l.type === "routed" && !routed(n))
+              fail("Quite los enlaces enrutados antes de cambiar este tipo.");
+            if (
+              l.type === "trunk" &&
+              !switching(n) &&
+              n.type !== "Access Point"
+            )
+              fail("Un trunk requiere un switch en ambos extremos.");
+            if (
+              l.type !== "routed" &&
+              node(l.a === id ? l.b : l.a).site !== n.site
+            )
+              fail("Los enlaces LAN no pueden cruzar sedes.");
+          }
+          if (
+            n.type === "Switch capa 3" &&
+            state.nodes.filter(
+              (x) => x.id !== id && x.site === n.site && x.type === n.type,
+            ).length >= 2
+          )
+            fail("Máximo dos cores por sede.");
+          if (id) state.nodes[state.nodes.findIndex((x) => x.id === id)] = n;
+          else state.nodes.push(n);
+          invalidate("topology");
+          closeModal();
+          render();
+        });
+      } // Mantiene relaciones y unicidad incluso al editar equipos conectados.
+      function deleteNode(id) {
+        if (confirm("¿Eliminar equipo y todos sus enlaces?")) {
+          state.nodes = state.nodes.filter((n) => n.id !== id);
+          state.links = state.links.filter((l) => l.a !== id && l.b !== id);
+          invalidate("topology");
+          render();
+        }
+      } // Borra enlaces huérfanos en la misma operación.
+      function editLink(id = "") {
+        if (state.nodes.length < 2)
+          return toast("Añada al menos dos equipos.", true);
+        const l = id
+          ? state.links.find((l) => l.id === id)
+          : {
+              a: state.nodes[0].id,
+              b: state.nodes[1].id,
+              type: "trunk",
+              network: "",
+              vlan: 10,
+              bundle: 0,
+              ac: "GigabitEthernet0/1",
+              bc: "GigabitEthernet0/1",
+              ah: "GigabitEthernet0/0/1",
+              bh: "GigabitEthernet0/0/1",
+            };
+        const ns = (sel) =>
+          state.nodes
+            .map(
+              (n) =>
+                `<option value="${n.id}" ${n.id === sel ? "selected" : ""}>${esc(n.name)} · ${esc(siteName(n.site))}</option>`,
+            )
+            .join("");
+        modal(
+          `<h2>${id ? "Editar" : "Crear"} enlace</h2><div class="grid"><div class="field"><label>Equipo A</label><select id="la">${ns(l.a)}</select></div><div class="field"><label>Equipo B</label><select id="lb">${ns(l.b)}</select></div><div class="field"><label>Tipo</label><select id="ltype">${optsHTML(["trunk", "access", "routed"], l.type)}</select></div><div class="field"><label>Red de tránsito (routed)</label><select id="lnet"><option value="">Asignar nueva /30 desde VLSM</option>${state.plan
+            .filter((r) => r.kind !== "vlan")
+            .map(
+              (r) =>
+                `<option value="${r.key}" ${r.key === l.network ? "selected" : ""}>${esc(r.name)} · ${r.network}/30</option>`,
+            )
+            .join(
+              "",
+            )}</select></div>${field("VLAN (solo access)", "lvlan", l.vlan, "number")}${field("Grupo LACP (0 = sin agrupación)", "lbundle", l.bundle, "number")}${field("Interfaz A · Cisco", "lac", l.ac)}${field("Interfaz B · Cisco", "lbc", l.bc)}${field("Interfaz A · Huawei", "lah", l.ah)}${field("Interfaz B · Huawei", "lbh", l.bh)}</div><div class="notice">Trunk transporta las VLAN de la sede (hacia AP: gestión, WiFi e invitados). Access conecta un terminal a una VLAN. Routed utiliza /30 y OSPF. LACP requiere dos enlaces físicos entre los mismos switches con el mismo número de grupo; se usa modo activo en ambos extremos.</div><div class="actions"><button class="primary" onclick="saveLink('${id}')">Confirmar enlace</button><button onclick="closeModal()">Cancelar</button></div>`,
+        );
+      } // Interfaces de cada fabricante se editan separadamente.
+      function interfaceName(v) {
+        if (
+          !/^(GigabitEthernet|TenGigabitEthernet|FastEthernet|Ethernet)\d+(\/\d+){1,3}$/.test(
+            v,
+          )
+        )
+          fail(
+            "Interfaz inválida: " +
+              v +
+              ". Use GigabitEthernet0/1 o GigabitEthernet0/0/1.",
+          );
+        return v;
+      } // No admite saltos de línea ni nombres de comandos.
+      function saveLink(id) {
+        safe(() => {
+          const l = {
+            id: id || "l" + Date.now(),
+            a: $("la").value,
+            b: $("lb").value,
+            type: $("ltype").value,
+            network: $("lnet").value,
+            vlan:
+              $("ltype").value === "access"
+                ? num($("lvlan").value, 2, 4094, "VLAN")
+                : 0,
+            bundle: num($("lbundle").value, 0, 128, "LACP"),
+            ac: interfaceName($("lac").value.trim()),
+            bc: interfaceName($("lbc").value.trim()),
+            ah: interfaceName($("lah").value.trim()),
+            bh: interfaceName($("lbh").value.trim()),
+          };
+          validateLink(
+            l,
+            state.links.filter((x) => x.id !== id),
+          );
+          let plan = state.plan;
+          if (l.type === "routed" && !l.network) {
+            const base = subnet(state.project.base),
+              occupied = state.plan;
+            let cursor = base.net;
+            while (
+              cursor + 3 <= base.end &&
+              occupied.some((r) => cursor <= r.end && cursor + 3 >= r.net)
+            )
+              cursor =
+                Math.ceil(
+                  (Math.max(
+                    ...occupied
+                      .filter((r) => cursor <= r.end && cursor + 3 >= r.net)
+                      .map((r) => r.end),
+                  ) +
+                    1) /
+                    4,
+                ) * 4;
+            if (cursor + 3 > base.end)
+              fail("Sin espacio para una /30 adicional.");
+            const info = subnet(ipStr(cursor) + "/30");
+            l.network = "m-" + l.id;
+            plan = state.plan.concat({
+              ...info,
+              key: l.network,
+              kind: "transit",
+              site: node(l.a).site === node(l.b).site ? node(l.a).site : "WAN",
+              name: node(l.a).name + " ↔ " + node(l.b).name,
+              hostsRequested: 2,
+              available: 2,
+              reserve: 0,
+              gateway: "",
+            });
+          }
+          state.plan = plan;
+          if (id) state.links[state.links.findIndex((x) => x.id === id)] = l;
+          else state.links.push(l);
+          invalidate("topology");
+          closeModal();
+          render();
+        });
+      } // Asignación adicional conserva las subredes existentes y evita solapamiento.
+      function validateLink(l, others) {
+        if (l.a === l.b) fail("Un enlace requiere dos equipos diferentes.");
+        const a = node(l.a),
+          b = node(l.b);
+        if (!a || !b) fail("Extremo inexistente.");
+        if (l.type === "routed") {
+          if (!routed(a) || !routed(b))
+            fail("Routed solo entre router o switch capa 3.");
+          if (l.bundle)
+            fail("LACP se implementa en trunks, no en redes routed.");
+          if (l.network && (!row(l.network) || row(l.network).kind === "vlan"))
+            fail("Seleccione una red /30 de tránsito.");
+          if (l.network && others.some((x) => x.network === l.network))
+            fail("Esta /30 ya está en uso por otro enlace.");
+        } else {
+          if (a.site !== b.site)
+            fail("Los enlaces LAN deben quedar en la misma sede.");
+          if (
+            l.type === "trunk" &&
+            !(
+              (switching(a) && (switching(b) || b.type === "Access Point")) ||
+              (switching(b) && a.type === "Access Point")
+            )
+          )
+            fail("Trunk requiere switches o un switch y un AP empresarial.");
+          if (l.type === "access") {
+            if (!switching(a) && !switching(b))
+              fail("Access requiere un switch.");
+            if (l.bundle) fail("Access no admite LACP.");
+            if (
+              !state.plan.some(
+                (r) =>
+                  r.site === a.site && r.kind === "vlan" && r.id === l.vlan,
+              )
+            )
+              fail("La VLAN access no existe en esta sede.");
+            const end = switching(a) ? b : a;
+            if (end.network && row(end.network).id !== l.vlan)
+              fail("La VLAN del terminal debe coincidir con el enlace access.");
+          }
+        }
+        for (const side of ["a", "b"])
+          for (const vendor of ["c", "h"]) {
+            const name = l[side + vendor];
+            for (const x of others) {
+              if (
+                (x.a === l[side] && x["a" + vendor] === name) ||
+                (x.b === l[side] && x["b" + vendor] === name)
+              )
+                fail(
+                  "Interfaz " + name + " ya utilizada en " + node(l[side]).name,
+                );
+            }
+          }
+        if (
+          l.bundle &&
+          others.some(
+            (x) =>
+              x.bundle === l.bundle &&
+              (x.a === a.id || x.b === a.id || x.a === b.id || x.b === b.id) &&
+              !(
+                (x.a === a.id && x.b === b.id) ||
+                (x.a === b.id && x.b === a.id)
+              ),
+          )
+        )
+          fail("El grupo LACP ya conecta otros equipos.");
+      } // Rechaza interfaces duplicadas y grupos incoherentes.
+      function deleteLink(id) {
+        if (
+          confirm(
+            "¿Eliminar este enlace? La subred quedará reservada en el plan.",
+          )
+        ) {
+          state.links = state.links.filter((l) => l.id !== id);
+          invalidate("topology");
+          render();
+        }
+      } // Las redes no se renumeran después de quitar un enlace.
+      function loadImage(input) {
+        safe(() => {
+          const file = input.files[0];
+          if (!file) return;
+          if (
+            !["image/png", "image/jpeg", "image/webp"].includes(file.type) ||
+            file.size > 5 * 1024 * 1024
+          )
+            fail("Use PNG, JPEG o WebP de máximo 5 MB.");
+          const reader = new FileReader();
+          reader.onload = () => {
+            imageData = reader.result;
+            imageMode = true;
+            render();
+            toast("Imagen cargada para interpretación manual.");
+          };
+          reader.readAsDataURL(file);
+        });
+      } // No usa API externa, claves ni reconocimiento simulado.
+      function downloadSVG() {
+        if (!state.nodes.length)
+          return toast("No hay topología para descargar.", true);
+        download("topologia.svg", svgTopology(), "image/svg+xml");
+      } // Exporta dibujo vectorial autónomo.
+      /* =================== Generación de Cisco IOS y Huawei VRP =================== */
+      function connected(n) {
+        return state.links.filter((l) => l.a === n.id || l.b === n.id);
+      } // Configuración limitada a interfaces realmente presentes.
+      function endpoint(l, n, vendor) {
+        const side = l.a === n.id ? "a" : "b",
+          r = row(l.network);
+        return {
+          iface: l[side + (vendor === "Cisco" ? "c" : "h")],
+          ip: r ? (side === "a" ? r.first : r.last) : "",
+          r,
+          peer: node(l.a === n.id ? l.b : l.a),
+        };
+      } // Los extremos routed reciben first/last de la misma /30.
+      function routerId(n) {
+        const index = state.nodes.findIndex((x) => x.id === n.id) + 1;
+        return "10.255." + Math.floor(index / 254) + "." + ((index % 254) + 1);
+      } // Router-ID único, no se copia 8.8.8.8 como loopback propia.
+      // Huawei: ofrece equivalencias si la topología automática solo contiene Cisco.
+      // No modifica fabricantes, nodos, enlaces, direccionamiento ni el generador Cisco.
+      function configNodes(vendor) {
+        const nodes = state.nodes.filter(
+          (n) => configurable(n) && n.vendor === vendor,
+        );
+        return vendor === "Huawei" && !nodes.length
+          ? state.nodes.filter(configurable)
+          : nodes;
+      }
+      function configView(vendor) {
+        const nodes = configNodes(vendor);
+        return (
+          title(
+            "Configuración " + vendor,
+            vendor === "Cisco"
+              ? "Propuestas para IOS / IOS XE con VLAN, SVI, OSPF y SSH. Elija equipo o genere toda la marca."
+              : "Propuestas para VRP con Vlanif, OSPF, AAA y STelnet. La equivalencia utiliza exactamente el mismo plan. Si no hay equipos marcados como Huawei, se ofrecen los equipos configurables de la topología como equivalentes VRP, sin cambiar su fabricante.",
+          ) +
+          configControls() +
+          `<div class="card"><div class="actions"><select id="confNode" aria-label="Equipo a configurar">${nodes.map((n) => `<option value="${n.id}">${esc(n.name)} · ${esc(siteName(n.site))}</option>`).join("")}</select><button class="primary" onclick="generateSelected('${vendor}')">Generar equipo</button><button onclick="generateAll('${vendor}')">Generar todos los ${vendor}</button><button onclick="downloadAll('${vendor}')">Descargar todos</button></div><div class="notice warn">Configuración preliminar; ajuste interfaces y sintaxis al modelo/versión del equipo. &lt;CAMBIAR_EN_PRODUCCION&gt; exige reemplazo externo antes de aplicar. Los prompts interactivos de claves y guardado se atienden en el equipo. No se genera configuración genérica para firewall, AP, ISP, PC o servidor.</div>${nodes.length ? nodes.map((n) => configBlock(n, vendor)).join("") : '<div class="empty">Genere una topología y asigne equipos a esta marca. Para evaluar el mismo equipo con ambas sintaxis use Comparación.</div>'}</div>`
+        );
+      }
+      function configControls() {
+        return `<div class="card"><h3>Funciones a generar</h3><div class="grid">${Object.entries(
+          {
+            basic: "Hostname y seguridad básica",
+            ssh: "SSH / STelnet con AAA",
+            vlans: "Crear VLAN",
+            interfaces: "Interfaces, trunks, SVI",
+            ospf: "OSPF área 0 (redes del plan)",
+            dhcp: "DHCP local (VLAN marcadas)",
+            relay: "Relay DHCP externo",
+            static: "Ruta estática por defecto",
+          },
+        )
+          .map(
+            ([k, l]) =>
+              `<label class="check"><input id="o${k}" type="checkbox" ${state.opts[k] ? "checked" : ""} onchange="changeOpts()">${l}</label>`,
+          )
+          .join(
+            "",
+          )}</div><div class="grid">${field("Servidor DHCP externo (solo relay)", "relay", state.relay, "text", 'onchange="changeOpts()"')}${field("Siguiente salto de ruta por defecto", "staticNext", state.staticNext, "text", 'onchange="changeOpts()"')}${field("Justificación de la ruta por defecto", "staticReason", state.staticReason, "text", 'onchange="changeOpts()"')}</div><small>DHCP y relay son excluyentes. OSPF usa interfaces LAN pasivas. HSRP/VRRP se genera en sedes con dos cores. LACP se genera para grupos válidos creados en Topología.</small></div>`;
+      } // Funciones reales, dependientes de los roles y selección.
+      function changeOpts() {
+        return safe(() => {
+          const opts = {};
+          for (const k of Object.keys(state.opts)) opts[k] = $("o" + k).checked;
+          let relay = $("relay").value.trim(),
+            next = $("staticNext").value.trim(),
+            reason = $("staticReason").value.trim();
+          if (relay) relay = ipStr(ipNum(relay));
+          if (next) next = ipStr(ipNum(next));
+          if (opts.relay && opts.dhcp) {
+            render();
+            fail("Elija DHCP local o relay, no ambos.");
+          }
+          const changed =
+            JSON.stringify([
+              state.opts,
+              state.relay,
+              state.staticNext,
+              state.staticReason,
+            ]) !== JSON.stringify([opts, relay, next, reason]);
+          state.opts = opts;
+          state.relay = relay;
+          state.staticNext = next;
+          state.staticReason = reason;
+          if (changed) {
+            state.configs = {};
+            state.revision++;
+          }
+          return true;
+        });
+      } // Las opciones modificadas invalidan los textos generados.
+      function assertReady(n) {
+        if (!state.approved || !state.plan.length)
+          fail("Confirme primero el plan.");
+        hostname(n.name);
+        if (!configurable(n))
+          fail("El tipo seleccionado no dispone de plantilla IOS/VRP.");
+        if (state.opts.relay && !state.relay)
+          fail("Indique IP de DHCP externo para relay.");
+        if (state.opts.static && (!state.staticNext || !state.staticReason))
+          fail("Ruta por defecto requiere siguiente salto y justificación.");
+        const problems = topologyIssues().filter((x) => x.block);
+        if (problems.length) fail(problems.map((x) => x.msg).join(" · "));
+        if (state.opts.static) {
+          const usable = connected(n)
+            .filter((l) => l.type === "routed")
+            .map((l) => endpoint(l, n, "Cisco"));
+          if (
+            !usable.some(
+              (e) =>
+                e.peer &&
+                e.r &&
+                isHost(state.staticNext, e.r) &&
+                state.staticNext !== e.ip,
+            )
+          )
+            fail(
+              "La ruta por defecto de " +
+                n.name +
+                " requiere un siguiente salto directamente conectado.",
+            );
+        }
+        if (state.opts.ospf && !state.opts.interfaces)
+          fail("OSPF requiere configurar interfaces.");
+        if (state.opts.dhcp && !state.opts.interfaces)
+          fail("DHCP requiere las interfaces gateway.");
+        if (state.opts.interfaces && switching(n) && !state.opts.vlans)
+          fail("Interfaces de switching requieren crear VLAN.");
+      } // Bloqueos técnicos concretos, sin afirmar funcionalidad incompleta.
+      function generate(n, vendor) {
+        assertReady(n);
+        const c = vendor === "Cisco",
+          o = state.opts,
+          lan = state.plan.filter(
+            (r) => r.site === n.site && r.kind === "vlan",
+          ),
+          links = connected(n),
+          core = n.type === "Switch capa 3",
+          cores = state.nodes
+            .filter((x) => x.site === n.site && x.type === "Switch capa 3")
+            .sort((a, b) => a.id.localeCompare(b.id)),
+          primary = cores[0]?.id === n.id;
+        const lines = [],
+          add = (...s) => lines.push(...s),
+          sep = c ? "!" : "#";
+        add(
+          sep + " Propuesta " + vendor + " para " + n.name,
+          sep +
+            " Proyecto " +
+            commandName(state.project.name) +
+            " / " +
+            commandName(siteName(n.site)),
+          sep + " Revisar plataforma y sustituir los marcadores de secretos.",
+          c ? "enable" : "system-view",
+        );
+        if (c) add("configure terminal");
+        if (o.basic) {
+          if (c)
+            add(
+              "hostname " + n.name,
+              "no ip domain-lookup",
+              "enable secret <CAMBIAR_EN_PRODUCCION>",
+              "no ip http server",
+              "no ip http secure-server",
+              "service timestamps log datetime msec",
+            );
+          else add("sysname " + n.name, "undo telnet server enable");
+        }
+        if (o.ssh) {
+          const mgmt = lan.find((r) => r.role === "Gestión");
+          if (mgmt) {
+            if (c)
+              add(
+                "ip access-list standard MGMT-SSH",
+                "permit " + mgmt.network + " " + wildcard(mgmt.mask),
+                "deny any",
+                "exit",
+              );
+            else
+              add(
+                "acl number 2000",
+                "rule 5 permit source " +
+                  mgmt.network +
+                  " " +
+                  wildcard(mgmt.mask),
+                "rule 10 deny",
+                "quit",
+              );
+          }
+          if (c)
+            add(
+              "ip domain-name laboratorio.local",
+              "username operador privilege 1 secret <CAMBIAR_EN_PRODUCCION>",
+              "crypto key generate rsa modulus 2048",
+              "ip ssh version 2",
+              "ip ssh time-out 60",
+              "ip ssh authentication-retries 3",
+              "line vty 0 15",
+              "login local",
+              "transport input ssh",
+              "exec-timeout 10 0",
+              ...(mgmt ? ["access-class MGMT-SSH in"] : []),
+              "exit",
+            );
+          else
+            add(
+              "rsa local-key-pair create",
+              sep + " Responder 2048 al prompt de longitud de clave si aplica.",
+              "stelnet server enable",
+              "aaa",
+              "local-user operador password irreversible-cipher <CAMBIAR_EN_PRODUCCION>",
+              "local-user operador privilege level 1",
+              "local-user operador service-type ssh",
+              "quit",
+              "ssh user operador authentication-type password",
+              "ssh user operador service-type stelnet",
+              "user-interface vty 0 4",
+              "authentication-mode aaa",
+              "protocol inbound ssh",
+              "idle-timeout 10 0",
+              ...(mgmt ? ["acl 2000 inbound"] : []),
+              "quit",
+            );
+        }
+        if (core && c) add("ip routing");
+        if (!c && core && (o.dhcp || o.relay)) add("dhcp enable");
+        if (o.basic && switching(n)) {
+          if (c) add("spanning-tree mode rapid-pvst");
+          else add("stp mode mstp", "stp bpdu-protection");
+          if (core) {
+            if (c)
+              add(
+                "spanning-tree vlan " +
+                  lan.map((r) => r.id).join(",") +
+                  " root " +
+                  (primary ? "primary" : "secondary"),
+              );
+            else add("stp root " + (primary ? "primary" : "secondary"));
+          }
+        }
+        if (o.vlans && switching(n)) {
+          for (const r of lan)
+            add(
+              "vlan " + r.id,
+              "name " + commandName(r.name),
+              c ? "exit" : "quit",
+            );
+        }
+        if (o.interfaces) {
+          const bundleDone = new Set();
+          for (const l of links.filter((l) => l.bundle)) {
+            if (bundleDone.has(l.bundle)) continue;
+            bundleDone.add(l.bundle);
+            add("interface " + (c ? "Port-channel" : "Eth-Trunk") + l.bundle);
+            if (!c) add("mode lacp-static");
+            add(
+              ...trunkCommands(c, lan),
+              c ? "no shutdown" : "undo shutdown",
+              c ? "exit" : "quit",
+            );
+          }
+          for (const l of links) {
+            const e = endpoint(l, n, vendor);
+            if (l.type === "access" && !switching(n)) continue;
+            add("interface " + e.iface);
+            if (l.type === "routed") {
+              if (switching(n)) add(c ? "no switchport" : "undo portswitch");
+              add("ip address " + e.ip + " " + e.r.mask);
+            } else if (l.type === "trunk") {
+              if (l.bundle) {
+                add(
+                  c
+                    ? "channel-group " + l.bundle + " mode active"
+                    : "eth-trunk " + l.bundle,
+                );
+              } else
+                add(
+                  ...trunkCommands(
+                    c,
+                    e.peer?.type === "Access Point"
+                      ? lan.filter((r) =>
+                          ["WiFi", "Gestión", "Invitados"].includes(r.role),
+                        )
+                      : lan,
+                  ),
+                );
+            } else {
+              add(
+                c ? "switchport mode access" : "port link-type access",
+                c
+                  ? "switchport access vlan " + l.vlan
+                  : "port default vlan " + l.vlan,
+              );
+              const peer = e.peer;
+              if (!switching(peer) && !routed(peer))
+                add(c ? "spanning-tree portfast" : "stp edged-port enable");
+              if (c) add("spanning-tree bpduguard enable");
+            }
+            add(c ? "no shutdown" : "undo shutdown", c ? "exit" : "quit");
+            if (l.bundle && !bundleDone.has(l.bundle)) {
+              bundleDone.add(l.bundle);
+              add("interface " + (c ? "Port-channel" : "Eth-Trunk") + l.bundle);
+              if (!c) add("mode lacp-static");
+              add(
+                ...trunkCommands(c, lan),
+                c ? "no shutdown" : "undo shutdown",
+                c ? "exit" : "quit",
+              );
+            }
+          }
+          if (core) {
+            for (const r of lan) {
+              const physical = coreAddress(n, r);
+              add(
+                "interface " + (c ? "Vlan" : "Vlanif") + r.id,
+                "ip address " + physical + " " + r.mask,
+              );
+              if (o.relay)
+                add(
+                  c ? "ip helper-address " + state.relay : "dhcp select relay",
+                  ...(!c ? ["dhcp relay server-ip " + state.relay] : []),
+                );
+              if (cores.length === 2) {
+                const group = 1;
+                add(
+                  c
+                    ? "standby " + group + " ip " + r.gateway
+                    : "vrrp vrid " + group + " virtual-ip " + r.gateway,
+                  c
+                    ? "standby " + group + " priority " + (primary ? 150 : 100)
+                    : "vrrp vrid " +
+                        group +
+                        " priority " +
+                        (primary ? 150 : 100),
+                  c
+                    ? "standby " + group + " preempt"
+                    : "vrrp vrid " + group + " preempt-mode timer delay 10",
+                );
+              }
+              if (o.dhcp && !c && primary && r.dhcp) add("dhcp select global");
+              add(c ? "no shutdown" : "undo shutdown", c ? "exit" : "quit");
+            }
+          } else if (n.type === "Switch" && n.ip && n.network) {
+            const r = row(n.network);
+            add(
+              "interface " + (c ? "Vlan" : "Vlanif") + r.id,
+              "ip address " + n.ip + " " + r.mask,
+              c ? "no shutdown" : "undo shutdown",
+              c ? "exit" : "quit",
+              c
+                ? "ip default-gateway " + r.gateway
+                : "ip route-static 0.0.0.0 0.0.0.0 " + r.gateway,
+            );
+          }
+        }
+        if (o.ospf && routed(n)) {
+          if (c) {
+            add(
+              "router ospf 1",
+              "router-id " + routerId(n),
+              "passive-interface default",
+            );
+            for (const l of links.filter((l) => l.type === "routed")) {
+              const e = endpoint(l, n, vendor);
+              add(
+                "no passive-interface " + e.iface,
+                "network " + e.r.network + " " + wildcard(e.r.mask) + " area 0",
+              );
+            }
+            if (core)
+              for (const r of lan)
+                add(
+                  "network " + r.network + " " + wildcard(r.mask) + " area 0",
+                );
+            add("exit");
+          } else {
+            add("ospf 1 router-id " + routerId(n));
+            if (core)
+              for (const r of lan) add("silent-interface Vlanif" + r.id);
+            add("area 0.0.0.0");
+            for (const l of links.filter((l) => l.type === "routed")) {
+              const e = endpoint(l, n, vendor);
+              add("network " + e.r.network + " " + wildcard(e.r.mask));
+            }
+            if (core)
+              for (const r of lan)
+                add("network " + r.network + " " + wildcard(r.mask));
+            add("quit", "quit");
+          }
+        }
+        if (o.dhcp && core && primary) {
+          for (const r of lan.filter((r) => r.dhcp)) {
+            const reserved = [
+              r.gateway,
+              ...(cores.length === 2 ? availableIPs(r, 2) : []),
+              ...state.nodes
+                .filter((x) => x.site === r.site && x.network === r.key && x.ip)
+                .map((x) => x.ip),
+            ];
+            if (c) {
+              for (const ip of [...new Set(reserved)])
+                add("ip dhcp excluded-address " + ip);
+              add(
+                "ip dhcp pool VLAN-" + r.id,
+                "network " + r.network + " " + r.mask,
+                "default-router " + r.gateway,
+                "dns-server " + state.project.dns,
+                "lease 1",
+                "exit",
+              );
+            } else {
+              add(
+                "ip pool VLAN-" + r.id,
+                "network " + r.network + " mask " + r.mask,
+                "gateway-list " + r.gateway,
+                "dns-list " + state.project.dns,
+              );
+              for (const ip of [...new Set(reserved)].filter(
+                (ip) => ip !== r.gateway,
+              ))
+                add("excluded-ip-address " + ip);
+              add("lease day 1", "quit");
+            }
+          }
+        }
+        if (o.static && routed(n))
+          add(
+            c
+              ? "ip route 0.0.0.0 0.0.0.0 " + state.staticNext
+              : "ip route-static 0.0.0.0 0.0.0.0 " + state.staticNext,
+          );
+        add(c ? "end" : "return", c ? "write memory" : "save");
+        return lines.join("\n");
+      } // Cada comando procede del proyecto confirmado y de los enlaces del equipo.
+      function trunkCommands(c, lan) {
+        return c
+          ? [
+              "switchport mode trunk",
+              "switchport trunk allowed vlan " + lan.map((r) => r.id).join(","),
+            ]
+          : [
+              "port link-type trunk",
+              "port trunk allow-pass vlan " + lan.map((r) => r.id).join(" "),
+            ];
+      } // Mantiene separadas las sintaxis de los fabricantes.
+      function wildcard(mask) {
+        return ipStr(4294967295 - ipNum(mask));
+      } // Masque inversé exact utilisé pour OSPF.
+      function generateSelected(vendor) {
+        if (changeOpts() === false) return;
+        safe(() => {
+          const n = node($("confNode").value);
+          if (!n) fail("Sélectionnez un équipement.");
+          const result = generate(n, vendor);
+          state.configs[n.id + "-" + vendor] = {
+            text: result,
+            revision: state.revision,
+          };
+          render();
+          toast("Configuration générée pour " + n.name);
+        });
+      } // Ne marque une configuration comme générée qu'après succès.
+      function generateAll(vendor) {
+        if (changeOpts() === false) return;
+        safe(() => {
+          const ns = configNodes(vendor);
+          if (!ns.length) fail("Aucun équipement " + vendor + " à configurer.");
+          const outputs = ns.map((n) => [n, generate(n, vendor)]);
+          for (const [n, t] of outputs)
+            state.configs[n.id + "-" + vendor] = {
+              text: t,
+              revision: state.revision,
+            };
+          render();
+          toast(outputs.length + " configurations générées.");
+        });
+      } // Génération atomique de la marque entière.
+      function configBlock(n, v) {
+        const item = state.configs[n.id + "-" + v];
+        if (!item) return "";
+        return `<div style="margin-top:24px"><div class="headingrow"><h3>${esc(n.name)} · ${v}</h3><div class="actions"><button class="small" onclick="copyConfig('${n.id}','${v}')">Copier configuration</button><button class="small" onclick="downloadConfig('${n.id}','${v}')">Télécharger</button></div></div><pre class="console">${esc(item.text)}</pre></div>`;
+      } // Les sorties CLI sont affichées comme texte, jamais interprétées en HTML.
+      function compareView() {
+        const ns = state.nodes.filter(configurable);
+        const n = node(selectedNode) || ns[0];
+        return (
+          title(
+            "Cisco IOS | Huawei VRP",
+            "Comparez le même rôle logique et le même adressage. Le choix du fabricant dans la topologie limite uniquement les exports par marque.",
+          ) +
+          configControls() +
+          `<div class="card"><div class="actions"><select aria-label="Équipe pour comparaison" onchange="selectedNode=this.value;render()">${ns.map((x) => `<option value="${x.id}" ${n?.id === x.id ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select><button class="primary" onclick="generateCompare('${n?.id || ""}')">Générer les deux syntaxes</button></div></div>${n ? `<div class="two"><div>${configBlock(n, "Cisco") || '<div class="card empty">Cisco · en attente de génération</div>'}</div><div>${configBlock(n, "Huawei") || '<div class="card empty">Huawei · en attente de génération</div>'}</div></div>` : '<div class="card empty">Une topologie est requise.</div>'}`
+        );
+      } // Comparaison sans changer le fabricant du dispositif réel.
+      function generateCompare(id) {
+        if (changeOpts() === false) return;
+        safe(() => {
+          const n = node(id);
+          if (!n) fail("Sélectionnez un équipement.");
+          const ci = generate(n, "Cisco"),
+            hw = generate(n, "Huawei");
+          state.configs[n.id + "-Cisco"] = {
+            text: ci,
+            revision: state.revision,
+          };
+          state.configs[n.id + "-Huawei"] = {
+            text: hw,
+            revision: state.revision,
+          };
+          selectedNode = id;
+          render();
+        });
+      } // Les deux résultats correspondent au même équipement et aux mêmes réseaux.
+      async function copyConfig(id, v) {
+        const item = state.configs[id + "-" + v];
+        if (!item) return;
+        try {
+          await navigator.clipboard.writeText(item.text);
+          toast("Configuration copiée.");
+        } catch (e) {
+          const ta = document.createElement("textarea");
+          ta.value = item.text;
+          ta.style.position = "fixed";
+          document.body.append(ta);
+          ta.select();
+          let ok = false;
+          try {
+            ok = document.execCommand("copy");
+          } catch (e) {}
+          ta.remove();
+          if (ok) toast("Configuration copiée.");
+          else
+            modal(
+              `<h2>Copie manuelle</h2><p>Le navigateur bloque la copie automatique en mode fichier. Sélectionnez le texte puis Ctrl+C.</p><textarea id="manualcopy" style="height:300px">${esc(item.text)}</textarea><button onclick="$('manualcopy').select()">Sélectionner tout</button> <button onclick="closeModal()">Fermer</button>`,
+            );
+        }
+      } // Repli fonctionnel lorsque Clipboard API n'est pas disponible sous file://.
+      function downloadConfig(id, v) {
+        const item = state.configs[id + "-" + v];
+        if (item)
+          download(
+            node(id).name + "-" + v.toLowerCase() + ".txt",
+            item.text,
+            "text/plain",
+          );
+      } // Export par hostname et marque.
+      function downloadAll(v) {
+        const entries = Object.entries(state.configs).filter(
+          ([k, x]) => k.endsWith("-" + v) && x.revision === state.revision,
+        );
+        if (!entries.length)
+          return toast(
+            "Générez les configurations avant de télécharger.",
+            true,
+          );
+        download(
+          "topologie-" + v.toLowerCase() + ".txt",
+          entries
+            .map(([k, x]) => x.text)
+            .join("\n\n" + "=".repeat(60) + "\n\n"),
+          "text/plain",
+        );
+      } // Un seul fichier contient des blocs nommés pour tous les équipements générés.
+      /* =================== Cohérence, ciberdéfense et tableau de bord =================== */
+      function topologyIssues() {
+        const out = [],
+          warn = (msg, block = false) => out.push({ msg, block });
+        for (let i = 0; i < state.plan.length; i++) {
+          const r = state.plan[i];
+          if (r.kind === "vlan" && !isHost(r.gateway, r))
+            warn("Gateway invalide pour " + r.name, true);
+          for (let j = i + 1; j < state.plan.length; j++) {
+            const b = state.plan[j];
+            if (r.net <= b.end && b.net <= r.end)
+              warn("Solapamiento " + r.name + " / " + b.name, true);
+          }
+        }
+        for (const n of state.nodes) {
+          if (!connected(n).length) warn(n.name + " sin enlaces.");
+          if (n.type === "Switch" && !n.ip)
+            warn(n.name + " sin dirección de gestión.");
+          if (n.type === "Switch capa 3") {
+            const cores = state.nodes.filter(
+              (x) => x.site === n.site && x.type === n.type,
+            );
+            if (cores.length === 2 && cores[0].vendor !== cores[1].vendor)
+              warn(
+                "Cores con fabricantes distintos en " +
+                  siteName(n.site) +
+                  ": HSRP y VRRP no forman un mismo grupo.",
+                true,
+              );
+            if (
+              cores.length !==
+              (state.sites.find((s) => s.id === n.site).redundant ? 2 : 1)
+            )
+              warn(
+                "Cantidad de cores incoherente en " +
+                  siteName(n.site) +
+                  ". Regenere desde el plan.",
+                true,
+              );
+          }
+          if (n.ip) {
+            const r = row(n.network);
+            if (!r || !isHost(n.ip, r))
+              warn("IP fuera de red: " + n.name, true);
+            else if (
+              state.sites.find((s) => s.id === r.site)?.redundant &&
+              availableIPs(r, 2).includes(n.ip)
+            )
+              warn("IP física de core usada por " + n.name, true);
+            if (state.nodes.some((x) => x.id !== n.id && x.ip === n.ip))
+              warn("IP duplicada: " + n.ip, true);
+          }
+        }
+        for (const l of state.links) {
+          try {
+            validateLink(
+              l,
+              state.links.filter((x) => x.id !== l.id),
+            );
+            if (l.type === "routed" && !l.network)
+              warn("Enlace sin red /30.", true);
+          } catch (e) {
+            warn(e.message, true);
+          }
+        }
+        const groups = new Map();
+        for (const l of state.links.filter((l) => l.bundle)) {
+          const key = [l.a, l.b].sort().join("-") + "-" + l.bundle;
+          groups.set(key, (groups.get(key) || 0) + 1);
+        }
+        for (const [key, n] of groups)
+          if (n < 2)
+            warn("Grupo LACP " + key + " requiere al menos dos enlaces.", true);
+        return out;
+      } // Validación transversal, independiente del gráfico.
+      function securityWarnings() {
+        const out = topologyIssues().map((x) => x.msg);
+        if (!state.opts.ssh)
+          out.push("SSH / STelnet deshabilitado en la propuesta.");
+        if (state.opts.static)
+          out.push(
+            "Ruta 0.0.0.0/0: " +
+              (state.staticReason || "sin justificación") +
+              ".",
+          );
+        if (state.nodes.length)
+          out.push(
+            "SSH se restringe al origen de la VLAN Gestión cuando existe. Los trunks y la ACL administrativa no aíslan el tráfico entre servicios; completar reglas de firewall.",
+          );
+        if (state.sites.length > 1 && state.project.interconnect)
+          out.push(
+            "WAN de laboratorio sin cifrado: en producción requiere VPN/MPLS/SD-WAN y contrato del ISP.",
+          );
+        if (Object.keys(state.configs).length)
+          out.push(
+            "Los marcadores de secretos no son credenciales válidas; sustitúyalos fuera de esta herramienta.",
+          );
+        if (state.sites.some((s) => s.redundant) && state.opts.dhcp)
+          out.push(
+            "DHCP se configura solo en el core primario. HSRP/VRRP no replica concesiones DHCP.",
+          );
+        for (const item of Object.values(state.configs)) {
+          if (
+            /transport input.*telnet|protocol inbound.*telnet|(?<!undo )telnet server enable/i.test(
+              item.text,
+            )
+          )
+            out.push("Se detectó Telnet habilitado.");
+          if (
+            /(?:secret|password|token|api.key)\s+(?!<CAMBIAR_EN_PRODUCCION>)(?:\S+)/i.test(
+              item.text.replace(
+                /username operador privilege 1 secret <CAMBIAR_EN_PRODUCCION>|local-user operador password irreversible-cipher <CAMBIAR_EN_PRODUCCION>|ssh user operador authentication-type password/g,
+                "",
+              ),
+            )
+          )
+            out.push(
+              "Revisar texto de autenticación: posible secreto literal.",
+            );
+        }
+        return [...new Set(out)];
+      } // Advertencias reales derivadas de opciones y textos generados.
+      const policies = [
+        "La herramienta no solicita ni guarda contraseñas, tokens, API keys o claves privadas. Las configuraciones contienen marcadores de sustitución.",
+        "En una arquitectura futura con backend, administrar secretos externamente mediante variables de entorno o un gestor de secretos.",
+        "Con IA pública utilizar únicamente datos de laboratorio o de ejemplo.",
+        "No suministrar credenciales, IP públicas sensibles ni topologías confidenciales a servicios públicos de IA.",
+        "Validar todas las entradas antes de construir el diseño o los comandos.",
+        "Revisar las configuraciones generadas antes de aplicarlas.",
+        "No ejecutar automáticamente configuraciones sobre equipos reales.",
+        "Modificar únicamente infraestructura autorizada.",
+        "Preferir SSH a Telnet y deshabilitar servicios administrativos innecesarios.",
+        "Aplicar mínimo privilegio; el usuario SSH propuesto comienza en nivel 1.",
+        "Tratar la salida de IA como propuesta técnica y verificarla antes de implementar.",
+      ]; // Políticas solicitadas, visibles en la aplicación.
+      function securityView() {
+        const warnings = securityWarnings();
+        return (
+          title(
+            "Ciberdefensa y uso de IA",
+            "Las entradas se validan y los secretos se sustituyen por marcadores. La herramienta no realiza conexiones a equipos ni envía sus datos a IA.",
+          ) +
+          `<div class="card"><h2>Validaciones actuales</h2>${warnings.length ? warnings.map((w) => `<div class="notice warn">${esc(w)}</div>`).join("") : '<div class="notice">Sin advertencias en los datos actuales. Esto no equivale a una auditoría de infraestructura real.</div>'}<div class="notice">No se solicitan secretos. Telnet no se habilita. Los hostnames e interfaces rechazan saltos de línea y comandos. Los textos importados se escapan antes de mostrarlos.</div></div><div class="card"><h2>Políticas de ciberdefensa y uso de IA</h2><ol>${policies.map((p) => `<li>${p}</li>`).join("")}</ol></div><div class="card"><h3>Referencias técnicas oficiales</h3><p>Plantillas genéricas para laboratorio; verificar modelo y versión antes de aplicar.</p><ul><li><a target="_blank" rel="noopener" href="https://www.cisco.com/c/en/us/td/docs/routers/ios/config/17-x/ip-addressing/b-ip-addressing/m_config-dhcp-server-xe.html">Cisco IOS XE: DHCP server</a></li><li><a target="_blank" rel="noopener" href="https://info.support.huawei.com/hedex/api/pages/EDOC1100334321/AEM1020X/06/resources/dc/dc_cfg_login_0006.html">Huawei: acceso por STelnet</a></li><li><a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc3021">RFC 3021: redes /31 punto a punto</a></li></ul></div>`
+        );
+      } // Enlaces de consulta opcionales; la aplicación funciona sin red.
+      function dashboard() {
+        const users = state.sites.reduce((a, s) => a + s.users, 0),
+          devices = state.sites.reduce(
+            (a, s) => a + Object.values(counts(s)).reduce((a, v) => a + v, 0),
+            0,
+          ),
+          routers = state.sites.reduce((a, s) => a + proposal(s).routers, 0),
+          switches = state.sites.reduce(
+            (a, s) =>
+              a +
+              proposal(s).access +
+              proposal(s).distribution +
+              proposal(s).core,
+            0,
+          ),
+          ap = state.sites.reduce((a, s) => a + counts(s).ap, 0),
+          warnings = securityWarnings();
+        return (
+          title(
+            state.project.name || "Diseñe su red WAN",
+            "Un proyecto conectado de extremo a extremo: requisitos por sede, segmentación, direccionamiento y propuestas de configuración.",
+          ) +
+          `<div class="metrics">${[
+            ["Sedes", state.sites.length],
+            ["Usuarios", users],
+            ["Terminales estimados", devices],
+            ["Routers sugeridos", routers],
+            ["Switches sugeridos", switches],
+            ["Access Points", ap],
+            ["VLAN", state.vlans.length],
+            ["Subredes", state.plan.length],
+          ]
+            .map(
+              ([k, v]) =>
+                `<div class="metric"><strong>${v}</strong><span>${k}</span></div>`,
+            )
+            .join(
+              "",
+            )}</div><div class="two"><div class="card"><h2>Estado del diseño</h2><div class="statuslist">${[
+            [
+              "Datos de " + (state.project.company || "la empresa"),
+              !!state.project.name && !!state.project.activity,
+            ],
+            [
+              "Direccionamiento sin solapamientos",
+              state.plan.length > 0 &&
+                !topologyIssues().some((x) =>
+                  /Solapamiento|Gateway/.test(x.msg),
+                ),
+            ],
+            [
+              "Topología",
+              state.nodes.length > 0 &&
+                state.links.length > 0 &&
+                !topologyIssues().some((x) => x.block),
+            ],
+            [
+              "Cisco generado",
+              Object.keys(state.configs).some((k) => k.endsWith("-Cisco")),
+            ],
+            [
+              "Huawei generado",
+              Object.keys(state.configs).some((k) => k.endsWith("-Huawei")),
+            ],
+          ]
+            .map(
+              ([k, ok]) =>
+                `<div class="statusrow"><span>${esc(k)}</span>${badge(ok)}</div>`,
+            )
+            .join(
+              "",
+            )}<div class="statusrow"><span>Advertencias de seguridad</span><span class="badge warn">${warnings.length}</span></div></div><div class="actions" style="margin-top:18px"><button class="primary" onclick="go(1)">Continuar diseño →</button><button onclick="downloadReport()">Descargar resumen HTML</button><button onclick="window.print()">Imprimir / PDF</button></div></div><div class="card"><h2>Sedes del proyecto</h2>${state.sites.map((s) => `<div class="statusrow"><div><strong>${esc(s.name)}</strong><br><small>${s.users} usuarios · ${s.floors} pisos · ${proposal(s).bandwidth} Mbps sugeridos</small></div><span class="badge dim">${s.redundant ? "2 cores" : "1 core"}</span></div>`).join("")}<div class="notice">Las cantidades son estimaciones preliminares. Los equipos representativos del gráfico y los comandos generados se cuentan por separado del inventario.</div></div></div><div class="card"><h2>Ruta de trabajo</h2><div class="grid">${[
+            ["01", "Levantamiento", "Usuarios y servicios por sede."],
+            ["02", "Segmentación", "VLAN revisables según actividad."],
+            ["03", "Plan IP", "VLSM para LAN, core y WAN."],
+            ["04", "Configuración", "Mismos datos, dos fabricantes."],
+          ]
+            .map(
+              ([n, l, d]) =>
+                `<div><span class="eyebrow">${n}</span><h3>${l}</h3><p>${d}</p></div>`,
+            )
+            .join("")}</div></div>`
+        );
+      } // Resume hechos calculados, no pruebas de producción.
+      function evidenceView() {
+        const ci = Object.values(state.configs).some(
+            (x) =>
+              /hostname .+\nvlan |hostname /s.test(x.text) &&
+              /interface Vlan\d/.test(x.text),
+          ),
+          hw = Object.values(state.configs).some(
+            (x) => /sysname /.test(x.text) && /interface Vlanif/.test(x.text),
+          );
+        return (
+          title(
+            "Evidencias Corte 2",
+            "Capture los resultados reales de su proyecto. El documento y los commits se verifican fuera de esta aplicación.",
+          ) +
+          `<div class="card"><h2>Capturas para la entrega</h2><div class="tablewrap"><table><thead><tr><th>Archivo</th><th>Qué debe verse</th><th>Abrir</th></tr></thead><tbody>${[
+            [
+              "01-subnetting.png",
+              "IP, prefijo, red, broadcast y hosts del ejemplo o una subred del proyecto.",
+              4,
+            ],
+            [
+              "02-topologia.png",
+              "Equipos, nombres, enlaces, sedes, VLAN y redes del plan.",
+              5,
+            ],
+            [
+              "03-config-cisco.png",
+              "Hostname, VLAN y dirección IP. Seleccione un core para incluir SVI.",
+              6,
+            ],
+            [
+              "04-config-huawei.png",
+              "Sysname, VLAN y dirección IP. Use Comparación si no tiene un core Huawei.",
+              7,
+            ],
+            [
+              "05-github-commits.png",
+              "Captura directamente en GitHub con al menos cinco commits claros. No se crean ni verifican commits aquí.",
+              -1,
+            ],
+          ]
+            .map(
+              ([f, d, i]) =>
+                `<tr><td class="mono">${f}</td><td>${d}</td><td>${i >= 0 ? `<button onclick="go(${i})">Ver sección</button>` : "Verificar en GitHub"}</td></tr>`,
+            )
+            .join(
+              "",
+            )}</tbody></table></div></div><div class="card"><h2>Cumplimiento Corte 2</h2><div class="statuslist">${[
+            [
+              "Subnetting funcional — 20%",
+              !!state.subnetOK,
+              "Ejecute un cálculo válido.",
+            ],
+            [
+              "Carga de topología — 15%",
+              state.nodes.length > 0 && state.links.length > 0,
+              "Genere o transcriba su topología.",
+            ],
+            [
+              "Configuración Cisco + Huawei — 25%",
+              ci && hw,
+              "Genere ambas sintaxis con VLAN e IP.",
+            ],
+            [
+              "Ciberdefensa aplicada — 10%",
+              true,
+              "Validaciones y políticas incorporadas; revisar advertencias.",
+            ],
+            [
+              "Documento — 10%",
+              false,
+              "Verificación externa: no se ha comprobado ningún PDF.",
+            ],
+            [
+              "Repositorio GitHub — 20%",
+              false,
+              "Verificación externa: no se ha comprobado ningún repositorio ni commits.",
+            ],
+          ]
+            .map(
+              ([label, ok, d]) =>
+                `<div class="statusrow"><div>${label}<br><small>${d}</small></div>${badge(ok)}</div>`,
+            )
+            .join(
+              "",
+            )}</div><div class="notice warn">Estos indicadores no certifican la calificación. Capturas, PDF, pruebas con simulador/equipos y repositorio deben existir realmente para sustentarlos.</div></div><div class="card"><h3>Glosario para sustentar</h3><div class="grid">${Object.entries(
+            {
+              VLAN: "Segmento lógico de capa 2.",
+              Gateway: "Salida de una subred hacia otras redes.",
+              CIDR: "Prefijo /n: bits que identifican la red.",
+              Broadcast:
+                "Dirección para todos los hosts de una subred convencional.",
+              VLSM: "Subredes de tamaños variables según capacidad requerida.",
+              WAN: "Interconexión de redes entre ubicaciones.",
+              Trunk: "Enlace de capa 2 que transporta varias VLAN.",
+              Access: "Puerto de capa 2 asignado a una sola VLAN.",
+              ISP: "Proveedor de conectividad.",
+              OSPF: "Protocolo que calcula rutas usando el estado de los enlaces.",
+              LACP: "Agrupa enlaces físicos en un enlace lógico.",
+              HSRP_VRRP: "Gateway virtual redundante entre dos equipos.",
+            },
+          )
+            .map(([k, v]) => `<div><strong>${k}</strong><p>${v}</p></div>`)
+            .join("")}</div></div>`
+        );
+      } // Rúbrica: documento y GitHub siempre quedan pendientes de verificación externa.
+      /* =================== Persistencia local y archivos =================== */
+      function download(name, content, mime) {
+        const blob = new Blob([content], { type: mime + ";charset=utf-8" }),
+          url = URL.createObjectURL(blob),
+          a = document.createElement("a");
+        a.href = url;
+        a.download = name;
+        document.body.append(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+      } // Descargas autónomas sin backend.
+      function exportJSON() {
+        download(
+          "WAN-proyecto.json",
+          JSON.stringify({ state, imageData }, null, 2),
+          "application/json",
+        );
+        toast(
+          "Proyecto exportado. Guarde este JSON junto al HTML para transportar sus datos.",
+        );
+      } // Guarda el proyecto completo, con imagen opcional.
+      function saveLocal() {
+        safe(() => {
+          localStorage.setItem(
+            "WAN-Architect-v2",
+            JSON.stringify({ state, imageData }),
+          );
+          toast("Proyecto guardado en este navegador.");
+        });
+      } // Los errores de cuota/file:// se comunican; JSON ofrece una copia alternativa.
+      function loadLocal() {
+        safe(() => {
+          const raw = localStorage.getItem("WAN-Architect-v2");
+          if (!raw) fail("No hay proyecto guardado en este navegador.");
+          const parsed = validateImport(JSON.parse(raw));
+          if (!confirm("¿Reemplazar el proyecto actual por el guardado?"))
+            return;
+          applyImport(parsed);
+          toast("Proyecto cargado.");
+        });
+      } // La lectura local pasa por el mismo validador que una importación externa.
+      async function importJSON(input) {
+        try {
+          const file = input.files[0];
+          if (!file) return;
+          if (file.size > 10 * 1024 * 1024)
+            fail("JSON demasiado grande (máximo 10 MB).");
+          const parsed = validateImport(JSON.parse(await file.text()));
+          if (!confirm("¿Reemplazar el proyecto actual por este JSON?")) return;
+          applyImport(parsed);
+          toast("Proyecto importado y validado.");
+        } catch (e) {
+          toast(e.message, true);
+        } finally {
+          input.value = "";
+        }
+      } // No ejecuta datos ni acepta texto arbitrario como configuración.
+      function validateImport(data) {
+        if (
+          !data ||
+          typeof data !== "object" ||
+          !data.state ||
+          data.state.version !== 2
+        )
+          fail(
+            "Formato JSON incompatible: se requiere exportación WAN Architect versión 2.",
+          );
+        const src = data.state,
+          out = fresh();
+        if (
+          !src.project ||
+          !Array.isArray(src.sites) ||
+          src.sites.length < 1 ||
+          src.sites.length > 12
+        )
+          fail("Proyecto o sedes inválidos.");
+        const p = src.project;
+        out.project = {
+          name: p.name ? text(p.name, "Proyecto") : "",
+          company: p.company ? text(p.company, "Empresa") : "",
+          activity: p.activity ? text(p.activity, "Actividad") : "",
+          type: enumVal(
+            p.type,
+            ["Casa", "Oficina", "Edificio", "Campus", "Varias sedes"],
+            "Infraestructura",
+          ),
+          interconnect: bool(p.interconnect),
+          segmentation: enumVal(
+            p.segmentation,
+            ["Servicios", "Departamentos"],
+            "Segmentación",
+          ),
+          base: subnet(p.base).network + "/" + subnet(p.base).prefix,
+          growth: num(p.growth, 0, 100, "Crecimiento"),
+          dns: ipStr(ipNum(p.dns)),
+        };
+        out.sites = src.sites.map((s) => {
+          const o = {
+            id: idVal(s.id),
+            name: text(s.name, "Sede"),
+            floors: num(s.floors, 1, 50, "Pisos"),
+            users: num(s.users, 1, 100000, "Usuarios"),
+            ratio: num(s.ratio, 1, 10, "Ratio", false),
+            busy: text(s.busy, "Pisos concurridos"),
+            areas: text(s.areas, "Áreas", 500),
+            bandwidth: num(s.bandwidth, 0, 100000, "Banda"),
+            counts: null,
+          };
+          o.busy.split(",").forEach((n) => num(n.trim(), 1, o.floors, "Piso"));
+          for (const k of [
+            "wifi",
+            "voip",
+            "cctv",
+            "printing",
+            "server",
+            "redundant",
+          ])
+            o[k] = bool(s[k]);
+          if (s.counts) {
+            o.counts = {};
+            for (const k of countKeys)
+              o.counts[k] = num(s.counts[k], 0, 1000000, k);
+          }
+          return o;
+        });
+        unique(
+          out.sites.map((s) => s.id),
+          "ID de sede",
+        );
+        unique(
+          out.sites.map((s) => s.name),
+          "Nombre de sede",
+        );
+        const hasSite = (id) => out.sites.some((s) => s.id === id);
+        if (
+          !Array.isArray(src.vlans) ||
+          src.vlans.length > 2000 ||
+          !Array.isArray(src.plan) ||
+          src.plan.length > 3000 ||
+          !Array.isArray(src.nodes) ||
+          src.nodes.length > 500 ||
+          !Array.isArray(src.links) ||
+          src.links.length > 2000
+        )
+          fail("Listas ausentes o demasiado grandes.");
+        out.vlans = src.vlans.map((v) => {
+          if (!hasSite(v.site)) fail("Sede de VLAN desconocida.");
+          return {
+            key: idVal(v.key),
+            site: v.site,
+            id: num(v.id, 2, 4094, "VLAN"),
+            name: text(v.name, "VLAN", 60),
+            role: enumVal(v.role, roles, "Servicio"),
+            hosts: num(v.hosts, 1, 1000000, "Hosts"),
+            dhcp: bool(v.dhcp),
+            gateway: v.gateway ? ipStr(ipNum(v.gateway)) : "",
+          };
+        });
+        unique(
+          out.vlans.map((v) => v.key),
+          "Clave VLAN",
+        );
+        unique(
+          out.vlans.map((v) => v.site + "-" + v.id),
+          "VLAN por sede",
+        );
+        out.plan = src.plan.map((r) => {
+          const kind = enumVal(r.kind, ["vlan", "transit", "wan"], "Red"),
+            info = subnet(r.network + "/" + r.prefix);
+          if (info.prefix > 30 || info.network !== r.network)
+            fail("Red no alineada o prefijo inválido en el plan.");
+          if (r.site !== "WAN" && !hasSite(r.site))
+            fail("Sede de red desconocida.");
+          const v = out.vlans.find((v) => v.key === r.key);
+          if (kind === "vlan" && (!v || v.site !== r.site || v.id !== r.id))
+            fail("Plan no coincide con VLAN.");
+          if (kind !== "vlan" && info.prefix !== 30)
+            fail("Tránsito debe ser /30.");
+          const reserve =
+            kind === "vlan"
+              ? out.sites.find((s) => s.id === r.site).redundant
+                ? 3
+                : 1
+              : 0;
+          if (
+            kind === "vlan" &&
+            info.hosts - reserve <
+              Math.ceil(v.hosts * (1 + out.project.growth / 100))
+          )
+            fail("Subred insuficiente para los hosts.");
+          const o = {
+            ...(v || {}),
+            ...info,
+            key: idVal(r.key),
+            site: r.site,
+            name: text(r.name, "Nombre red", 100),
+            kind,
+            hostsRequested: kind === "vlan" ? v.hosts : 2,
+            available: info.hosts - reserve,
+            reserve,
+            gateway: kind === "vlan" ? ipStr(ipNum(r.gateway)) : "",
+          };
+          if (o.gateway && !isHost(o.gateway, o))
+            fail("Gateway importado fuera de subred.");
+          if (v && v.gateway && v.gateway !== o.gateway)
+            fail("Gateway de VLAN y plan incoherentes.");
+          const base = subnet(out.project.base);
+          if (o.net < base.net || o.end > base.end)
+            fail("Red fuera del bloque base.");
+          return o;
+        });
+        unique(
+          out.plan.map((r) => r.key),
+          "Clave red",
+        );
+        for (let i = 0; i < out.plan.length; i++)
+          for (let j = i + 1; j < out.plan.length; j++)
+            if (
+              out.plan[i].net <= out.plan[j].end &&
+              out.plan[j].net <= out.plan[i].end
+            )
+              fail("Subredes importadas solapadas.");
+        out.nodes = src.nodes.map((n) => {
+          if (!hasSite(n.site)) fail("Sede de equipo desconocida.");
+          const r = out.plan.find((r) => r.key === n.network),
+            o = {
+              id: idVal(n.id),
+              name: hostname(n.name),
+              type: enumVal(n.type, kinds, "Tipo de equipo"),
+              vendor: enumVal(n.vendor, ["Cisco", "Huawei"], "Fabricante"),
+              site: n.site,
+              ip: n.ip ? ipStr(ipNum(n.ip)) : "",
+              network: n.network ? idVal(n.network) : "",
+              x: num(n.x, 0, 100000, "X", false),
+              y: num(n.y, 0, 100000, "Y", false),
+            };
+          if (o.network && (!r || r.site !== o.site || r.kind !== "vlan"))
+            fail("Red de equipo inexistente.");
+          if (o.ip && (!r || !isHost(o.ip, r) || o.ip === r.gateway))
+            fail("IP de equipo inválida.");
+          return o;
+        });
+        unique(
+          out.nodes.map((n) => n.id),
+          "ID de equipo",
+        );
+        unique(
+          out.nodes.map((n) => n.name),
+          "Hostname",
+        );
+        unique(out.nodes.map((n) => n.ip).filter(Boolean), "IP de equipo");
+        out.links = src.links.map((l) => {
+          if (
+            !out.nodes.some((n) => n.id === l.a) ||
+            !out.nodes.some((n) => n.id === l.b) ||
+            l.a === l.b
+          )
+            fail("Extremos de enlace inválidos.");
+          if (
+            l.network &&
+            !out.plan.some((r) => r.key === l.network && r.kind !== "vlan")
+          )
+            fail("Red routed inválida.");
+          return {
+            id: idVal(l.id),
+            a: l.a,
+            b: l.b,
+            type: enumVal(l.type, ["routed", "trunk", "access"], "Tipo enlace"),
+            network: l.network ? idVal(l.network) : "",
+            vlan: num(l.vlan, 0, 4094, "VLAN enlace"),
+            bundle: num(l.bundle, 0, 128, "LACP"),
+            ac: interfaceName(l.ac),
+            bc: interfaceName(l.bc),
+            ah: interfaceName(l.ah),
+            bh: interfaceName(l.bh),
+          };
+        });
+        unique(
+          out.links.map((l) => l.id),
+          "ID de enlace",
+        );
+        for (const k of Object.keys(out.opts))
+          out.opts[k] = bool(src.opts?.[k]);
+        if (out.opts.dhcp && out.opts.relay)
+          fail("DHCP y relay no pueden estar activos simultáneamente.");
+        out.relay = src.relay ? ipStr(ipNum(src.relay)) : "";
+        out.staticNext = src.staticNext ? ipStr(ipNum(src.staticNext)) : "";
+        out.staticReason = src.staticReason
+          ? text(src.staticReason, "Justificación")
+          : "";
+        out.approved = bool(src.approved) && out.plan.length > 0;
+        if (
+          out.approved &&
+          out.vlans.some((v) => !out.plan.some((r) => r.key === v.key))
+        )
+          fail("Faltan redes para VLAN confirmadas.");
+        out.calc = src.calc ? String(src.calc) : undefined;
+        if (out.calc) subnet(out.calc);
+        out.subnetOK = src.subnetOK === true;
+        out.revision = num(src.revision, 0, 100000000, "Revisión");
+        const previous = state;
+        try {
+          state = out;
+          for (const l of out.links)
+            validateLink(
+              l,
+              out.links.filter((x) => x.id !== l.id),
+            );
+          const blocking = topologyIssues().filter((x) => x.block);
+          if (blocking.length) fail(blocking[0].msg);
+          if (src.configs && typeof src.configs === "object")
+            for (const [key, val] of Object.entries(src.configs)) {
+              const m = key.match(/^([A-Za-z0-9_-]+)-(Cisco|Huawei)$/),
+                n = m ? out.nodes.find((n) => n.id === m[1]) : null;
+              if (
+                !n ||
+                !configurable(n) ||
+                typeof val.text !== "string" ||
+                val.text.length > 100000 ||
+                val.revision !== out.revision
+              )
+                continue;
+              const generated = generate(n, m[2]);
+              if (generated === val.text)
+                out.configs[key] = { text: generated, revision: out.revision };
+            }
+        } finally {
+          state = previous;
+        }
+        let img = data.imageData || "";
+        if (
+          typeof img !== "string" ||
+          (img &&
+            !/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(
+              img,
+            )) ||
+          img.length > 7 * 1024 * 1024
+        )
+          fail("Imagen importada no válida.");
+        return { state: out, imageData: img };
+      } // Reconstruye un esquema conocido; recalcula números y comprueba texto CLI, nunca evalúa JSON.
+      function enumVal(v, arr, label) {
+        if (!arr.includes(v)) fail(label + " inválido.");
+        return v;
+      } // Listas cerradas.
+      function bool(v) {
+        if (typeof v !== "boolean") fail("Valor booleano inválido.");
+        return v;
+      } // No convierte "false" en verdadero.
+      function idVal(v) {
+        if (typeof v !== "string" || !/^[-A-Za-z0-9_]{1,80}$/.test(v))
+          fail("Identificador inválido.");
+        return v;
+      } // IDs seguros para atributos y handlers.
+      function unique(values, label) {
+        if (new Set(values).size !== values.length) fail(label + " duplicado.");
+      } // Integridad referencial.
+      function applyImport(data) {
+        state = data.state;
+        imageData = data.imageData;
+        imageMode = false;
+        selectedSite = 0;
+        selectedNode = "";
+        page = 0;
+        render();
+      } // El reemplazo ocurre solo después de validación completa.
+      function newProject() {
+        if (
+          confirm(
+            "¿Crear un proyecto nuevo? Exporte o guarde el actual primero.",
+          )
+        ) {
+          state = fresh();
+          imageData = "";
+          selectedSite = 0;
+          page = 1;
+          render();
+        }
+      } // No elimina la copia local ya guardada.
+      function demo() {
+        if (
+          !confirm(
+            "¿Reemplazar el proyecto por un ejemplo ficticio de laboratorio de dos sedes?",
+          )
+        )
+          return;
+        state = fresh();
+        state.project = {
+          ...state.project,
+          name: "WAN · Laboratorio Corte 2",
+          company: "Empresa de ejemplo",
+          activity: "Clínica ambulatoria (laboratorio)",
+          type: "Varias sedes",
+        };
+        state.sites = [
+          {
+            ...siteDefault(1),
+            name: "Sede asistencial",
+            floors: 3,
+            users: 100,
+            busy: "1,2",
+            areas: "Admisiones, Enfermería, Consulta",
+            voip: true,
+            cctv: true,
+            server: true,
+            redundant: true,
+          },
+          {
+            ...siteDefault(2),
+            name: "Sede administrativa",
+            floors: 2,
+            users: 45,
+            busy: "1",
+            areas: "Sistemas, Contabilidad, Compras",
+            voip: true,
+            cctv: true,
+          },
+        ];
+        selectedSite = 0;
+        imageData = "";
+        render();
+        toast("Ejemplo cargado; datos ficticios, editables.");
+      } // Nunca presenta valores de laboratorio como datos de la organización real.
+      function downloadPlan() {
+        const head = [
+          "Sede",
+          "VLAN",
+          "Nombre",
+          "Hosts requeridos",
+          "Disponibles",
+          "Red",
+          "Prefijo",
+          "Máscara",
+          "Gateway",
+          "Primera IP",
+          "Última IP",
+          "Broadcast",
+        ];
+        const cell = (x) =>
+          '"' +
+          String(x ?? "")
+            .replace(/"/g, '""')
+            .replace(/^([=+@-])/, "\t$1") +
+          '"';
+        const rows = state.plan.map((r) => [
+          siteName(r.site),
+          r.id || r.kind,
+          r.name,
+          r.hostsRequested,
+          r.available,
+          r.network,
+          r.prefix,
+          r.mask,
+          r.gateway,
+          r.first,
+          r.last,
+          r.broadcast,
+        ]);
+        download(
+          "plan-direccionamiento.csv",
+          "\ufeff" +
+            [head, ...rows].map((r) => r.map(cell).join(";")).join("\r\n"),
+          "text/csv",
+        );
+      } // CSV compatible con separador regional español y protección de fórmulas.
+      function downloadReport() {
+        const body =
+          dashboard() +
+          planTable() +
+          `<div class="card"><h2>Topología</h2>${state.nodes.length ? svgTopology() : "No generada"}</div><div class="card"><h2>Advertencias</h2><ul>${securityWarnings()
+            .map((w) => `<li>${esc(w)}</li>`)
+            .join(
+              "",
+            )}</ul></div><div class="card"><h2>Configuraciones generadas</h2>${Object.entries(
+            state.configs,
+          )
+            .map(
+              ([k, v]) =>
+                `<h3>${esc(k)}</h3><pre class="console">${esc(v.text)}</pre>`,
+            )
+            .join("")}</div>`;
+        download(
+          "WAN-resumen.html",
+          '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Resumen WAN</title><style>' +
+            $("view").ownerDocument.querySelector("style").textContent +
+            "main{margin:0}button{display:none}</style></head><body><main>" +
+            body +
+            "</main></body></html>",
+          "text/html",
+        );
+      } // Informe estático con datos reales del proyecto actual.
+      render(); // Primer render: no genera topologías ni pruebas ficticias automáticamente.
+    </script>
+  </body>
+</html>
