@@ -1,0 +1,2185 @@
+Actúa como **ingeniero senior de redes empresariales, arquitecto de soluciones WAN, especialista en Cisco IOS y Huawei VRP, desarrollador web senior y docente universitario de redes**.
+
+Necesito que construyas una **herramienta web completa de diseño y gestión de redes WAN 
+## OBJETIVO PRINCIPAL
+
+Debes entregarme una aplicación completamente funcional contenida en **UN SOLO ARCHIVO llamado `WAN.html`**.
+
+El archivo debe incluir internamente:
+
+- HTML
+- CSS
+- JavaScript
+
+No quiero dependencias obligatorias de backend, Node.js, Python, bases de datos ni instalaciones adicionales.
+
+El archivo debe poder abrirse directamente en un navegador moderno y funcionar.
+
+La aplicación debe estar diseñada como una herramienta profesional para elaborar el diseño y configuración preliminar de una red empresarial WAN.
+
+---
+
+# 1. FLUJO GENERAL DE LA HERRAMIENTA
+
+La herramienta debe funcionar mediante un flujo guiado por etapas.
+
+El usuario primero debe ingresar la información del proyecto y posteriormente la aplicación debe construir:
+
+1. Requerimientos de infraestructura.
+2. Estimación de dispositivos.
+3. Diseño lógico de la red.
+4. Topología.
+5. Plan de direccionamiento IP.
+6. Subnetting/VLSM.
+7. VLAN.
+8. Enlaces WAN.
+9. Configuración Cisco.
+10. Configuración Huawei.
+11. Validaciones de seguridad.
+12. Resumen final del proyecto.
+
+Debe existir navegación y conexión clara entre las diferentes etapas NO SON MODULOS INDEPENDIENTES, la información contenida en cada fase se debe utilizar para la siguiente..
+
+---
+
+# 2. DATOS DEL PROYECTO
+
+Crear una sección llamada:
+
+**Datos del proyecto**
+
+Solicitar como mínimo:
+
+- Nombre del proyecto.
+- Nombre de la empresa.
+- Tipo de empresa o actividad.
+- Tipo de infraestructura:
+  - Casa
+  - Oficina
+  - Edificio
+  - Campus
+  - Varias sedes
+- Número de sedes.
+- Número de pisos por sede.
+- Cantidad aproximada de usuarios por sede.
+-Pisos más concurridos por sede
+- Cantidad estimada de dispositivos por usuario.
+- Áreas o departamentos.
+- Pisos o zonas con mayor concentración de usuarios.
+- Necesidad de red WiFi.
+- Cantidad estimada de Access Points, en este punto debe ofrecer un estimado de acuerdo a la información anterior, y permitir editar en caso de que el usuario lo requiera.
+- Necesidad de servidores.
+- Necesidad de telefonía IP.
+- Necesidad de cámaras IP.
+- Necesidad de impresoras.
+- Ancho de banda estimado: También dar sugerencia.
+- Si las sedes deben estar interconectadas.
+
+Si existen varias sedes, permitir registrar los datos individualmente para cada sede.
+
+La aplicación debe permitir posteriormente editar esta información.
+
+---
+
+# 3. ESTIMACIÓN AUTOMÁTICA DE DISPOSITIVOS
+
+A partir de los usuarios ingresados, generar una estimación de dispositivos.
+
+Mostrar, por ejemplo:
+
+- Computadores.
+- Teléfonos.
+- Dispositivos móviles.
+- Impresoras.
+- Access Points.
+- Cámaras.
+- Teléfonos IP.
+- Servidores.
+- Equipos de red.
+
+Explicar brevemente cómo se realizó la estimación.
+
+Permitir que el usuario modifique manualmente los valores propuestos.
+
+---
+
+# 4. PROPUESTA DE INFRAESTRUCTURA
+
+Generar una propuesta preliminar indicando la cantidad sugerida de:
+
+- Routers.
+- Switches de acceso.
+- Switches de distribución.
+- Switches capa 3.
+- Firewalls.
+- Access Points.
+- Servidores.
+
+La propuesta debe adaptarse al número de usuarios, sedes y pisos.
+
+No utilizar valores completamente arbitrarios.
+
+Mostrar una explicación breve del criterio utilizado.
+
+Si ves necesario agregar otro tipo de dispositivo hazlo
+
+---
+# 6. SUBNETTING E IP PLANNING
+
+Esta funcionalidad es obligatoria.
+
+Crear un módulo completo de subnetting IPv4.
+
+Debe permitir introducir:
+
+- Dirección IPv4.
+- Prefijo CIDR.
+
+Ejemplo:
+
+192.168.10.50/26
+
+Debe calcular correctamente:
+
+- Dirección IP ingresada.
+- Prefijo.
+- Máscara decimal.
+- Máscara binaria.
+- Dirección de red.
+- Dirección de broadcast.
+- Primera IP utilizable.
+- Última IP utilizable.
+- Cantidad total de direcciones.
+- Cantidad de hosts utilizables.
+- Bits de red.
+- Bits de host.
+- Tipo de IP:
+  - privada
+  - pública
+  - loopback cuando corresponda.
+
+Debe validar direcciones incorrectas.
+
+Ejemplo obligatorio para comprobar funcionamiento:
+
+192.168.10.50/26
+
+Resultado esperado:
+
+Red: 192.168.10.0  
+Broadcast: 192.168.10.63  
+Primer host: 192.168.10.1  
+Último host: 192.168.10.62  
+Hosts utilizables: 62  
+Máscara: 255.255.255.192
+
+Este módulo debe estar integrado con el Ip Planning y permitirme validar que el direccionamiento IP que propones es correcto
+
+---
+
+# 7. VLSM / PLAN DE DIRECCIONAMIENTO
+
+La aplicación debe poder generar un plan de direccionamiento para el proyecto.
+Según la actividad de la empresa descrita por el usuario en el primer modulo, la aplicación debe ser capaz de proponer una alternativa para segmentar la red, puede ser por departamentos / áreas de la empresa, por tipo se servicio (Datos, cctv, VoIP, controles de Acceso, etc)
+
+Una vez la app proponga las vlan el usuario también debe tener la posibilidad de confirmar o editar la propyesta.El usuario debe poder indicar redes o VLAN con diferentes cantidades de hosts.
+
+Ejemplo:
+
+Administración: 100 hosts  
+Ventas: 250 hosts  
+WiFi: 500 hosts  
+Servidores: 30 hosts  
+Administración de red: 20 hosts
+
+La herramienta debe:
+
+1. Ordenar las redes de mayor a menor.
+2. Calcular el prefijo apropiado para cada vlan y para la interconexión o enrutamiento entre sedes y pisos.
+3. Asignar subredes evitando solapamientos.
+4. Mostrar una tabla.
+
+Columnas mínimas:
+
+- Sede.
+- VLAN.
+- Nombre.
+- Hosts requeridos.
+- Hosts disponibles.
+- Dirección de red.
+- Prefijo.
+- Máscara.
+- Gateway.
+- Primera IP.
+- Última IP.
+- Broadcast.
+
+Permitir editar VLAN y gateway.
+
+---
+
+
+# 8. TOPOLOGÍA DE RED
+
+Esta funcionalidad es obligatoria 
+
+Crear una sección:
+
+**Topología**
+
+La aplicación debe permitir:
+
+### Opción A — Generación automática
+
+Generar una topología inicial utilizando la información introducida anteriormente, en la topología se debe evidenciar el ip planning y las vlan creadas anteriormente
+
+### Opción B — Edición manual
+
+Permitir:
+
+- Agregar dispositivos.
+- Eliminar dispositivos.
+- Modificar nombre.
+- Cambiar tipo.
+- Cambiar fabricante.
+- Cambiar sede.
+- Cambiar dirección IP.
+- Crear enlaces.
+- Eliminar enlaces.
+
+Tipos de dispositivos:
+
+- Router.
+- Switch.
+- Switch capa 3.
+- Firewall.
+- Access Point.
+- Servidor.
+- PC.
+- ISP.
+
+Fabricantes disponibles:
+
+- Cisco.
+- Huawei.
+
+Debe visualizarse gráficamente la relación entre los dispositivos y sus enlaces.
+
+Puede utilizarse SVG, Canvas o elementos HTML conectados mediante líneas.
+
+La topología debe ser entendible visualmente.
+
+Ejemplo:
+
+Internet / ISP  
+↓  
+Router principal : Sin son varias sedes se deben visualizar los router conectados mediante enrutamiento.  
+↓  
+Switch Core  
+↓  
+Switches de distribución  
+↓  
+Switches de acceso  
+↓  
+Usuarios / AP / servidores
+
+Si existen varias sedes, representar cada sede claramente y los enlaces WAN entre ellas.
+También debe tener la capacidad de dejar importar imágenes de topologías y poder interpretarlas.
+
+---
+
+
+
+---
+
+# 9. GENERADOR DE CONFIGURACIÓN CISCO IOS
+
+Esta funcionalidad es obligatoria para el segundo corte.
+
+Crear una sección llamada:
+
+**Configuración Cisco**
+
+El usuario debe poder seleccionar un equipo Cisco de la topología o directamente elegir que se configure toda la topología y el aplicativo seccionar la configuración por los equipos propuestos en los modulos anteriores
+
+A partir de los datos del proyecto, VLAN y direccionamiento, generar automáticamente configuraciones Cisco IOS. DEBE USAR OBLIGATORIAMENTE EL IP PLANNING YA CONFIGURADO EN EL MODULO ANTERIOR
+
+Debe poder generar, cuando corresponda:
+
+### Configuración básica
+
+Te voy a pasar un ejemplo de una configuración para que lo tengas en cuenta pero los datos que gemeres deben ser siempre DE ACUERDO A LO QUE INGRESA EL USUARIO, adicional, también debes configurar el nombre de los equipos por comando y habilitar ssh, y seguridad, estas configuraciones no las voy a colocar en el ejemplo por eso necesito que lo tengas en cuenta.
+No todo lo que voy a colocar en el ejemplo se debe configurar, puedes colocar en el modulo una selección multiple donde el usuario elija que requiere que se configure en el dispositivo.
+---------------------------------------------------------- 
+
+R1
+
+----------------------------------------------------------- 
+
+enable 
+configure terminal 
+int G0/0/0
+ip address 10.10.0.1 255.255.255.252 
+no shutdown 
+int G0/1/0 
+ip address 10.10.1.1 255.255.255.252 
+no shutdown 
+interface loopback 0 
+ip address 8.8.8.8  255.255.255.255 
+router ospf 1 
+router-id 1.1.1.1 
+network 10.10.0.0 0.0.0.3 area 0 
+network 10.10.1.0 0.0.0.3 area 0 
+do wr 
+
+-------------------------------------------------------- 
+
+R2 
+
+-------------------------------------------------------- 
+
+enable 
+configure terminal 
+int G0/0/0 
+ip address 10.10.0.2 255.255.255.252 
+no shutdown 
+int G0/0 
+ip address 10.10.2.1 255.255.255.252 
+no shutdown 
+router ospf 1 
+router-id 2.2.2.2 
+network 10.10.0.0 0.0.0.3 area 0 
+network 10.10.2.0 0.0.0.3 area 0 
+do wr 
+
+----------------------------------------------------------- 
+
+R3 
+
+---------------------------------------------------------- 
+
+enable 
+configure terminal 
+int G0/0/0 
+ip address 10.10.1.2 255.255.255.252 
+no shutdown 
+int G0/0 
+ip address 10.10.3.1 255.255.255.252 
+no shutdown 
+router ospf 1 
+router-id 3.3.3.3 
+network 10.10.1.0 0.0.0.3 area 0 
+network 10.10.3.0 0.0.0.3 area 0 
+do wr
+
+---------------------------------------------------------- 
+
+SWITCH MULTILAYER0 
+
+---------------------------------------------------------- 
+
+enable 
+configure terminal 
+ip routing 
+vlan 4 
+name VLAN4 
+exit 
+vlan 10 
+name VLAN10 
+exit 
+vlan 20 
+name VLAN20 
+exit 
+vlan 30 
+name VLAN30 
+exit 
+vlan 40 
+name VLAN40 
+exit
+
+---------------------------------------------
+enable
+configure terminal 
+interface GigabitEthernet 1/0/1 
+no switchport 
+ip address 10.10.2.2 255.255.255.252 
+no shutdown
+interface range GigabitEthernet 1/0/23-24 
+no shutdown
+channel-protocol lacp
+channel-group 1 mode passive
+
+interface port-channel 1
+switchport mode trunk
+switchport trunk allowed vlan 4,10,20,30,40
+
+interface range GigabitEthernet 1/0/2-3
+no shutdown
+channel-protocol lacp
+channel-group 2 mode active
+
+interface port-channel 2
+switchport mode trunk
+switchport trunk allowed vlan 4,10,20,30,40
+
+interface vlan 10 
+ip address 10.10.10.1 255.255.255.128 
+ip helper-address 10.10.30.2
+standby 10 ip 10.10.10.3
+standby 10 priority 150
+standby 10 preempt
+
+no shutdown
+exit 
+
+interface vlan 20 
+ip address 10.10.20.1  255.255.255.240 
+ip helper-address 10.10.30.2
+standby 20 ip 10.10.20.3
+standby 20 priority 150
+standby 20 preempt
+
+no shutdown
+exit
+
+interface vlan 30
+ip address 10.10.30.1  255.255.255.224
+ip helper-address 10.10.30.2
+standby 30 ip 10.10.30.3
+
+no shutdown
+exit
+
+interface vlan 40
+ip address 10.10.40.1  255.255.255.192
+ip helper-address 10.10.30.2
+standby 40 ip 10.10.40.3
+
+no shutdown
+exit
+
+
+interface vlan 4 
+ip address 10.10.4.3 255.255.255.248
+standby 10 ip 10.10.4.1
+standby 10 priority 110
+standby 10 preempt
+
+no shutdown
+exit
+
+enable
+configure terminal
+
+router ospf 1
+router-id 4.4.4.4
+
+network 10.10.2.0 0.0.0.3 area 0
+network 10.10.10.0 0.0.0.127 area 0
+network 10.10.20.0 0.0.0.15 area 0
+network 10.10.30.0 0.0.0.31 area 0
+network 10.10.40.0 0.0.0.63 area 0
+network 10.10.4.0 0.0.0.7 area 0
+
+---------------------------------------------------------- 
+
+SWITCH MULTILAYER1
+
+---------------------------------------------------------- 
+
+enable 
+configure terminal 
+ip routing 
+vlan 4 
+name VLAN4 
+exit 
+vlan 10 
+name VLAN10 
+exit 
+vlan 20 
+name VLAN20 
+exit 
+vlan 30 
+name VLAN30 
+exit 
+vlan 40 
+name VLAN40 
+exit
+
+---------------------------------------------
+enable
+configure terminal 
+interface GigabitEthernet 1/0/1
+no switchport
+ip address 10.10.3.2 255.255.255.252 
+no shutdown
+
+interface range GigabitEthernet 1/0/23-24 
+no shutdown
+channel-protocol lacp
+channel-group 1 mode active
+
+interface port-channel 1
+switchport mode trunk
+switchport trunk allowed vlan 4,10,20,30,40
+
+interface range GigabitEthernet 1/0/2-3
+no shutdown
+channel-protocol lacp
+channel-group 6 mode passive
+
+interface port-channel 6
+switchport mode trunk
+switchport trunk allowed vlan 4,10,20,30,40
+
+
+interface vlan 10 
+ip address 10.10.10.1 255.255.255.128 
+ip helper-address 10.10.30.2
+standby 10 ip 10.10.10.3
+
+
+no shutdown
+exit 
+
+interface vlan 20 
+ip address 10.10.20.1  255.255.255.240 
+ip helper-address 10.10.30.2
+standby 20 ip 10.10.20.3
+
+no shutdown
+exit
+
+interface vlan 30
+ip address 10.10.30.1  255.255.255.224
+ip helper-address 10.10.30.2
+standby 30 ip 10.10.30.3
+standby 30 priority 100
+standby 30 preempt
+
+no shutdown
+exit
+
+interface vlan 40
+ip address 10.10.40.1  255.255.255.192
+ip helper-address 10.10.30.2
+standby 40 ip 10.10.40.3
+standby 40 priority 100
+standby 40 preempt
+
+no shutdown
+exit
+
+
+
+interface vlan 4 
+ip address 10.10.4.3 255.255.255.248
+standby 10 ip 10.10.4.1
+
+no shutdown
+exit
+
+
+router ospf 1
+router-id 5.5.5.5
+
+network 10.10.3.0 0.0.0.3 area 0
+network 10.10.10.0 0.0.0.127 area 0
+network 10.10.20.0 0.0.0.15 area 0
+network 10.10.30.0 0.0.0.31 area 0
+network 10.10.40.0 0.0.0.63 area 0
+network 10.10.4.0 0.0.0.7 area 0
+----------------------------------------------------------- 
+
+ 			SERVIDOR DHCP
+
+----------------------------------------------------------- 
+
+enable 
+configure terminal 
+ip address 10.10.30.2 255.255.255.224 
+no shutdown 
+exit 
+
+ip DHCP excluded-address 10.10.10.1
+ip DHCP excluded-address 10.10.20.1 
+ip DHCP excluded-address 10.10.30.1 
+ip DHCP excluded-address 10.10.30.2 
+ip DHCP excluded-address 10.10.40.3
+ip DHCP excluded-address 10.10.10.3
+ip DHCP excluded-address 10.10.20.3 
+ip DHCP excluded-address 10.10.30.3 
+ip DHCP excluded-address 10.10.40.3 
+
+ip dhcp pool VLAN-10 
+lease 86400 
+network 10.10.10.0 255.255.255.128 
+default-router 10.10.10.3
+dns-server 10.10.10.1 
+exit 
+
+ip dhcp pool VLAN-20 
+lease 86400 
+network 10.10.20.0 255.255.255.240 
+default-router 10.10.20.3
+dns-server 10.10.20.1 
+exit 
+
+ip dhcp pool VLAN-30 
+lease 86400 
+network 10.10.30.0 255.255.255.224 
+default-router 10.10.30.3
+dns-server 10.10.30.1 
+exit 
+
+ip dhcp pool VLAN-40 
+lease 86400 
+network 10.10.40.0 255.255.255.192 
+default-router 10.10.40.3
+dns-server 10.10.40.1
+exit 
+No habilitar Telnet por defecto.
+
+Mostrar la configuración en una consola o bloque de código.
+
+Añadir botón:
+
+**Copiar configuración**
+
+Añadir botón:
+
+**Descargar configuración**
+
+El archivo puede descargarse como:
+
+`nombre-equipo-cisco.txt`
+
+---
+
+# 10. GENERADOR DE CONFIGURACIÓN HUAWEI VRP
+
+Esta funcionalidad también es obligatoria.
+
+Crear una sección:
+
+**Configuración Huawei**
+
+Debe generar el equivalente de la configuración Cisco utilizando sintaxis Huawei VRP.
+
+Incluir cuando corresponda:
+
+system-view
+
+sysname
+
+vlan batch
+
+interface GigabitEthernet
+
+port link-type access
+
+port default vlan
+
+port link-type trunk
+
+port trunk allow-pass vlan
+
+interface Vlanif
+
+ip address
+
+ip route-static
+
+stelnet server enable
+
+AAA o configuración de usuario segura cuando corresponda.
+
+Debe utilizar la información real ingresada en la herramienta.
+
+No quiero simplemente una plantilla fija.
+
+La configuración debe cambiar según:
+
+- Hostname.
+- Interfaces.
+- VLAN.
+- Direccionamiento.
+- Topología.
+
+Añadir:
+
+**Copiar configuración**
+
+y
+
+**Descargar configuración**
+
+El archivo puede llamarse:
+
+`nombre-equipo-huawei.txt`
+
+---
+
+# 11. COMPARACIÓN CISCO VS HUAWEI
+
+Agregar una opción para visualizar simultáneamente:
+
+**Cisco IOS | Huawei VRP**
+
+para un mismo dispositivo o función lógica.
+
+Ejemplo:
+
+Crear VLAN 20.
+
+Cisco:
+
+vlan 20  
+name ADMINISTRACION
+
+Huawei:
+
+vlan 20  
+name ADMINISTRACION
+
+Esto debe ayudar a demostrar que la aplicación genera configuraciones equivalentes para ambas marcas.
+
+---
+
+# 12. CIBERDEFENSA
+
+Este apartado es obligatorio.
+
+La aplicación debe incorporar medidas de seguridad reales.
+
+## Secretos
+
+Nunca colocar:
+
+- Contraseñas reales.
+- Tokens.
+- API Keys.
+- Claves privadas.
+
+Cuando sea necesario usar una contraseña, utilizar:
+
+`<CAMBIAR_EN_PRODUCCION>`
+
+o algo equivalente.
+
+## Validación de entradas
+
+Validar como mínimo:
+
+- IP.
+- CIDR.
+- VLAN.
+- Número de usuarios.
+- Cantidad de hosts.
+- Hostname.
+- Nombres de dispositivos.
+
+Rechazar entradas evidentemente inválidas.
+
+Ejemplos:
+
+999.1.1.1
+
+VLAN 9000
+
+Prefijo /40
+
+Campos vacíos obligatorios.
+
+## Advertencias de seguridad
+
+La herramienta debe detectar o advertir cuando encuentre situaciones como:
+
+- Telnet habilitado.
+- Contraseña por defecto.
+- Contraseña incluida directamente.
+- `0.0.0.0/0` utilizada sin contexto.
+- SSH deshabilitado.
+- Servicios administrativos inseguros.
+- Interfaces innecesariamente expuestas.
+
+Mostrar advertencias visuales.
+
+No bloquear configuraciones legítimas cuando exista una justificación técnica, pero sí informar del riesgo.
+
+---
+
+# 13. POLÍTICAS DE IA Y SEGURIDAD
+
+Agregar dentro de la aplicación una sección denominada:
+
+**Políticas de ciberdefensa y uso de IA**
+
+Mostrar estas políticas:
+
+1. La herramienta nunca guarda contraseñas ni tokens en el código.
+2. Los secretos deben administrarse externamente mediante variables de entorno cuando el proyecto evolucione a una arquitectura con backend.
+3. Con IA pública solo se utilizan datos de laboratorio o de ejemplo.
+4. Nunca se deben suministrar credenciales, IP públicas sensibles ni topologías confidenciales.
+5. Toda entrada del usuario debe validarse.
+6. Las configuraciones generadas deben revisarse antes de aplicarlas.
+7. No se debe ejecutar automáticamente ninguna configuración sobre equipos reales.
+8. Los cambios deben realizarse únicamente en infraestructura autorizada.
+9. Debe preferirse SSH sobre Telnet.
+10. Aplicar principio de mínimo privilegio.
+11. La salida generada por IA debe tratarse como propuesta técnica y verificarse antes de implementarla.
+
+---
+
+# 14. RESUMEN DEL PROYECTO
+
+Crear una pantalla final tipo dashboard mostrando:
+
+- Nombre proyecto.
+- Empresa.
+- Número de sedes.
+- Usuarios totales.
+- Dispositivos estimados.
+- Routers.
+- Switches.
+- AP.
+- Número de VLAN.
+- Número de subredes.
+- Estado del direccionamiento.
+- Estado de topología.
+- Cisco generado: Sí/No.
+- Huawei generado: Sí/No.
+- Número de advertencias de seguridad.
+
+Añadir indicadores visuales.
+
+---
+
+# 15. EVIDENCIAS DEL SEGUNDO CORTE
+
+Crear dentro de la herramienta una sección llamada:
+
+**Evidencias Corte 2**
+
+Debe indicar explícitamente qué capturas debo tomar para mi entrega:
+
+### 01-subnetting.png
+
+La herramienta calculando una subred.
+
+Deben verse:
+
+- IP.
+- prefijo.
+- dirección de red.
+- broadcast.
+- hosts.
+
+### 02-topologia.png
+
+Topología cargada mostrando:
+
+- dispositivos.
+- nombres.
+- enlaces.
+
+### 03-config-cisco.png
+
+Configuración Cisco generada mostrando como mínimo:
+
+- hostname.
+- VLAN.
+- dirección IP.
+
+### 04-config-huawei.png
+
+Configuración Huawei mostrando como mínimo:
+
+- sysname.
+- VLAN.
+- dirección IP.
+
+### 05-github-commits.png
+
+Indicar que esta captura se realiza directamente desde GitHub y debe mostrar mínimo 5 commits claros.
+
+---
+
+# 16. CHECKLIST DE LA RÚBRICA
+
+Crear un apartado visible llamado:
+
+**Cumplimiento Corte 2**
+
+Mostrar:
+
+- Subnetting funcional — 20%.
+- Carga de topología — 15%.
+- Configuración Cisco + Huawei — 25%.
+- Ciberdefensa aplicada — 10%.
+- Documento — 10%.
+- Repositorio GitHub — 20%.
+
+Para los elementos que puedan comprobarse automáticamente dentro de la aplicación, mostrar:
+
+- Cumplido.
+- Pendiente.
+- Advertencia.
+
+No afirmar que el PDF o los commits existen si la aplicación no puede comprobarlos.
+
+---
+
+# 17. PERSISTENCIA
+
+Usar `localStorage` para conservar localmente:
+
+- Proyecto.
+- Sedes.
+- Dispositivos.
+- VLAN.
+- Direccionamiento.
+- Topología.
+- Configuraciones.
+
+Añadir:
+
+- Guardar proyecto.
+- Cargar proyecto.
+- Nuevo proyecto.
+- Exportar proyecto como JSON.
+- Importar proyecto desde JSON.
+
+Validar el JSON antes de cargarlo.
+
+---
+
+# 18. INTERFAZ
+
+Quiero una interfaz visualmente profesional.
+
+Debe tener:
+
+- Dashboard.
+- Menú lateral o navegación superior.
+- Diseño responsive.
+- Tarjetas.
+- Tablas.
+- Formularios ordenados.
+- Modales cuando tengan sentido.
+- Mensajes de validación.
+- Tooltips o explicaciones.
+- Estados vacíos.
+- Confirmación antes de eliminar información.
+
+Usar una estética profesional relacionada con redes y tecnología.
+
+Evita una apariencia infantil, es un proyecto profesional de Telecomunicaciones.
+
+Debe funcionar correctamente en escritorio y adaptarse a dispositivos móviles.
+
+---
+
+# 19. EXPERIENCIA PARA ALGUIEN QUE NO PROGRAMA
+
+Cada sección debe explicar brevemente:
+
+- Qué hace.
+- Para qué sirve.
+- Qué debe ingresar el usuario.
+- Cómo interpretar el resultado.
+
+Utiliza lenguaje técnico correcto pero comprensible.
+
+Puedes incluir ayudas como:
+
+`¿Qué significa esto?`
+
+para explicar términos como:
+
+- Gateway.
+- CIDR.
+- VLAN.
+- Broadcast.
+- VLSM.
+- WAN.
+- Trunk.
+- Access.
+- ISP.
+
+---
+
+# 20. VALIDACIONES TÉCNICAS
+
+Antes de terminar, revisa el código y asegúrate de que:
+
+- No existan botones sin funcionalidad.
+- No existan enlaces internos rotos.
+- Los formularios funcionen.
+- La navegación funcione.
+- El subnetting sea matemáticamente correcto.
+- No existan subredes solapadas en el plan generado.
+- Cisco utilice sintaxis Cisco.
+- Huawei utilice sintaxis Huawei.
+- No se mezclen comandos entre fabricantes.
+- Las configuraciones correspondan a los datos ingresados.
+- Las IP se validen.
+- Los CIDR se validen.
+- Las VLAN se validen.
+- La aplicación no contenga contraseñas reales.
+- Exportar e importar JSON funcione.
+- Los botones copiar funcionen.
+- Los botones descargar funcionen.
+- `localStorage` funcione.
+- El HTML no produzca errores JavaScript al abrirse.
+
+---
+
+# 21. RESTRICCIONES IMPORTANTES
+
+NO me entregues solamente:
+
+- una maqueta;
+- un wireframe;
+- una explicación;
+- pseudocódigo;
+- fragmentos;
+- funciones incompletas;
+- botones simulados;
+- secciones con "TODO";
+- mensajes del tipo "implementar posteriormente".
+
+Quiero una **aplicación funcional**.
+
+No inventes resultados técnicos.
+
+Cuando una función no pueda ejecutarse realmente desde un HTML local, represéntala de forma técnicamente correcta sin afirmar que se ejecutó.
+
+La aplicación NO debe conectarse automáticamente a routers, switches ni equipos reales.
+
+Debe generar configuraciones para que el administrador las revise y posteriormente las aplique manualmente.
+
+---
+
+# 22. FORMATO DE ENTREGA
+
+Tu respuesta final debe contener el contenido COMPLETO del archivo:
+
+`WAN.html`
+
+Debe comenzar exactamente con:
+
+`<!DOCTYPE html>`
+
+y terminar con:
+
+`</html>`
+
+No dividas el proyecto en múltiples archivos.
+
+No omitas CSS ni JavaScript.
+
+No me expliques primero cómo hacerlo.
+
+Genera directamente el archivo completo.
+
+Añade comentarios claros dentro del código para que posteriormente pueda entenderlo y explicarlo durante la sustentación. Es decir, cada línea de código debe estar debidamente comentareada
+
+Antes de entregarlo, haz una revisión mental integral de todas las funciones y corrige inconsistencias.
+
+El objetivo es que al guardar tu respuesta como `WAN.html` y abrirla en el navegador tenga una aplicación funcional lista para probar y usar como herramienta profesiona de diseño y configuración de redes.
+
+======================================================================
+VERSIÓN 4
+PROMPT COMPLETO CORREGIDO
+======================================================================
+
+Actúa como **ingeniero senior de redes empresariales, arquitecto de soluciones WAN, especialista en Cisco IOS y Huawei VRP, desarrollador web senior y docente universitario de redes**.
+
+Necesito que construyas una **herramienta web completa de diseño y gestión de redes WAN 
+## OBJETIVO PRINCIPAL
+
+Debes entregarme una aplicación completamente funcional contenida en **UN SOLO ARCHIVO llamado `WAN.html`**.
+
+El archivo debe incluir internamente:
+
+- HTML
+- CSS
+- JavaScript
+
+No quiero dependencias obligatorias de backend, Node.js, Python, bases de datos ni instalaciones adicionales.
+
+El archivo debe poder abrirse directamente en un navegador moderno y funcionar.
+
+La aplicación debe estar diseñada como una herramienta profesional para elaborar el diseño y configuración preliminar de una red empresarial WAN.
+
+---
+
+# 1. FLUJO GENERAL DE LA HERRAMIENTA
+
+La herramienta debe funcionar mediante un flujo guiado por etapas.
+
+El usuario primero debe ingresar la información del proyecto y posteriormente la aplicación debe construir:
+
+1. Requerimientos de infraestructura.
+2. Estimación de dispositivos.
+3. Diseño lógico de la red.
+4. Topología.
+5. Plan de direccionamiento IP.
+6. Subnetting/VLSM.
+7. VLAN.
+8. Enlaces WAN.
+9. Configuración Cisco.
+10. Configuración Huawei.
+11. Validaciones de seguridad.
+12. Resumen final del proyecto.
+
+Debe existir navegación y conexión clara entre las diferentes etapas NO SON MODULOS INDEPENDIENTES, la información contenida en cada fase se debe utilizar para la siguiente..
+
+---
+
+# 2. DATOS DEL PROYECTO
+
+Crear una sección llamada:
+
+**Datos del proyecto**
+
+Solicitar como mínimo:
+
+- Nombre del proyecto.
+- Nombre de la empresa.
+- Tipo de empresa o actividad.
+- Tipo de infraestructura:
+  - Casa
+  - Oficina
+  - Edificio
+  - Campus
+  - Varias sedes
+- Número de sedes.
+- Número de pisos por sede.
+- Cantidad aproximada de usuarios por sede.
+-Pisos más concurridos por sede
+- Cantidad estimada de dispositivos por usuario.
+- Áreas o departamentos.
+- Pisos o zonas con mayor concentración de usuarios.
+- Necesidad de red WiFi.
+- Cantidad estimada de Access Points, en este punto debe ofrecer un estimado de acuerdo a la información anterior, y permitir editar en caso de que el usuario lo requiera.
+- Necesidad de servidores.
+- Necesidad de telefonía IP.
+- Necesidad de cámaras IP.
+- Necesidad de impresoras.
+- Ancho de banda estimado: También dar sugerencia.
+- Si las sedes deben estar interconectadas.
+
+Si existen varias sedes, permitir registrar los datos individualmente para cada sede.
+
+La aplicación debe permitir posteriormente editar esta información.
+
+---
+
+# 3. ESTIMACIÓN AUTOMÁTICA DE DISPOSITIVOS
+
+A partir de los usuarios ingresados, generar una estimación de dispositivos.
+
+Mostrar, por ejemplo:
+
+- Computadores.
+- Teléfonos.
+- Dispositivos móviles.
+- Impresoras.
+- Access Points.
+- Cámaras.
+- Teléfonos IP.
+- Servidores.
+- Equipos de red.
+
+Explicar brevemente cómo se realizó la estimación.
+
+Permitir que el usuario modifique manualmente los valores propuestos.
+
+---
+
+# 4. PROPUESTA DE INFRAESTRUCTURA
+
+Generar una propuesta preliminar indicando la cantidad sugerida de:
+
+- Routers.
+- Switches de acceso.
+- Switches de distribución.
+- Switches capa 3.
+- Firewalls.
+- Access Points.
+- Servidores.
+
+La propuesta debe adaptarse al número de usuarios, sedes y pisos.
+
+No utilizar valores completamente arbitrarios.
+
+Mostrar una explicación breve del criterio utilizado.
+
+Si ves necesario agregar otro tipo de dispositivo hazlo
+
+---
+# 6. SUBNETTING E IP PLANNING
+
+Esta funcionalidad es obligatoria.
+
+Crear un módulo completo de subnetting IPv4.
+
+Debe permitir introducir:
+
+- Dirección IPv4.
+- Prefijo CIDR.
+
+Ejemplo:
+
+192.168.10.50/26
+
+Debe calcular correctamente:
+
+- Dirección IP ingresada.
+- Prefijo.
+- Máscara decimal.
+- Máscara binaria.
+- Dirección de red.
+- Dirección de broadcast.
+- Primera IP utilizable.
+- Última IP utilizable.
+- Cantidad total de direcciones.
+- Cantidad de hosts utilizables.
+- Bits de red.
+- Bits de host.
+- Tipo de IP:
+  - privada
+  - pública
+  - loopback cuando corresponda.
+
+Debe validar direcciones incorrectas.
+
+Ejemplo obligatorio para comprobar funcionamiento:
+
+192.168.10.50/26
+
+Resultado esperado:
+
+Red: 192.168.10.0  
+Broadcast: 192.168.10.63  
+Primer host: 192.168.10.1  
+Último host: 192.168.10.62  
+Hosts utilizables: 62  
+Máscara: 255.255.255.192
+
+Este módulo debe estar integrado con el Ip Planning y permitirme validar que el direccionamiento IP que propones es correcto
+
+---
+
+# 7. VLSM / PLAN DE DIRECCIONAMIENTO
+
+La aplicación debe poder generar un plan de direccionamiento para el proyecto.
+Según la actividad de la empresa descrita por el usuario en el primer modulo, la aplicación debe ser capaz de proponer una alternativa para segmentar la red, puede ser por departamentos / áreas de la empresa, por tipo se servicio (Datos, cctv, VoIP, controles de Acceso, etc)
+
+Una vez la app proponga las vlan el usuario también debe tener la posibilidad de confirmar o editar la propyesta.El usuario debe poder indicar redes o VLAN con diferentes cantidades de hosts.
+
+Ejemplo:
+
+Administración: 100 hosts  
+Ventas: 250 hosts  
+WiFi: 500 hosts  
+Servidores: 30 hosts  
+Administración de red: 20 hosts
+
+La herramienta debe:
+
+1. Ordenar las redes de mayor a menor.
+2. Calcular el prefijo apropiado para cada vlan y para la interconexión o enrutamiento entre sedes y pisos.
+3. Asignar subredes evitando solapamientos.
+4. Mostrar una tabla.
+
+Columnas mínimas:
+
+- Sede.
+- VLAN.
+- Nombre.
+- Hosts requeridos.
+- Hosts disponibles.
+- Dirección de red.
+- Prefijo.
+- Máscara.
+- Gateway.
+- Primera IP.
+- Última IP.
+- Broadcast.
+
+Permitir editar VLAN y gateway.
+
+---
+
+
+# 8. TOPOLOGÍA DE RED
+
+Esta funcionalidad es obligatoria 
+
+Crear una sección:
+
+**Topología**
+
+La aplicación debe permitir:
+
+### Opción A — Generación automática
+
+Generar una topología inicial utilizando la información introducida anteriormente, en la topología se debe evidenciar el ip planning y las vlan creadas anteriormente
+
+### Opción B — Edición manual
+
+Permitir:
+
+- Agregar dispositivos.
+- Eliminar dispositivos.
+- Modificar nombre.
+- Cambiar tipo.
+- Cambiar fabricante.
+- Cambiar sede.
+- Cambiar dirección IP.
+- Crear enlaces.
+- Eliminar enlaces.
+
+Tipos de dispositivos:
+
+- Router.
+- Switch.
+- Switch capa 3.
+- Firewall.
+- Access Point.
+- Servidor.
+- PC.
+- ISP.
+
+Fabricantes disponibles:
+
+- Cisco.
+- Huawei.
+
+Debe visualizarse gráficamente la relación entre los dispositivos y sus enlaces.
+
+Puede utilizarse SVG, Canvas o elementos HTML conectados mediante líneas.
+
+La topología debe ser entendible visualmente.
+
+Ejemplo:
+
+Internet / ISP  
+↓  
+Router principal : Sin son varias sedes se deben visualizar los router conectados mediante enrutamiento.  
+↓  
+Switch Core  
+↓  
+Switches de distribución  
+↓  
+Switches de acceso  
+↓  
+Usuarios / AP / servidores
+
+Si existen varias sedes, representar cada sede claramente y los enlaces WAN entre ellas.
+También debe tener la capacidad de dejar importar imágenes de topologías y poder interpretarlas.
+
+---
+
+
+
+---
+
+# 9. GENERADOR DE CONFIGURACIÓN CISCO IOS
+
+Esta funcionalidad es obligatoria para el segundo corte.
+
+Crear una sección llamada:
+
+**Configuración Cisco**
+
+El usuario debe poder seleccionar un equipo Cisco de la topología o directamente elegir que se configure toda la topología y el aplicativo seccionar la configuración por los equipos propuestos en los modulos anteriores
+
+A partir de los datos del proyecto, VLAN y direccionamiento, generar automáticamente configuraciones Cisco IOS. DEBE USAR OBLIGATORIAMENTE EL IP PLANNING YA CONFIGURADO EN EL MODULO ANTERIOR
+
+Debe poder generar, cuando corresponda:
+
+### Configuración básica
+
+Te voy a pasar un ejemplo de una configuración para que lo tengas en cuenta pero los datos que gemeres deben ser siempre DE ACUERDO A LO QUE INGRESA EL USUARIO, adicional, también debes configurar el nombre de los equipos por comando y habilitar ssh, y seguridad, estas configuraciones no las voy a colocar en el ejemplo por eso necesito que lo tengas en cuenta.
+No todo lo que voy a colocar en el ejemplo se debe configurar, puedes colocar en el modulo una selección multiple donde el usuario elija que requiere que se configure en el dispositivo.
+---------------------------------------------------------- 
+
+R1
+
+----------------------------------------------------------- 
+
+enable 
+configure terminal 
+int G0/0/0
+ip address 10.10.0.1 255.255.255.252 
+no shutdown 
+int G0/1/0 
+ip address 10.10.1.1 255.255.255.252 
+no shutdown 
+interface loopback 0 
+ip address 8.8.8.8  255.255.255.255 
+router ospf 1 
+router-id 1.1.1.1 
+network 10.10.0.0 0.0.0.3 area 0 
+network 10.10.1.0 0.0.0.3 area 0 
+do wr 
+
+-------------------------------------------------------- 
+
+R2 
+
+-------------------------------------------------------- 
+
+enable 
+configure terminal 
+int G0/0/0 
+ip address 10.10.0.2 255.255.255.252 
+no shutdown 
+int G0/0 
+ip address 10.10.2.1 255.255.255.252 
+no shutdown 
+router ospf 1 
+router-id 2.2.2.2 
+network 10.10.0.0 0.0.0.3 area 0 
+network 10.10.2.0 0.0.0.3 area 0 
+do wr 
+
+----------------------------------------------------------- 
+
+R3 
+
+---------------------------------------------------------- 
+
+enable 
+configure terminal 
+int G0/0/0 
+ip address 10.10.1.2 255.255.255.252 
+no shutdown 
+int G0/0 
+ip address 10.10.3.1 255.255.255.252 
+no shutdown 
+router ospf 1 
+router-id 3.3.3.3 
+network 10.10.1.0 0.0.0.3 area 0 
+network 10.10.3.0 0.0.0.3 area 0 
+do wr
+
+---------------------------------------------------------- 
+
+SWITCH MULTILAYER0 
+
+---------------------------------------------------------- 
+
+enable 
+configure terminal 
+ip routing 
+vlan 4 
+name VLAN4 
+exit 
+vlan 10 
+name VLAN10 
+exit 
+vlan 20 
+name VLAN20 
+exit 
+vlan 30 
+name VLAN30 
+exit 
+vlan 40 
+name VLAN40 
+exit
+
+---------------------------------------------
+enable
+configure terminal 
+interface GigabitEthernet 1/0/1 
+no switchport 
+ip address 10.10.2.2 255.255.255.252 
+no shutdown
+interface range GigabitEthernet 1/0/23-24 
+no shutdown
+channel-protocol lacp
+channel-group 1 mode passive
+
+interface port-channel 1
+switchport mode trunk
+switchport trunk allowed vlan 4,10,20,30,40
+
+interface range GigabitEthernet 1/0/2-3
+no shutdown
+channel-protocol lacp
+channel-group 2 mode active
+
+interface port-channel 2
+switchport mode trunk
+switchport trunk allowed vlan 4,10,20,30,40
+
+interface vlan 10 
+ip address 10.10.10.1 255.255.255.128 
+ip helper-address 10.10.30.2
+standby 10 ip 10.10.10.3
+standby 10 priority 150
+standby 10 preempt
+
+no shutdown
+exit 
+
+interface vlan 20 
+ip address 10.10.20.1  255.255.255.240 
+ip helper-address 10.10.30.2
+standby 20 ip 10.10.20.3
+standby 20 priority 150
+standby 20 preempt
+
+no shutdown
+exit
+
+interface vlan 30
+ip address 10.10.30.1  255.255.255.224
+ip helper-address 10.10.30.2
+standby 30 ip 10.10.30.3
+
+no shutdown
+exit
+
+interface vlan 40
+ip address 10.10.40.1  255.255.255.192
+ip helper-address 10.10.30.2
+standby 40 ip 10.10.40.3
+
+no shutdown
+exit
+
+
+interface vlan 4 
+ip address 10.10.4.3 255.255.255.248
+standby 10 ip 10.10.4.1
+standby 10 priority 110
+standby 10 preempt
+
+no shutdown
+exit
+
+enable
+configure terminal
+
+router ospf 1
+router-id 4.4.4.4
+
+network 10.10.2.0 0.0.0.3 area 0
+network 10.10.10.0 0.0.0.127 area 0
+network 10.10.20.0 0.0.0.15 area 0
+network 10.10.30.0 0.0.0.31 area 0
+network 10.10.40.0 0.0.0.63 area 0
+network 10.10.4.0 0.0.0.7 area 0
+
+---------------------------------------------------------- 
+
+SWITCH MULTILAYER1
+
+---------------------------------------------------------- 
+
+enable 
+configure terminal 
+ip routing 
+vlan 4 
+name VLAN4 
+exit 
+vlan 10 
+name VLAN10 
+exit 
+vlan 20 
+name VLAN20 
+exit 
+vlan 30 
+name VLAN30 
+exit 
+vlan 40 
+name VLAN40 
+exit
+
+---------------------------------------------
+enable
+configure terminal 
+interface GigabitEthernet 1/0/1
+no switchport
+ip address 10.10.3.2 255.255.255.252 
+no shutdown
+
+interface range GigabitEthernet 1/0/23-24 
+no shutdown
+channel-protocol lacp
+channel-group 1 mode active
+
+interface port-channel 1
+switchport mode trunk
+switchport trunk allowed vlan 4,10,20,30,40
+
+interface range GigabitEthernet 1/0/2-3
+no shutdown
+channel-protocol lacp
+channel-group 6 mode passive
+
+interface port-channel 6
+switchport mode trunk
+switchport trunk allowed vlan 4,10,20,30,40
+
+
+interface vlan 10 
+ip address 10.10.10.1 255.255.255.128 
+ip helper-address 10.10.30.2
+standby 10 ip 10.10.10.3
+
+
+no shutdown
+exit 
+
+interface vlan 20 
+ip address 10.10.20.1  255.255.255.240 
+ip helper-address 10.10.30.2
+standby 20 ip 10.10.20.3
+
+no shutdown
+exit
+
+interface vlan 30
+ip address 10.10.30.1  255.255.255.224
+ip helper-address 10.10.30.2
+standby 30 ip 10.10.30.3
+standby 30 priority 100
+standby 30 preempt
+
+no shutdown
+exit
+
+interface vlan 40
+ip address 10.10.40.1  255.255.255.192
+ip helper-address 10.10.30.2
+standby 40 ip 10.10.40.3
+standby 40 priority 100
+standby 40 preempt
+
+no shutdown
+exit
+
+
+
+interface vlan 4 
+ip address 10.10.4.3 255.255.255.248
+standby 10 ip 10.10.4.1
+
+no shutdown
+exit
+
+
+router ospf 1
+router-id 5.5.5.5
+
+network 10.10.3.0 0.0.0.3 area 0
+network 10.10.10.0 0.0.0.127 area 0
+network 10.10.20.0 0.0.0.15 area 0
+network 10.10.30.0 0.0.0.31 area 0
+network 10.10.40.0 0.0.0.63 area 0
+network 10.10.4.0 0.0.0.7 area 0
+----------------------------------------------------------- 
+
+ 			SERVIDOR DHCP
+
+----------------------------------------------------------- 
+
+enable 
+configure terminal 
+ip address 10.10.30.2 255.255.255.224 
+no shutdown 
+exit 
+
+ip DHCP excluded-address 10.10.10.1
+ip DHCP excluded-address 10.10.20.1 
+ip DHCP excluded-address 10.10.30.1 
+ip DHCP excluded-address 10.10.30.2 
+ip DHCP excluded-address 10.10.40.3
+ip DHCP excluded-address 10.10.10.3
+ip DHCP excluded-address 10.10.20.3 
+ip DHCP excluded-address 10.10.30.3 
+ip DHCP excluded-address 10.10.40.3 
+
+ip dhcp pool VLAN-10 
+lease 86400 
+network 10.10.10.0 255.255.255.128 
+default-router 10.10.10.3
+dns-server 10.10.10.1 
+exit 
+
+ip dhcp pool VLAN-20 
+lease 86400 
+network 10.10.20.0 255.255.255.240 
+default-router 10.10.20.3
+dns-server 10.10.20.1 
+exit 
+
+ip dhcp pool VLAN-30 
+lease 86400 
+network 10.10.30.0 255.255.255.224 
+default-router 10.10.30.3
+dns-server 10.10.30.1 
+exit 
+
+ip dhcp pool VLAN-40 
+lease 86400 
+network 10.10.40.0 255.255.255.192 
+default-router 10.10.40.3
+dns-server 10.10.40.1
+exit 
+No habilitar Telnet por defecto.
+
+Mostrar la configuración en una consola o bloque de código.
+
+Añadir botón:
+
+**Copiar configuración**
+
+Añadir botón:
+
+**Descargar configuración**
+
+El archivo puede descargarse como:
+
+`nombre-equipo-cisco.txt`
+
+---
+
+# 10. GENERADOR DE CONFIGURACIÓN HUAWEI VRP — CORREGIDO EN VERSIÓN 4
+
+Esta funcionalidad también es obligatoria.
+
+Crear una sección **Configuración Huawei** con generación por equipo y generación de todos los equipos disponibles en ese módulo.
+
+REGLA DE SELECCIÓN OBLIGATORIA:
+
+- Si la topología contiene routers, switches o switches capa 3 marcados como Huawei, listar y generar esos equipos.
+- Si no hay equipos configurables marcados como Huawei, listar los routers, switches y switches capa 3 de la topología existente y permitir generar su configuración equivalente en Huawei VRP.
+- La topología automática puede conservar su fabricante Cisco predeterminado. El módulo Huawei NO debe quedar vacío únicamente por esa razón.
+- Mostrar una explicación en el módulo indicando cuándo se generan equivalencias sin modificar el fabricante original.
+- Usar exactamente el mismo criterio de selección para el desplegable, los bloques de configuración y el botón «Generar todos los Huawei».
+- No cambiar el fabricante de los nodos ni crear o regenerar la topología para obtener las equivalencias.
+- No generar plantillas de routers/switches para AP, firewall, ISP, PC ni servidor.
+
+Debe generar el equivalente de la configuración Cisco utilizando sintaxis Huawei VRP y la información real del proyecto confirmado, NO una plantilla fija.
+
+Utilizar exclusivamente los datos ya existentes: hostname, sede, rol del equipo, VLAN, gateways, direcciones físicas de los cores, enlaces y nombres de interfaces Huawei de cada extremo. Mantener el mismo IP Planning y las mismas redes WAN /30.
+
+Incluir cuando corresponda y según las opciones ya existentes:
+
+- `system-view`, `sysname` y deshabilitación de Telnet.
+- VLAN con sus identificadores y nombres del plan.
+- Interfaces `GigabitEthernet` reales registradas en los enlaces.
+- `port link-type access` y `port default vlan` para puertos de acceso.
+- `port link-type trunk` y `port trunk allow-pass vlan` para trunks.
+- `undo portswitch` en interfaces enrutadas de switches compatibles.
+- Interfaces `Vlanif` con IP y máscara del plan.
+- OSPF con router-ID único, área 0 y máscaras wildcard correctas; LAN pasivas mediante `silent-interface`.
+- Agregación LACP mediante `Eth-Trunk`, `mode lacp-static` y miembros `eth-trunk` cuando existan grupos válidos.
+- VRRP en sedes con dos cores, manteniendo el gateway virtual y las IP físicas diferentes.
+- DHCP local o relay según la selección existente; no habilitar ambos simultáneamente.
+- `ip route-static` solo cuando corresponda y con las validaciones existentes.
+- AAA, usuario local y STelnet cuando SSH esté seleccionado.
+- `quit`/`return` para salir de las vistas y `save` para el guardado manual.
+
+No mezclar comandos Cisco con Huawei. No colocar contraseñas reales: mantener `<CAMBIAR_EN_PRODUCCION>`. Indicar que los marcadores deben sustituirse externamente y que la generación de claves y el guardado pueden requerir respuestas interactivas. Las plantillas son preliminares: la sintaxis y las interfaces se revisan para el modelo y versión VRP antes de aplicar.
+
+Conservar **Copiar configuración**, **Descargar configuración** y **Descargar todos**. Las equivalencias generadas se almacenan con la clave Huawei del mismo equipo y la revisión actual, para que funcionen las descargas y los reportes existentes.
+
+El archivo individual puede llamarse `nombre-equipo-huawei.txt`.
+
+VALIDACIÓN OBLIGATORIA:
+
+1. Con una topología automática formada solo por equipos Cisco, Huawei debe mostrar equipos y generar configuración individual y completa.
+2. Si se asignan equipos Huawei explícitamente, el módulo debe seleccionar esos equipos.
+3. Sin topología, conservar el estado vacío y las validaciones existentes.
+4. La generación Huawei debe conservar nodos, fabricantes, enlaces, VLAN y plan IP.
+5. La salida Cisco debe permanecer idéntica para el mismo proyecto y opciones.
+6. Comprobar copia, descarga individual y descarga completa con las claves Huawei.
+7. No afirmar que se probaron comandos en equipos físicos si solo se verificó la generación local.
+
+---
+
+# 11. COMPARACIÓN CISCO VS HUAWEI
+
+Agregar una opción para visualizar simultáneamente:
+
+**Cisco IOS | Huawei VRP**
+
+para un mismo dispositivo o función lógica.
+
+Ejemplo:
+
+Crear VLAN 20.
+
+Cisco:
+
+vlan 20  
+name ADMINISTRACION
+
+Huawei:
+
+vlan 20  
+name ADMINISTRACION
+
+Esto debe ayudar a demostrar que la aplicación genera configuraciones equivalentes para ambas marcas.
+
+---
+
+# 12. CIBERDEFENSA
+
+Este apartado es obligatorio.
+
+La aplicación debe incorporar medidas de seguridad reales.
+
+## Secretos
+
+Nunca colocar:
+
+- Contraseñas reales.
+- Tokens.
+- API Keys.
+- Claves privadas.
+
+Cuando sea necesario usar una contraseña, utilizar:
+
+`<CAMBIAR_EN_PRODUCCION>`
+
+o algo equivalente.
+
+## Validación de entradas
+
+Validar como mínimo:
+
+- IP.
+- CIDR.
+- VLAN.
+- Número de usuarios.
+- Cantidad de hosts.
+- Hostname.
+- Nombres de dispositivos.
+
+Rechazar entradas evidentemente inválidas.
+
+Ejemplos:
+
+999.1.1.1
+
+VLAN 9000
+
+Prefijo /40
+
+Campos vacíos obligatorios.
+
+## Advertencias de seguridad
+
+La herramienta debe detectar o advertir cuando encuentre situaciones como:
+
+- Telnet habilitado.
+- Contraseña por defecto.
+- Contraseña incluida directamente.
+- `0.0.0.0/0` utilizada sin contexto.
+- SSH deshabilitado.
+- Servicios administrativos inseguros.
+- Interfaces innecesariamente expuestas.
+
+Mostrar advertencias visuales.
+
+No bloquear configuraciones legítimas cuando exista una justificación técnica, pero sí informar del riesgo.
+
+---
+
+# 13. POLÍTICAS DE IA Y SEGURIDAD
+
+Agregar dentro de la aplicación una sección denominada:
+
+**Políticas de ciberdefensa y uso de IA**
+
+Mostrar estas políticas:
+
+1. La herramienta nunca guarda contraseñas ni tokens en el código.
+2. Los secretos deben administrarse externamente mediante variables de entorno cuando el proyecto evolucione a una arquitectura con backend.
+3. Con IA pública solo se utilizan datos de laboratorio o de ejemplo.
+4. Nunca se deben suministrar credenciales, IP públicas sensibles ni topologías confidenciales.
+5. Toda entrada del usuario debe validarse.
+6. Las configuraciones generadas deben revisarse antes de aplicarlas.
+7. No se debe ejecutar automáticamente ninguna configuración sobre equipos reales.
+8. Los cambios deben realizarse únicamente en infraestructura autorizada.
+9. Debe preferirse SSH sobre Telnet.
+10. Aplicar principio de mínimo privilegio.
+11. La salida generada por IA debe tratarse como propuesta técnica y verificarse antes de implementarla.
+
+---
+
+# 14. RESUMEN DEL PROYECTO
+
+Crear una pantalla final tipo dashboard mostrando:
+
+- Nombre proyecto.
+- Empresa.
+- Número de sedes.
+- Usuarios totales.
+- Dispositivos estimados.
+- Routers.
+- Switches.
+- AP.
+- Número de VLAN.
+- Número de subredes.
+- Estado del direccionamiento.
+- Estado de topología.
+- Cisco generado: Sí/No.
+- Huawei generado: Sí/No.
+- Número de advertencias de seguridad.
+
+Añadir indicadores visuales.
+
+---
+
+# 15. EVIDENCIAS DEL SEGUNDO CORTE
+
+Crear dentro de la herramienta una sección llamada:
+
+**Evidencias Corte 2**
+
+Debe indicar explícitamente qué capturas debo tomar para mi entrega:
+
+### 01-subnetting.png
+
+La herramienta calculando una subred.
+
+Deben verse:
+
+- IP.
+- prefijo.
+- dirección de red.
+- broadcast.
+- hosts.
+
+### 02-topologia.png
+
+Topología cargada mostrando:
+
+- dispositivos.
+- nombres.
+- enlaces.
+
+### 03-config-cisco.png
+
+Configuración Cisco generada mostrando como mínimo:
+
+- hostname.
+- VLAN.
+- dirección IP.
+
+### 04-config-huawei.png
+
+Configuración Huawei mostrando como mínimo:
+
+- sysname.
+- VLAN.
+- dirección IP.
+
+### 05-github-commits.png
+
+Indicar que esta captura se realiza directamente desde GitHub y debe mostrar mínimo 5 commits claros.
+
+---
+
+# 16. CHECKLIST DE LA RÚBRICA
+
+Crear un apartado visible llamado:
+
+**Cumplimiento Corte 2**
+
+Mostrar:
+
+- Subnetting funcional — 20%.
+- Carga de topología — 15%.
+- Configuración Cisco + Huawei — 25%.
+- Ciberdefensa aplicada — 10%.
+- Documento — 10%.
+- Repositorio GitHub — 20%.
+
+Para los elementos que puedan comprobarse automáticamente dentro de la aplicación, mostrar:
+
+- Cumplido.
+- Pendiente.
+- Advertencia.
+
+No afirmar que el PDF o los commits existen si la aplicación no puede comprobarlos.
+
+---
+
+# 17. PERSISTENCIA
+
+Usar `localStorage` para conservar localmente:
+
+- Proyecto.
+- Sedes.
+- Dispositivos.
+- VLAN.
+- Direccionamiento.
+- Topología.
+- Configuraciones.
+
+Añadir:
+
+- Guardar proyecto.
+- Cargar proyecto.
+- Nuevo proyecto.
+- Exportar proyecto como JSON.
+- Importar proyecto desde JSON.
+
+Validar el JSON antes de cargarlo.
+
+---
+
+# 18. INTERFAZ
+
+Quiero una interfaz visualmente profesional.
+
+Debe tener:
+
+- Dashboard.
+- Menú lateral o navegación superior.
+- Diseño responsive.
+- Tarjetas.
+- Tablas.
+- Formularios ordenados.
+- Modales cuando tengan sentido.
+- Mensajes de validación.
+- Tooltips o explicaciones.
+- Estados vacíos.
+- Confirmación antes de eliminar información.
+
+Usar una estética profesional relacionada con redes y tecnología.
+
+Evita una apariencia infantil, es un proyecto profesional de Telecomunicaciones.
+
+Debe funcionar correctamente en escritorio y adaptarse a dispositivos móviles.
+
+---
+
+# 19. EXPERIENCIA PARA ALGUIEN QUE NO PROGRAMA
+
+Cada sección debe explicar brevemente:
+
+- Qué hace.
+- Para qué sirve.
+- Qué debe ingresar el usuario.
+- Cómo interpretar el resultado.
+
+Utiliza lenguaje técnico correcto pero comprensible.
+
+Puedes incluir ayudas como:
+
+`¿Qué significa esto?`
+
+para explicar términos como:
+
+- Gateway.
+- CIDR.
+- VLAN.
+- Broadcast.
+- VLSM.
+- WAN.
+- Trunk.
+- Access.
+- ISP.
+
+---
+
+# 20. VALIDACIONES TÉCNICAS
+
+Antes de terminar, revisa el código y asegúrate de que:
+
+- No existan botones sin funcionalidad.
+- No existan enlaces internos rotos.
+- Los formularios funcionen.
+- La navegación funcione.
+- El subnetting sea matemáticamente correcto.
+- No existan subredes solapadas en el plan generado.
+- Cisco utilice sintaxis Cisco.
+- Huawei utilice sintaxis Huawei.
+- No se mezclen comandos entre fabricantes.
+- Las configuraciones correspondan a los datos ingresados.
+- Las IP se validen.
+- Los CIDR se validen.
+- Las VLAN se validen.
+- La aplicación no contenga contraseñas reales.
+- Exportar e importar JSON funcione.
+- Los botones copiar funcionen.
+- Los botones descargar funcionen.
+- `localStorage` funcione.
+- El HTML no produzca errores JavaScript al abrirse.
+
+---
+
+# 21. RESTRICCIONES IMPORTANTES
+
+NO me entregues solamente:
+
+- una maqueta;
+- un wireframe;
+- una explicación;
+- pseudocódigo;
+- fragmentos;
+- funciones incompletas;
+- botones simulados;
+- secciones con "TODO";
+- mensajes del tipo "implementar posteriormente".
+
+Quiero una **aplicación funcional**.
+
+No inventes resultados técnicos.
+
+Cuando una función no pueda ejecutarse realmente desde un HTML local, represéntala de forma técnicamente correcta sin afirmar que se ejecutó.
+
+La aplicación NO debe conectarse automáticamente a routers, switches ni equipos reales.
+
+Debe generar configuraciones para que el administrador las revise y posteriormente las aplique manualmente.
+
+---
+
+# 22. FORMATO DE ENTREGA
+
+Tu respuesta final debe contener el contenido COMPLETO del archivo:
+
+`WAN.html`
+
+Debe comenzar exactamente con:
+
+`<!DOCTYPE html>`
+
+y terminar con:
+
+`</html>`
+
+No dividas el proyecto en múltiples archivos.
+
+No omitas CSS ni JavaScript.
+
+No me expliques primero cómo hacerlo.
+
+Genera directamente el archivo completo.
+
+Añade comentarios claros dentro del código para que posteriormente pueda entenderlo y explicarlo durante la sustentación. Es decir, cada línea de código debe estar debidamente comentareada
+
+Antes de entregarlo, haz una revisión mental integral de todas las funciones y corrige inconsistencias.
+
+El objetivo es que al guardar tu respuesta como `WAN.html` y abrirla en el navegador tenga una aplicación funcional lista para probar y usar como herramienta profesiona de diseño y configuración de redes.
+
+# 23. ALCANCE DE LA ACTUALIZACIÓN VERSIÓN 4 SOBRE EL HTML EXISTENTE
+
+Si te entrego el HTML que ya funciona, úsalo como base y corrige ÚNICAMENTE la selección de equipos y el funcionamiento del módulo Huawei descrito en la sección 10. Conserva el generador VRP existente cuando sus comandos ya sean correctos.
+
+No rediseñes ni reescribas la aplicación. No cambies CSS, estilos, textos de otros módulos, navegación, formularios, estimaciones, VLAN, VLSM, subnetting, topología, configuración Cisco, comparación, seguridad, exportación/importación JSON ni almacenamiento local. No cambies automáticamente los fabricantes de los equipos. No modifiques la estructura del estado ni su versión solo por este ajuste.
+
+Entrega el HTML completo corregido, en un solo archivo, conservando intacto el resto del código. Verifica que las únicas diferencias funcionales correspondan al módulo Huawei y que Cisco produzca exactamente las mismas configuraciones que antes. Cuando este alcance se aplique a un archivo existente, prevalece sobre indicaciones generales de rediseño o de añadir comentarios a todo el código.
