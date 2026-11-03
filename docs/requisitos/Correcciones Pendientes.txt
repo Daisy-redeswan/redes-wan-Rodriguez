@@ -1,0 +1,13 @@
+Correcciones: Si elimino una vlan se me reestablecen todas
+En vlan y direccionamiento no me deja colocar un rango de ips por sede, adicional, coloca una ip y no me alcanza al numero de vlan, debería dejarme colocar las ips por Vlan
+
+-------------------------------------------------
+Botón de traductor
+
+
+---------------------------------------------------
+Normalizar código según lo enviado
+
+
+---------------------------------------------------
+En el módulo de configuración de cisco los botones de copiar y descargar no se encuentran en castellano,. agregar un módulo de inglés y español para toda la herramienta. Solo debes realizar cambios en estos botones, no modifiques nada más de la herramienta.

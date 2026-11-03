@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Proyecto Redes WAN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#e9edf3; --surface:#ffffff; --surface-2:#f2f5f9; --line:#d7dfea;
+  --ink:#141d2b; --ink-2:#46556a; --ink-3:#78879c;
+  --accent:#0f766e; --accent-ink:#ffffff; --accent-soft:#d2ece8;
+  --up:#15794b; --up-soft:#d7efdf; --warn:#a85d0a; --warn-soft:#f6e4cc;
+  --down:#bb2d2d; --down-soft:#f4d9d9;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --display:'Bricolage Grotesque',Georgia,system-ui,sans-serif;
+  --body:'Hanken Grotesk',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  --radius:12px; --shadow:0 1px 2px rgba(20,29,43,.05),0 10px 26px rgba(20,29,43,.07);
+  --maxw:1080px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1420; --surface:#151e2c; --surface-2:#111927; --line:#28344a;
+  --ink:#e7edf6; --ink-2:#a7b4c8; --ink-3:#6d7c95;
+  --accent:#3cc7b7; --accent-ink:#0d1420; --accent-soft:#123330;
+  --up:#54c98a; --up-soft:#123024; --warn:#e0a44f; --warn-soft:#33270f; --down:#ef7676; --down-soft:#331b1b;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0d1420; --surface:#151e2c; --surface-2:#111927; --line:#28344a;
+  --ink:#e7edf6; --ink-2:#a7b4c8; --ink-3:#6d7c95;
+  --accent:#3cc7b7; --accent-ink:#0d1420; --accent-soft:#123330;
+  --up:#54c98a; --up-soft:#123024; --warn:#e0a44f; --warn-soft:#33270f; --down:#ef7676; --down-soft:#331b1b;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.62;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--display);line-height:1.15;text-wrap:balance;margin:0;font-weight:600}
+a{color:var(--accent)}
+[hidden]{display:none!important}
+code,kbd{font-family:var(--mono);font-size:.9em}
+.wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:16px}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:color-mix(in srgb,var(--surface) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.topbar-in{display:flex;align-items:center;gap:14px;padding-block:11px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:16px}
+.mark{width:13px;height:13px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+.brand small{font-family:var(--body);font-weight:500;color:var(--ink-3);font-size:12.5px}
+.theme-btn{margin-left:auto;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);border-radius:8px;padding:7px 12px;font-family:var(--mono);font-size:12px;cursor:pointer}
+.theme-btn:hover{border-color:var(--accent);color:var(--accent)}
+nav.tabs{display:flex;gap:5px;overflow-x:auto;padding-block:8px;scrollbar-width:thin}
+nav.tabs button{white-space:nowrap;border:1px solid transparent;background:transparent;color:var(--ink-2);font-family:var(--display);font-weight:600;font-size:13.5px;padding:8px 13px;border-radius:8px;cursor:pointer;transition:background .15s,color .15s}
+nav.tabs button:hover{color:var(--ink);background:var(--surface-2)}
+nav.tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+nav.tabs button.nudge{animation:nudge 1.9s ease-in-out infinite}
+@keyframes nudge{0%,100%{box-shadow:0 0 0 0 var(--accent-soft)}50%{box-shadow:0 0 0 6px var(--accent-soft)}}
+@media (prefers-reduced-motion:reduce){nav.tabs button.nudge{animation:none}}
+main{padding-block:24px 60px}
+.panel{animation:fade .22s ease}
+@keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.panel{animation:none}}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:9px}
+.lead{font-size:16.5px;color:var(--ink-2);max-width:66ch}
+.h-xl{font-size:clamp(27px,4.6vw,40px)}
+.h-lg{font-size:clamp(21px,3.2vw,28px)}
+.h-md{font-size:18px}
+section.block{margin-top:28px}
+p{margin:.55em 0}
+.muted{color:var(--ink-3)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:19px;box-shadow:var(--shadow)}
+.grid{display:grid;gap:15px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+.badge-line{display:inline-flex;align-items:center;gap:8px;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:6px 13px;font-family:var(--mono);font-size:12px;font-weight:500;margin-bottom:14px}
+.config-note{background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 30%,var(--line));border-radius:11px;padding:14px 16px;margin-top:14px;font-size:14.5px}
+.config-note b{font-family:var(--display)}
+.fname{font-family:var(--mono);font-size:12px;background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--ink-2)}
+.two-things{display:grid;gap:12px;grid-template-columns:1fr 1fr 1fr;margin-top:10px}
+@media(max-width:760px){.two-things{grid-template-columns:1fr}}
+.thing{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:16px;border-top:3px solid var(--accent)}
+.thing h4{font-size:15.5px;margin-bottom:6px}
+.phase{display:flex;align-items:center;gap:12px;margin:26px 0 6px;flex-wrap:wrap}
+.phase .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:6px;background:var(--accent-soft);color:var(--accent)}
+.phase h3{font-size:18px}
+.deliv{display:flex;flex-direction:column;gap:9px;margin-top:8px}
+.deliv .row{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.deliv .n{flex:none;width:26px;height:26px;border-radius:7px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:12px}
+.deliv .row b{font-family:var(--display)}
+.review{background:var(--up-soft);border:1px solid color-mix(in srgb,var(--up) 30%,var(--line));border-radius:10px;padding:11px 14px;margin-top:10px;font-size:13.5px}
+.review b{font-family:var(--display);color:var(--up)}
+ol.steps{list-style:none;counter-reset:s;padding:0;margin:0;display:flex;flex-direction:column;gap:11px}
+ol.steps > li{counter-increment:s;position:relative;padding:15px 15px 15px 54px;background:var(--surface);border:1px solid var(--line);border-radius:11px}
+ol.steps > li::before{content:counter(s);position:absolute;left:13px;top:13px;width:29px;height:29px;border-radius:8px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:14px}
+.chk{display:flex;gap:11px;align-items:flex-start;cursor:pointer;user-select:none}
+.chk input{margin-top:3px;width:18px;height:18px;accent-color:var(--up);flex:none;cursor:pointer}
+.chk .t{flex:1}
+.chk .t b{font-family:var(--display)}
+.done{color:var(--ink-3);text-decoration:line-through}
+.progress-wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:8px}
+.bar{flex:1;min-width:180px;height:12px;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.bar > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--up));transition:width .4s ease}
+.pct{font-family:var(--display);font-weight:700;font-size:22px;min-width:54px;text-align:right}
+.code{position:relative;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;margin:12px 0}
+.code pre{margin:0;padding:15px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;color:var(--ink);line-height:1.7}
+.code .cmt{color:var(--ink-3)}
+.copy{position:absolute;top:9px;right:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);border-radius:7px;padding:5px 10px;font-family:var(--mono);font-size:11px;cursor:pointer}
+.copy:hover{border-color:var(--accent);color:var(--accent)}
+.copy.ok{color:var(--up);border-color:var(--up)}
+.tbl{width:100%;border-collapse:collapse;font-size:14px;border-radius:10px;border:1px solid var(--line);overflow:hidden}
+.tbl th,.tbl td{text-align:left;padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl th{background:var(--surface-2);font-family:var(--display);font-size:13px;font-weight:600}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td .pt{font-family:var(--display);font-weight:700;color:var(--accent)}
+.tbl tfoot td{font-family:var(--display);font-weight:700;background:var(--surface-2)}
+.scroll-x{overflow-x:auto}
+.note{border-radius:10px;padding:13px 15px;border:1px solid var(--line);display:flex;gap:12px;align-items:flex-start}
+.note .lb{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:500;flex:none;padding-top:2px}
+.note.tip{background:var(--up-soft);border-color:color-mix(in srgb,var(--up) 30%,var(--line))}
+.note.tip .lb{color:var(--up)}
+.note.warn{background:var(--warn-soft);border-color:color-mix(in srgb,var(--warn) 30%,var(--line))}
+.note.warn .lb{color:var(--warn)}
+.note.danger{background:var(--down-soft);border-color:color-mix(in srgb,var(--down) 30%,var(--line))}
+.note.danger .lb{color:var(--down)}
+dl.gloss{display:grid;gap:11px;margin:0}
+dl.gloss > div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+dl.gloss dt{font-family:var(--display);font-weight:700;color:var(--ink);margin-bottom:3px}
+dl.gloss dd{margin:0;color:var(--ink-2);font-size:14.5px}
+.reveal-btn{border:1px dashed var(--accent);background:transparent;color:var(--accent);border-radius:8px;padding:8px 13px;font-family:var(--display);font-weight:600;font-size:13px;cursor:pointer}
+.reveal-btn:hover{background:var(--accent-soft)}
+ul.plain{color:var(--ink-2);padding-left:18px;margin:8px 0 0}
+ul.plain li{margin:4px 0}
+.timeline{display:flex;flex-direction:column;gap:0;margin-top:14px}
+.tl{display:flex;gap:14px;align-items:flex-start;padding-bottom:16px;position:relative;padding-left:26px}
+.tl::before{content:"";position:absolute;left:6px;top:4px;width:11px;height:11px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.tl::after{content:"";position:absolute;left:11px;top:16px;bottom:0;width:2px;background:var(--line)}
+.tl:last-child::after{display:none}
+.tl .d{font-family:var(--mono);font-size:12px;color:var(--accent);flex:none;width:96px}
+/* Video */
+.video{position:relative;aspect-ratio:16/9;width:100%;background:var(--surface-2);border-radius:11px;overflow:hidden;border:1px solid var(--line)}
+.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.video .facade{position:absolute;inset:0;border:0;padding:0;margin:0;width:100%;height:100%;cursor:pointer;background:#0b0f17;display:block}
+.video .facade img{width:100%;height:100%;object-fit:cover;display:block;opacity:.82}
+.video .play{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+.video .play .tri{width:62px;height:62px;border-radius:50%;background:rgba(15,118,110,.92);display:grid;place-items:center;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.video .play span{font-family:var(--display);font-weight:600;font-size:14px}
+.vnote{font-size:13px;color:var(--ink-3);margin-top:8px}
+.videolink{display:block;position:relative;border-radius:11px;overflow:hidden;border:1px solid var(--line);text-decoration:none;max-width:520px;background:#0b0f17;margin-top:14px}
+.videolink img{width:100%;display:block;aspect-ratio:16/9;object-fit:cover;opacity:.8}
+.videolink .vp{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#fff;font-family:var(--display);font-weight:600;font-size:14.5px;text-align:center;padding:14px;text-shadow:0 1px 6px rgba(0,0,0,.75)}
+.videolink .vp .tri{width:54px;height:54px;border-radius:50%;background:rgba(15,118,110,.95);display:grid;place-items:center;font-size:20px}
+.videolink:hover .tri{filter:brightness(1.1)}
+/* Subnetting */
+.calc{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;box-shadow:var(--shadow);margin-top:14px}
+.fields{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3)}
+.field input,.field select{font-family:var(--mono);font-size:15px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);color:var(--ink);min-width:120px}
+.field input:focus,.field select:focus{outline:2px solid var(--accent);outline-offset:1px}
+.btn{font-family:var(--display);font-weight:600;font-size:14px;padding:11px 18px;border:0;border-radius:9px;background:var(--accent);color:var(--accent-ink);cursor:pointer}
+.btn:hover{filter:brightness(1.05)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink-2)}
+.err{color:var(--down);font-size:13px;margin-top:8px;min-height:1em}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:16px}
+.rcard{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px}
+.rcard .k{font-family:var(--mono);font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em}
+.rcard .v{font-family:var(--mono);font-size:15px;font-weight:500;margin-top:3px;word-break:break-all}
+.rcard .v.big{color:var(--accent)}
+.bin{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:13px;margin-top:14px;overflow-x:auto;line-height:1.9}
+.bin .net{color:var(--accent);font-weight:600}
+.bin .host{color:var(--ink-3)}
+.steps-box{background:var(--accent-soft);border-radius:10px;padding:14px 16px;margin-top:14px;font-size:14px}
+.steps-box ol{margin:6px 0 0;padding-left:20px}
+.steps-box li{margin:4px 0}
+.feedback{margin-top:12px;padding:12px 14px;border-radius:10px;font-size:14px;display:none}
+.feedback.ok{display:block;background:var(--up-soft);border:1px solid color-mix(in srgb,var(--up) 30%,var(--line))}
+.feedback.bad{display:block;background:var(--down-soft);border:1px solid color-mix(in srgb,var(--down) 30%,var(--line))}
+/* Bit visualizer */
+.bitbar{display:flex;flex-wrap:wrap;gap:3px;margin-top:12px}
+.bit{width:20px;height:26px;border-radius:4px;display:grid;place-items:center;font-family:var(--mono);font-size:10px;border:1px solid var(--line)}
+.bit.net{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.bit.host{background:var(--surface-2);color:var(--ink-3)}
+.bit.gap{width:8px;border:0;background:transparent}
+.slider-row{display:flex;align-items:center;gap:14px;margin-top:10px;flex-wrap:wrap}
+.slider-row input[type=range]{flex:1;min-width:180px;accent-color:var(--accent)}
+.slider-val{font-family:var(--display);font-weight:700;font-size:20px;color:var(--accent);min-width:52px}
+.legend{display:flex;gap:16px;margin-top:10px;font-size:13px;color:var(--ink-2);flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+/* Lock */
+.lock{max-width:420px;margin:20px auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:24px;text-align:center;box-shadow:var(--shadow)}
+.lock .ico{width:46px;height:46px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin:0 auto 12px}
+.lock input{font-family:var(--mono);font-size:15px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);color:var(--ink);width:100%;margin-top:10px}
+.lock .btn{margin-top:12px;width:100%}
+.foot{margin-top:38px;padding-top:18px;border-top:1px solid var(--line);color:var(--ink-3);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.kb{font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 6px;background:var(--surface-2)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.skip{position:absolute;left:-999px;top:0;background:var(--accent);color:var(--accent-ink);padding:8px 12px;border-radius:0 0 8px 0;z-index:99}
+.skip:focus{left:0}
+</style>
+</head>
+<body>
+<a href="#main" class="skip">Saltar al contenido</a>
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <div class="brand"><span class="mark" aria-hidden="true"></span> Proyecto Redes WAN <small>· Interconexión de Redes WAN</small></div>
+    <button class="theme-btn" id="themeBtn" type="button">Cambiar tema</button>
+  </div>
+  <div class="wrap">
+    <nav class="tabs" id="tabs" role="tablist" aria-label="Secciones">
+      <button role="tab" aria-selected="true" data-p="rubrica">Rúbrica</button>
+      <button role="tab" aria-selected="false" data-p="actividades">Actividades y entrega</button>
+      <button role="tab" aria-selected="false" data-p="herramienta">La herramienta</button>
+      <button role="tab" aria-selected="false" data-p="subnetting">Subnetting interactivo</button>
+      <button role="tab" aria-selected="false" data-p="github">Crear cuenta GitHub</button>
+      <button role="tab" aria-selected="false" data-p="practicas">Buenas prácticas</button>
+      <button role="tab" aria-selected="false" data-p="ia">Uso de la IA</button>
+      <button role="tab" aria-selected="false" data-p="cronograma">Cronograma</button>
+      <button role="tab" aria-selected="false" data-p="glosario">Glosario</button>
+      <button role="tab" aria-selected="false" data-p="docente">Modo docente</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+<!-- RUBRICA (primera) -->
+<section class="panel" id="p-rubrica" role="tabpanel">
+  <span class="badge-line">Actividad INDIVIDUAL · Corte 2 y Corte 3</span>
+  <h1 class="h-xl">Rúbrica de evaluación</h1>
+  <p class="lead">Cada corte vale <b>100%</b> y se convierte a la escala <b>0.0–5.0</b>. Cada fila dice, sin rodeos, qué debe cumplir tu entrega para el puntaje completo y con qué evidencia se comprueba. Los detalles de qué entregar están en la pestaña <b>Actividades y entrega</b>.</p>
+
+  <div class="phase"><span class="tag">Corte 2</span><h3>Subnetting, topología y configuraciones base</h3></div>
+  <div class="scroll-x"><table class="tbl">
+    <thead><tr><th>Criterio</th><th>Para obtener el 100% de este ítem…</th><th>%</th></tr></thead>
+    <tbody>
+      <tr><td class="pt">Subnetting funcional</td><td>La herramienta calcula subredes correctas (red, broadcast, hosts) con un ejemplo resuelto en el documento (captura 01).</td><td>20%</td></tr>
+      <tr><td class="pt">Carga de topología</td><td>La herramienta permite ingresar o importar los dispositivos y enlaces de la red (captura 02).</td><td>15%</td></tr>
+      <tr><td class="pt">Config Cisco + Huawei</td><td>Genera configuraciones válidas para ambas marcas a partir de la topología (capturas 03 y 04).</td><td>25%</td></tr>
+      <tr><td class="pt">Ciberdefensa aplicada</td><td>Sin contraseñas/tokens en el repositorio; existe <code>.gitignore</code> con <code>.env</code>; inicia <code>docs/politicas-ia.md</code>.</td><td>10%</td></tr>
+      <tr><td class="pt">Documento</td><td>Informe en PDF completo con todas las secciones y las capturas 01–05.</td><td>10%</td></tr>
+      <tr><td class="pt">Repositorio en GitHub</td><td>Repositorio público con README, uso de al menos 1 rama y mínimo 5 commits con mensajes claros (captura 05).</td><td>20%</td></tr>
+    </tbody>
+    <tfoot><tr><td colspan="2">Total Corte 2</td><td>100%</td></tr></tfoot>
+  </table></div>
+
+  <div class="phase"><span class="tag">Corte 3</span><h3>Multimarca, ciberdefensa, pruebas y sustentación</h3></div>
+  <div class="scroll-x"><table class="tbl">
+    <thead><tr><th>Criterio</th><th>Para obtener el 100% de este ítem…</th><th>%</th></tr></thead>
+    <tbody>
+      <tr><td class="pt">Config Fortinet + 4.ª marca</td><td>Completa la generación para las 4 marcas (Cisco, Huawei, Fortinet y MikroTik) (capturas 06 y 07).</td><td>25%</td></tr>
+      <tr><td class="pt">Ciberdefensa integrada</td><td>La herramienta aplica las políticas anti-IA (no guarda secretos, valida entradas, advierte configs inseguras) y entrega <code>docs/politicas-ia.md</code> (captura 08).</td><td>15%</td></tr>
+      <tr><td class="pt">Pruebas y % de confianza</td><td><code>docs/pruebas.md</code> con las pruebas y el % superado (captura 09); se corren en la sustentación.</td><td>20%</td></tr>
+      <tr><td class="pt">Documento + manual</td><td>Informe final y manual de usuario claros.</td><td>15%</td></tr>
+      <tr><td class="pt">Sustentación</td><td>Demuestra la herramienta en vivo y explica cómo funciona y cómo se construyó.</td><td>15%</td></tr>
+      <tr><td class="pt">Repositorio y versiones</td><td>Historial de commits limpio, uso de ramas y app final funcionando (captura 10).</td><td>10%</td></tr>
+    </tbody>
+    <tfoot><tr><td colspan="2">Total Corte 3</td><td>100%</td></tr></tfoot>
+  </table></div>
+  <div class="note tip block"><span class="lb">Conversión a nota</span><div><b>nota = (% obtenido ÷ 100) × 5.0</b>. Ejemplo: 80% → 4.0.</div></div>
+</section>
+
+<!-- ACTIVIDADES -->
+<section class="panel" id="p-actividades" role="tabpanel" hidden>
+  <span class="badge-line">Qué entregar · Corte 2 y Corte 3</span>
+  <h2 class="h-lg">Actividades y forma de entrega</h2>
+  <p class="lead">Cada estudiante construye, con ayuda de IA, una <b>herramienta de diseño y gestión de redes WAN</b>. El trabajo es <b>individual</b>. En cada corte entregas un <b>documento</b> y el <b>proyecto</b> (repositorio público en GitHub); el Corte 3 suma <b>pruebas con % de confianza</b> y <b>sustentación</b>.</p>
+
+  <div class="config-note"><b>Configura antes de asignar:</b> Enlace de entrega en GitHub = <span class="fname">_______________</span> · Fechas de cada corte = las define el docente en el cronograma · Escala de nota = <span class="fname">0.0 – 5.0</span>.</div>
+
+  <div class="two-things">
+    <div class="thing"><h4>1. El documento</h4><p class="muted" style="margin:0">Un informe en PDF con lo que hiciste, cómo funciona y las capturas. Se sube al repositorio dentro de la carpeta <span class="fname">docs/</span>.</p></div>
+    <div class="thing"><h4>2. El proyecto (GitHub)</h4><p class="muted" style="margin:0">Un repositorio <b>público en GitHub</b> con el código de la app, el <span class="fname">README</span> y el historial de cambios.</p></div>
+    <div class="thing"><h4>3. Pruebas + sustentación</h4><p class="muted" style="margin:0">En el Corte 3: probar la herramienta con evidencia del <b>% de confianza</b> y defenderla en vivo.</p></div>
+  </div>
+
+  <!-- Paso a paso de entrega en GitHub -->
+  <section class="block card">
+    <h3 class="h-md">Cómo dejar tu entrega en GitHub (paso a paso)</h3>
+    <ol class="steps" style="margin-top:12px">
+      <li><b>Un solo repositorio</b> para todo el proyecto, llamado <span class="fname">redes-wan-TUAPELLIDO</span>, en modo <b>Público</b>. (Cómo crearlo: pestaña "Crear cuenta GitHub".)</li>
+      <li><b>Sube tu código</b> a ese repositorio y crea la carpeta <span class="fname">docs/</span> y dentro <span class="fname">docs/capturas/</span>.</li>
+      <li><b>Guarda cada avance con un commit.</b> Un "commit" es un guardado con un mensaje corto que dice qué hiciste. <b>Mínimo 5</b> a lo largo del trabajo, no todos el último día. Ejemplos de mensajes claros: <code>"Agrego calculo de subnetting"</code>, <code>"Genero config de Cisco"</code>.</li>
+      <li><b>Usa al menos una rama.</b> Una "rama" es una copia de trabajo para una función nueva. Ejemplo: crear la rama <code>feature/topologia</code>, trabajar ahí y luego unirla (Pull Request). Los comandos exactos están en "Buenas prácticas".</li>
+      <li><b>Pon el enlace del repositorio</b> en la primera página de tu documento.</li>
+      <li><b>Nombra las capturas exactamente</b> como se indica más abajo (01, 02, …). Así tu entrega queda ordenada.</li>
+    </ol>
+  </section>
+
+  <div class="note tip block"><span class="lb">Qué debe hacer tu herramienta</span><div><b>(1)</b> Subnetting / IP planning · <b>(2)</b> cargar la topología · <b>(3)</b> generar configuraciones para <b>Cisco, Huawei, Fortinet y MikroTik</b> · <b>(4)</b> aplicar ciberdefensa contra IA. El detalle está en "La herramienta".</div></div>
+
+  <!-- CORTE 2 -->
+  <div class="phase"><span class="tag">Corte 2</span><h3>Subnetting, carga de topología y configuraciones Cisco + Huawei</h3></div>
+  <p class="muted" style="max-width:66ch">En este corte tu herramienta ya debe: <b>calcular subnetting</b>, <b>cargar la topología</b> y <b>generar la configuración para Cisco y Huawei</b>. Subes a tu repositorio de GitHub, exactamente, estos archivos con estos nombres:</p>
+  <div class="scroll-x"><table class="tbl">
+    <thead><tr><th>Archivo (nombre exacto)</th><th>Formato</th><th>Qué debe contener / mostrar (foto de qué)</th></tr></thead>
+    <tbody>
+      <tr><td class="pt">README.md</td><td>Texto</td><td>En la raíz del repositorio. Usa la plantilla de más abajo: tu nombre, el enlace del repositorio y la tabla de evidencias.</td></tr>
+      <tr><td class="pt">docs/informe-corte2.pdf</td><td>PDF</td><td>Escríbelo en Word o Google Docs y expórtalo a PDF. Debe llevar: portada (tu nombre + enlace del repo), qué hace tu herramienta, un ejemplo de subnetting resuelto, cómo se carga la topología, y las 5 capturas insertadas.</td></tr>
+      <tr><td class="pt">docs/capturas/01-subnetting.png</td><td>Imagen</td><td><b>Captura de pantalla de tu herramienta</b> calculando una subred. Deben verse: la IP, el prefijo, la dirección de red, el broadcast y el número de hosts.</td></tr>
+      <tr><td class="pt">docs/capturas/02-topologia.png</td><td>Imagen</td><td><b>Captura de tu herramienta</b> con la topología cargada. Deben verse los dispositivos y sus enlaces.</td></tr>
+      <tr><td class="pt">docs/capturas/03-config-cisco.png</td><td>Imagen</td><td><b>Captura de tu herramienta</b> mostrando la configuración generada para un equipo <b>Cisco</b> (deben verse el hostname, la VLAN y la IP).</td></tr>
+      <tr><td class="pt">docs/capturas/04-config-huawei.png</td><td>Imagen</td><td>Igual que la anterior, pero para <b>Huawei</b>.</td></tr>
+      <tr><td class="pt">docs/capturas/05-github-commits.png</td><td>Imagen</td><td>Captura de la pestaña <b>Commits</b> de tu repositorio en GitHub, mostrando <b>al menos 5</b> commits con mensajes claros.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="review"><b>Así se revisa tu entrega (para que no te pierdas):</b> se abre el enlace de tu repositorio → se abre el informe en <code>docs/</code> → se abre cada captura 01–05 → se revisa el historial de commits. Si cada archivo está con su nombre exacto y muestra lo indicado, obtienes el puntaje.</div>
+
+  <!-- CORTE 3 -->
+  <div class="phase"><span class="tag">Corte 3</span><h3>Las 4 marcas, ciberdefensa, pruebas y sustentación</h3></div>
+  <p class="muted" style="max-width:66ch">En este corte completas la generación para las <b>4 marcas</b>, integras la <b>ciberdefensa</b>, <b>pruebas</b> tu herramienta y la <b>sustentas</b>. Subes a tu repositorio, exactamente, estos archivos:</p>
+  <div class="scroll-x"><table class="tbl">
+    <thead><tr><th>Archivo (nombre exacto)</th><th>Formato</th><th>Qué debe contener / mostrar (foto de qué)</th></tr></thead>
+    <tbody>
+      <tr><td class="pt">docs/informe-corte3.pdf</td><td>PDF</td><td>Informe final: qué mejoraste, las 4 marcas, la ciberdefensa y el resultado de las pruebas, con las capturas insertadas.</td></tr>
+      <tr><td class="pt">docs/manual.md</td><td>Texto (Markdown)</td><td>Manual de usuario: cómo se instala/ejecuta la herramienta y cómo se usa, paso a paso.</td></tr>
+      <tr><td class="pt">docs/seguridad.md</td><td>Texto (Markdown)</td><td>Qué medidas de seguridad aplicaste (contraseñas, accesos, etc.).</td></tr>
+      <tr><td class="pt">docs/politicas-ia.md</td><td>Texto (Markdown)</td><td>Las políticas de ciberdefensa contra IA (copia la plantilla de la pestaña "La herramienta").</td></tr>
+      <tr><td class="pt">docs/pruebas.md</td><td>Texto (Markdown)</td><td>Lista de pruebas y el resultado, ej. "18 de 20 = 90% de confianza" (plantilla en "Uso de la IA").</td></tr>
+      <tr><td class="pt">docs/capturas/06-config-fortinet.png</td><td>Imagen</td><td><b>Captura de tu herramienta</b> generando la configuración para <b>Fortinet</b>.</td></tr>
+      <tr><td class="pt">docs/capturas/07-config-mikrotik.png</td><td>Imagen</td><td><b>Captura de tu herramienta</b> generando la configuración para <b>MikroTik</b>.</td></tr>
+      <tr><td class="pt">docs/capturas/08-ciberdefensa.png</td><td>Imagen</td><td>Captura que demuestre una acción de ciberdefensa: por ejemplo, tu app <b>rechazando una entrada inválida</b> o <b>advirtiendo una configuración insegura</b>.</td></tr>
+      <tr><td class="pt">docs/capturas/09-pruebas.png</td><td>Imagen</td><td>Captura de las <b>pruebas corriendo</b> con su resultado visible (X de Y superadas).</td></tr>
+      <tr><td class="pt">docs/capturas/10-app-final.png</td><td>Imagen</td><td>Captura de tu <b>herramienta final funcionando</b> (pantalla principal).</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note tip block"><span class="lb">Además</span><div><b>Sustentación (en vivo, no es un archivo):</b> muestras la herramienta funcionando, corres las pruebas frente al grupo y explicas cómo la construiste y cómo funciona.</div></div>
+  <div class="review"><b>Así se revisa tu entrega:</b> se abre el repositorio → se leen informe y manual → se abren las capturas 06–10 → se revisan <code>politicas-ia.md</code> y <code>pruebas.md</code> → y en la sustentación se confirma que funciona y que lo entiendes.</div>
+
+  <div class="note tip block"><span class="lb">Qué es "% de confianza"</span><div>Cuántas de tus pruebas pasan. Si defines 20 pruebas y pasan 18, tu confianza es <b>90%</b>. La IA te ayuda a escribir las pruebas (pestaña "Uso de la IA").</div></div>
+
+  <h3 class="h-md block">Plantilla del README (cópiala en tu repositorio)</h3>
+  <div class="code"><button class="copy" type="button" data-copy="readme">Copiar plantilla</button><pre id="readme"># Herramienta de Redes WAN — [Nombre]  (trabajo individual)
+Materia: Interconexión de Redes WAN
+Repositorio (público): https://github.com/TU_USUARIO/redes-wan-TUAPELLIDO
+
+## Qué hace esta herramienta
+[2-3 líneas]
+
+## Funciones
+- Subnetting / IP Planning (IPv4/IPv6, público/privado)
+- Carga de la topología (dispositivos, enlaces, ISP)
+- Generación de configuraciones: Cisco, Huawei, Fortinet, MikroTik
+- Ciberdefensa contra IA (aplica docs/politicas-ia.md)
+
+## Cómo ejecutarla
+1. ...
+2. ...
+
+## Pruebas y % de confianza  (Corte 3)
+- Pruebas superadas: __ de __  =  __%  (ver docs/pruebas.md)
+
+## Documentos
+- docs/informe-corte2.pdf · docs/informe-corte3.pdf
+- docs/manual.md · docs/seguridad.md · docs/politicas-ia.md · docs/pruebas.md
+
+## Capturas (evidencias)
+docs/capturas/  (01-subnetting.png ... 10-app-final.png)
+
+## Autoevaluación (marca Sí/No)
+| Criterio                          | ¿Cumplido? | Evidencia            |
+|-----------------------------------|------------|----------------------|
+| Subnetting funciona               | Sí / No    | 01-subnetting.png    |
+| Carga de topología                | Sí / No    | 02-topologia.png     |
+| Config Cisco y Huawei             | Sí / No    | 03 / 04              |
+| Config Fortinet y MikroTik (C3)   | Sí / No    | 06 / 07              |
+| Ciberdefensa (politicas-ia.md)    | Sí / No    | 08-ciberdefensa.png  |
+| Pruebas con % de confianza (C3)   | Sí / No    | docs/pruebas.md      |
+</pre></div>
+  <div class="note warn block"><span class="lb">Nombres</span><div>Usa los nombres de archivo <b>exactos</b>. Mantiene tu entrega ordenada y fácil de revisar.</div></div>
+</section>
+
+<!-- LA HERRAMIENTA -->
+<section class="panel" id="p-herramienta" role="tabpanel" hidden>
+  <p class="eyebrow">Alcance del proyecto</p>
+  <h2 class="h-lg">Qué debe hacer la herramienta</h2>
+  <p class="lead">La app —que construyes con IA— apoya el <b>diseño y la gestión de una red WAN</b>. Tiene <b>cuatro funciones obligatorias</b>. La cuarta, la ciberdefensa, no es un anexo: va integrada en cómo funciona la herramienta.</p>
+
+  <div class="grid g2 block">
+    <div class="card"><h3 class="h-md">1 · Subnetting / IP planning</h3><p class="muted">Calcula subredes (IPv4/IPv6), direccionamiento público/privado y el plan de direcciones por sede o piso. Practícalo en la pestaña "Subnetting interactivo".</p></div>
+    <div class="card"><h3 class="h-md">2 · Cargar la topología</h3><p class="muted">Permite ingresar o importar la topología: dispositivos, roles, enlaces WAN e ISP. Es la base para generar las configuraciones.</p></div>
+    <div class="card"><h3 class="h-md">3 · Generar configuraciones</h3><p class="muted">A partir del subnetting y la topología, produce la configuración lista para pegar en cada equipo, según su marca.</p></div>
+    <div class="card" style="border-left:4px solid var(--accent)"><h3 class="h-md">4 · Ciberdefensa contra IA (integrada)</h3><p class="muted">La herramienta debe protegerse a sí misma y a la red: no guardar secretos, validar lo que se ingresa y advertir configuraciones inseguras, aplicando las políticas de abajo.</p></div>
+  </div>
+
+  <h3 class="h-md block">Marcas que debe soportar</h3>
+  <div class="grid g2 block">
+    <div class="card"><h4 class="h-md">Cisco (IOS)</h4><p class="muted">VLAN, direccionamiento, enrutamiento básico y acceso.</p></div>
+    <div class="card"><h4 class="h-md">Huawei (VRP)</h4><p class="muted">Equivalente en su sintaxis (system-view, interface, etc.).</p></div>
+    <div class="card"><h4 class="h-md">Fortinet (FortiOS)</h4><p class="muted">Interfaces, políticas y direccionamiento del firewall.</p></div>
+    <div class="card"><h4 class="h-md">MikroTik (RouterOS)</h4><p class="muted">Direcciones, rutas y servicios. <i>(Cuarta marca seleccionada para el curso.)</i></p></div>
+  </div>
+
+  <h3 class="h-md block">Ciberdefensa contra IA, dentro de la herramienta</h3>
+  <p class="muted" style="max-width:66ch">Mientras construyes con IA y mientras tu app funciona, estas amenazas deben estar cubiertas. Cada una tiene su acción, y tu herramienta debe reflejarlas.</p>
+  <div class="scroll-x"><table class="tbl">
+    <thead><tr><th>Amenaza (relacionada con IA)</th><th>Qué debe hacer tu herramienta / tú</th></tr></thead>
+    <tbody>
+      <tr><td>Fuga de datos al pegar en una IA pública IPs reales, credenciales o el <code>.env</code>.</td><td>La app no guarda secretos en el código; usas datos de ejemplo con la IA; secretos en <code>.env</code> + <code>.gitignore</code>.</td></tr>
+      <tr><td>Prompt injection: instrucciones ocultas en una fuente externa que la IA obedece.</td><td>No ejecutar a ciegas lo que la IA "leyó" afuera; verificar cada comando antes de correrlo.</td></tr>
+      <tr><td>Código inseguro generado por IA.</td><td>La app <b>valida y sanea</b> lo que ingresa el usuario; revisas y pruebas todo antes de subirlo.</td></tr>
+      <tr><td>Configuraciones peligrosas (puertos abiertos, credenciales por defecto).</td><td>La app <b>advierte</b> configs inseguras y aplica el mínimo privilegio.</td></tr>
+      <tr><td>Sobreconfianza en la IA.</td><td>Tratar cada respuesta como borrador; medir con pruebas el % de confianza.</td></tr>
+    </tbody>
+  </table></div>
+  <h4 class="h-md block" style="font-size:15px">Políticas que tu herramienta entrega (docs/politicas-ia.md)</h4>
+  <div class="code"><button class="copy" type="button" data-copy="politicas">Copiar políticas</button><pre id="politicas"># docs/politicas-ia.md — Ciberdefensa y uso de IA en la herramienta
+
+1. La herramienta nunca guarda contraseñas ni tokens en el código; van en .env
+   (protegido por .gitignore).
+2. Con IA pública solo se usan datos de ejemplo, nunca IPs reales, credenciales
+   ni topologías sensibles.
+3. Todo lo que ingresa el usuario se valida y sanea antes de usarse.
+4. La herramienta advierte cuando una configuración es insegura (puertos abiertos,
+   credenciales por defecto) y aplica el mínimo privilegio.
+5. No se ejecuta ningún comando o configuración que no se entienda; lo generado por
+   IA se revisa y se prueba primero.
+6. Toda automatización/acceso a equipos se hace solo en el laboratorio autorizado.
+7. La calidad se mide con pruebas y se reporta el % de confianza (docs/pruebas.md).
+</pre></div>
+
+  <div class="note warn block"><span class="lb">Laboratorio</span><div>Toda configuración y acceso a equipos se hace <b>solo en la infraestructura autorizada</b> del curso. Nada sobre redes ajenas.</div></div>
+
+  <h3 class="h-md block">Marca tu avance</h3>
+  <div class="grid" id="listScope"></div>
+  <div class="progress-wrap"><div class="bar"><i id="progFill"></i></div><div class="pct" id="progPct">0%</div></div>
+  <p class="muted" id="progTxt" style="font-size:13px">0 de 0 objetivos completados</p>
+</section>
+
+<!-- SUBNETTING -->
+<section class="panel" id="p-subnetting" role="tabpanel" hidden>
+  <p class="eyebrow">Aprende haciendo</p>
+  <h2 class="h-lg">Subnetting interactivo</h2>
+  <p class="lead">Aquí entiendes el subnetting <b>desde cero</b>: míralo en video, muévelo con un control para ver cómo cambia, calcúlalo, divídelo y practica con ejercicios que se corrigen solos.</p>
+
+  <h3 class="h-md block">1. Míralo en video</h3>
+  <a class="videolink" href="https://www.youtube.com/watch?v=l7ePr6lMMeQ" target="_blank" rel="noopener noreferrer" aria-label="Ver el video de subneteo en YouTube">
+    <img src="https://i.ytimg.com/vi/l7ePr6lMMeQ/hqdefault.jpg" alt="">
+    <span class="vp"><span class="tri" aria-hidden="true">&#9658;</span> Ver el video: "Subneteo explicado fácil"<br><span style="font-weight:400;font-size:12.5px">(se abre en YouTube, en una pestaña nueva)</span></span>
+  </a>
+  <p class="vnote">Haz clic en la imagen y el video se abre en YouTube. Si la imagen no carga, el enlace igual funciona. Otra explicación: <a href="https://www.youtube.com/watch?v=7vS9cwzn3vQ" target="_blank" rel="noopener noreferrer">Subneteo con la fórmula 2ⁿ−2</a>.</p>
+
+  <div class="card block"><h4 class="h-md">La idea, como una dirección postal</h4><p class="muted" style="margin-top:6px">Una IP tiene dos partes: el <b>barrio</b> (la red) y la <b>casa</b> (el host). El <b>prefijo</b> (/24, /26…) es la línea que separa el barrio de la casa. Subnetear es partir un barrio grande en varios más pequeños, cada uno con sus casas.</p></div>
+
+  <h3 class="h-md block">2. Aprende con un ejemplo (paso a paso)</h3>
+  <div class="card">
+    <p style="margin-top:0">Resolvamos juntos <b>192.168.10.0/26</b>. Sigue el razonamiento y luego repítelo tú en la calculadora de más abajo.</p>
+    <ol class="steps" style="margin-top:12px">
+      <li><b>¿Cuántos bits son de red y de host?</b> El /26 significa 26 bits de red y 32 − 26 = <b>6 bits de host</b>. Con esos 6 bits se cuentan los equipos.</li>
+      <li><b>La máscara.</b> 26 unos seguidos dan <b>255.255.255.192</b>. (El último octeto, 11000000, vale 192.)</li>
+      <li><b>El "tamaño de bloque".</b> Con 6 bits de host: 2⁶ = <b>64</b>. Las subredes van de 64 en 64: <b>.0, .64, .128, .192</b>.</li>
+      <li><b>La subred donde cae .0.</b> Su dirección de red es <b>192.168.10.0</b>; la siguiente empieza en .64, así que el broadcast es <b>192.168.10.63</b>.</li>
+      <li><b>Hosts utilizables.</b> Del .1 al .62 → <b>62 hosts</b> (2⁶ − 2, porque la red y el broadcast no se asignan a equipos).</li>
+    </ol>
+    <p class="muted" style="margin-bottom:0">Regla rápida: <b>bloque = 2^(bits de host)</b>. La <b>red</b> es el inicio del bloque y el <b>broadcast</b> es el número justo antes del siguiente bloque.</p>
+  </div>
+
+  <h3 class="h-md block">3. Muévelo y obsérvalo</h3>
+  <div class="calc">
+    <p style="margin-top:0">Arrastra el control del <b>prefijo</b> y mira cómo cambian los bits de red (verde) y de host (gris), y cuántos equipos caben.</p>
+    <div class="slider-row">
+      <span class="slider-val" id="svVal">/24</span>
+      <input id="sv" type="range" min="8" max="30" value="24" aria-label="Prefijo">
+    </div>
+    <div class="bitbar" id="bitbar" aria-hidden="true"></div>
+    <div class="legend"><span><i style="background:var(--accent)"></i> bits de red</span><span><i style="background:var(--surface-2);border:1px solid var(--line)"></i> bits de host</span></div>
+    <div class="results" id="svRes" style="margin-top:14px"></div>
+  </div>
+
+  <h3 class="h-md block">4. Calcula una dirección</h3>
+  <div class="calc">
+    <div class="fields">
+      <div class="field"><label for="ipIn">Dirección IP</label><input id="ipIn" type="text" inputmode="decimal" value="192.168.1.10" autocomplete="off"></div>
+      <div class="field"><label for="cidrIn">Prefijo (/)</label><select id="cidrIn"></select></div>
+      <button class="btn" id="calcBtn" type="button">Calcular</button>
+    </div>
+    <div class="err" id="calcErr" role="alert"></div>
+    <div id="calcOut" hidden>
+      <div class="results" id="results"></div>
+      <div class="bin" id="binOut"></div>
+      <div class="steps-box"><b>Cómo se calculó</b><ol id="stepsOut"></ol></div>
+    </div>
+  </div>
+
+  <h3 class="h-md block">5. Divide una red en subredes</h3>
+  <p class="muted" style="max-width:64ch">Escribe una red base y el nuevo prefijo (más grande) y verás las subredes. Útil para el plan de VLAN por piso o área.</p>
+  <div class="calc">
+    <div class="fields">
+      <div class="field"><label for="baseIp">Red base</label><input id="baseIp" type="text" inputmode="decimal" value="192.168.1.0" autocomplete="off"></div>
+      <div class="field"><label for="basePfx">Prefijo actual</label><select id="basePfx"></select></div>
+      <div class="field"><label for="newPfx">Nuevo prefijo</label><select id="newPfx"></select></div>
+      <button class="btn" id="divBtn" type="button">Dividir</button>
+    </div>
+    <div class="err" id="divErr" role="alert"></div>
+    <div class="scroll-x"><table class="tbl" id="divTbl" hidden style="margin-top:14px">
+      <thead><tr><th>#</th><th>Red</th><th>Rango utilizable</th><th>Broadcast</th><th>Hosts</th></tr></thead>
+      <tbody id="divBody"></tbody>
+    </table></div>
+    <p class="muted" id="divMore" style="font-size:13px"></p>
+  </div>
+
+  <h3 class="h-md block">6. Practica (se corrige solo)</h3>
+  <div class="calc">
+    <p id="quizQ" style="margin-top:0;font-size:15px"></p>
+    <div class="fields">
+      <div class="field"><label for="quizIn">Dirección de red</label><input id="quizIn" type="text" inputmode="decimal" placeholder="ej. 10.0.0.0" autocomplete="off"></div>
+      <button class="btn" id="quizCheck" type="button">Comprobar</button>
+      <button class="btn ghost" id="quizNew" type="button">Otro ejercicio</button>
+    </div>
+    <div class="feedback" id="quizFb"></div>
+    <p class="muted" style="font-size:13px;margin-top:10px">Puntaje: <b id="quizScore">0</b> aciertos de <b id="quizTotal">0</b> intentos.</p>
+  </div>
+</section>
+
+<!-- GITHUB -->
+<section class="panel" id="p-github" role="tabpanel" hidden>
+  <p class="eyebrow">Desde cero</p>
+  <h2 class="h-lg">Crear tu cuenta de GitHub</h2>
+  <p class="lead">GitHub es donde vive y se entrega tu proyecto. Sigue estos pasos una sola vez.</p>
+  <ol class="steps block">
+    <li><b>Entra a <a href="https://github.com/signup" target="_blank" rel="noopener noreferrer">github.com/signup</a></b> y haz clic en <b>Sign up</b>.</li>
+    <li><b>Escribe tu correo</b> (usa el institucional si lo tienes) y continúa.</li>
+    <li><b>Crea una contraseña</b> fuerte (letras, números y símbolos).</li>
+    <li><b>Elige tu username</b> (será parte del enlace; algo serio, ej. <code>lperez-redes</code>).</li>
+    <li><b>Resuelve el captcha</b> y crea la cuenta.</li>
+    <li><b>Verifica tu correo</b> con el código que te envían.</li>
+    <li><b>Activa la verificación en dos pasos (2FA):</b> Settings → Password and authentication → Enable two-factor. Obligatorio para el curso.</li>
+    <li><b>Crea el repositorio:</b> botón <b>New</b> → nombre <code>redes-wan-TUAPELLIDO</code> → marca <b>Public</b> → añade <b>README</b> y <b>.gitignore</b> → Create repository.</li>
+    <li><b>Copia el enlace</b> (botón verde <b>Code</b> → HTTPS) y pégalo en la portada de tu documento.</li>
+  </ol>
+  <div class="note tip block"><span class="lb">Consejo</span><div>Un solo repositorio para todo el proyecto: crece del Corte 2 al Corte 3 y guarda todo el historial.</div></div>
+  <h3 class="h-md block">Conectar tu proyecto y guardar avances</h3>
+  <div class="code"><button class="copy" type="button" data-copy="git-init">Copiar</button><pre id="git-init"><span class="cmt"># Una sola vez: conectar tu carpeta al repositorio</span>
+git init
+git add .
+git commit -m "Version base de la herramienta WAN"
+git branch -M main
+git remote add origin https://github.com/TU_USUARIO/redes-wan-TUAPELLIDO.git
+git push -u origin main</pre></div>
+  <div class="code"><button class="copy" type="button" data-copy="git-flow">Copiar</button><pre id="git-flow"><span class="cmt"># Cada vez que avances: guardar y subir</span>
+git add .
+git commit -m "Genero config de Cisco desde la topologia"
+git push</pre></div>
+  <div class="note danger block"><span class="lb">Seguridad</span><div>El repositorio es público: <b>nunca</b> subas contraseñas, tokens ni IPs reales sensibles. Usa <code>.env</code> con <code>.gitignore</code>.</div></div>
+</section>
+
+<!-- PRACTICAS -->
+<section class="panel" id="p-practicas" role="tabpanel" hidden>
+  <p class="eyebrow">Aunque uses IA, el código debe ser de calidad</p>
+  <h2 class="h-lg">Buenas prácticas de programación</h2>
+  <p class="lead">La IA escribe el código, pero tú respondes por que quede ordenado, entendible, probado y versionado.</p>
+  <div class="grid g2 block">
+    <div class="card"><h3 class="h-md">Código de calidad</h3><ul class="plain">
+      <li><b>Comentarios</b> que expliquen qué hace y por qué.</li>
+      <li><b>Nombres claros</b> en variables y archivos.</li>
+      <li><b>Orden:</b> separar por temas/funciones.</li>
+      <li><b>Sin secretos</b> en el código (usa <code>.env</code>).</li>
+      <li><b>Probar antes de subir</b>: que corra sin errores.</li>
+      <li><b>Entenderlo</b>: saber explicar cada parte (se pregunta en la sustentación).</li>
+    </ul></div>
+    <div class="card"><h3 class="h-md">Flujo en GitHub</h3><ul class="plain">
+      <li>Commits pequeños y frecuentes.</li>
+      <li>Funciones nuevas en <b>ramas</b> + <b>Pull Requests</b>.</li>
+      <li><code>.gitignore</code> con <code>.env</code> desde el inicio.</li>
+      <li>README siempre actualizado.</li>
+    </ul></div>
+  </div>
+  <div class="code"><button class="copy" type="button" data-copy="git-branch">Copiar</button><pre id="git-branch"><span class="cmt"># Trabajar una funcion nueva en una rama y abrir un Pull Request</span>
+git checkout -b feature/config-fortinet
+<span class="cmt"># ...cambios y pruebas...</span>
+git add .
+git commit -m "Agrego generador de config Fortinet con pruebas"
+git push -u origin feature/config-fortinet
+<span class="cmt"># En GitHub: Compare & pull request -> revisar -> Merge</span></pre></div>
+</section>
+
+<!-- USO IA -->
+<section class="panel" id="p-ia" role="tabpanel" hidden>
+  <p class="eyebrow">La IA es tu herramienta, no tu reemplazo</p>
+  <h2 class="h-lg">Uso de la IA y pruebas</h2>
+  <p class="lead">Como no eres programador, la IA te ayuda a construir <b>y a probar</b>. Pero el resultado depende de pedir bien y verificar.</p>
+  <ol class="steps block">
+    <li><b>Da contexto completo.</b> Explica qué es la herramienta y qué función construyes antes de pedir código.</li>
+    <li><b>Un paso a la vez.</b> Pide una función, pruébala, y sigue.</li>
+    <li><b>Verifica antes de usar.</b> Pide que te expliquen el código; no lo subas si no lo entiendes.</li>
+    <li><b>No pegues secretos</b> (IPs reales, credenciales, <code>.env</code>).</li>
+    <li><b>Pide pruebas.</b> La IA puede escribir pruebas que revisan tu app; con ellas mides tu <b>% de confianza</b>.</li>
+  </ol>
+  <h3 class="h-md block">Prompt de arranque (cópialo)</h3>
+  <div class="code"><button class="copy" type="button" data-copy="prompt">Copiar prompt</button><pre id="prompt">Actúa como ingeniero de redes y desarrollador senior, y como profesor de alguien que NO programa.
+Construyo una herramienta de diseño y gestión de redes WAN que debe: (1) hacer subnetting,
+(2) cargar la topología, (3) generar configuraciones para Cisco, Huawei, Fortinet y MikroTik, y
+(4) aplicar ciberdefensa contra IA (no guardar secretos, validar entradas, advertir configs inseguras).
+Ahora quiero agregar/mejorar: [subnetting / topología / config <marca> / ciberdefensa].
+Tecnología: [lenguaje, si es web, etc.].
+
+Reglas:
+1. Explícame cada paso en simple, con analogías cuando ayude.
+2. Dame el código comentado y dime en qué archivo va.
+3. Un paso a la vez; espera mi "ok".
+4. Nunca me pidas poner contraseñas o IPs reales; enséñame .env y .gitignore.
+5. Al terminar cada avance, dame los comandos de git para guardar.
+6. Cuando el módulo esté listo, escríbeme PRUEBAS que verifiquen que funciona y explícame cómo
+   correrlas y cómo contar cuántas pasan (mi % de confianza).
+
+Primero hazme máximo 3 preguntas y luego dame el paso 1.</pre></div>
+  <h3 class="h-md block">Cómo reportar el % de confianza (Corte 3)</h3>
+  <div class="code"><button class="copy" type="button" data-copy="pruebas">Copiar plantilla</button><pre id="pruebas"># docs/pruebas.md — Reporte de pruebas
+
+## Qué probé
+- [P1] Subnetting: 192.168.1.10/24 da red 192.168.1.0            -> OK
+- [P2] Detecta IP inválida (999.1.1.1)                           -> OK
+- [P3] Genera config Cisco con la VLAN y la IP correctas          -> OK
+- [P4] Genera config Huawei equivalente                           -> OK
+- ...
+
+## Resultado
+Pruebas superadas: 18 de 20  =  90% de confianza
+
+## Qué falta / errores encontrados
+- [P7] La config de MikroTik no incluye la ruta por defecto -> pendiente
+</pre></div>
+  <div class="note warn block"><span class="lb">Importante</span><div>Las pruebas deben ser <b>reales</b> y se corren en la sustentación. Un % alto sin pruebas ejecutables no cuenta.</div></div>
+</section>
+
+<!-- CRONOGRAMA -->
+<section class="panel" id="p-cronograma" role="tabpanel" hidden>
+  <p class="eyebrow">Estructura del proyecto</p>
+  <h2 class="h-lg">Cronograma</h2>
+  <p class="lead">El proyecto se evalúa en <b>Corte 2</b> y <b>Corte 3</b>. Las <b>fechas las define el docente</b> en cada curso (por eso quedan en blanco aquí).</p>
+  <div class="timeline block">
+    <div class="tl"><span class="d">Fecha: ____</span><div><b>Corte 2</b><br><span class="muted">Subnetting, carga de topología y configuraciones Cisco + Huawei.</span></div></div>
+    <div class="tl"><span class="d">Fecha: ____</span><div><b>Corte 3 + sustentación</b><br><span class="muted">Las 4 marcas, ciberdefensa, pruebas con % de confianza y defensa en vivo.</span></div></div>
+  </div>
+  <div class="note tip block"><span class="lb">Consejo</span><div>Sube avances a GitHub cada sesión, no solo el día de la entrega. El historial de commits también se evalúa.</div></div>
+</section>
+
+<!-- GLOSARIO -->
+<section class="panel" id="p-glosario" role="tabpanel" hidden>
+  <p class="eyebrow">Habla el idioma</p>
+  <h2 class="h-lg">Glosario</h2>
+  <dl class="gloss block">
+    <div><dt>WAN</dt><dd>Red de área amplia: conecta redes distantes (entre sedes/ciudades). LAN es la red local de un sitio.</dd></div>
+    <div><dt>Subnetting</dt><dd>Dividir una red en subredes más pequeñas para organizar y aprovechar mejor las direcciones IP.</dd></div>
+    <div><dt>Prefijo / máscara (/24)</dt><dd>Cuántos bits de la IP son de red. El resto son para los hosts (equipos).</dd></div>
+    <div><dt>Dirección de red / broadcast</dt><dd>Red: la primera de la subred (la identifica). Broadcast: la última (habla con todos).</dd></div>
+    <div><dt>IP pública / privada</dt><dd>Pública: visible en Internet. Privada: solo dentro de tu red (10.x, 172.16–31.x, 192.168.x).</dd></div>
+    <div><dt>Topología</dt><dd>El mapa de la red: qué dispositivos hay, sus roles y cómo se conectan.</dd></div>
+    <div><dt>Cisco IOS / Huawei VRP / FortiOS / RouterOS</dt><dd>Los sistemas y sintaxis de configuración de Cisco, Huawei, Fortinet y MikroTik.</dd></div>
+    <div><dt>VLAN / NAT / DHCP</dt><dd>VLAN separa el tráfico; NAT traduce privadas a pública; DHCP asigna IPs automáticamente.</dd></div>
+    <div><dt>SSH / Telnet / VPN</dt><dd>Formas de conectarse a equipos (SSH cifrado, Telnet no) y túnel cifrado entre redes (VPN).</dd></div>
+    <div><dt>Prompt injection</dt><dd>Ataque donde se esconden instrucciones para que una IA las obedezca sin que lo notes.</dd></div>
+    <div><dt>Prueba (test) / % de confianza</dt><dd>Comprobación automática de que algo funciona. El % es cuántas pruebas pasan (18/20 = 90%).</dd></div>
+    <div><dt>Commit / rama / Pull Request</dt><dd>Guardado con etiqueta / línea de trabajo aparte / propuesta para unir una rama a la principal.</dd></div>
+    <div><dt>Sustentación</dt><dd>Presentar y defender el trabajo en vivo, mostrando que funciona y explicando cómo.</dd></div>
+  </dl>
+</section>
+
+<!-- DOCENTE -->
+<section class="panel" id="p-docente" role="tabpanel" hidden>
+  <p class="eyebrow">Acceso restringido</p>
+  <h2 class="h-lg">Modo docente</h2>
+  <div id="docenteLock">
+    <div class="lock">
+      <div class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+      <p style="margin:0 0 4px;font-family:var(--display);font-weight:600">Contenido para el instructor</p>
+      <p class="muted" style="margin:0;font-size:14px">Escribe la contraseña para ver esta sección.</p>
+      <input id="docPass" type="password" placeholder="Contraseña" autocomplete="off" aria-label="Contraseña">
+      <button class="btn" id="docBtn" type="button">Entrar</button>
+      <div class="err" id="docErr" role="alert" style="text-align:center"></div>
+    </div>
+  </div>
+  <div id="docenteContent" hidden>
+    <p class="lead">Notas para dirigir y evaluar el proyecto con rapidez y consistencia.</p>
+    <div class="grid g2 block">
+      <div class="card"><h3 class="h-md">Propósito</h3><p class="muted">Que estudiantes no programadores construyan, con IA, una herramienta de diseño WAN que haga subnetting, cargue la topología, genere configuraciones multimarca y aplique ciberdefensa, con control de versiones, pruebas con % de confianza y sustentación.</p></div>
+      <div class="card"><h3 class="h-md">Cómo revisar rápido</h3><p class="muted">Cada entrega es un repositorio público con la misma estructura: informe en <code>docs/</code>, capturas numeradas, README con tabla de evidencias y autoevaluación, <code>docs/pruebas.md</code> y <code>docs/politicas-ia.md</code>. Abrir el repo, recorrer la tabla contra la rúbrica y ver el historial de commits.</p></div>
+    </div>
+    <section class="block">
+      <h3 class="h-md">Puntos a vigilar en la sustentación</h3>
+      <div style="margin-top:10px"><button class="reveal-btn" type="button" id="revealBtn" aria-expanded="false">Mostrar</button></div>
+      <div id="teacherAnswers" hidden style="margin-top:14px"><div class="grid g2">
+        <div class="card"><h4 class="h-md">¿Entienden su código?</h4><p class="muted">Pedir que expliquen cómo genera la config de una marca.</p></div>
+        <div class="card"><h4 class="h-md">¿Las pruebas corren?</h4><p class="muted">Que las ejecuten en vivo y muestren el % real.</p></div>
+        <div class="card"><h4 class="h-md">¿Config multimarca real?</h4><p class="muted">Comparar la salida para Cisco/Huawei/Fortinet/MikroTik con la topología cargada.</p></div>
+        <div class="card"><h4 class="h-md">¿Ciberdefensa aplicada?</h4><p class="muted">Sin secretos en el repo; existe docs/politicas-ia.md; la app valida entradas.</p></div>
+      </div></div>
+    </section>
+    <div class="note warn block"><span class="lb">Nota</span><div>Esta contraseña es un candado del lado del navegador para ocultar el contenido a los estudiantes; no es seguridad fuerte.</div></div>
+  </div>
+</section>
+
+<div class="wrap foot">
+  <span>Proyecto Redes WAN · Guía y rúbrica · v4.0 — 2026-09-23</span>
+  <span>Navega con <span class="kb">◀</span> <span class="kb">▶</span></span>
+</div>
+</main>
+
+<script>
+(function(){
+  "use strict";
+  var tabs=Array.prototype.slice.call(document.querySelectorAll('nav.tabs button')), panels={};
+  tabs.forEach(function(b){ panels[b.dataset.p]=document.getElementById('p-'+b.dataset.p); });
+  function show(name,focus){ tabs.forEach(function(b){ var on=b.dataset.p===name; b.setAttribute('aria-selected',on?'true':'false'); if(panels[b.dataset.p]) panels[b.dataset.p].hidden=!on; if(on&&focus) b.focus(); }); try{ history.replaceState(null,'','#'+name);}catch(e){} window.scrollTo({top:0,behavior:'smooth'}); }
+  tabs.forEach(function(b,i){ b.addEventListener('click',function(){ show(b.dataset.p); }); b.addEventListener('keydown',function(e){ if(e.key==='ArrowRight'){e.preventDefault();show(tabs[(i+1)%tabs.length].dataset.p,true);} if(e.key==='ArrowLeft'){e.preventDefault();show(tabs[(i-1+tabs.length)%tabs.length].dataset.p,true);} }); });
+  var initial=(location.hash||'').replace('#',''); if(initial&&panels[initial]) show(initial);
+
+  var root=document.documentElement, tb=document.getElementById('themeBtn');
+  function cur(){ var e=root.getAttribute('data-theme'); if(e) return e; return (window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light'; }
+  try{ var s=localStorage.getItem('wan-theme'); if(s) root.setAttribute('data-theme',s); }catch(e){}
+  tb.addEventListener('click',function(){ var n=cur()==='dark'?'light':'dark'; root.setAttribute('data-theme',n); try{ localStorage.setItem('wan-theme',n);}catch(e){} });
+
+  function doCopy(text,btn,label){ function ok(){ var t=btn.textContent; btn.textContent=label||'Copiado'; btn.classList.add('ok'); setTimeout(function(){ btn.textContent=t; btn.classList.remove('ok'); },1600);} if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(ok).catch(function(){ fbk(text); ok(); }); } else { fbk(text); ok(); } }
+  function fbk(text){ try{ var ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);}catch(e){} }
+  document.querySelectorAll('.copy[data-copy]').forEach(function(btn){ btn.addEventListener('click',function(){ var el=document.getElementById(btn.dataset.copy); if(el) doCopy(el.innerText,btn,'Copiado'); }); });
+
+  /* Modo docente: lo maneja un <script> independiente al final del documento. */
+
+  /* Video facade */
+  document.querySelectorAll('.video[data-yt]').forEach(function(v){
+    var id=v.dataset.yt, title=v.dataset.title||'Video';
+    var btn=document.createElement('button'); btn.type='button'; btn.className='facade'; btn.setAttribute('aria-label','Reproducir: '+title);
+    var img=document.createElement('img'); img.loading='lazy'; img.alt=''; img.src='https://i.ytimg.com/vi/'+id+'/hqdefault.jpg'; img.onerror=function(){ img.style.display='none'; };
+    var play=document.createElement('span'); play.className='play';
+    play.innerHTML='<span class="tri"><svg width="22" height="24" viewBox="0 0 22 24" aria-hidden="true"><path d="M2 2 L20 12 L2 22 Z" fill="#fff"/></svg></span><span>Reproducir video</span>';
+    btn.appendChild(img); btn.appendChild(play); v.appendChild(btn);
+    btn.addEventListener('click',function(){ var f=document.createElement('iframe'); f.src='https://www.youtube.com/embed/'+id+'?autoplay=1&rel=0'; f.title=title; f.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'; f.allowFullscreen=true; f.setAttribute('referrerpolicy','strict-origin-when-cross-origin'); v.innerHTML=''; v.appendChild(f); });
+  });
+
+  /* Subnetting */
+  function parseIp(str){ var m=String(str).trim().split('.'); if(m.length!==4) return null; var o=[]; for(var i=0;i<4;i++){ if(!/^\d{1,3}$/.test(m[i])) return null; var n=parseInt(m[i],10); if(n<0||n>255) return null; o.push(n);} return o; }
+  function ipToInt(o){ return ((o[0]<<24)>>>0)+(o[1]<<16)+(o[2]<<8)+o[3]; }
+  function intToIp(n){ n=n>>>0; return [(n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255].join('.'); }
+  function maskInt(p){ return p===0?0:((0xFFFFFFFF<<(32-p))>>>0); }
+  function toBin(n){ n=n>>>0; var s=n.toString(2); while(s.length<32) s='0'+s; return s; }
+  function binDotted(bits){ return bits.slice(0,8)+'.'+bits.slice(8,16)+'.'+bits.slice(16,24)+'.'+bits.slice(24,32); }
+  function privateType(o){ if(o[0]===10) return 'Privada'; if(o[0]===172&&o[1]>=16&&o[1]<=31) return 'Privada'; if(o[0]===192&&o[1]===168) return 'Privada'; if(o[0]===127) return 'Loopback'; return 'Pública'; }
+  function ipClass(o){ var f=o[0]; if(f<128) return 'A'; if(f<192) return 'B'; if(f<224) return 'C'; if(f<240) return 'D'; return 'E'; }
+  function rcard(k,v,big){ return '<div class="rcard"><div class="k">'+k+'</div><div class="v'+(big?' big':'')+'">'+v+'</div></div>'; }
+
+  var cidrSel=document.getElementById('cidrIn'), basePfxSel=document.getElementById('basePfx'), newPfxSel=document.getElementById('newPfx');
+  for(var p=8;p<=32;p++){ var a=new Option('/'+p,p); if(p===24)a.selected=true; cidrSel.add(a); var b=new Option('/'+p,p); if(p===24)b.selected=true; basePfxSel.add(b); var c=new Option('/'+p,p); if(p===26)c.selected=true; newPfxSel.add(c); }
+
+  /* Bit visualizer / slider */
+  var sv=document.getElementById('sv'), svVal=document.getElementById('svVal'), bitbar=document.getElementById('bitbar'), svRes=document.getElementById('svRes');
+  function renderSlider(){
+    var pfx=parseInt(sv.value,10); svVal.textContent='/'+pfx;
+    var html='';
+    for(var i=0;i<32;i++){ html+='<div class="bit '+(i<pfx?'net':'host')+'">'+(i<pfx?'R':'H')+'</div>'; if(i===7||i===15||i===23) html+='<div class="bit gap"></div>'; }
+    bitbar.innerHTML=html;
+    var hosts = pfx<=30 ? (Math.pow(2,32-pfx)-2) : (pfx===31?2:1);
+    svRes.innerHTML = rcard('Bits de red',pfx,true)+rcard('Bits de host',32-pfx)+rcard('Máscara',intToIp(maskInt(pfx)))+rcard('Hosts por subred',hosts.toLocaleString('es'),true);
+  }
+  sv.addEventListener('input',renderSlider); renderSlider();
+
+  function calc(){
+    var err=document.getElementById('calcErr'); err.textContent='';
+    var out=document.getElementById('calcOut');
+    var o=parseIp(document.getElementById('ipIn').value);
+    if(!o){ out.hidden=true; err.textContent='Dirección IP inválida. Usa 0-255 en cada octeto (ej. 192.168.1.10).'; return; }
+    var pfx=parseInt(cidrSel.value,10), ipI=ipToInt(o), mI=maskInt(pfx);
+    var net=(ipI&mI)>>>0, bc=(net|(~mI>>>0))>>>0, total=Math.pow(2,32-pfx), usable,first,last;
+    if(pfx<=30){ usable=total-2; first=intToIp(net+1); last=intToIp(bc-1); }
+    else if(pfx===31){ usable=2; first=intToIp(net); last=intToIp(net+1); }
+    else { usable=1; first=intToIp(net); last=intToIp(net); }
+    document.getElementById('results').innerHTML =
+      rcard('Dirección de red',intToIp(net),true)+rcard('Broadcast',intToIp(bc),true)+rcard('Máscara',intToIp(mI))+
+      rcard('Prefijo','/'+pfx)+rcard('Primer host',first)+rcard('Último host',last)+
+      rcard('Hosts utilizables',usable.toLocaleString('es'))+rcard('Clase',ipClass(o))+rcard('Tipo',privateType(o));
+    var bits=toBin(ipI), dotted='';
+    for(var i=0;i<32;i++){ dotted += (i<pfx?'<span class="net">'+bits[i]+'</span>':'<span class="host">'+bits[i]+'</span>'); if(i===7||i===15||i===23) dotted+='.'; }
+    document.getElementById('binOut').innerHTML='IP en binario (verde = red, gris = host):<br>'+dotted+'<br><br>Máscara: '+binDotted(toBin(mI));
+    document.getElementById('stepsOut').innerHTML =
+      '<li>El prefijo /'+pfx+' significa <b>'+pfx+'</b> bits de red y <b>'+(32-pfx)+'</b> de host.</li>'+
+      '<li>La máscara /'+pfx+' en decimal es <b>'+intToIp(mI)+'</b>.</li>'+
+      '<li>Red = IP <b>Y (AND)</b> máscara = <b>'+intToIp(net)+'</b>.</li>'+
+      '<li>Broadcast = red con los bits de host en 1 = <b>'+intToIp(bc)+'</b>.</li>'+
+      '<li>Hosts = 2^'+(32-pfx)+(pfx<=30?' − 2':'')+' = <b>'+usable.toLocaleString('es')+'</b>.</li>';
+    out.hidden=false;
+  }
+  document.getElementById('calcBtn').addEventListener('click',calc);
+  document.getElementById('ipIn').addEventListener('keydown',function(e){ if(e.key==='Enter') calc(); });
+  calc();
+
+  function divide(){
+    var err=document.getElementById('divErr'); err.textContent='';
+    var tbl=document.getElementById('divTbl'), body=document.getElementById('divBody'), more=document.getElementById('divMore');
+    var o=parseIp(document.getElementById('baseIp').value);
+    if(!o){ tbl.hidden=true; more.textContent=''; err.textContent='Red base inválida.'; return; }
+    var bp=parseInt(basePfxSel.value,10), np=parseInt(newPfxSel.value,10);
+    if(np<bp){ tbl.hidden=true; more.textContent=''; err.textContent='El nuevo prefijo (/'+np+') debe ser mayor o igual que el actual (/'+bp+').'; return; }
+    var baseNet=(ipToInt(o)&maskInt(bp))>>>0, count=Math.pow(2,np-bp), inc=Math.pow(2,32-np), showN=Math.min(count,16);
+    body.innerHTML='';
+    for(var i=0;i<showN;i++){ var net=(baseNet+i*inc)>>>0, bc=(net+inc-1)>>>0, usable,range;
+      if(np<=30){ usable=inc-2; range=intToIp(net+1)+' – '+intToIp(bc-1); }
+      else if(np===31){ usable=2; range=intToIp(net)+' – '+intToIp(net+1); }
+      else { usable=1; range=intToIp(net); }
+      body.innerHTML+='<tr><td>'+(i+1)+'</td><td><b>'+intToIp(net)+'/'+np+'</b></td><td>'+range+'</td><td>'+intToIp(bc)+'</td><td>'+usable.toLocaleString('es')+'</td></tr>'; }
+    more.textContent = count>showN ? ('Se muestran las primeras '+showN+' de '+count.toLocaleString('es')+' subredes.') : ('Total: '+count+' subred(es).');
+    tbl.hidden=false;
+  }
+  document.getElementById('divBtn').addEventListener('click',divide);
+
+  /* Practice */
+  var quiz={ip:'',pfx:24,net:'',score:0,total:0};
+  function newQuiz(){
+    var o=[Math.floor(Math.random()*222)+1,Math.floor(Math.random()*256),Math.floor(Math.random()*256),Math.floor(Math.random()*254)+1];
+    if(o[0]===127) o[0]=126;
+    var opts=[8,16,24,25,26,27,28], pfx=opts[Math.floor(Math.random()*opts.length)];
+    quiz.ip=o.join('.'); quiz.pfx=pfx; quiz.net=intToIp((ipToInt(o)&maskInt(pfx))>>>0);
+    document.getElementById('quizQ').innerHTML='Dada la dirección <b>'+quiz.ip+'/'+pfx+'</b>, ¿cuál es su <b>dirección de red</b>?';
+    var fb=document.getElementById('quizFb'); fb.className='feedback'; fb.textContent=''; document.getElementById('quizIn').value='';
+  }
+  function checkQuiz(){
+    var val=(document.getElementById('quizIn').value||'').trim(), fb=document.getElementById('quizFb'), o=parseIp(val); quiz.total++;
+    if(o && intToIp(ipToInt(o))===quiz.net){ quiz.score++; fb.className='feedback ok'; fb.innerHTML='¡Correcto! '+quiz.ip+'/'+quiz.pfx+' → red <b>'+quiz.net+'</b>.'; }
+    else { fb.className='feedback bad'; fb.innerHTML='No es correcto. La red de '+quiz.ip+'/'+quiz.pfx+' es <b>'+quiz.net+'</b>. Pista: pon en 0 los bits de host.'; }
+    document.getElementById('quizScore').textContent=quiz.score; document.getElementById('quizTotal').textContent=quiz.total;
+  }
+  document.getElementById('quizNew').addEventListener('click',newQuiz);
+  document.getElementById('quizCheck').addEventListener('click',checkQuiz);
+  document.getElementById('quizIn').addEventListener('keydown',function(e){ if(e.key==='Enter') checkQuiz(); });
+  newQuiz();
+
+  /* Checklist */
+  var TASKS={ listScope:[
+    ["Subnetting funcional","IPv4/IPv6, público/privado."],
+    ["Carga de la topología","Dispositivos, roles y enlaces WAN."],
+    ["Config Cisco (IOS)","Salida lista para pegar."],
+    ["Config Huawei (VRP)","Equivalente en su sintaxis."],
+    ["Config Fortinet (FortiOS)","Interfaces y políticas."],
+    ["Config MikroTik (RouterOS)","Direcciones y rutas."],
+    ["Ciberdefensa contra IA","Secretos fuera del repo, validación y politicas-ia.md."],
+    ["Pruebas con % de confianza","docs/pruebas.md + captura."],
+    ["Documentación y sustentación","Manual, informe y defensa en vivo."]
+  ]};
+  var store={}; try{ store=JSON.parse(localStorage.getItem('wan-progress4')||'{}'); }catch(e){ store={}; }
+  var all=[];
+  Object.keys(TASKS).forEach(function(listId){ var host=document.getElementById(listId); if(!host) return; TASKS[listId].forEach(function(item,idx){ var id=listId+'-'+idx; var wrap=document.createElement('div'); wrap.className='card'; var lab=document.createElement('label'); lab.className='chk'; lab.setAttribute('for',id); var cb=document.createElement('input'); cb.type='checkbox'; cb.id=id; cb.checked=!!store[id]; var t=document.createElement('span'); t.className='t'; t.innerHTML='<b>'+item[0]+'</b><br><span class="muted" style="font-size:13.5px">'+item[1]+'</span>'; if(cb.checked) t.classList.add('done'); cb.addEventListener('change',function(){ store[id]=cb.checked; t.classList.toggle('done',cb.checked); try{ localStorage.setItem('wan-progress4',JSON.stringify(store)); }catch(e){} upd(); }); lab.appendChild(cb); lab.appendChild(t); wrap.appendChild(lab); host.appendChild(wrap); all.push(cb); }); });
+  var fill=document.getElementById('progFill'), pctEl=document.getElementById('progPct'), txtEl=document.getElementById('progTxt');
+  function upd(){ var total=all.length, done=all.filter(function(c){return c.checked;}).length, pct=total?Math.round(done/total*100):0; if(fill) fill.style.width=pct+'%'; if(pctEl) pctEl.textContent=pct+'%'; if(txtEl) txtEl.textContent=done+' de '+total+' objetivos completados'; }
+  upd();
+
+  var rb=document.getElementById('revealBtn'), ans=document.getElementById('teacherAnswers');
+  if(rb) rb.addEventListener('click',function(){ var open=ans.hidden; ans.hidden=!open; rb.setAttribute('aria-expanded',open?'true':'false'); rb.textContent=open?'Ocultar':'Mostrar'; });
+})();
+</script>
+<script>
+/* Modo docente — script independiente: funciona aunque el script principal falle. Contraseña: Cable900 */
+(function(){
+  var d=document.getElementById('docBtn'), p=document.getElementById('docPass'),
+      lock=document.getElementById('docenteLock'), content=document.getElementById('docenteContent'),
+      err=document.getElementById('docErr');
+  if(!d||!p) return;
+  function unlock(){ if(lock) lock.hidden=true; if(content) content.hidden=false; try{ sessionStorage.setItem('wan-doc','1'); }catch(e){} }
+  try{ if(sessionStorage.getItem('wan-doc')==='1') unlock(); }catch(e){}
+  function go(){ if((p.value||'').trim()==='Cable900'){ if(err) err.textContent=''; unlock(); } else { if(err) err.textContent='Contraseña incorrecta.'; p.value=''; p.focus(); } }
+  d.addEventListener('click',go);
+  p.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); go(); } });
+})();
+</script>
+</body>
+</html>
