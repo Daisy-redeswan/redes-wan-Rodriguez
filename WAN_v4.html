@@ -675,7 +675,7 @@
       let state = fresh(); // Se inicia vacío; los datos de demostración solo se cargan por acción explícita.
       function fresh() {
         return {
-          version: 2,
+          version: 3,
           project: {
             name: "",
             company: "",
@@ -684,6 +684,7 @@
             interconnect: true,
             segmentation: "Servicios",
             base: "10.20.0.0/16",
+            transitBase: "",
             growth: 20,
             dns: "1.1.1.1",
           },
@@ -714,6 +715,7 @@
         return {
           id: "s" + n,
           name: "Sede " + n,
+          ipv4Base: "",
           floors: 1,
           users: 25,
           ratio: 2,
@@ -1181,6 +1183,7 @@
                     role,
                   ),
                   gateway: "",
+                  ipv4Cidr: "",
                 });
                 id += 10;
               }
@@ -1259,6 +1262,7 @@
           hosts: 20,
           dhcp: true,
           gateway: "",
+          ipv4Cidr: "",
         });
         invalidate("plan");
         render();
@@ -3082,7 +3086,7 @@
       function saveLocal() {
         safe(() => {
           localStorage.setItem(
-            "WAN-Architect-v2",
+            "WAN-Architect-v3",
             JSON.stringify({ state, imageData }),
           );
           toast("Proyecto guardado en este navegador.");
@@ -3090,8 +3094,10 @@
       } // Los errores de cuota/file:// se comunican; JSON ofrece una copia alternativa.
       function loadLocal() {
         safe(() => {
-          const raw = localStorage.getItem("WAN-Architect-v2");
-          if (!raw) fail("No hay proyecto guardado en este navegador.");
+          const raw =
+            localStorage.getItem("WAN-Architect-v3") ??
+            localStorage.getItem("WAN-Architect-v2");
+          if (raw === null) fail("No hay proyecto guardado en este navegador.");
           const parsed = validateImport(JSON.parse(raw));
           if (!confirm("¿Reemplazar el proyecto actual por el guardado?"))
             return;
@@ -3115,17 +3121,35 @@
           input.value = "";
         }
       } // No ejecuta datos ni acepta texto arbitrario como configuración.
+      function migrateV2(src) {
+        return {
+          ...src,
+          version: 3,
+          project: { ...src.project, transitBase: "" },
+          sites: Array.isArray(src.sites)
+            ? src.sites.map((s) => ({ ...s, ipv4Base: "" }))
+            : src.sites,
+          vlans: Array.isArray(src.vlans)
+            ? src.vlans.map((v) => ({ ...v, ipv4Cidr: "" }))
+            : src.vlans,
+        };
+      } // Migra intenciones sin recalcular ni modificar el plan v2 recibido.
+      function optionalAddressIntent(value, label) {
+        if (value === undefined) return "";
+        if (typeof value !== "string") fail(label + ": se requiere una cadena.");
+        return value;
+      } // En esta etapa las intenciones se conservan, pero no alimentan VLSM.
       function validateImport(data) {
         if (
           !data ||
           typeof data !== "object" ||
           !data.state ||
-          data.state.version !== 2
+          ![2, 3].includes(data.state.version)
         )
           fail(
-            "Formato JSON incompatible: se requiere exportación WAN Architect versión 2.",
+            "Formato JSON incompatible: se requiere exportación WAN Architect versión 2 o 3.",
           );
-        const src = data.state,
+        const src = data.state.version === 2 ? migrateV2(data.state) : data.state,
           out = fresh();
         if (
           !src.project ||
@@ -3151,6 +3175,7 @@
             "Segmentación",
           ),
           base: subnet(p.base).network + "/" + subnet(p.base).prefix,
+          transitBase: optionalAddressIntent(p.transitBase, "Bloque de tránsito"),
           growth: num(p.growth, 0, 100, "Crecimiento"),
           dns: ipStr(ipNum(p.dns)),
         };
@@ -3158,6 +3183,7 @@
           const o = {
             id: idVal(s.id),
             name: text(s.name, "Sede"),
+            ipv4Base: optionalAddressIntent(s.ipv4Base, "Bloque IPv4 de sede"),
             floors: num(s.floors, 1, 50, "Pisos"),
             users: num(s.users, 1, 100000, "Usuarios"),
             ratio: num(s.ratio, 1, 10, "Ratio", false),
@@ -3214,6 +3240,7 @@
             hosts: num(v.hosts, 1, 1000000, "Hosts"),
             dhcp: bool(v.dhcp),
             gateway: v.gateway ? ipStr(ipNum(v.gateway)) : "",
+            ipv4Cidr: optionalAddressIntent(v.ipv4Cidr, "CIDR IPv4 de VLAN"),
           };
         });
         unique(
@@ -3260,6 +3287,18 @@
             reserve,
             gateway: kind === "vlan" ? ipStr(ipNum(r.gateway)) : "",
           };
+          if (r.size !== undefined) {
+            if (r.size !== info.total) fail("Tamaño de subred incoherente.");
+            o.size = r.size;
+          }
+          if (r.required !== undefined) {
+            const required =
+              kind === "vlan"
+                ? Math.ceil(v.hosts * (1 + out.project.growth / 100)) + reserve
+                : 2;
+            if (r.required !== required) fail("Capacidad requerida incoherente.");
+            o.required = r.required;
+          }
           if (o.gateway && !isHost(o.gateway, o))
             fail("Gateway importado fuera de subred.");
           if (v && v.gateway && v.gateway !== o.gateway)
