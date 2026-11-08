@@ -989,7 +989,7 @@
             "Datos del proyecto",
             "Registre cada sede por separado. Confirme los cambios para que estimación, VLAN, direccionamiento y topología utilicen la misma información.",
           ) +
-          `<div class="notice">Flujo: datos → estimación → confirmar VLAN → VLSM → topología → configuraciones. Cambiar datos confirmados invalida las etapas dependientes.</div><div class="card"><h2>Identificación y alcance</h2><div class="grid">${field("Nombre del proyecto *", "pname", state.project.name)}${field("Empresa *", "pcompany", state.project.company)}${field("Actividad * (ej. clínica, educación, comercio)", "pactivity", state.project.activity)}<div class="field"><label for="ptype">Infraestructura</label><select id="ptype">${optsHTML(["Casa", "Oficina", "Edificio", "Campus", "Varias sedes"], state.project.type)}</select></div><div class="field"><label for="psegment">Criterio de segmentación</label><select id="psegment">${optsHTML(["Servicios", "Departamentos"], state.project.segmentation)}</select></div>${field("Número de sedes (1–12)", "sitecount", state.sites.length, "number", 'min="1" max="12"')}</div><label class="check"><input id="pinter" type="checkbox" ${state.project.interconnect ? "checked" : ""}>Interconectar las sedes mediante enlaces WAN enrutados</label><div class="actions"><button class="primary" onclick="saveProject()">Confirmar datos del proyecto</button><button onclick="resizeSites()">Aplicar número de sedes</button><button onclick="demo()">Cargar ejemplo de laboratorio</button></div></div><div class="card"><div class="sitehead"><h2>Ficha individual de la sede</h2><div class="actions"><select class="sitecount" aria-label="Sede activa" onchange="selectedSite=+this.value;render()">${state.sites.map((x, i) => `<option value="${i}" ${i === selectedSite ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select><button class="danger" onclick="removeSite()">Eliminar sede</button></div></div><div class="grid">${field("Nombre de sede *", "sname", s.name)}${field("Número de pisos", "sfloors", s.floors, "number", 'min="1" max="50"')}${field("Usuarios", "susers", s.users, "number", 'min="1" max="100000"')}${field("Dispositivos personales por usuario", "sratio", s.ratio, "number", 'min="1" max="10" step="0.1"')}${field("Pisos más concurridos (separados por coma)", "sbusy", s.busy)}${field("Áreas / departamentos (separados por coma)", "sareas", s.areas)}${field("Ancho de banda Mbps (0 = sugerir)", "sbw", s.bandwidth, "number", 'min="0" max="100000"')}</div><div class="grid" style="margin-top:16px">${[
+          `<div class="notice">Flujo: datos → estimación → confirmar VLAN → VLSM → topología → configuraciones. Cambiar datos confirmados invalida las etapas dependientes.</div><div class="card"><h2>Identificación y alcance</h2><div class="grid">${field("Nombre del proyecto *", "pname", state.project.name)}${field("Empresa *", "pcompany", state.project.company)}${field("Actividad * (ej. clínica, educación, comercio)", "pactivity", state.project.activity)}<div class="field"><label for="ptype">Infraestructura</label><select id="ptype">${optsHTML(["Casa", "Oficina", "Edificio", "Campus", "Varias sedes"], state.project.type)}</select></div><div class="field"><label for="psegment">Criterio de segmentación</label><select id="psegment">${optsHTML(["Servicios", "Departamentos"], state.project.segmentation)}</select></div>${field("Número de sedes (1–12)", "sitecount", state.sites.length, "number", 'min="1" max="12"')}</div><label class="check"><input id="pinter" type="checkbox" ${state.project.interconnect ? "checked" : ""}>Interconectar las sedes mediante enlaces WAN enrutados</label><div class="actions"><button class="primary" onclick="saveProject()">Confirmar datos del proyecto</button><button onclick="resizeSites()">Aplicar número de sedes</button><button onclick="demo()">Cargar ejemplo de laboratorio</button></div></div><div class="card"><div class="sitehead"><h2>Ficha individual de la sede</h2><div class="actions"><select class="sitecount" aria-label="Sede activa" onchange="selectedSite=+this.value;render()">${state.sites.map((x, i) => `<option value="${i}" ${i === selectedSite ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select><button class="danger" onclick="removeSite()">Eliminar sede</button></div></div><div class="grid">${field("Nombre de sede *", "sname", s.name)}${field("Bloque IPv4 de la sede (opcional)", "sipv4Base", s.ipv4Base, "text", 'placeholder="10.10.0.0/16" aria-describedby="siteIpv4Help"')}${field("Número de pisos", "sfloors", s.floors, "number", 'min="1" max="50"')}${field("Usuarios", "susers", s.users, "number", 'min="1" max="100000"')}${field("Dispositivos personales por usuario", "sratio", s.ratio, "number", 'min="1" max="10" step="0.1"')}${field("Pisos más concurridos (separados por coma)", "sbusy", s.busy)}${field("Áreas / departamentos (separados por coma)", "sareas", s.areas)}${field("Ancho de banda Mbps (0 = sugerir)", "sbw", s.bandwidth, "number", 'min="0" max="100000"')}</div><div class="grid" style="margin-top:16px">${[
             ["wifi", "WiFi"],
             ["voip", "Telefonía IP"],
             ["cctv", "Cámaras IP"],
@@ -1003,7 +1003,7 @@
             )
             .join(
               "",
-            )}</div><div class="hint">La redundancia reserva un gateway virtual y dos IP físicas por VLAN. Los pisos concurridos se usan para identificar prioridad de cobertura; la cantidad de AP requiere luego un estudio RF.</div><div class="actions" style="margin-top:16px"><button class="primary" onclick="saveSite()">Confirmar esta sede</button></div></div>`
+            )}</div><div id="siteIpv4Help" class="hint">Opcional: deje vacío para conservar el comportamiento heredado. Este bloque se guarda y valida, pero todavía no controla la asignación VLSM.</div><div class="hint">La redundancia reserva un gateway virtual y dos IP físicas por VLAN. Los pisos concurridos se usan para identificar prioridad de cobertura; la cantidad de AP requiere luego un estudio RF.</div><div class="actions" style="margin-top:16px"><button class="primary" onclick="saveSite()">Confirmar esta sede</button></div></div>`
         );
       }
       function saveProject() {
@@ -1062,6 +1062,7 @@
             s = {
               ...old,
               name: text($("sname").value, "Sede"),
+              ipv4Base: $("sipv4Base").value.trim(),
               floors: num($("sfloors").value, 1, 50, "Pisos"),
               users: num($("susers").value, 1, 100000, "Usuarios"),
               ratio: num(
@@ -1091,6 +1092,10 @@
             s[k] = $("s" + k).checked;
           if (state.sites.some((x) => x.id !== s.id && x.name === s.name))
             fail("Use un nombre de sede único.");
+          validateSiteBlocks(
+            state.project,
+            state.sites.map((x) => (x.id === s.id ? s : x)),
+          );
           state.sites[selectedSite] = s;
           invalidate();
           render();
@@ -3121,6 +3126,48 @@
           input.value = "";
         }
       } // No ejecuta datos ni acepta texto arbitrario como configuración.
+      function validateSiteBlocks(project, sites) {
+        const blocks = [];
+        for (const site of sites) {
+          if (!site.ipv4Base) continue;
+          const label = "Sede «" + site.name + "»: ";
+          let block, global, transit;
+          try {
+            block = subnet(site.ipv4Base);
+          } catch (e) {
+            fail(label + "bloque IPv4 inválido. " + e.message);
+          }
+          if (block.ip !== block.network)
+            fail(label + "la dirección debe ser la red alineada con el prefijo.");
+          const privateBlock = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+            .map(subnet)
+            .some((r) => block.net >= r.net && block.end <= r.end);
+          if (!privateBlock)
+            fail(label + "el bloque debe estar completamente dentro de RFC1918.");
+          try {
+            global = subnet(project.base);
+          } catch (e) {
+            fail(label + "no se puede verificar la contención: bloque global inválido.");
+          }
+          if (block.net < global.net || block.end > global.end)
+            fail(label + "el bloque queda fuera del bloque global " + project.base + ".");
+          const other = blocks.find(
+            (r) => block.net <= r.end && r.net <= block.end,
+          );
+          if (other)
+            fail(label + "el bloque se solapa con la sede «" + other.name + "».");
+          if (project.transitBase) {
+            try {
+              transit = subnet(project.transitBase);
+            } catch (e) {
+              fail(label + "no se puede comprobar el solapamiento: bloque de tránsito inválido.");
+            }
+            if (block.net <= transit.end && transit.net <= block.end)
+              fail(label + "el bloque se solapa con el bloque de tránsito.");
+          }
+          blocks.push({ net: block.net, end: block.end, name: site.name });
+        }
+      } // Valida intenciones de sede sin contrastarlas con el plan efectivo.
       function migrateV2(src) {
         return {
           ...src,
@@ -3217,6 +3264,7 @@
           out.sites.map((s) => s.name),
           "Nombre de sede",
         );
+        validateSiteBlocks(out.project, out.sites);
         const hasSite = (id) => out.sites.some((s) => s.id === id);
         if (
           !Array.isArray(src.vlans) ||
