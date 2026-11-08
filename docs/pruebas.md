@@ -121,3 +121,13 @@ Se revisó visualmente el PNG: los 20 casos, X/Y, porcentaje, fecha, commit y ve
 4. Abrir el HTML recién generado (su ruta se imprime) y contrastar un caso de cálculo, una migración, una eliminación VLAN y una salida por fabricante con esperado/obtenido.
 5. Mostrar captura 09 versionada como evidencia histórica de esta ejecución; para evidencia actual, regenerarla con las opciones explícitas anteriores y registrar su fecha/commit.
 6. Señalar límites: validación local/textual, generación IPv4 y aclaración docente de IPv6; no conectar ni ejecutar CLI en equipos reales.
+
+## Ratificación para la entrega documental final
+
+Sobre main `f7ed2b907d6edad6f1ed7bd5274c49956a7a77d8` se ejecutó nuevamente el comando principal en **2026-11-08T17:15:43-05:00** (America/Bogota): **20/20 = 100%**, 0 fallidas, bloqueadas o no ejecutadas; aproximadamente 13 segundos. Python 3.12.14, Playwright 1.62.0 y Chromium 154.0.8037.57. La suite y `WAN_v4.html` no se modificaron. El reporte de esta ratificación es temporal; no reemplaza el HTML histórico versionado.
+
+Las capturas 06/07/08/10 se generaron en HTTP local, contextos limpios y datos ficticios del mismo main; sus fuentes y límites se explican en el [manual](manual.md), [seguridad](seguridad.md) y [informe Corte 3](informe-corte3.pdf). Se verificaron también ejecuciones 20/20 posteriores a la generación de esas capturas, sin sumarlas como casos nuevos.
+
+**09-pruebas.png se conserva sin sobrescribir**: identifica la ejecución de la suite `fd36e76fcfca1847e08d5ed0a7e61737e792760e`, cuyos archivos de prueba y aplicación son idénticos a los integrados en el main actual. Su SHA-256 sigue siendo `032b942fd24a5bdc0f3ba11d1cf4820678eb4488755f73cfadd4d8678e6acf29`. No se presenta su fecha como la de una captura nueva. El 20/20 es validación de navegador y texto, sin ejecutar CLI ni certificar hardware o conectividad.
+
+Verificación final antes de publicar: **2026-11-08T17:28:41-05:00**, mismo main y entorno, **20/20 = 100%**; 0 fallidas, bloqueadas o no ejecutadas, aproximadamente 13 segundos. Se realizó después de generar capturas, documentos y PDF; no se modificó el código ni se reemplazaron el reporte o la captura 09 históricos.
