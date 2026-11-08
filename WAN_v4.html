@@ -675,7 +675,7 @@
       let state = fresh(); // Se inicia vacío; los datos de demostración solo se cargan por acción explícita.
       function fresh() {
         return {
-          version: 2,
+          version: 3,
           project: {
             name: "",
             company: "",
@@ -684,6 +684,7 @@
             interconnect: true,
             segmentation: "Servicios",
             base: "10.20.0.0/16",
+            transitBase: "",
             growth: 20,
             dns: "1.1.1.1",
           },
@@ -714,6 +715,7 @@
         return {
           id: "s" + n,
           name: "Sede " + n,
+          ipv4Base: "",
           floors: 1,
           users: 25,
           ratio: 2,
@@ -987,7 +989,7 @@
             "Datos del proyecto",
             "Registre cada sede por separado. Confirme los cambios para que estimación, VLAN, direccionamiento y topología utilicen la misma información.",
           ) +
-          `<div class="notice">Flujo: datos → estimación → confirmar VLAN → VLSM → topología → configuraciones. Cambiar datos confirmados invalida las etapas dependientes.</div><div class="card"><h2>Identificación y alcance</h2><div class="grid">${field("Nombre del proyecto *", "pname", state.project.name)}${field("Empresa *", "pcompany", state.project.company)}${field("Actividad * (ej. clínica, educación, comercio)", "pactivity", state.project.activity)}<div class="field"><label for="ptype">Infraestructura</label><select id="ptype">${optsHTML(["Casa", "Oficina", "Edificio", "Campus", "Varias sedes"], state.project.type)}</select></div><div class="field"><label for="psegment">Criterio de segmentación</label><select id="psegment">${optsHTML(["Servicios", "Departamentos"], state.project.segmentation)}</select></div>${field("Número de sedes (1–12)", "sitecount", state.sites.length, "number", 'min="1" max="12"')}</div><label class="check"><input id="pinter" type="checkbox" ${state.project.interconnect ? "checked" : ""}>Interconectar las sedes mediante enlaces WAN enrutados</label><div class="actions"><button class="primary" onclick="saveProject()">Confirmar datos del proyecto</button><button onclick="resizeSites()">Aplicar número de sedes</button><button onclick="demo()">Cargar ejemplo de laboratorio</button></div></div><div class="card"><div class="sitehead"><h2>Ficha individual de la sede</h2><div class="actions"><select class="sitecount" aria-label="Sede activa" onchange="selectedSite=+this.value;render()">${state.sites.map((x, i) => `<option value="${i}" ${i === selectedSite ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select><button class="danger" onclick="removeSite()">Eliminar sede</button></div></div><div class="grid">${field("Nombre de sede *", "sname", s.name)}${field("Número de pisos", "sfloors", s.floors, "number", 'min="1" max="50"')}${field("Usuarios", "susers", s.users, "number", 'min="1" max="100000"')}${field("Dispositivos personales por usuario", "sratio", s.ratio, "number", 'min="1" max="10" step="0.1"')}${field("Pisos más concurridos (separados por coma)", "sbusy", s.busy)}${field("Áreas / departamentos (separados por coma)", "sareas", s.areas)}${field("Ancho de banda Mbps (0 = sugerir)", "sbw", s.bandwidth, "number", 'min="0" max="100000"')}</div><div class="grid" style="margin-top:16px">${[
+          `<div class="notice">Flujo: datos → estimación → confirmar VLAN → VLSM → topología → configuraciones. Cambiar datos confirmados invalida las etapas dependientes.</div><div class="card"><h2>Identificación y alcance</h2><div class="grid">${field("Nombre del proyecto *", "pname", state.project.name)}${field("Empresa *", "pcompany", state.project.company)}${field("Actividad * (ej. clínica, educación, comercio)", "pactivity", state.project.activity)}<div class="field"><label for="ptype">Infraestructura</label><select id="ptype">${optsHTML(["Casa", "Oficina", "Edificio", "Campus", "Varias sedes"], state.project.type)}</select></div><div class="field"><label for="psegment">Criterio de segmentación</label><select id="psegment">${optsHTML(["Servicios", "Departamentos"], state.project.segmentation)}</select></div>${field("Número de sedes (1–12)", "sitecount", state.sites.length, "number", 'min="1" max="12"')}</div><label class="check"><input id="pinter" type="checkbox" ${state.project.interconnect ? "checked" : ""}>Interconectar las sedes mediante enlaces WAN enrutados</label><div class="actions"><button class="primary" onclick="saveProject()">Confirmar datos del proyecto</button><button onclick="resizeSites()">Aplicar número de sedes</button><button onclick="demo()">Cargar ejemplo de laboratorio</button></div></div><div class="card"><div class="sitehead"><h2>Ficha individual de la sede</h2><div class="actions"><select class="sitecount" aria-label="Sede activa" onchange="selectedSite=+this.value;render()">${state.sites.map((x, i) => `<option value="${i}" ${i === selectedSite ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select><button class="danger" onclick="removeSite()">Eliminar sede</button></div></div><div class="grid">${field("Nombre de sede *", "sname", s.name)}${field("Bloque IPv4 de la sede (opcional)", "sipv4Base", s.ipv4Base, "text", 'placeholder="10.10.0.0/16" aria-describedby="siteIpv4Help"')}${field("Número de pisos", "sfloors", s.floors, "number", 'min="1" max="50"')}${field("Usuarios", "susers", s.users, "number", 'min="1" max="100000"')}${field("Dispositivos personales por usuario", "sratio", s.ratio, "number", 'min="1" max="10" step="0.1"')}${field("Pisos más concurridos (separados por coma)", "sbusy", s.busy)}${field("Áreas / departamentos (separados por coma)", "sareas", s.areas)}${field("Ancho de banda Mbps (0 = sugerir)", "sbw", s.bandwidth, "number", 'min="0" max="100000"')}</div><div class="grid" style="margin-top:16px">${[
             ["wifi", "WiFi"],
             ["voip", "Telefonía IP"],
             ["cctv", "Cámaras IP"],
@@ -1001,7 +1003,7 @@
             )
             .join(
               "",
-            )}</div><div class="hint">La redundancia reserva un gateway virtual y dos IP físicas por VLAN. Los pisos concurridos se usan para identificar prioridad de cobertura; la cantidad de AP requiere luego un estudio RF.</div><div class="actions" style="margin-top:16px"><button class="primary" onclick="saveSite()">Confirmar esta sede</button></div></div>`
+            )}</div><div id="siteIpv4Help" class="hint">Opcional: deje vacío para conservar el comportamiento heredado. Este bloque se valida y delimita la asignación VLSM automática de sus VLAN.</div><div class="hint">La redundancia reserva un gateway virtual y dos IP físicas por VLAN. Los pisos concurridos se usan para identificar prioridad de cobertura; la cantidad de AP requiere luego un estudio RF.</div><div class="actions" style="margin-top:16px"><button class="primary" onclick="saveSite()">Confirmar esta sede</button></div></div>`
         );
       }
       function saveProject() {
@@ -1060,6 +1062,7 @@
             s = {
               ...old,
               name: text($("sname").value, "Sede"),
+              ipv4Base: $("sipv4Base").value.trim(),
               floors: num($("sfloors").value, 1, 50, "Pisos"),
               users: num($("susers").value, 1, 100000, "Usuarios"),
               ratio: num(
@@ -1089,6 +1092,10 @@
             s[k] = $("s" + k).checked;
           if (state.sites.some((x) => x.id !== s.id && x.name === s.name))
             fail("Use un nombre de sede único.");
+          validateSiteBlocks(
+            state.project,
+            state.sites.map((x) => (x.id === s.id ? s : x)),
+          );
           state.sites[selectedSite] = s;
           invalidate();
           render();
@@ -1181,6 +1188,7 @@
                     role,
                   ),
                   gateway: "",
+                  ipv4Cidr: "",
                 });
                 id += 10;
               }
@@ -1245,7 +1253,7 @@
             "VLAN y plan de direccionamiento",
             "Confirme los segmentos; el VLSM los ordena por tamaño y asigna redes sin solaparse. Incluye tránsito router–core y WAN entre sedes.",
           ) +
-          `<div class="card"><div class="grid">${field("Bloque IPv4 base", "base", state.project.base)}${field("Reserva de crecimiento (%)", "growth", state.project.growth, "number", 'min="0" max="100"')}${field("DNS para DHCP", "dns", state.project.dns)}</div><div class="notice">Hosts solicitados son terminales; el cálculo añade crecimiento y una IP de gateway, o tres IP si hay dos cores. El gateway no cuenta como host disponible para terminales. Las redes de tránsito son /30 y no usan VLAN.</div><div class="actions"><button onclick="proposeVlans()">Volver a proponer</button><button onclick="addVlan()">Agregar VLAN</button><button class="primary" onclick="confirmVlans()">Confirmar VLAN y calcular VLSM</button></div></div><div class="card"><h2>Segmentos editables por sede</h2>${state.vlans.length ? `<div class="tablewrap"><table><thead><tr><th>Sede</th><th>VLAN</th><th>Nombre</th><th>Servicio</th><th>Hosts terminales</th><th>DHCP local</th><th>Acción</th></tr></thead><tbody>${state.vlans.map((v, i) => `<tr><td><select id="vs${i}" aria-label="Sede de VLAN">${state.sites.map((s) => `<option value="${s.id}" ${s.id === v.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></td><td><input class="num" aria-label="VLAN" id="vi${i}" value="${v.id}" type="number" min="2" max="4094"></td><td><input aria-label="Nombre VLAN" id="vn${i}" value="${esc(v.name)}"></td><td><select aria-label="Servicio" id="vr${i}">${optsHTML(roles, v.role)}</select></td><td><input class="num" aria-label="Hosts" id="vh${i}" type="number" value="${v.hosts}"></td><td><input aria-label="DHCP local" id="vd${i}" type="checkbox" ${v.dhcp ? "checked" : ""}></td><td><button class="small danger" onclick="deleteVlan(${i})">Eliminar</button></td></tr>`).join("")}</tbody></table></div>` : '<div class="empty">Confirme los datos y genere una propuesta desde Estimación, o agregue sus segmentos manualmente.</div>'}</div>${planTable()}<details class="card"><summary>¿Qué significan VLSM, CIDR y gateway?</summary><p>VLSM asigna tamaños diferentes a las subredes. CIDR /n indica cuántos bits identifican la red. El gateway es la dirección del equipo que lleva el tráfico fuera de la VLAN. Una VLAN separa dominios de broadcast; necesita políticas de acceso para aportar aislamiento de seguridad.</p></details>`
+          `<div class="card"><div class="grid">${field("Bloque IPv4 base", "base", state.project.base)}${field("Reserva de crecimiento (%)", "growth", state.project.growth, "number", 'min="0" max="100"')}${field("DNS para DHCP", "dns", state.project.dns)}</div><div class="notice">Hosts solicitados son terminales; el cálculo añade crecimiento y una IP de gateway, o tres IP si hay dos cores. El gateway no cuenta como host disponible para terminales. Las redes de tránsito son /30 y no usan VLAN.</div><div class="actions"><button onclick="proposeVlans()">Volver a proponer</button><button onclick="addVlan()">Agregar VLAN</button><button class="primary" onclick="confirmVlans()">Confirmar VLAN y calcular VLSM</button></div></div><div class="card"><h2>Segmentos editables por sede</h2><p id="vlanCidrHelp" class="hint">Subred IPv4 / CIDR (opcional): deje vacío para asignación automática. Define la red completa de la VLAN; no es el gateway ni un rango DHCP.</p>${state.vlans.length ? `<div class="tablewrap"><table><thead><tr><th>Sede</th><th>VLAN</th><th>Nombre</th><th>Subred IPv4 / CIDR (opcional)</th><th>Servicio</th><th>Hosts terminales</th><th>DHCP local</th><th>Acción</th></tr></thead><tbody>${state.vlans.map((v, i) => `<tr><td><select id="vs${i}" aria-label="Sede de VLAN">${state.sites.map((s) => `<option value="${s.id}" ${s.id === v.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></td><td><input class="num" aria-label="VLAN" id="vi${i}" value="${v.id}" type="number" min="2" max="4094"></td><td><input aria-label="Nombre VLAN" id="vn${i}" value="${esc(v.name)}"></td><td><input aria-label="Subred IPv4 / CIDR (opcional)" id="vc${i}" value="${esc(v.ipv4Cidr || "")}" placeholder="Automática · 10.10.20.0/24" aria-describedby="vlanCidrHelp"></td><td><select aria-label="Servicio" id="vr${i}">${optsHTML(roles, v.role)}</select></td><td><input class="num" aria-label="Hosts" id="vh${i}" type="number" value="${v.hosts}"></td><td><input aria-label="DHCP local" id="vd${i}" type="checkbox" ${v.dhcp ? "checked" : ""}></td><td><button class="small danger" onclick="deleteVlan(${i})">Eliminar</button></td></tr>`).join("")}</tbody></table></div>` : '<div class="empty">Confirme los datos y genere una propuesta desde Estimación, o agregue sus segmentos manualmente.</div>'}</div>${planTable()}<details class="card"><summary>¿Qué significan VLSM, CIDR y gateway?</summary><p>VLSM asigna tamaños diferentes a las subredes. CIDR /n indica cuántos bits identifican la red. El gateway es la dirección del equipo que lleva el tráfico fuera de la VLAN. Una VLAN separa dominios de broadcast; necesita políticas de acceso para aportar aislamiento de seguridad.</p></details>`
         );
       }
       function addVlan() {
@@ -1259,6 +1267,7 @@
           hosts: 20,
           dhcp: true,
           gateway: "",
+          ipv4Cidr: "",
         });
         invalidate("plan");
         render();
@@ -1283,6 +1292,8 @@
           site: $("vs" + i).value,
           id: num($("vi" + i).value, 2, 4094, "VLAN"),
           name: text($("vn" + i).value, "Nombre VLAN", 60),
+          ipv4Cidr: $("vc" + i).value.trim(),
+          gateway: vlanGatewayIntent(v),
           role: $("vr" + i).value,
           hosts: num($("vh" + i).value, 1, 1000000, "Hosts"),
           dhcp: $("vd" + i).checked,
@@ -1295,6 +1306,17 @@
             fail("Use una sola VLAN de gestión por sede.");
           if (!rows.length) fail("Se requiere al menos una VLAN en " + s.name);
         }
+        if (vlans.some((v) => v.ipv4Cidr))
+          manualVlanNetworks(
+            {
+              ...state.project,
+              base: $("base").value.trim(),
+              growth: num($("growth").value, 0, 100, "Reserva"),
+            },
+            state.sites,
+            vlans,
+            state.nodes,
+          );
         return vlans;
       } // Permite repetir VLAN entre sedes, pero no dentro de una.
       function initialTransits() {
@@ -1323,17 +1345,87 @@
             );
         return req;
       } // WAN en estrella; sedes desconectadas no reciben enlaces entre sí.
-      function allocate(vlans, base, growth, transits) {
-        const b = subnet(base);
+      function allocationPools(base, project = state.project, siteList = state.sites) {
+        const b = privateIPv4Block(base, "Bloque global");
         if (b.prefix > 30) fail("El bloque base debe ser /30 o mayor.");
-        if (
-          !b.type.startsWith("Privada") ||
-          !ipType(b.end).startsWith("Privada") ||
-          Math.floor(b.net / 16777216) !== Math.floor(b.end / 16777216)
-        )
-          fail(
-            "Use un bloque completo privado RFC1918 para el plan de laboratorio.",
-          );
+        project = { ...project, base };
+        validateSiteBlocks(project, siteList);
+        const sites = new Map(
+          siteList
+            .filter((s) => s.ipv4Base)
+            .map((s) => [s.id, subnet(s.ipv4Base)]),
+        );
+        const transit = project.transitBase
+          ? privateIPv4Block(project.transitBase, "Bloque de tránsito")
+          : null;
+        if (transit && (transit.net < b.net || transit.end > b.end))
+          fail("El bloque de tránsito queda fuera del bloque global " + base + ".");
+        return { global: b, sites, transit };
+      } // Reservas de pools; nunca modifica el estado confirmado.
+      function findIPv4Space(pool, size, blocked) {
+        let cursor = Math.ceil(pool.net / size) * size;
+        const ranges = blocked
+          .filter((r) => r.net <= pool.end && pool.net <= r.end)
+          .slice()
+          .sort((a, b) => a.net - b.net || a.end - b.end);
+        for (const r of ranges) {
+          if (r.end < cursor) continue;
+          if (cursor + size - 1 < r.net) break;
+          cursor = Math.ceil((r.end + 1) / size) * size;
+        }
+        return cursor + size - 1 <= pool.end ? cursor : null;
+      } // Primer hueco CIDR contiguo; no confunde espacio total con alineación.
+      function vlanGatewayIntent(v, previousPlan = state.plan) {
+        const previous = previousPlan.find((r) => r.key === v.key);
+        return previous && previous.gateway === previous.first && v.gateway === previous.first
+          ? ""
+          : v.gateway;
+      } // Reconoce el valor automático anterior sin añadir campos al esquema.
+      function manualVlanNetworks(project, sites, vlans, nodes = [], pools = null) {
+        const manual = new Map();
+        if (!vlans.some((v) => v.ipv4Cidr)) return manual;
+        pools = pools || allocationPools(project.base, project, sites);
+        for (const v of vlans) {
+          if (!v.ipv4Cidr) continue;
+          const site = sites.find((s) => s.id === v.site),
+            label = "Sede «" + site.name + "», VLAN " + v.id + " «" + v.name + "»",
+            network = privateIPv4Block(v.ipv4Cidr, label),
+            reserve = site.redundant ? 3 : 1,
+            required = Math.ceil(v.hosts * (1 + project.growth / 100)) + reserve,
+            pool = pools.sites.get(v.site) || pools.global;
+          if (network.prefix > 30)
+            fail(label + ": /31 y /32 no son aptos para LAN y sus reservas.");
+          if (network.hosts < required)
+            fail(label + ": capacidad insuficiente; requiere " + required + " IP útiles, disponibles " + network.hosts + ".");
+          if (network.net < pool.net || network.end > pool.end)
+            fail(label + ": la subred queda fuera del bloque de " + (site.ipv4Base ? "su sede." : "proyecto."));
+          for (const [id, block] of pools.sites)
+            if (id !== v.site && network.net <= block.end && block.net <= network.end)
+              fail(label + ": la subred invade el bloque reservado de otra sede.");
+          if (pools.transit && network.net <= pools.transit.end && pools.transit.net <= network.end)
+            fail(label + ": la subred se solapa con el bloque de tránsito.");
+          for (const [key, other] of manual)
+            if (network.net <= other.end && other.net <= network.end)
+              fail(label + ": la subred se solapa con la VLAN «" + vlans.find((x) => x.key === key).name + "».");
+          if (v.gateway) {
+            let valid = false;
+            try { valid = isHost(v.gateway, network); } catch (e) { /* Se informa con contexto de sede/VLAN. */ }
+            if (!valid)
+              fail(label + ": gateway manual inválido o fuera de la subred.");
+            if (nodes.some((n) => n.network === v.key && n.ip === v.gateway))
+              fail(label + ": gateway manual en conflicto con una IP reservada a un equipo.");
+          }
+          manual.set(v.key, network);
+        }
+        return manual;
+      } // Valida y reserva intenciones; no asigna ni sustituye el plan efectivo.
+      function allocate(vlans, base, growth, transits) {
+        const pools = allocationPools(base),
+          manual = manualVlanNetworks({ ...state.project, base, growth }, state.sites, vlans, state.nodes, pools),
+          b = pools.global,
+          scoped = pools.sites.size > 0 || pools.transit !== null || manual.size > 0,
+          reserved = [...pools.sites.values(), ...(pools.transit ? [pools.transit] : [])],
+          assigned = [...manual.values()];
         const req = vlans
           .map((v) => {
             const s = state.sites.find((s) => s.id === v.site),
@@ -1345,8 +1437,8 @@
               kind: "vlan",
               reserve,
               required: need,
-              prefix: 32 - bits,
-              size: 2 ** bits,
+              prefix: manual.get(v.key)?.prefix ?? 32 - bits,
+              size: manual.get(v.key)?.total ?? 2 ** bits,
             };
           })
           .concat(
@@ -1362,10 +1454,25 @@
         let cursor = b.net;
         const result = [];
         for (const r of req) {
-          cursor = Math.ceil(cursor / r.size) * r.size;
-          if (cursor + r.size - 1 > b.end)
+          const pool = r.kind === "vlan"
+            ? pools.sites.get(r.site) || b
+            : pools.transit || b;
+          cursor = manual.has(r.key)
+            ? manual.get(r.key).net
+            : scoped
+            ? findIPv4Space(pool, r.size, [
+                ...assigned,
+                ...(pool === b ? reserved : []),
+              ])
+            : Math.ceil(cursor / r.size) * r.size;
+          if (cursor === null || cursor + r.size - 1 > pool.end)
             fail(
-              "El bloque base no tiene espacio suficiente. Amplíelo o reduzca hosts.",
+              (r.kind === "vlan"
+                ? "Sede «" + siteName(r.site) + "», VLAN " + r.id + " «" + r.name + "»"
+                : "Tránsito «" + r.name + "», " + siteName(r.site)) +
+                ": no hay hueco CIDR contiguo /" + r.prefix + " (" + r.size +
+                " direcciones, " + r.required + " IP útiles requeridas) en " +
+                pool.network + "/" + pool.prefix + ". Amplíe el bloque o reduzca hosts.",
             );
           const info = subnet(ipStr(cursor) + "/" + r.prefix);
           const row = {
@@ -1386,6 +1493,7 @@
                 " fuera de su nueva subred. Bórrelo antes de recalcular.",
             );
           result.push(row);
+          if (!manual.has(r.key)) assigned.push({ net: info.net, end: info.end });
           cursor += r.size;
         }
         return result;
@@ -3082,7 +3190,7 @@
       function saveLocal() {
         safe(() => {
           localStorage.setItem(
-            "WAN-Architect-v2",
+            "WAN-Architect-v3",
             JSON.stringify({ state, imageData }),
           );
           toast("Proyecto guardado en este navegador.");
@@ -3090,8 +3198,10 @@
       } // Los errores de cuota/file:// se comunican; JSON ofrece una copia alternativa.
       function loadLocal() {
         safe(() => {
-          const raw = localStorage.getItem("WAN-Architect-v2");
-          if (!raw) fail("No hay proyecto guardado en este navegador.");
+          const raw =
+            localStorage.getItem("WAN-Architect-v3") ??
+            localStorage.getItem("WAN-Architect-v2");
+          if (raw === null) fail("No hay proyecto guardado en este navegador.");
           const parsed = validateImport(JSON.parse(raw));
           if (!confirm("¿Reemplazar el proyecto actual por el guardado?"))
             return;
@@ -3115,17 +3225,82 @@
           input.value = "";
         }
       } // No ejecuta datos ni acepta texto arbitrario como configuración.
+      function privateIPv4Block(value, label) {
+        let block;
+        try {
+          block = subnet(value);
+        } catch (e) {
+          fail(label + ": bloque IPv4 inválido. " + e.message);
+        }
+        if (block.ip !== block.network)
+          fail(label + ": la dirección debe ser la red alineada con el prefijo.");
+        const privateBlock = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+          .map(subnet)
+          .some((r) => block.net >= r.net && block.end <= r.end);
+        if (!privateBlock)
+          fail(label + ": el bloque debe estar completamente dentro de RFC1918.");
+        return block;
+      } // Parser común y contención numérica; no normaliza redes desalineadas.
+      function validateSiteBlocks(project, sites) {
+        const blocks = [];
+        for (const site of sites) {
+          if (!site.ipv4Base) continue;
+          const label = "Sede «" + site.name + "»: ";
+          const block = privateIPv4Block(site.ipv4Base, label.slice(0, -2));
+          let global, transit;
+          try {
+            global = subnet(project.base);
+          } catch (e) {
+            fail(label + "no se puede verificar la contención: bloque global inválido.");
+          }
+          if (block.net < global.net || block.end > global.end)
+            fail(label + "el bloque queda fuera del bloque global " + project.base + ".");
+          const other = blocks.find(
+            (r) => block.net <= r.end && r.net <= block.end,
+          );
+          if (other)
+            fail(label + "el bloque se solapa con la sede «" + other.name + "».");
+          if (project.transitBase) {
+            try {
+              transit = subnet(project.transitBase);
+            } catch (e) {
+              fail(label + "no se puede comprobar el solapamiento: bloque de tránsito inválido.");
+            }
+            if (block.net <= transit.end && transit.net <= block.end)
+              fail(label + "el bloque se solapa con el bloque de tránsito.");
+          }
+          blocks.push({ net: block.net, end: block.end, name: site.name });
+        }
+      } // Valida intenciones de sede sin contrastarlas con el plan efectivo.
+      function migrateV2(src) {
+        return {
+          ...src,
+          version: 3,
+          project: { ...src.project, transitBase: "" },
+          sites: Array.isArray(src.sites)
+            ? src.sites.map((s) => ({ ...s, ipv4Base: "" }))
+            : src.sites,
+          vlans: Array.isArray(src.vlans)
+            ? src.vlans.map((v) => ({ ...v, ipv4Cidr: "" }))
+            : src.vlans,
+        };
+      } // Migra intenciones sin recalcular ni modificar el plan v2 recibido.
+      function optionalAddressIntent(value, label) {
+        if (value === undefined) return "";
+        if (typeof value !== "string") fail(label + ": se requiere una cadena.");
+        return value;
+      } // En esta etapa las intenciones se conservan, pero no alimentan VLSM.
       function validateImport(data) {
         if (
           !data ||
           typeof data !== "object" ||
           !data.state ||
-          data.state.version !== 2
+          ![2, 3].includes(data.state.version)
         )
           fail(
-            "Formato JSON incompatible: se requiere exportación WAN Architect versión 2.",
+            "Formato JSON incompatible: se requiere exportación WAN Architect versión 2 o 3.",
           );
-        const src = data.state,
+        const src = data.state.version === 2 ? migrateV2(data.state) : data.state,
           out = fresh();
         if (
           !src.project ||
@@ -3151,6 +3326,7 @@
             "Segmentación",
           ),
           base: subnet(p.base).network + "/" + subnet(p.base).prefix,
+          transitBase: optionalAddressIntent(p.transitBase, "Bloque de tránsito"),
           growth: num(p.growth, 0, 100, "Crecimiento"),
           dns: ipStr(ipNum(p.dns)),
         };
@@ -3158,6 +3334,7 @@
           const o = {
             id: idVal(s.id),
             name: text(s.name, "Sede"),
+            ipv4Base: optionalAddressIntent(s.ipv4Base, "Bloque IPv4 de sede"),
             floors: num(s.floors, 1, 50, "Pisos"),
             users: num(s.users, 1, 100000, "Usuarios"),
             ratio: num(s.ratio, 1, 10, "Ratio", false),
@@ -3191,6 +3368,7 @@
           out.sites.map((s) => s.name),
           "Nombre de sede",
         );
+        validateSiteBlocks(out.project, out.sites);
         const hasSite = (id) => out.sites.some((s) => s.id === id);
         if (
           !Array.isArray(src.vlans) ||
@@ -3214,6 +3392,7 @@
             hosts: num(v.hosts, 1, 1000000, "Hosts"),
             dhcp: bool(v.dhcp),
             gateway: v.gateway ? ipStr(ipNum(v.gateway)) : "",
+            ipv4Cidr: optionalAddressIntent(v.ipv4Cidr, "CIDR IPv4 de VLAN"),
           };
         });
         unique(
@@ -3224,6 +3403,7 @@
           out.vlans.map((v) => v.site + "-" + v.id),
           "VLAN por sede",
         );
+        const manual = manualVlanNetworks(out.project, out.sites, out.vlans);
         out.plan = src.plan.map((r) => {
           const kind = enumVal(r.kind, ["vlan", "transit", "wan"], "Red"),
             info = subnet(r.network + "/" + r.prefix);
@@ -3260,6 +3440,18 @@
             reserve,
             gateway: kind === "vlan" ? ipStr(ipNum(r.gateway)) : "",
           };
+          if (r.size !== undefined) {
+            if (r.size !== info.total) fail("Tamaño de subred incoherente.");
+            o.size = r.size;
+          }
+          if (r.required !== undefined) {
+            const required =
+              kind === "vlan"
+                ? Math.ceil(v.hosts * (1 + out.project.growth / 100)) + reserve
+                : 2;
+            if (r.required !== required) fail("Capacidad requerida incoherente.");
+            o.required = r.required;
+          }
           if (o.gateway && !isHost(o.gateway, o))
             fail("Gateway importado fuera de subred.");
           if (v && v.gateway && v.gateway !== o.gateway)
@@ -3273,6 +3465,22 @@
           out.plan.map((r) => r.key),
           "Clave red",
         );
+        for (const [key, network] of manual) {
+          const v = out.vlans.find((v) => v.key === key),
+            effective = out.plan.find((r) => r.key === key && r.kind === "vlan"),
+            label = "Sede «" + out.sites.find((s) => s.id === v.site).name + "», VLAN " + v.id;
+          if (out.plan.length && !effective)
+            fail(label + ": falta la subred manual en el plan importado.");
+          if (!effective) continue;
+          if (effective.network !== network.network || effective.prefix !== network.prefix)
+            fail(label + ": el plan no coincide con la intención CIDR manual.");
+          if (effective.gateway !== (v.gateway || effective.first))
+            fail(label + ": gateway incoherente con la intención manual.");
+          const source = src.plan.find((r) => r.key === key);
+          for (const field of ["reserve", "available", "hostsRequested"])
+            if (source[field] !== undefined && source[field] !== effective[field])
+              fail(label + ": " + field + " incoherente en el plan manual.");
+        }
         for (let i = 0; i < out.plan.length; i++)
           for (let j = i + 1; j < out.plan.length; j++)
             if (
