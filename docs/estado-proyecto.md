@@ -3,15 +3,17 @@
 ## Alcance y referencia
 
 Repositorio: `https://github.com/Daisy-redeswan/redes-wan-Rodriguez`.
-Rama actual: `feature/fortinet-fortios`.
-Código Fortinet inspeccionado y probado: `5d87d76d3e78ded591220f75e2960f736fcf28ce`; base verificada de `origin/main`: `c33859758c717b1f777174183409dcdf5376aaab`.
+Rama actual: `feature/mikrotik-routeros`.
+Código MikroTik inspeccionado y probado: `a31d6554c72b815c1d7b8a799a072d90d8ddac27`; base verificada de `origin/main`: `42b6167cbcd6b2a6a1992b99eaabb7ba377c9ca6`.
+Auditoría MikroTik: 8 de noviembre de 2026, UTC; antecedentes Fortinet y direccionamiento conservados.
+Antecedente: código Fortinet inspeccionado y probado: `5d87d76d3e78ded591220f75e2960f736fcf28ce`; base verificada de `origin/main`: `c33859758c717b1f777174183409dcdf5376aaab`.
 Pruebas Fortinet y revisión crítica: 8 de noviembre de 2026, America/Bogota. La auditoría I1–I9 del PR #3 se conserva con su referencia histórica.
 Antecedente P1–P6/R1: 7 de noviembre de 2026 sobre `6f45dc1e54051a2467241ee50f59fa18906cf23c`; se conserva como evidencia histórica.
 Antecedente conservado: commit de documentación `ce35714047c1e86a4823f5513b2a76867c06a188`, publicado sobre la base histórica `6f45dc1e54051a2467241ee50f59fa18906cf23c`. Aquella revisión reutilizó su rama sin reescribir el historial y verificó el adjunto de `AGENTS.md`.
 
 Objetivo general: apoyar el diseño y la gestión de redes WAN por sedes, calcular direccionamiento, representar dispositivos y enlaces y generar propuestas de configuración por fabricante, con ciberdefensa integrada y evidencia académica reproducible. La aplicación genera texto; no aplica configuraciones a dispositivos.
 
-El commit documental actualiza únicamente los tres documentos de orientación autorizados, sin modificar el HTML ya incluido en el commit de código. Describe el contrato v3 integrado mediante PR #3 y el adaptador Fortinet implementado en el commit indicado; no instala dependencias ni ejecuta configuraciones sobre redes. La guía docente define requisitos; el código define implementación; una inspección no demuestra funcionamiento.
+El commit documental actualiza únicamente los tres documentos de orientación autorizados, sin modificar el HTML ya incluido en el commit de código. Describe el contrato v3 integrado mediante PR #3 y los adaptadores Fortinet/MikroTik implementados en los commits indicados; no instala dependencias ni ejecuta configuraciones sobre redes. La guía docente define requisitos; el código define implementación; una inspección no demuestra funcionamiento.
 
 ## Fuentes y clasificación
 
@@ -28,7 +30,7 @@ Estados usados: **requisito oficial** (guía), **inspeccionado** (código existe
 
 Aplicación autónoma en `WAN_v4.html`: HTML, CSS y JavaScript integrados; sin backend, base de datos ni dependencias externas de ejecución. No hay manifiesto de paquetes ni suite de pruebas o CI versionada en esta base.
 
-`state = fresh()` centraliza proyecto, sedes, VLAN, plan, nodos, enlaces, opciones, configuraciones y revisión. `state.version` es 3. `render()` y `go()` presentan doce etapas, incluidas evidencias Corte 2 y la nueva pantalla Fortinet. Los formularios editan valores visibles que se confirman mediante funciones específicas; el DOM y el estado confirmado pueden diferir.
+`state = fresh()` centraliza proyecto, sedes, VLAN, plan, nodos, enlaces, opciones, configuraciones y revisión. `state.version` es 3. `render()` y `go()` presentan trece etapas, incluidas evidencias Corte 2 y las pantallas Fortinet/MikroTik. Los formularios editan valores visibles que se confirman mediante funciones específicas; el DOM y el estado confirmado pueden diferir.
 
 La persistencia guarda en `WAN-Architect-v3`; `loadLocal()` busca primero esa clave y, si no existe, carga `WAN-Architect-v2` y migra en memoria sin eliminarla ni sobrescribirla. `exportJSON()` serializa `{ state, imageData }` en versión 3; `validateImport()` admite v2 mediante `migrateV2()` y valida v3 antes de `applyImport()`, rechazando versiones desconocidas. La migración conserva el plan, gateways, nodos, enlaces, configuraciones y opciones; no llama a `allocate()` ni infiere subredes manuales. Los archivos v3 no son compatibles con la aplicación antigua. Los datos permanecen en el navegador o archivos exportados. El JSON no es un mecanismo para ejecutar comandos.
 
@@ -38,7 +40,7 @@ La persistencia guarda en `WAN-Architect-v3`; `loadLocal()` busca primero esa cl
 | VLAN y VLSM | `proposeVlans`, `readVlans`, `allocate`, `confirmVlans`, `editGateway` | Segmentación por sede, bloque privado global, bloques opcionales por sede/tránsito, CIDR manual por VLAN, asignación automática o mixta, reservas y tránsitos /30 |
 | Calculadora IPv4 | `ipNum`, `ipType`, `subnet`, `calculate` | CIDR, red, broadcast, máscara, hosts y clasificación de direcciones; no IPv6 |
 | Topología | `buildTopology`, `editNode`, `editLink`, `validateLink`, `svgTopology` | Generación y edición de nodos/enlaces, ISP, VLAN, interfaces, imagen manual de referencia y exportación SVG |
-| Fabricantes | `configNodes`, `assertReady`, `generate`, `generateFortinet`, `generateCompare` | Cisco/Huawei para routers y switches; Fortinet separado para nodos Firewall; MikroTik pendiente |
+| Fabricantes | `configNodes`, `assertReady`, `generate`, `generateFortinet`, `generateMikroTik`, `generateCompare` | Cisco/Huawei para routers y switches; Fortinet separado para nodos Firewall; MikroTik separado para nodos Router |
 | Ciberdefensa | `esc`, `hostname`, `interfaceName`, `topologyIssues`, `securityWarnings` | Escape de textos, validación, advertencias y marcadores de secretos; no auditoría integral |
 | Persistencia y entregas | `saveLocal`, `loadLocal`, `importJSON`, `exportJSON`, `downloadPlan`, `downloadReport` | Guardado, importación validada, exportación JSON, CSV y resumen HTML |
 
@@ -54,7 +56,37 @@ Los formularios e importación admiten `vendor: Fortinet` únicamente para tipo 
 
 Antes de publicar se repitieron solo F1/F2/F3/F5/F6/F7/F8/F10/F12/F14/F15 e I1/I4/I8: **14/14 críticas superadas**, sin sumarlas como casos independientes al 27/27 histórico. Ambos conjuntos corresponden al SHA-256 `dca2f5ac15e9de848f50205e18ece204e6aef2247304d1203e81f46df3da30ff`. La comparación conserva exactamente las 28 salidas Cisco/Huawei de referencia y el cuerpo anterior del generador; no cambia el asignador v3. Evidencia temporal de sesión: `/workspace/work/wan-fortinet/verify.py`, `historical-fortinet-results.json`, `historical-integral-results.json` y resultados críticos. No hay suite versionada ni reporte académico nuevo.
 
-**Límites y pendientes:** validación únicamente local/estática del texto; no se ejecutaron comandos en FortiGate ni simuladores y no se certifica compatibilidad física. Revisar puertos, objetos, IDs `edit 0`, adyacencias, rutas de retorno y configuración existente; las propuestas no son respaldos completos ni aplicaciones idempotentes. La captura oficial `docs/capturas/06-config-fortinet.png` sigue pendiente. MikroTik, IPv6, HA/LACP Fortinet, pools DHCP y reservas editables continúan fuera de este alcance. Las fuentes oficiales consultadas están en la pantalla Fortinet y en [matriz-fabricantes.md](matriz-fabricantes.md).
+**Límites y pendientes:** validación únicamente local/estática del texto; no se ejecutaron comandos en FortiGate ni simuladores y no se certifica compatibilidad física. Revisar puertos, objetos, IDs `edit 0`, adyacencias, rutas de retorno y configuración existente; las propuestas no son respaldos completos ni aplicaciones idempotentes. La captura oficial `docs/capturas/06-config-fortinet.png` sigue pendiente. Ese alcance Fortinet no incluyó MikroTik; su implementación actual se detalla a continuación. IPv6, HA/LACP Fortinet, pools DHCP y reservas editables siguen pendientes. Las fuentes oficiales consultadas están en la pantalla Fortinet y en [matriz-fabricantes.md](matriz-fabricantes.md).
+
+## MikroTik RouterOS: implementado y validado como texto
+
+**Supuesto autorizado:** router genérico de laboratorio, RouterOS 7.x, sin VRF, CAPsMAN ni compatibilidad física certificada. Código `a31d6554c72b815c1d7b8a799a072d90d8ddac27`, HTML SHA-256 `9e68b48741fda952252680bac415e9dd56d18a79e7ed897b2ca21b1c634afd09`. No se ejecutaron comandos RouterOS en equipos ni simuladores.
+
+`generateMikroTik()` es un adaptador separado. `mikrotikInterfaces()` deriva puertos físicos `am`/`bm`, bridge con filtrado VLAN y CPU tagged, access/PVID, VLAN/IP/gateways y extremos /30 del plan/topología reales. `mikrotikRoute()` obtiene el primer salto de enlaces existentes; genera rutas LAN si OSPF está desactivado y default únicamente con siguiente salto/justificación explícitos. OSPF usa menús RouterOS 7, instancia IPv4 versión 2, área 0 y LAN pasivas. DHCP automático excluye gateway y endpoints mediante `mikrotikDhcpRanges()`; relay usa el servidor configurado. No se añaden pools ni reservas **editables**.
+
+Selección, formularios, JSON y persistencia admiten MikroTik solo como Router; `am`/`bm` son opcionales para otros fabricantes y obligatorios para sus extremos MikroTik. Se conserva `state.version = 3`, migración y claves v2/v3; no se recalcula el plan al importar. No cambia `allocate()`, `confirmVlans()`, `saveSite()` ni el cuerpo IOS/VRP o los helpers Fortinet. `generateMikroTikFromForm()` confirma opciones y propuestas juntas; errores conservan el estado previo y el formulario.
+
+Administración: SSH fuerte en puerto 22 restringido al CIDR de Gestión y su interfaz real; sin Gestión alcanzable o con SSH desactivado, el servicio queda deshabilitado. Telnet, FTP, WWW/HTTPS, APIs y Winbox deshabilitados; también acceso MAC, descubrimiento y bandwidth-server. La cadena input admite control explícito (SSH, OSPF, DHCP/relay según opciones), established/related y termina denegando. Una regla inicial **drop en forward** bloquea el tráfico reenviado hasta que se definan intenciones; no hay accept forward ni NAT/Internet implícitos. No crea usuarios ni secretos. Los controles previos de la propuesta detectan objetos `wan-`, puertos inexistentes u ocupados; no sustituyen una auditoría de configuración existente.
+
+**Pruebas finales ejecutadas:** Python/Playwright, Chromium 154.0.8037.57, HTTP local, contextos nuevos y datos ficticios. Comandos temporales: `python /workspace/work/wan-mikrotik/verify.py` y `python /workspace/work/wan-mikrotik/integral.py`. Resultado: **T1–T21 (21/21) + I1–I9 (9/9) = 30/30 = 100% del conjunto ejecutado**; 0 fallidas, bloqueadas o no ejecutadas en el conjunto final. Es validación local/estática del texto, no ejecución de la CLI.
+
+| Casos | Esperado y obtenido en la ejecución final | Estado |
+| --- | --- | --- |
+| T1–T2 | Selección/edición de nodos y puertos, localStorage y JSON v3 conservados; cero asignaciones al importar | Superadas |
+| T3–T4 | Ocho VLAN LAN y una /30 coinciden con el plan; bridge CPU tagged, trunk filtrado y access/PVID coherentes | Superadas |
+| T5–T6 | Instancia/área/plantillas OSPF v7, LAN pasivas; siete rutas LAN reales y default solo explícito | Superadas |
+| T7–T8 | Tres servidores DHCP con exclusiones de gateway/endpoints; tres relay con servidor/IP local reales, sin DHCP simultáneo | Superadas |
+| T9–T10 | Siete servicios deshabilitados, SSH/Gestión y MAC restringidos; input controlado, forward denegado y NAT ausente | Superadas |
+| T11–T14 | Once entradas maliciosas, roles/datos incompletos, conflictos de gateways, LACP y puertos duplicados rechazados sin sustituir estado | Superadas |
+| T15–T17 | Cuatro gramáticas separadas; cuatro variantes Fortinet y 28 salidas Cisco/Huawei idénticas a sus referencias | Superadas |
+| T18–T19 | Error conserva opciones/propuesta/DOM; descargas individuales, conjuntas (separadores comentados) y JSON correctas | Superadas |
+| T20 | `node --check`, cero errores de página/consola; pantalla MikroTik y campos nuevos caben a 1440/390 px | Superada |
+| T21 | Router solo enrutado conserva gateways de cores; Gestión por interfaz real y SSH deshabilitado si no existe Gestión | Superada |
+| I1–I9 | Modo global exacto, v2→v3/JSON sin reasignar, pools sede/tránsito, asignación mixta, errores atómicos, persistencia v2/v3, eliminación VLAN y topología/textos Cisco/Huawei | Superadas |
+
+Evidencia temporal de sesión: scripts, `mikrotik-results.json`, `integral-results.json`, `scope-check.json`, referencias Fortinet y capturas en `/workspace/work/wan-mikrotik/`; no es una suite versionada ni un reporte académico nuevo. El harness T20 inicialmente exigía que la tabla de topología histórica cupiera; se contrastó con la base (419 px de ancho a viewport 390) y la rama (414 px), verificando separadamente que el modal y sus campos nuevos sí caben. T21 corrigió una entrada de prueba que había eliminado redes aún referenciadas por endpoints; no requirió cambios funcionales.
+
+**Pendiente/no validado físicamente:** captura oficial `docs/capturas/07-config-mikrotik.png`, modelo/patch 7.x, puertos, hardware offload, cuentas/SSH, adyacencias y rutas de retorno. Solo rol Router; LACP/VRRP, gateways compartidos, VRF/CAPsMAN e IPv6 no se inventan. Las propuestas no son idempotentes y forward queda bloqueado por diseño; requieren revisión manual y permisos de tráfico explícitos. Persisten `saveSite()`, selector a 320 px y tabla de topología a 390 px según datos; no se corrigieron. Fuentes oficiales por familia en [matriz-fabricantes.md](matriz-fabricantes.md).
 
 ## Direccionamiento IPv4 v3: implementado y probado
 
@@ -108,7 +140,7 @@ Reproducción histórica: abrir el HTML de aquella base servido localmente en un
 | --- | --- | --- |
 | Resuelta en el alcance probado | R1 histórico corregido por PR #2; `deleteVlan` lee las filas antes de eliminar | I7 conserva nombre, hosts y CIDR pendientes; antecedentes V1–V8/R1–R3 cubren cancelación, última fila y dependencias |
 | Implementada y probada | Direccionamiento IPv4 v3 automático/mixto por global, sede, tránsito y CIDR manual por VLAN | I1–I6/I8; gateway independiente. Pools DHCP y reservas editables pendientes, sin confundirlos con subredes |
-| Parcial / alta | Fortinet implementado y probado como texto; MikroTik pendiente; guía exige cuatro marcas | Validación física y captura 06 de Fortinet pendientes; implementar MikroTik y su evidencia 07; ver matriz de fabricantes |
+| Parcial / alta | Fortinet/MikroTik implementados y probados como texto; guía exige cuatro marcas | Validación física y capturas 06/07 pendientes; conservar regresión de cuatro adaptadores; ver matriz de fabricantes |
 | Alta | IPv6 es requisito oficial general; calculadora y plan actuales son IPv4 | Confirmar alcance para Corte 3; no ocultar la brecha ni atribuirle un peso independiente |
 | Media | Interfaz mezcla español y francés; Correcciones pide tanto solo botones como traducción integral | Decidir parche localizado frente a i18n total antes de modificar; son tareas distintas |
 | Media | README marca filtro Huawei pendiente; `configNodes` ya ofrece equivalencias cuando no hay nodos Huawei | Verificar específicamente selección alternativa, equipos manuales y mixtos; P5 solo prueba Comparación, no certifica ese filtro |
@@ -121,7 +153,7 @@ Flujo actual: proyecto/sedes → inventario → VLAN → plan VLSM → topologí
 
 `invalidate` aumenta revisión y vacía datos derivados según nivel. `confirmVlans` y `editGateway` eliminan topología y configuraciones previas para evitar salidas obsoletas. Cambiar VLAN puede afectar gateway, DHCP, OSPF, enlaces y ambos fabricantes. La conservación al eliminar VLAN está probada en I7. `saveSite()` mantiene su invalidación histórica de VLAN, plan y derivados al confirmar cambios; corregirla sigue pendiente. Persiste el desbordamiento histórico a 320 px del selector de sede; no se modificó en este PR.
 
-El validador de importación acepta Cisco/Huawei y Fortinet para Firewall. Añadir MikroTik o IPv6 necesita diseño de compatibilidad y pruebas sobre el esquema v3; ambos siguen pendientes. Fortinet tiene supuesto 7.4 autorizado y validación textual, sin certificación física.
+El validador de importación acepta Cisco/Huawei, Fortinet para Firewall y MikroTik para Router, con interfaces separadas y validación v3. Fortinet 7.4 y RouterOS 7.x son supuestos autorizados, con validación textual y compatibilidad física pendiente. IPv6 sigue pendiente.
 
 Las configuraciones son propuestas: no hay modelo/versión de equipo verificados. HSRP y VRRP no forman un grupo común; el programa advierte pares de cores de fabricantes distintos. En Cisco/Huawei, DHCP se configura solo en el core primario y no tiene replicación de concesiones. En Fortinet, DHCP/relay solo se generan en las LAN cuyo gateway asume el firewall, sin HA compartida. La WAN dibujada no aporta VPN, cifrado ni servicio de ISP; las ACL de administración no equivalen a aislamiento entre servicios. Estas advertencias existen por inspección; no se probó cada rama de validación.
 
@@ -131,9 +163,9 @@ El guardado local depende del origen, navegador y cuota. La imagen es referencia
 
 1. Revisar esta documentación y usar la trazabilidad como lista de aceptación, sin tratarla como evidencia de cumplimiento completo.
 2. Crear harness versionado y casos de conservación de estado, migración v2→v3, importación/exportación v3 y salidas Cisco/Huawei de referencia.
-3. Revisar las propuestas Fortinet y su PR sin fusionarlo automáticamente; tratar `saveSite()` y el desbordamiento a 320 px en tareas separadas.
+3. Revisar las propuestas MikroTik y su PR sin fusionarlo automáticamente; tratar `saveSite()` y el desbordamiento a 320 px en tareas separadas.
 4. Resolver i18n, alcance IPv6 y versiones de fabricantes; pools DHCP y reservas editables requieren diseño y autorización posteriores.
-5. Completar validación de plataforma y captura 06 de Fortinet; implementar MikroTik con pruebas y revisión de sintaxis por separado.
+5. Completar validación de plataforma y capturas 06/07 de Fortinet/MikroTik; conservar las referencias de los cuatro adaptadores.
 6. Completar ciberdefensa, pruebas formales, documentos y capturas, y ensayar sustentación en vivo.
 
 `AGENTS.md` contiene ahora las instrucciones permanentes que gobiernan el análisis, desarrollo, corrección, pruebas, documentación y publicación de WAN Architect. Sustituye el instructivo temporal utilizado para crear esta documentación y aplica autorizaciones diferentes según el tipo de tarea. Su existencia no modifica por sí misma el código de la aplicación ni demuestra el cumplimiento de requisitos; cada resultado debe confirmarse mediante inspección y pruebas. Esta revisión documental no cambia `WAN_v4.html`.
