@@ -1253,7 +1253,7 @@
             "VLAN y plan de direccionamiento",
             "Confirme los segmentos; el VLSM los ordena por tamaño y asigna redes sin solaparse. Incluye tránsito router–core y WAN entre sedes.",
           ) +
-          `<div class="card"><div class="grid">${field("Bloque IPv4 base", "base", state.project.base)}${field("Reserva de crecimiento (%)", "growth", state.project.growth, "number", 'min="0" max="100"')}${field("DNS para DHCP", "dns", state.project.dns)}</div><div class="notice">Hosts solicitados son terminales; el cálculo añade crecimiento y una IP de gateway, o tres IP si hay dos cores. El gateway no cuenta como host disponible para terminales. Las redes de tránsito son /30 y no usan VLAN.</div><div class="actions"><button onclick="proposeVlans()">Volver a proponer</button><button onclick="addVlan()">Agregar VLAN</button><button class="primary" onclick="confirmVlans()">Confirmar VLAN y calcular VLSM</button></div></div><div class="card"><h2>Segmentos editables por sede</h2>${state.vlans.length ? `<div class="tablewrap"><table><thead><tr><th>Sede</th><th>VLAN</th><th>Nombre</th><th>Servicio</th><th>Hosts terminales</th><th>DHCP local</th><th>Acción</th></tr></thead><tbody>${state.vlans.map((v, i) => `<tr><td><select id="vs${i}" aria-label="Sede de VLAN">${state.sites.map((s) => `<option value="${s.id}" ${s.id === v.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></td><td><input class="num" aria-label="VLAN" id="vi${i}" value="${v.id}" type="number" min="2" max="4094"></td><td><input aria-label="Nombre VLAN" id="vn${i}" value="${esc(v.name)}"></td><td><select aria-label="Servicio" id="vr${i}">${optsHTML(roles, v.role)}</select></td><td><input class="num" aria-label="Hosts" id="vh${i}" type="number" value="${v.hosts}"></td><td><input aria-label="DHCP local" id="vd${i}" type="checkbox" ${v.dhcp ? "checked" : ""}></td><td><button class="small danger" onclick="deleteVlan(${i})">Eliminar</button></td></tr>`).join("")}</tbody></table></div>` : '<div class="empty">Confirme los datos y genere una propuesta desde Estimación, o agregue sus segmentos manualmente.</div>'}</div>${planTable()}<details class="card"><summary>¿Qué significan VLSM, CIDR y gateway?</summary><p>VLSM asigna tamaños diferentes a las subredes. CIDR /n indica cuántos bits identifican la red. El gateway es la dirección del equipo que lleva el tráfico fuera de la VLAN. Una VLAN separa dominios de broadcast; necesita políticas de acceso para aportar aislamiento de seguridad.</p></details>`
+          `<div class="card"><div class="grid">${field("Bloque IPv4 base", "base", state.project.base)}${field("Reserva de crecimiento (%)", "growth", state.project.growth, "number", 'min="0" max="100"')}${field("DNS para DHCP", "dns", state.project.dns)}</div><div class="notice">Hosts solicitados son terminales; el cálculo añade crecimiento y una IP de gateway, o tres IP si hay dos cores. El gateway no cuenta como host disponible para terminales. Las redes de tránsito son /30 y no usan VLAN.</div><div class="actions"><button onclick="proposeVlans()">Volver a proponer</button><button onclick="addVlan()">Agregar VLAN</button><button class="primary" onclick="confirmVlans()">Confirmar VLAN y calcular VLSM</button></div></div><div class="card"><h2>Segmentos editables por sede</h2><p id="vlanCidrHelp" class="hint">Subred IPv4 / CIDR (opcional): deje vacío para asignación automática. Define la red completa de la VLAN; no es el gateway ni un rango DHCP.</p>${state.vlans.length ? `<div class="tablewrap"><table><thead><tr><th>Sede</th><th>VLAN</th><th>Nombre</th><th>Subred IPv4 / CIDR (opcional)</th><th>Servicio</th><th>Hosts terminales</th><th>DHCP local</th><th>Acción</th></tr></thead><tbody>${state.vlans.map((v, i) => `<tr><td><select id="vs${i}" aria-label="Sede de VLAN">${state.sites.map((s) => `<option value="${s.id}" ${s.id === v.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></td><td><input class="num" aria-label="VLAN" id="vi${i}" value="${v.id}" type="number" min="2" max="4094"></td><td><input aria-label="Nombre VLAN" id="vn${i}" value="${esc(v.name)}"></td><td><input aria-label="Subred IPv4 / CIDR (opcional)" id="vc${i}" value="${esc(v.ipv4Cidr || "")}" placeholder="Automática · 10.10.20.0/24" aria-describedby="vlanCidrHelp"></td><td><select aria-label="Servicio" id="vr${i}">${optsHTML(roles, v.role)}</select></td><td><input class="num" aria-label="Hosts" id="vh${i}" type="number" value="${v.hosts}"></td><td><input aria-label="DHCP local" id="vd${i}" type="checkbox" ${v.dhcp ? "checked" : ""}></td><td><button class="small danger" onclick="deleteVlan(${i})">Eliminar</button></td></tr>`).join("")}</tbody></table></div>` : '<div class="empty">Confirme los datos y genere una propuesta desde Estimación, o agregue sus segmentos manualmente.</div>'}</div>${planTable()}<details class="card"><summary>¿Qué significan VLSM, CIDR y gateway?</summary><p>VLSM asigna tamaños diferentes a las subredes. CIDR /n indica cuántos bits identifican la red. El gateway es la dirección del equipo que lleva el tráfico fuera de la VLAN. Una VLAN separa dominios de broadcast; necesita políticas de acceso para aportar aislamiento de seguridad.</p></details>`
         );
       }
       function addVlan() {
@@ -1292,6 +1292,8 @@
           site: $("vs" + i).value,
           id: num($("vi" + i).value, 2, 4094, "VLAN"),
           name: text($("vn" + i).value, "Nombre VLAN", 60),
+          ipv4Cidr: $("vc" + i).value.trim(),
+          gateway: vlanGatewayIntent(v),
           role: $("vr" + i).value,
           hosts: num($("vh" + i).value, 1, 1000000, "Hosts"),
           dhcp: $("vd" + i).checked,
@@ -1304,6 +1306,17 @@
             fail("Use una sola VLAN de gestión por sede.");
           if (!rows.length) fail("Se requiere al menos una VLAN en " + s.name);
         }
+        if (vlans.some((v) => v.ipv4Cidr))
+          manualVlanNetworks(
+            {
+              ...state.project,
+              base: $("base").value.trim(),
+              growth: num($("growth").value, 0, 100, "Reserva"),
+            },
+            state.sites,
+            vlans,
+            state.nodes,
+          );
         return vlans;
       } // Permite repetir VLAN entre sedes, pero no dentro de una.
       function initialTransits() {
@@ -1332,13 +1345,13 @@
             );
         return req;
       } // WAN en estrella; sedes desconectadas no reciben enlaces entre sí.
-      function allocationPools(base) {
+      function allocationPools(base, project = state.project, siteList = state.sites) {
         const b = privateIPv4Block(base, "Bloque global");
         if (b.prefix > 30) fail("El bloque base debe ser /30 o mayor.");
-        const project = { ...state.project, base };
-        validateSiteBlocks(project, state.sites);
+        project = { ...project, base };
+        validateSiteBlocks(project, siteList);
         const sites = new Map(
-          state.sites
+          siteList
             .filter((s) => s.ipv4Base)
             .map((s) => [s.id, subnet(s.ipv4Base)]),
         );
@@ -1362,18 +1375,57 @@
         }
         return cursor + size - 1 <= pool.end ? cursor : null;
       } // Primer hueco CIDR contiguo; no confunde espacio total con alineación.
+      function vlanGatewayIntent(v, previousPlan = state.plan) {
+        const previous = previousPlan.find((r) => r.key === v.key);
+        return previous && previous.gateway === previous.first && v.gateway === previous.first
+          ? ""
+          : v.gateway;
+      } // Reconoce el valor automático anterior sin añadir campos al esquema.
+      function manualVlanNetworks(project, sites, vlans, nodes = [], pools = null) {
+        const manual = new Map();
+        if (!vlans.some((v) => v.ipv4Cidr)) return manual;
+        pools = pools || allocationPools(project.base, project, sites);
+        for (const v of vlans) {
+          if (!v.ipv4Cidr) continue;
+          const site = sites.find((s) => s.id === v.site),
+            label = "Sede «" + site.name + "», VLAN " + v.id + " «" + v.name + "»",
+            network = privateIPv4Block(v.ipv4Cidr, label),
+            reserve = site.redundant ? 3 : 1,
+            required = Math.ceil(v.hosts * (1 + project.growth / 100)) + reserve,
+            pool = pools.sites.get(v.site) || pools.global;
+          if (network.prefix > 30)
+            fail(label + ": /31 y /32 no son aptos para LAN y sus reservas.");
+          if (network.hosts < required)
+            fail(label + ": capacidad insuficiente; requiere " + required + " IP útiles, disponibles " + network.hosts + ".");
+          if (network.net < pool.net || network.end > pool.end)
+            fail(label + ": la subred queda fuera del bloque de " + (site.ipv4Base ? "su sede." : "proyecto."));
+          for (const [id, block] of pools.sites)
+            if (id !== v.site && network.net <= block.end && block.net <= network.end)
+              fail(label + ": la subred invade el bloque reservado de otra sede.");
+          if (pools.transit && network.net <= pools.transit.end && pools.transit.net <= network.end)
+            fail(label + ": la subred se solapa con el bloque de tránsito.");
+          for (const [key, other] of manual)
+            if (network.net <= other.end && other.net <= network.end)
+              fail(label + ": la subred se solapa con la VLAN «" + vlans.find((x) => x.key === key).name + "».");
+          if (v.gateway) {
+            let valid = false;
+            try { valid = isHost(v.gateway, network); } catch (e) { /* Se informa con contexto de sede/VLAN. */ }
+            if (!valid)
+              fail(label + ": gateway manual inválido o fuera de la subred.");
+            if (nodes.some((n) => n.network === v.key && n.ip === v.gateway))
+              fail(label + ": gateway manual en conflicto con una IP reservada a un equipo.");
+          }
+          manual.set(v.key, network);
+        }
+        return manual;
+      } // Valida y reserva intenciones; no asigna ni sustituye el plan efectivo.
       function allocate(vlans, base, growth, transits) {
-        for (const v of vlans)
-          if (v.ipv4Cidr)
-            fail(
-              "Sede «" + siteName(v.site) + "», VLAN " + v.id +
-                ": la subred manual será soportada en la siguiente etapa.",
-            );
         const pools = allocationPools(base),
+          manual = manualVlanNetworks({ ...state.project, base, growth }, state.sites, vlans, state.nodes, pools),
           b = pools.global,
-          scoped = pools.sites.size > 0 || pools.transit !== null,
+          scoped = pools.sites.size > 0 || pools.transit !== null || manual.size > 0,
           reserved = [...pools.sites.values(), ...(pools.transit ? [pools.transit] : [])],
-          assigned = [];
+          assigned = [...manual.values()];
         const req = vlans
           .map((v) => {
             const s = state.sites.find((s) => s.id === v.site),
@@ -1385,8 +1437,8 @@
               kind: "vlan",
               reserve,
               required: need,
-              prefix: 32 - bits,
-              size: 2 ** bits,
+              prefix: manual.get(v.key)?.prefix ?? 32 - bits,
+              size: manual.get(v.key)?.total ?? 2 ** bits,
             };
           })
           .concat(
@@ -1405,7 +1457,9 @@
           const pool = r.kind === "vlan"
             ? pools.sites.get(r.site) || b
             : pools.transit || b;
-          cursor = scoped
+          cursor = manual.has(r.key)
+            ? manual.get(r.key).net
+            : scoped
             ? findIPv4Space(pool, r.size, [
                 ...assigned,
                 ...(pool === b ? reserved : []),
@@ -1439,7 +1493,7 @@
                 " fuera de su nueva subred. Bórrelo antes de recalcular.",
             );
           result.push(row);
-          assigned.push({ net: info.net, end: info.end });
+          if (!manual.has(r.key)) assigned.push({ net: info.net, end: info.end });
           cursor += r.size;
         }
         return result;
@@ -3349,6 +3403,7 @@
           out.vlans.map((v) => v.site + "-" + v.id),
           "VLAN por sede",
         );
+        const manual = manualVlanNetworks(out.project, out.sites, out.vlans);
         out.plan = src.plan.map((r) => {
           const kind = enumVal(r.kind, ["vlan", "transit", "wan"], "Red"),
             info = subnet(r.network + "/" + r.prefix);
@@ -3410,6 +3465,22 @@
           out.plan.map((r) => r.key),
           "Clave red",
         );
+        for (const [key, network] of manual) {
+          const v = out.vlans.find((v) => v.key === key),
+            effective = out.plan.find((r) => r.key === key && r.kind === "vlan"),
+            label = "Sede «" + out.sites.find((s) => s.id === v.site).name + "», VLAN " + v.id;
+          if (out.plan.length && !effective)
+            fail(label + ": falta la subred manual en el plan importado.");
+          if (!effective) continue;
+          if (effective.network !== network.network || effective.prefix !== network.prefix)
+            fail(label + ": el plan no coincide con la intención CIDR manual.");
+          if (effective.gateway !== (v.gateway || effective.first))
+            fail(label + ": gateway incoherente con la intención manual.");
+          const source = src.plan.find((r) => r.key === key);
+          for (const field of ["reserve", "available", "hostsRequested"])
+            if (source[field] !== undefined && source[field] !== effective[field])
+              fail(label + ": " + field + " incoherente en el plan manual.");
+        }
         for (let i = 0; i < out.plan.length; i++)
           for (let j = i + 1; j < out.plan.length; j++)
             if (
