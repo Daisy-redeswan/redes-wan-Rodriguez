@@ -5,7 +5,8 @@
 Repositorio: `https://github.com/Daisy-redeswan/redes-wan-Rodriguez`.
 Rama de esta documentación: `docs/instrucciones-codex`.
 Base verificada de `origin/main`: `6f45dc1e54051a2467241ee50f59fa18906cf23c`.
-Revisión y pruebas de esta tarea: 2 de noviembre de 2026, America/Bogota.
+Revisión y repetición de P1–P6/R1: 7 de noviembre de 2026, America/Bogota.
+Antecedente conservado: commit de documentación `ce35714047c1e86a4823f5513b2a76867c06a188`, publicado sobre la misma base de main. La rama existente se reutiliza sin reescribir su historial; el adjunto coincide exactamente con su `AGENTS.md`.
 
 Objetivo general: apoyar el diseño y la gestión de redes WAN por sedes, calcular direccionamiento, representar dispositivos y enlaces y generar propuestas de configuración por fabricante, con ciberdefensa integrada y evidencia académica reproducible. La aplicación genera texto; no aplica configuraciones a dispositivos.
 
@@ -42,7 +43,7 @@ La persistencia usa `localStorage` con clave `WAN-Architect-v2`. `exportJSON()` 
 
 ## Pruebas ejecutadas en esta tarea
 
-Ejecución real con Python/Playwright ya disponibles y Chromium 154.0.8037.57, contexto de navegador nuevo, datos ficticios. Se sirvió el checkout por HTTP local temporal con `http.server`; GET de `WAN_v4.html` devolvió 200. El servidor y el navegador se cerraron al terminar. La apertura directa `file://` se intentó primero y quedó **bloqueada por política del navegador** (`ERR_BLOCKED_BY_ADMINISTRATOR`); no es un fallo demostrado del HTML. No se cambiaron políticas del navegador.
+P1–P6 y R1 se repitieron en esta revisión con Python/Playwright ya disponibles y Chromium 154.0.8037.57, contexto de navegador nuevo y datos ficticios. Se sirvió el checkout por HTTP local temporal con `http.server`; GET de `WAN_v4.html` devolvió 200. El servidor y el navegador se cerraron al terminar. No se instalaron dependencias ni se aplicaron configuraciones de red. El antecedente `ce35714` registra bloqueo de `file://` por política del navegador (`ERR_BLOCKED_BY_ADMINISTRATOR`); esa modalidad no se repitió en esta revisión y no demuestra un fallo del HTML.
 
 | Caso | Acción y comprobación ejecutada | Resultado y límite |
 | --- | --- | --- |
@@ -54,7 +55,7 @@ Ejecución real con Python/Playwright ya disponibles y Chromium 154.0.8037.57, c
 | P6 | Guardar proyecto después de P5 | Existe una entrada en `localStorage`; no se probó restauración, persistencia tras reinicio ni ida y vuelta de JSON |
 | R1 | En VLAN, editar sin confirmar el nombre de la primera fila y eliminar la tercera | **Defecto reproducido:** el nombre visible vuelve al confirmado anterior; no se conserva la edición pendiente |
 
-No hubo errores de página JavaScript en el flujo HTTP ejecutado. R1 confirma una incidencia pendiente; no equivale a que el comportamiento requerido pase. Las verificaciones se ejecutaron como comandos de sesión, sin incorporar un harness al repositorio. No se generaron capturas ni un reporte académico formal. No se calcula porcentaje de confianza con esta prueba de humo.
+No hubo errores de página JavaScript en el flujo HTTP ejecutado. Los resultados P1–P6/R1 de la tabla corresponden a la repetición actual, no solo al registro histórico. R1 confirma una incidencia pendiente; no equivale a que el comportamiento requerido pase. Las verificaciones se ejecutaron como comandos de sesión, sin incorporar un harness al repositorio. No se generaron capturas ni un reporte académico formal. No se calcula porcentaje de confianza con esta prueba de humo.
 
 Reproducción manual: abrir el HTML servido localmente en un navegador limpio, ejecutar P1–P6 en el orden indicado y después R1. Para repetir las comprobaciones internas usar `state.plan`, `state.nodes`, `state.links` y `state.configs` en la consola; el código conserva estas variables en el contexto del script. Probar JSON, descargas, todos los fabricantes y límites requiere casos adicionales.
 
@@ -81,7 +82,7 @@ El validador de importación solo acepta fabricantes Cisco/Huawei. Añadir marca
 
 Las configuraciones son propuestas: no hay modelo/versión de equipo verificados. HSRP y VRRP no forman un grupo común; el programa advierte pares de cores de fabricantes distintos. DHCP se configura solo en el core primario y no tiene replicación de concesiones. La WAN dibujada no aporta VPN, cifrado ni servicio de ISP; las ACL de administración no equivalen a aislamiento entre servicios. Estas advertencias existen por inspección; no se probó cada rama de validación.
 
-El guardado local depende del origen, navegador y cuota. La imagen es referencia manual, sin OCR ni reconocimiento automático. No se verificaron importación/exportación, descargas, portapapeles, accesibilidad, móviles o todos los casos de seguridad. Las capturas 01–04 y el PDF Corte 2 existen, pero no se auditó su contenido ni vigencia frente al commit base. Falta `05-github-commits.png`; la base tiene 22 commits alcanzables, lo que no demuestra calidad de mensajes, visibilidad pública ni 2FA.
+El guardado local depende del origen, navegador y cuota. La imagen es referencia manual, sin OCR ni reconocimiento automático. No se verificaron importación/exportación, descargas, portapapeles, accesibilidad, móviles o todos los casos de seguridad. Las capturas 01–04 y el PDF Corte 2 existen, pero no se auditó su contenido ni vigencia frente al commit base. Falta `05-github-commits.png`; la base tiene 22 commits alcanzables, lo que no demuestra calidad de mensajes ni 2FA. El conector GitHub confirmó en esta revisión `visibility: public` y rama principal `main`; 2FA no se verificó.
 
 ## Próximas etapas recomendadas
 

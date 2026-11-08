@@ -21,6 +21,8 @@ Las funcionalidades avanzadas presentes en el código no son todas requisitos ex
 
 ## Validaciones, riesgos y pruebas necesarias
 
+La evidencia P5 de esta tabla se repitió el 7 de noviembre de 2026 (America/Bogota) contra el mismo `WAN_v4.html` de la base indicada. Solo comprueba generación de texto en Comparación; mantiene pendientes las pruebas por plataforma y versión.
+
 | Fabricante | Evidencia real disponible en esta tarea | Validaciones pendientes | Riesgos de compatibilidad | Pruebas necesarias antes de declarar soporte |
 | --- | --- | --- | --- | --- |
 | Cisco IOS / IOS XE | P5: Comparación del primer equipo del laboratorio produjo texto con `hostname`. No se probó toda la salida ni todos los equipos | Validar comandos contra documentación oficial del modelo/OS, modos y capacidades de interfaces; comprobar seguridad, DHCP/relay, OSPF y redundancia | Router frente a switch L2/L3; nombres de interfaces; soporte de `no switchport`, HSRP, RSA, STP y comandos de guardado; usuario propuesto de privilegio 1 puede requerir un procedimiento externo de autorización | Casos de router, L2 y L3; comparar VLAN/IP/rutas con plan; sin/ con redundancia; DHCP y relay; LACP con enlaces completos; revisar CLI y comportamiento en laboratorio autorizado por tarea separada |
