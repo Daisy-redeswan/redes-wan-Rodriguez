@@ -620,7 +620,7 @@
         "Datos del proyecto",
         "Estimación e infraestructura",
         "VLAN y VLSM",
-        "Subnetting IPv4",
+        "Subnetting IPv4 / IPv6",
         "Topología",
         "Configuración Cisco",
         "Configuración Huawei",
@@ -629,6 +629,7 @@
         "Evidencias Corte 2",
         "Configuración Fortinet",
         "Configuración MikroTik",
+        "Planificación IPv6",
       ]; // Etapas visibles del flujo.
       const kinds = [
         "Router",
@@ -677,7 +678,7 @@
       let state = fresh(); // Se inicia vacío; los datos de demostración solo se cargan por acción explícita.
       function fresh() {
         return {
-          version: 3,
+          version: 4,
           project: {
             name: "",
             company: "",
@@ -687,12 +688,14 @@
             segmentation: "Servicios",
             base: "10.20.0.0/16",
             transitBase: "",
+            ipv6Base: "",
             growth: 20,
             dns: "1.1.1.1",
           },
           sites: [siteDefault(1)],
           vlans: [],
           plan: [],
+          ipv6Plan: [],
           nodes: [],
           links: [],
           approved: false,
@@ -718,6 +721,7 @@
           id: "s" + n,
           name: "Sede " + n,
           ipv4Base: "",
+          ipv6Base: "",
           floors: 1,
           users: 25,
           ratio: 2,
@@ -865,6 +869,7 @@
         );
       } // Aviso accesible de guardado, validación o error.
       function invalidate(level = "project") {
+        if (level === "project" || level === "plan") state.ipv6Plan = [];
         state.revision++;
         state.configs = {};
         if (level === "project") {
@@ -929,9 +934,12 @@
           evidenceView,
           fortinetView,
           mikrotikView,
+          ipv6View,
         ][page]();
         $("stepfoot").innerHTML =
           `<button ${page === 0 ? "disabled" : ""} onclick="go(${page - 1})">← Anterior</button><button class="primary" ${page === steps.length - 1 ? "disabled" : ""} onclick="go(${page + 1})">Siguiente →</button>`;
+        if ([6, 7, 11, 12].includes(page))
+          $("view").insertAdjacentHTML("afterbegin", '<div class="notice">Estas propuestas de fabricante son exclusivamente IPv4. IPv6 solo se calcula y planifica; su configuración requiere aclaración docente.</div>');
         if (page === 5) bindDrag();
       } // Solo se reconstruye la etapa visible.
       /* =================== Datos por sede y estimación explicable =================== */
@@ -1511,6 +1519,8 @@
             growth = num($("growth").value, 0, 100, "Reserva"),
             dns = ipStr(ipNum($("dns").value.trim()));
           const plan = allocate(vlans, base, growth, initialTransits());
+          if (state.ipv6Plan.length && (state.ipv6Plan.length !== vlans.length ||
+              state.ipv6Plan.some((r) => !vlans.some((v) => v.key === r.key && v.site === r.site)))) state.ipv6Plan = [];
           state.project = { ...state.project, base, growth, dns };
           state.vlans = vlans;
           state.plan = plan;
@@ -1565,17 +1575,17 @@
         const val = state.calc || "192.168.10.50/26";
         let result = "";
         try {
-          const r = subnet(val);
-          result = subnetResult(r);
+          const r = addressCalculation(val);
+          result = addressResult(r);
         } catch (e) {
           result = `<div class="notice error">${esc(e.message)}</div>`;
         }
         return (
           title(
-            "Subnetting IPv4",
-            "Compruebe una IP/CIDR o una red del plan. /31 utiliza ambas direcciones para punto a punto; /32 representa una sola dirección.",
+            "Subnetting IPv4 / IPv6",
+            "Compruebe IPv4/CIDR o IPv6/prefijo. IPv4: /31 punto a punto y /32 dirección única. IPv6: rango completo, sin broadcast ni descuento de dos direcciones.",
           ) +
-          `<div class="card"><div class="grid">${field("Dirección IPv4 / prefijo CIDR", "calc", val)}<div class="field"><label>Acciones</label><div class="actions"><button class="primary" onclick="calculate()">Calcular</button><button onclick="state.calc='192.168.10.50/26';render()">Ejemplo obligatorio /26</button></div></div></div></div><div id="calcResult">${result}</div>${state.plan.length ? `<div class="card"><h3>Validar una red del proyecto</h3><div class="chips">${state.plan.map((r, i) => `<button onclick="inspectSubnet(${i})">${esc(siteName(r.site))} · ${esc(r.name)} · ${r.network}/${r.prefix}</button>`).join("")}</div></div>` : ""}<details class="card"><summary>Interpretación</summary><p>La dirección de red identifica la subred. Broadcast alcanza todos sus hosts en redes convencionales. La máscara separa bits de red y de host. /0 tiene 4.294.967.296 direcciones; no debe confundirse con una política que permita todo tráfico.</p></details>`
+          `<div class="card"><div class="grid">${field("Dirección IPv4 o IPv6 / prefijo CIDR", "calc", val)}<div class="field"><label>Acciones</label><div class="actions"><button class="primary" onclick="calculate()">Calcular</button><button onclick="state.calc='192.168.10.50/26';render()">Ejemplo obligatorio /26</button></div></div></div></div><div id="calcResult">${result}</div>${state.plan.length ? `<div class="card"><h3>Validar una red del proyecto</h3><div class="chips">${state.plan.map((r, i) => `<button style="white-space:normal;overflow-wrap:anywhere;max-width:100%" onclick="inspectSubnet(${i})">${esc(siteName(r.site))} · ${esc(r.name)} · ${r.network}/${r.prefix}</button>`).join("")}</div></div>` : ""}<details class="card"><summary>Interpretación</summary><p>La dirección de red identifica la subred. Broadcast alcanza todos sus hosts en redes convencionales. La máscara separa bits de red y de host. /0 tiene 4.294.967.296 direcciones; no debe confundirse con una política que permita todo tráfico.</p></details>`
         );
       }
       function subnetResult(r) {
@@ -1615,12 +1625,204 @@
       function calculate() {
         safe(() => {
           const value = $("calc").value.trim(),
-            r = subnet(value);
+            r = addressCalculation(value);
           state.calc = value;
           state.subnetOK = true;
-          $("calcResult").innerHTML = subnetResult(r);
+          $("calcResult").innerHTML = addressResult(r);
         });
       } // El estado de la rúbrica solo cambia tras cálculo válido.
+      /* IPv6 independiente: RFC 4291/4193/5952; BigInt nunca sale al estado. */
+      function ipv6Number(value) {
+        if (typeof value !== "string" || value.length > 80 || !/^[0-9a-fA-F:.]+$/.test(value))
+          fail("IPv6 inválida: use una dirección sin zona, comandos ni espacios.");
+        let text = value;
+        if (text.includes(".")) {
+          const colon = text.lastIndexOf(":"), tail = text.slice(colon + 1).split(".");
+          if (colon < 0 || tail.length !== 4 || tail.some((o) => !/^(0|[1-9][0-9]{0,2})$/.test(o) || Number(o) > 255))
+            fail("Cola IPv4 inválida en IPv6.");
+          const n = tail.reduce((n, o) => (n << 8n) | BigInt(o), 0n);
+          text = text.slice(0, colon + 1) + (n >> 16n).toString(16) + ":" + (n & 65535n).toString(16);
+        }
+        const halves = text.split("::");
+        if (halves.length > 2) fail("IPv6 solo permite una compresión ::.");
+        const left = halves[0] ? halves[0].split(":") : [],
+          right = halves.length === 2 && halves[1] ? halves[1].split(":") : [],
+          groups = left.concat(right);
+        if (groups.some((g) => !/^[0-9a-fA-F]{1,4}$/.test(g)) ||
+            (halves.length === 1 ? groups.length !== 8 : groups.length >= 8))
+          fail("IPv6 requiere ocho grupos de 16 bits, con compresión válida.");
+        const full = halves.length === 2 ? left.concat(Array(8 - groups.length).fill("0"), right) : left;
+        return full.reduce((n, g) => (n << 16n) | BigInt("0x" + g), 0n);
+      }
+      function ipv6String(n) {
+        if (typeof n !== "bigint" || n < 0n || n >= (1n << 128n)) fail("Entero IPv6 fuera de rango.");
+        if ((n >> 32n) === 65535n)
+          return "::ffff:" + [24n, 16n, 8n, 0n].map((bits) => Number((n >> bits) & 255n)).join(".");
+        const groups = Array.from({ length: 8 }, (_, i) => ((n >> BigInt((7 - i) * 16)) & 65535n).toString(16));
+        let start = -1, length = 1;
+        for (let i = 0; i < 8;) {
+          if (groups[i] !== "0") { i++; continue; }
+          let end = i; while (end < 8 && groups[end] === "0") end++;
+          if (end - i > length) { start = i; length = end - i; }
+          i = end;
+        }
+        return start < 0 ? groups.join(":") : groups.slice(0, start).join(":") + "::" + groups.slice(start + length).join(":");
+      } // Minúsculas, mayor secuencia de ceros, primera en empate; no comprime un cero aislado.
+      function ipv6In(n, address, prefix) {
+        const bits = BigInt(128 - prefix);
+        return (n >> bits) === (ipv6Number(address) >> bits);
+      }
+      function ipv6Type(n) {
+        if (n === 0n) return "Unspecified";
+        if (n === 1n) return "Loopback";
+        if (ipv6In(n, "2001:db8::", 32) || ipv6In(n, "3fff::", 20)) return "Documentación";
+        if (ipv6In(n, "ff00::", 8)) return "Multicast";
+        if (ipv6In(n, "fe80::", 10)) return "Link-local";
+        if (ipv6In(n, "fc00::", 7)) return "ULA (uso local)";
+        if (ipv6In(n, "2001::", 23) || ipv6In(n, "2002::", 16) || ipv6In(n, "2620:4f:8000::", 48))
+          return "Especial (IANA)";
+        return ipv6In(n, "2000::", 3) ? "Global unicast (clasificación preliminar)" : "Especial / reservado";
+      }
+      function ipv6Subnet(value) {
+        if (typeof value !== "string" || value.length > 85) fail("CIDR IPv6 inválido.");
+        const parts = value.trim().split("/");
+        if (parts.length !== 2 || !/^(0|[1-9][0-9]{0,2})$/.test(parts[1])) fail("Indique IPv6/prefijo, por ejemplo fd12:3456:789a::/48.");
+        const prefix = Number(parts[1]);
+        if (prefix > 128) fail("El prefijo IPv6 debe estar entre /0 y /128.");
+        const ip = ipv6Number(parts[0]), bits = BigInt(128 - prefix), total = 1n << bits,
+          net = (ip >> bits) << bits, end = net + total - 1n;
+        return { ip: ipv6String(ip), prefix, net, end, total,
+          network: ipv6String(net), first: ipv6String(net), last: ipv6String(end), type: ipv6Type(ip) };
+      }
+      function addressCalculation(value) {
+        return value.includes(":") ? ipv6Subnet(value) : subnet(value);
+      }
+      function addressResult(r) {
+        if (typeof r.net !== "bigint") return subnetResult(r);
+        return `<div class="card"><h2>Resultado IPv6 calculado</h2><div class="tablewrap"><table style="table-layout:fixed">${Object.entries({
+          "IP canónica": r.ip, "Red / prefijo": r.network + "/" + r.prefix,
+          "Primera dirección del rango": r.first, "Última dirección del rango": r.last,
+          "Direcciones totales (sin restar red/broadcast)": r.total.toString(),
+          "Broadcast": "No aplica (IPv6)", "Clasificación": r.type,
+        }).map(([label, value]) => `<tr><th style="white-space:normal;overflow-wrap:anywhere">${label}</th><td class="mono" style="overflow-wrap:anywhere">${esc(value)}</td></tr>`).join("")}</table></div><p>Rango matemático de direcciones, no una lista de hosts asignables: existen direcciones especiales/anycast y reservas de operación. La clasificación no demuestra enrutabilidad. No se generan configuraciones IPv6.</p></div>`;
+      }
+      function ipv6Intent(value, label) {
+        if (value === undefined) return "";
+        if (typeof value !== "string" || value.length > 85) fail(label + ": se requiere una cadena CIDR IPv6.");
+        return value.trim();
+      }
+      function ipv6Block(value, label, min, max) {
+        const r = ipv6Subnet(value);
+        if (ipv6Number(r.ip) !== r.net) fail(label + ": dirección de red desalineada.");
+        if (!ipv6In(r.net, "fd00::", 8) || !ipv6In(r.end, "fd00::", 8))
+          fail(label + ": planificación solo ULA local fd00::/8.");
+        if (r.prefix < min || r.prefix > max) fail(label + ": se requiere /" + min + (min === max ? "" : " a /" + max) + ".");
+        return r;
+      }
+      function ipv6Blocks(project, sites) {
+        const base = ipv6Intent(project.ipv6Base, "Proyecto IPv6"), manual = new Map();
+        if (!base) {
+          if (sites.some((s) => ipv6Intent(s.ipv6Base, "Sede IPv6"))) fail("Habilite primero el prefijo IPv6 del proyecto.");
+          return { global: null, manual };
+        }
+        const global = ipv6Block(base, "Proyecto IPv6", 48, 56);
+        for (const s of sites) {
+          const value = ipv6Intent(s.ipv6Base, "IPv6 de " + s.name);
+          if (!value) continue;
+          const block = ipv6Block(value, "Sede «" + s.name + "»", 56, 56);
+          if (block.net < global.net || block.end > global.end) fail("Sede «" + s.name + "»: bloque IPv6 fuera del proyecto.");
+          for (const [id, other] of manual)
+            if (block.net <= other.end && block.end >= other.net)
+              fail("Sedes IPv6 solapadas: «" + s.name + "» / «" + sites.find((s) => s.id === id).name + "».");
+          manual.set(s.id, block);
+        }
+        return { global, manual };
+      }
+      function ipv6Row(v, site, pool, net) {
+        const end = net + (1n << 64n) - 1n, router = ipv6String(net + 1n);
+        return { key: v.key, site: site.id, siteCidr: pool.network + "/56", cidr: ipv6String(net) + "/64",
+          router, virtual: site.redundant ? router : "",
+          physical: site.redundant ? [ipv6String(net + 2n), ipv6String(net + 3n)] : [router],
+          first: ipv6String(net), last: ipv6String(end), addresses: (1n << 64n).toString() };
+      } // Solo cadenas (o arrays de cadenas); las reservas no son configuraciones HSRP/VRRP.
+      function allocateIPv6(project, sites, vlans) {
+        const { global, manual } = ipv6Blocks(project, sites);
+        if (!global) return [];
+        if (!vlans.length) fail("Confirme o proponga VLAN antes de planificar IPv6.");
+        const pools = new Map(manual), occupied = [...manual.values()], size = 1n << 72n;
+        for (const s of sites.slice().sort((a, b) => a.id.localeCompare(b.id))) {
+          if (pools.has(s.id)) continue;
+          let cursor = global.net;
+          while (cursor + size - 1n <= global.end && occupied.some((r) => cursor <= r.end && cursor + size - 1n >= r.net)) cursor += size;
+          if (cursor + size - 1n > global.end) fail("Sede «" + s.name + "»: capacidad IPv6 insuficiente para un /56.");
+          const pool = ipv6Subnet(ipv6String(cursor) + "/56"); pools.set(s.id, pool); occupied.push(pool);
+        }
+        const result = [];
+        for (const s of sites.slice().sort((a, b) => a.id.localeCompare(b.id))) {
+          const rows = vlans.filter((v) => v.site === s.id).slice().sort((a, b) => a.key.localeCompare(b.key)), pool = pools.get(s.id);
+          if (rows.length > 256) fail("Sede «" + s.name + "»: capacidad /56 insuficiente; máximo 256 VLAN /64.");
+          rows.forEach((v, i) => result.push(ipv6Row(v, s, pool, pool.net + (BigInt(i) << 64n))));
+        }
+        if (result.length !== vlans.length) fail("VLAN con sede IPv6 desconocida.");
+        return result;
+      }
+      function validateIPv6Plan(src, out) {
+        const pools = ipv6Blocks(out.project, out.sites), list = src.ipv6Plan;
+        if (!Array.isArray(list) || list.length > 3000) fail("Plan IPv6 ausente o demasiado grande.");
+        if (!list.length) return [];
+        if (!pools.global || list.length !== out.vlans.length) fail("Plan IPv6 incompleto o sin prefijo de proyecto.");
+        const seen = new Set(), assigned = [], sites = new Map();
+        return list.map((entry) => {
+          if (!entry || typeof entry !== "object") fail("Fila IPv6 inválida.");
+          const v = out.vlans.find((v) => v.key === entry.key), s = v && out.sites.find((s) => s.id === v.site);
+          if (!v || entry.site !== v.site || seen.has(v.key)) fail("Clave/sede VLAN IPv6 inválida o duplicada.");
+          seen.add(v.key);
+          const pool = ipv6Block(entry.siteCidr, "Plan de sede «" + s.name + "»", 56, 56),
+            network = ipv6Block(entry.cidr, "VLAN IPv6 " + v.id, 64, 64);
+          if (pool.net < pools.global.net || pool.end > pools.global.end || network.net < pool.net || network.end > pool.end)
+            fail("Plan IPv6 fuera de sus bloques.");
+          if (pools.manual.has(s.id) && pools.manual.get(s.id).net !== pool.net) fail("Plan IPv6 no coincide con el bloque manual de sede.");
+          for (const [id, other] of [...pools.manual, ...sites])
+            if (id !== s.id && pool.net <= other.end && pool.end >= other.net) fail("Plan IPv6: bloques de sedes solapados.");
+          if (sites.has(s.id) && sites.get(s.id).net !== pool.net) fail("Una sede no puede tener varios /56 IPv6.");
+          sites.set(s.id, pool);
+          if (assigned.some((r) => network.net <= r.end && network.end >= r.net)) fail("VLAN IPv6 solapadas.");
+          assigned.push(network);
+          const expected = ipv6Row(v, s, pool, network.net);
+          if (Object.keys(entry).length !== Object.keys(expected).length || Object.entries(expected).some(([key, value]) =>
+              JSON.stringify(entry[key]) !== JSON.stringify(value))) fail("Plan IPv6: direcciones, reservas o campos incoherentes.");
+          return expected;
+        });
+      } // Valida el plan recibido; no llama a allocate() ni allocateIPv6().
+      function newULAPrefix() {
+        const bytes = crypto.getRandomValues(new Uint8Array(5)); let n = 0xfdn << 120n;
+        bytes.forEach((byte, i) => { n |= BigInt(byte) << BigInt(112 - i * 8); });
+        return ipv6String(n) + "/48";
+      } // Identificador local pseudoaleatorio de 40 bits; no es una asignación pública.
+      function toggleIPv6() {
+        if ($("ipv6Enabled").checked && !$("ipv6Base").value.trim()) $("ipv6Base").value = newULAPrefix();
+      }
+      function confirmIPv6() {
+        safe(() => {
+          const enabled = $("ipv6Enabled").checked,
+            project = { ...state.project, ipv6Base: enabled ? $("ipv6Base").value.trim() : "" },
+            sites = state.sites.map((s, i) => ({ ...s, ipv6Base: enabled ? $("ipv6Site" + i).value.trim() : "" }));
+          if (enabled && !project.ipv6Base) fail("Indique el prefijo ULA del proyecto.");
+          const plan = allocateIPv6(project, sites, state.vlans);
+          if (project.ipv6Base) project.ipv6Base = ipv6Subnet(project.ipv6Base).network + "/" + ipv6Subnet(project.ipv6Base).prefix;
+          sites.forEach((s) => { if (s.ipv6Base) s.ipv6Base = ipv6Subnet(s.ipv6Base).network + "/56"; });
+          state.project = project; state.sites = sites; state.ipv6Plan = plan;
+          render(); toast(enabled ? "Plan IPv6 confirmado; no modifica IPv4 ni sus propuestas." : "Planificación IPv6 desactivada; IPv4 conservado.");
+        });
+      } // La validación y asignación completas preceden a cualquier cambio de estado/DOM.
+      function ipv6View() {
+        return title("Planificación IPv6 de laboratorio", "ULA independiente de IPv4 · /48 de proyecto → /56 por sede → /64 por VLAN · sin tránsitos ni configuraciones IPv6.") +
+          `<div class="card"><label class="check"><input id="ipv6Enabled" type="checkbox" ${state.project.ipv6Base ? "checked" : ""} onchange="toggleIPv6()">Habilitar planificación IPv6</label><div class="grid">${field("Prefijo ULA del proyecto (opcional; /48 a /56)", "ipv6Base", state.project.ipv6Base, "text", 'placeholder="fd12:3456:789a::/48"')}${state.sites.map((s, i) => field("Bloque /56 de «" + esc(s.name) + "» (opcional)", "ipv6Site" + i, s.ipv6Base, "text", 'placeholder="Vacío = /56 automático"')).join("")}</div><p>Al habilitar se propone un /48 con identificador pseudoaleatorio (RFC 4193); confirme para guardarlo. Vacío en una sede asigna un /56 del proyecto; cada /56 admite 256 VLAN /64. Desactivar y confirmar elimina solo la intención y el plan IPv6. Se utilizan las VLAN del estado confirmado; confirme primero las ediciones pendientes en VLAN/VLSM.</p><div class="actions"><button class="primary" onclick="confirmIPv6()">Confirmar planificación IPv6</button></div></div>` +
+          `<div class="notice warn">Router propuesto: prefijo completo + ::1. Con redundancia, ::1 virtual y ::2/::3 físicas; sin redundancia, ::1 física. Son reservas de planificación, sin habilitar HSRP/VRRP ni conectividad IPv6. Broadcast: no aplica. Sin DHCPv6, SLAAC avanzado, NAT66 ni políticas IPv6. Las propuestas Cisco/Huawei/Fortinet/MikroTik siguen siendo exclusivamente IPv4, pendiente aclaración docente.</div>` +
+          (state.ipv6Plan.length ? `<div class="card"><h2>Plan IPv6 confirmado · ${esc(state.project.ipv6Base)}</h2><div class="tablewrap"><table><thead><tr><th>Sede / VLAN</th><th>Bloque sede</th><th>Subred VLAN</th><th>Router</th><th>Virtual</th><th>Físicas</th><th>Direcciones totales</th></tr></thead><tbody>${state.ipv6Plan.map((r) => `<tr><td>${esc(siteName(r.site))} · V${esc(state.vlans.find((v) => v.key === r.key)?.id)}</td><td class="mono">${esc(r.siteCidr)}</td><td class="mono">${esc(r.cidr)}</td><td class="mono">${esc(r.router)}</td><td class="mono">${esc(r.virtual || "—")}</td><td class="mono">${r.physical.map(esc).join("<br>")}</td><td>${r.addresses}</td></tr>`).join("")}</tbody></table></div></div>` : '<div class="card empty">IPv6 desactivado o pendiente de confirmar. IPv4 conserva su propio plan.</div>') +
+          `<details class="card"><summary>Fuentes oficiales y límites</summary><p><a href="https://www.rfc-editor.org/rfc/rfc4291.html" target="_blank" rel="noopener">RFC 4291: arquitectura IPv6</a> · <a href="https://www.rfc-editor.org/rfc/rfc4193.html" target="_blank" rel="noopener">RFC 4193: ULA</a> · <a href="https://www.rfc-editor.org/rfc/rfc5952.html" target="_blank" rel="noopener">RFC 5952: representación canónica</a> · <a href="https://www.iana.org/assignments/iana-ipv6-special-registry/iana-ipv6-special-registry.xhtml" target="_blank" rel="noopener">IANA: direcciones especiales</a>. La calculadora clasifica direcciones; no certifica enrutabilidad ni conectividad. El plan acepta únicamente ULA local fd00::/8.</p></details>`;
+      }
+
       /* =================== Topología y asignación de interfaces =================== */
       function row(key) {
         return state.plan.find((r) => r.key === key);
@@ -3686,7 +3888,7 @@
       function saveLocal() {
         safe(() => {
           localStorage.setItem(
-            "WAN-Architect-v3",
+            "WAN-Architect-v4",
             JSON.stringify({ state, imageData }),
           );
           toast("Proyecto guardado en este navegador.");
@@ -3695,6 +3897,7 @@
       function loadLocal() {
         safe(() => {
           const raw =
+            localStorage.getItem("WAN-Architect-v4") ??
             localStorage.getItem("WAN-Architect-v3") ??
             localStorage.getItem("WAN-Architect-v2");
           if (raw === null) fail("No hay proyecto guardado en este navegador.");
@@ -3781,6 +3984,11 @@
             : src.vlans,
         };
       } // Migra intenciones sin recalcular ni modificar el plan v2 recibido.
+      function migrateV3(src) {
+        return { ...src, version: 4, project: { ...src.project, ipv6Base: "" },
+          sites: Array.isArray(src.sites) ? src.sites.map((s) => ({ ...s, ipv6Base: "" })) : src.sites,
+          ipv6Plan: [] };
+      } // v2 pasa primero por migrateV2(); IPv6 queda desactivado, sin asignar redes.
       function optionalAddressIntent(value, label) {
         if (value === undefined) return "";
         if (typeof value !== "string") fail(label + ": se requiere una cadena.");
@@ -3791,12 +3999,13 @@
           !data ||
           typeof data !== "object" ||
           !data.state ||
-          ![2, 3].includes(data.state.version)
+          ![2, 3, 4].includes(data.state.version)
         )
           fail(
-            "Formato JSON incompatible: se requiere exportación WAN Architect versión 2 o 3.",
+            "Formato JSON incompatible: se requiere exportación WAN Architect versión 2, 3 o 4.",
           );
-        const src = data.state.version === 2 ? migrateV2(data.state) : data.state,
+        const legacy = data.state.version === 2 ? migrateV2(data.state) : data.state,
+          src = legacy.version === 3 ? migrateV3(legacy) : legacy,
           out = fresh();
         if (
           !src.project ||
@@ -3823,6 +4032,7 @@
           ),
           base: subnet(p.base).network + "/" + subnet(p.base).prefix,
           transitBase: optionalAddressIntent(p.transitBase, "Bloque de tránsito"),
+          ipv6Base: ipv6Intent(p.ipv6Base, "Prefijo IPv6 de proyecto"),
           growth: num(p.growth, 0, 100, "Crecimiento"),
           dns: ipStr(ipNum(p.dns)),
         };
@@ -3831,6 +4041,7 @@
             id: idVal(s.id),
             name: text(s.name, "Sede"),
             ipv4Base: optionalAddressIntent(s.ipv4Base, "Bloque IPv4 de sede"),
+            ipv6Base: ipv6Intent(s.ipv6Base, "Bloque IPv6 de sede"),
             floors: num(s.floors, 1, 50, "Pisos"),
             users: num(s.users, 1, 100000, "Usuarios"),
             ratio: num(s.ratio, 1, 10, "Ratio", false),
@@ -3961,6 +4172,11 @@
           out.plan.map((r) => r.key),
           "Clave red",
         );
+        out.ipv6Plan = validateIPv6Plan(src, out);
+        if (out.project.ipv6Base) {
+          const r = ipv6Subnet(out.project.ipv6Base); out.project.ipv6Base = r.network + "/" + r.prefix;
+        }
+        out.sites.forEach((s) => { if (s.ipv6Base) s.ipv6Base = ipv6Subnet(s.ipv6Base).network + "/56"; });
         for (const [key, network] of manual) {
           const v = out.vlans.find((v) => v.key === key),
             effective = out.plan.find((r) => r.key === key && r.kind === "vlan"),
@@ -4065,7 +4281,7 @@
         )
           fail("Faltan redes para VLAN confirmadas.");
         out.calc = src.calc ? String(src.calc) : undefined;
-        if (out.calc) subnet(out.calc);
+        if (out.calc) addressCalculation(out.calc);
         out.subnetOK = src.subnetOK === true;
         out.revision = num(src.revision, 0, 100000000, "Revisión");
         const previous = state;
