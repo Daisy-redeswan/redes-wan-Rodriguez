@@ -627,6 +627,7 @@
         "Comparación",
         "Ciberdefensa y uso de IA",
         "Evidencias Corte 2",
+        "Configuración Fortinet",
       ]; // Etapas visibles del flujo.
       const kinds = [
         "Router",
@@ -925,6 +926,7 @@
           compareView,
           securityView,
           evidenceView,
+          fortinetView,
         ][page]();
         $("stepfoot").innerHTML =
           `<button ${page === 0 ? "disabled" : ""} onclick="go(${page - 1})">← Anterior</button><button class="primary" ${page === steps.length - 1 ? "disabled" : ""} onclick="go(${page + 1})">Siguiente →</button>`;
@@ -1625,13 +1627,13 @@
         return state.nodes.find((n) => n.id === id);
       } // Búsqueda de nodo.
       function routed(n) {
-        return n && ["Router", "Switch capa 3"].includes(n.type);
+        return n && (["Router", "Switch capa 3"].includes(n.type) || fortinetNode(n));
       } // Solo roles soportados reciben comandos de enrutamiento.
       function switching(n) {
         return n && ["Switch", "Switch capa 3"].includes(n.type);
       } // Roles con VLAN y puertos de switching.
       function configurable(n) {
-        return routed(n) || switching(n);
+        return !fortinetNode(n) && (routed(n) || switching(n));
       } // Firewalls y endpoints necesitan software específico, no IOS/VRP genérico.
       function availableIPs(r, n, excluded = []) {
         const skip = new Set([r.gateway, ...excluded].filter(Boolean));
@@ -1965,7 +1967,7 @@
               y: 100,
             };
         modal(
-          `<h2>${id ? "Editar" : "Agregar"} equipo</h2><div class="grid">${field("Hostname *", "nname", n.name)}<div class="field"><label>Tipo</label><select id="ntype">${optsHTML(kinds, n.type)}</select></div><div class="field"><label>Fabricante</label><select id="nvendor">${optsHTML(["Cisco", "Huawei"], n.vendor)}</select></div><div class="field"><label>Sede</label><select id="nsite">${state.sites.map((s) => `<option value="${s.id}" ${s.id === n.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></div>${field("IP de gestión / endpoint (opcional)", "nip", n.ip)}<div class="field"><label>VLAN de gestión / endpoint</label><select id="nnetwork"><option value="">Sin asignar</option>${state.plan
+          `<h2>${id ? "Editar" : "Agregar"} equipo</h2><div class="grid">${field("Hostname *", "nname", n.name)}<div class="field"><label>Tipo</label><select id="ntype">${optsHTML(kinds, n.type)}</select></div><div class="field"><label>Fabricante</label><select id="nvendor">${optsHTML(["Cisco", "Huawei", "Fortinet"], n.vendor)}</select></div><div class="field"><label>Sede</label><select id="nsite">${state.sites.map((s) => `<option value="${s.id}" ${s.id === n.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></div>${field("IP de gestión / endpoint (opcional)", "nip", n.ip)}<div class="field"><label>VLAN de gestión / endpoint</label><select id="nnetwork"><option value="">Sin asignar</option>${state.plan
             .filter((r) => r.kind === "vlan")
             .map(
               (r) =>
@@ -1982,11 +1984,13 @@
             ...(id ? node(id) : { id: "n" + Date.now(), x: 50, y: 100 }),
             name: hostname($("nname").value),
             type: $("ntype").value,
-            vendor: $("nvendor").value,
+            vendor: enumVal($("nvendor").value, ["Cisco", "Huawei", "Fortinet"], "Fabricante"),
             site: $("nsite").value,
             ip: $("nip").value.trim(),
             network: $("nnetwork").value,
           };
+          if (n.vendor === "Fortinet" && n.type !== "Firewall")
+            fail("Fortinet requiere tipo Firewall.");
           if (state.nodes.some((x) => x.id !== id && x.name === n.name))
             fail("Hostname duplicado.");
           const r = row(n.network);
@@ -2016,7 +2020,7 @@
               fail("Quite los enlaces enrutados antes de cambiar este tipo.");
             if (
               l.type === "trunk" &&
-              !switching(n) &&
+              !switching(n) && !fortinetNode(n) &&
               n.type !== "Access Point"
             )
               fail("Un trunk requiere un switch en ambos extremos.");
@@ -2081,7 +2085,7 @@
             )
             .join(
               "",
-            )}</select></div>${field("VLAN (solo access)", "lvlan", l.vlan, "number")}${field("Grupo LACP (0 = sin agrupación)", "lbundle", l.bundle, "number")}${field("Interfaz A · Cisco", "lac", l.ac)}${field("Interfaz B · Cisco", "lbc", l.bc)}${field("Interfaz A · Huawei", "lah", l.ah)}${field("Interfaz B · Huawei", "lbh", l.bh)}</div><div class="notice">Trunk transporta las VLAN de la sede (hacia AP: gestión, WiFi e invitados). Access conecta un terminal a una VLAN. Routed utiliza /30 y OSPF. LACP requiere dos enlaces físicos entre los mismos switches con el mismo número de grupo; se usa modo activo en ambos extremos.</div><div class="actions"><button class="primary" onclick="saveLink('${id}')">Confirmar enlace</button><button onclick="closeModal()">Cancelar</button></div>`,
+            )}</select></div>${field("VLAN (solo access)", "lvlan", l.vlan, "number")}${field("Grupo LACP (0 = sin agrupación)", "lbundle", l.bundle, "number")}${field("Interfaz A · Cisco", "lac", l.ac)}${field("Interfaz B · Cisco", "lbc", l.bc)}${field("Interfaz A · Huawei", "lah", l.ah)}${field("Interfaz B · Huawei", "lbh", l.bh)}${field("Interfaz A · Fortinet (solo Firewall)", "laf", l.af || "", "text", 'placeholder="port1"')}${field("Interfaz B · Fortinet (solo Firewall)", "lbf", l.bf || "", "text", 'placeholder="port2"')}</div><div class="notice">Trunk transporta las VLAN de la sede (hacia AP: gestión, WiFi e invitados). Access conecta un terminal a una VLAN. Routed utiliza /30 y OSPF. LACP requiere dos enlaces físicos entre los mismos switches con el mismo número de grupo; se usa modo activo en ambos extremos.</div><div class="actions"><button class="primary" onclick="saveLink('${id}')">Confirmar enlace</button><button onclick="closeModal()">Cancelar</button></div>`,
         );
       } // Interfaces de cada fabricante se editan separadamente.
       function interfaceName(v) {
@@ -2115,6 +2119,12 @@
             ah: interfaceName($("lah").value.trim()),
             bh: interfaceName($("lbh").value.trim()),
           };
+          for (const side of ["a", "b"]) {
+            const value = $("l" + side + "f").value.trim();
+            if (value || fortinetNode(node(l[side]))) l[side + "f"] = fortinetInterfaceName(value);
+          }
+          if (l.type === "routed" && !l.network && (fortinetNode(node(l.a)) || fortinetNode(node(l.b))))
+            fail("Fortinet: seleccione una /30 existente del plan; no se asigna tránsito fuera de sus pools.");
           validateLink(
             l,
             state.links.filter((x) => x.id !== id),
@@ -2169,7 +2179,7 @@
         if (!a || !b) fail("Extremo inexistente.");
         if (l.type === "routed") {
           if (!routed(a) || !routed(b))
-            fail("Routed solo entre router o switch capa 3.");
+            fail("Routed requiere router, switch capa 3 o Firewall Fortinet.");
           if (l.bundle)
             fail("LACP se implementa en trunks, no en redes routed.");
           if (l.network && (!row(l.network) || row(l.network).kind === "vlan"))
@@ -2183,7 +2193,8 @@
             l.type === "trunk" &&
             !(
               (switching(a) && (switching(b) || b.type === "Access Point")) ||
-              (switching(b) && a.type === "Access Point")
+              (switching(b) && a.type === "Access Point") ||
+              (fortinetNode(a) && switching(b)) || (fortinetNode(b) && switching(a))
             )
           )
             fail("Trunk requiere switches o un switch y un AP empresarial.");
@@ -2204,8 +2215,8 @@
           }
         }
         for (const side of ["a", "b"])
-          for (const vendor of ["c", "h"]) {
-            const name = l[side + vendor];
+          for (const vendor of (fortinetNode(node(l[side])) ? ["f"] : ["c", "h"])) {
+            const name = vendor === "f" ? fortinetInterfaceName(l[side + vendor]) : l[side + vendor];
             for (const x of others) {
               if (
                 (x.a === l[side] && x["a" + vendor] === name) ||
@@ -2273,7 +2284,7 @@
         const side = l.a === n.id ? "a" : "b",
           r = row(l.network);
         return {
-          iface: l[side + (vendor === "Cisco" ? "c" : "h")],
+          iface: l[side + (vendor === "Fortinet" ? "f" : vendor === "Cisco" ? "c" : "h")],
           ip: r ? (side === "a" ? r.first : r.last) : "",
           r,
           peer: node(l.a === n.id ? l.b : l.a),
@@ -2286,6 +2297,7 @@
       // Huawei: ofrece equivalencias si la topología automática solo contiene Cisco.
       // No modifica fabricantes, nodos, enlaces, direccionamiento ni el generador Cisco.
       function configNodes(vendor) {
+        if (vendor === "Fortinet") return state.nodes.filter(fortinetNode);
         const nodes = state.nodes.filter(
           (n) => configurable(n) && n.vendor === vendor,
         );
@@ -2397,6 +2409,9 @@
           fail("Interfaces de switching requieren crear VLAN.");
       } // Bloqueos técnicos concretos, sin afirmar funcionalidad incompleta.
       function generate(n, vendor) {
+        if (vendor === "Fortinet") return generateFortinet(n);
+        if (!["Cisco", "Huawei"].includes(vendor) || fortinetNode(n))
+          fail("No existe adaptador para esta combinación de equipo y fabricante.");
         assertReady(n);
         const c = vendor === "Cisco",
           o = state.opts,
@@ -2701,6 +2716,233 @@
         add(c ? "end" : "return", c ? "write memory" : "save");
         return lines.join("\n");
       } // Cada comando procede del proyecto confirmado y de los enlaces del equipo.
+      /* FortiGate de laboratorio, FortiOS 7.4, sin VDOM. Solo propuestas. */
+      function fortinetNode(n) {
+        return n?.vendor === "Fortinet" && n.type === "Firewall";
+      }
+      function fortinetInterfaceName(value, optional = false) {
+        if (optional && (value === undefined || value === "")) return "";
+        if (typeof value !== "string" || !/^[A-Za-z][A-Za-z0-9_-]{0,14}$/.test(value))
+          fail("Interfaz Fortinet inválida: use un nombre físico de 1–15 caracteres, por ejemplo port1.");
+        return value;
+      }
+      function fortinetInterfaces(n) {
+        const interfaces = [], used = new Set(), networks = new Set();
+        for (const l of connected(n).slice().sort((a, b) => a.id.localeCompare(b.id))) {
+          const e = endpoint(l, n, "Fortinet"), parent = fortinetInterfaceName(e.iface);
+          if (used.has(parent)) fail("Interfaz Fortinet repetida: " + parent);
+          used.add(parent);
+          if (l.bundle) fail("Fortinet: LACP/HA no están modelados en este adaptador.");
+          if (l.type === "routed") {
+            if (!e.r || e.r.kind === "vlan" || e.r.prefix !== 30 || !isHost(e.ip, e.r))
+              fail("Fortinet: seleccione una /30 confirmada para " + parent);
+            interfaces.push({ name: parent, ip: e.ip, r: e.r, peer: e.peer, link: l });
+            continue;
+          }
+          const lan = state.plan.filter((r) => r.site === n.site && r.kind === "vlan" && (l.type === "trunk" || r.id === l.vlan));
+          if (!lan.length) fail("Fortinet: el enlace LAN no corresponde a una VLAN del plan.");
+          if (state.sites.find((s) => s.id === n.site).redundant ||
+              state.nodes.some((x) => x.site === n.site && x.type === "Switch capa 3"))
+            fail("Fortinet: no asigne los mismos gateways a firewall y cores; HA/gateway compartido requiere un diseño explícito.");
+          if (l.type === "trunk") interfaces.push({ name: parent });
+          for (const r of lan) {
+            if (networks.has(r.key)) fail("Fortinet: VLAN " + r.id + " asignada a varios puertos.");
+            networks.add(r.key);
+            if (state.nodes.some((x) => x.id !== n.id && x.ip === r.gateway))
+              fail("Fortinet: gateway ya asignado a otro equipo.");
+            // Otro firewall de la sede tampoco puede reclamar el mismo gateway.
+            if (state.nodes.some((x) => x.id !== n.id && fortinetNode(x) && x.site === n.site &&
+                connected(x).some((y) => y.type === "trunk" || (y.type === "access" && y.vlan === r.id))))
+              fail("Fortinet: gateway compartido por dos firewalls sin HA modelada.");
+            const name = l.type === "trunk" ? parent + "_v" + r.id : parent;
+            if (name.length > 15 || (name !== parent && used.has(name)))
+              fail("Fortinet: nombre de subinterfaz duplicado o mayor de 15 caracteres: " + name);
+            used.add(name);
+            interfaces.push({ name, parent: l.type === "trunk" ? parent : "", ip: r.gateway, r, link: l });
+          }
+        }
+        return interfaces;
+      }
+      function fortinetPath(n, target) {
+        const queue = [{ n, first: null }], seen = new Set([n.id]);
+        while (queue.length) {
+          const current = queue.shift();
+          if (target(current.n)) return current.first;
+          for (const l of connected(current.n).filter((x) => x.type === "routed").sort((a, b) => a.id.localeCompare(b.id))) {
+            const e = endpoint(l, current.n, "Fortinet");
+            if (!e.r || !e.peer || !routed(e.peer) || seen.has(e.peer.id)) continue;
+            seen.add(e.peer.id);
+            queue.push({ n: e.peer, first: current.first || {
+              iface: fortinetInterfaceName(e.iface),
+              gateway: l.a === n.id ? e.r.last : e.r.first,
+            } });
+          }
+        }
+        return null;
+      } // BFS por enlaces reales; no presupone ISP ni salida a Internet.
+      function fortinetRoute(n, r) {
+        return fortinetPath(n, (x) => x.id !== n.id && x.site === r.site &&
+          (x.type === "Switch capa 3" || (fortinetNode(x) && connected(x).some((l) =>
+            l.type === "trunk" || (l.type === "access" && l.vlan === r.id)))));
+      }
+      function generateFortinet(n) {
+        if (!fortinetNode(n)) fail("FortiOS solo admite nodos Firewall de fabricante Fortinet.");
+        if (!state.approved || !state.plan.length) fail("Confirme primero el plan v3.");
+        hostname(n.name);
+        if (n.ip || n.network)
+          fail("Fortinet: deje vacíos IP/red del nodo; las direcciones de sus interfaces se toman del plan y de los enlaces.");
+        if (!connected(n).length) fail("Fortinet: el firewall no tiene enlaces.");
+        const problems = topologyIssues().filter((x) => x.block);
+        if (problems.length) fail(problems.map((x) => x.msg).join(" · "));
+        if (state.opts.dhcp && state.opts.relay) fail("Elija DHCP o relay, no ambos.");
+        const relay = state.opts.relay ? ipStr(ipNum(state.relay)) : "",
+          interfaces = fortinetInterfaces(n),
+          lan = interfaces.filter((e) => e.r?.kind === "vlan"),
+          direct = new Set(interfaces.filter((e) => e.r).map((e) => e.r.key)),
+          mgmt = state.plan.find((r) => r.site === n.site && r.kind === "vlan" && r.role === "Gestión"),
+          mgmtIf = mgmt && (interfaces.find((e) => e.r?.key === mgmt.key)?.name || fortinetRoute(n, mgmt)?.iface),
+          routes = [];
+        for (const r of state.plan.filter((r) => !state.opts.ospf && r.kind === "vlan" && !direct.has(r.key))) {
+          const path = fortinetRoute(n, r);
+          if (path) routes.push({ ...path, r });
+        }
+        if (state.opts.static) {
+          const next = ipStr(ipNum(state.staticNext));
+          text(state.staticReason, "Justificación de ruta por defecto");
+          const e = interfaces.find((e) => e.r && e.r.kind !== "vlan" && isHost(next, e.r) && next !== e.ip);
+          if (!e) fail("Fortinet: el siguiente salto debe ser el otro extremo de una /30 conectada.");
+          routes.push({ iface: e.name, gateway: next, r: { network: "0.0.0.0", mask: "0.0.0.0" } });
+        }
+        const lines = [
+          "# Propuesta FortiGate genérico / FortiOS 7.4, sin VDOM; compatibilidad física pendiente.",
+          "# Modo no-vdom: root es solo el contexto interno de las VLAN; no se habilita multi-VDOM.",
+          "# Revisar puertos, objetos e IDs existentes antes de aplicar. No es un respaldo completo.",
+          "# Credenciales y certificados: <CAMBIAR_EN_PRODUCCION> mediante procedimiento externo.",
+          "# OSPF área 0 si está seleccionado; en otro caso, rutas LAN por caminos reales. Revisar rutas de retorno.",
+          "config system global", '    set hostname "' + n.name + '"', "    set strong-crypto enable", "end",
+        ], add = (...s) => lines.push(...s), objectName = (r) => "WAN_" + r.key;
+        add("config firewall address");
+        for (const r of state.plan) {
+          idVal(r.key);
+          const info = subnet(r.network + "/" + r.prefix);
+          if (info.network !== r.network || info.mask !== r.mask) fail("Fortinet: red/máscara incoherentes.");
+          add('    edit "' + objectName(r) + '"', "        set type ipmask", "        set subnet " + r.network + " " + r.mask, "    next");
+        }
+        add("end", "config system interface");
+        for (const e of interfaces) {
+          add('    edit "' + e.name + '"');
+          if (e.parent) add('        set vdom "root"', "        set type vlan", '        set interface "' + e.parent + '"', "        set vlanid " + num(e.r.id, 2, 4094, "VLAN"));
+          add("        set mode static", "        set ip " + (e.ip ? ipStr(ipNum(e.ip)) + " " + e.r.mask : "0.0.0.0 0.0.0.0"));
+          if (state.opts.ssh && mgmtIf === e.name) add("        set allowaccess https ssh");
+          else add("        unset allowaccess");
+          if (e.r?.kind === "vlan" && state.opts.relay)
+            add("        set dhcp-relay-service enable", "        set dhcp-relay-ip " + relay);
+          else add("        set dhcp-relay-service disable");
+          add("    next");
+        }
+        add("end");
+        if (state.opts.ssh && mgmtIf) {
+          add("# Acceso administrativo solo desde la red Gestión; revisar cuentas existentes fuera de la herramienta.",
+            "config firewall local-in-policy", "    edit 0", '        set intf "' + mgmtIf + '"',
+            '        set srcaddr "' + objectName(mgmt) + '"', "        set srcaddr-negate enable",
+            '        set dstaddr "all"', '        set service "HTTPS" "SSH"', '        set schedule "always"',
+            "        set action deny", "        set status enable", "    next", "end");
+        } else add("# Administración remota cerrada: falta una red Gestión alcanzable o SSH está deshabilitado; use consola.");
+        if (state.opts.ospf) {
+          add("config router ospf", "    set router-id " + routerId(n), "    config area",
+            "        edit 0.0.0.0", "        next", "    end", "    config network");
+          for (const e of interfaces.filter((e) => e.r))
+            add("        edit 0", "            set prefix " + e.r.network + " " + e.r.mask,
+              "            set area 0.0.0.0", "        next");
+          add("    end");
+          if (lan.length) add("    set passive-interface " + lan.map((e) => '"' + e.name + '"').join(" "));
+          add("end");
+        }
+        if (routes.length) {
+          add("config router static");
+          for (const route of routes)
+            add("    edit 0", "        set dst " + route.r.network + " " + route.r.mask,
+              "        set gateway " + route.gateway, '        set device "' + route.iface + '"', "    next");
+          add("end");
+        }
+        if (state.opts.dhcp) {
+          const dns = ipStr(ipNum(state.project.dns));
+          for (const e of lan.filter((e) => e.r.dhcp)) {
+            const r = e.r, reserved = [...new Set([r.gateway, ...state.nodes.filter((x) => x.network === r.key && x.ip).map((x) => x.ip)])];
+            if (reserved.length >= r.hosts) fail("Fortinet: no quedan hosts entregables para DHCP.");
+            add("config system dhcp server", "    edit 0", "        set status enable", '        set interface "' + e.name + '"',
+              "        set default-gateway " + r.gateway, "        set netmask " + r.mask,
+              "        set dns-service specify", "        set dns-server1 " + dns,
+              "        config ip-range", "            edit 1", "                set start-ip " + r.first,
+              "                set end-ip " + r.last, "            next", "        end", "        config exclude-range");
+            reserved.forEach((ip, i) => add("            edit " + (i + 1), "                set start-ip " + ip,
+              "                set end-ip " + ip, "            next"));
+            add("        end", "    next", "end");
+          }
+        }
+        add("# POLITICAS DE TRANSITO: REVISAR. Sin intención explícita de origen/destino/servicio no se crean permisos activos.",
+          "# Sin NAT ni Internet implícitos. Las rutas no autorizan tráfico. Auditar políticas preexistentes.");
+        for (const e of interfaces.filter((e) => e.r))
+          add("# REVISAR política para " + e.name + " / " + e.r.network + "/" + e.r.prefix + ": pendiente de intención de tráfico.");
+        for (const r of state.plan.filter((r) => r.kind === "vlan" && !direct.has(r.key) && !fortinetRoute(n, r)))
+          add("# Sin ruta deducible hacia " + r.network + "/" + r.prefix + "; no se inventa siguiente salto.");
+        return lines.join("\n");
+      }
+      function fortinetControls() {
+        return `<div class="card"><h3>Opciones FortiOS</h3><div class="grid">${Object.entries({ssh: "HTTPS/SSH restringidos a Gestión", ospf: "OSPF área 0 (LAN pasivas)", dhcp: "DHCP local en VLAN marcadas", relay: "Relay DHCP externo", static: "Ruta por defecto explícita"}).map(([k,v]) => `<label class="check"><input id="fo${k}" type="checkbox" ${state.opts[k] ? "checked" : ""}>${v}</label>`).join("")}</div><div class="grid">${field("Servidor DHCP externo", "frelay", state.relay)}${field("Siguiente salto por defecto", "fstaticNext", state.staticNext)}${field("Justificación de ruta por defecto", "fstaticReason", state.staticReason)}</div></div>`;
+      }
+      function changeFortinetOpts() {
+        return safe(() => {
+          const opts = {...state.opts};
+          for (const k of ["ssh", "ospf", "dhcp", "relay", "static"]) opts[k] = $("fo" + k).checked;
+          if (opts.dhcp && opts.relay) fail("Elija DHCP o relay, no ambos.");
+          const relay = $("frelay").value.trim(), next = $("fstaticNext").value.trim(), reason = $("fstaticReason").value.trim();
+          if (relay) ipNum(relay);
+          if (next) ipNum(next);
+          if (opts.relay && !relay) fail("Indique servidor DHCP externo.");
+          if (opts.static && (!next || !reason)) fail("Ruta por defecto requiere siguiente salto y justificación.");
+          if (reason) text(reason, "Justificación");
+          if (JSON.stringify([opts, relay, next, reason]) !== JSON.stringify([state.opts, state.relay, state.staticNext, state.staticReason])) {
+            state.opts = opts; state.relay = relay; state.staticNext = next; state.staticReason = reason;
+            state.configs = {}; state.revision++;
+          }
+          return true;
+        });
+      }
+      function generateFortinetFromForm(all) {
+        safe(() => {
+          const previous = { opts: state.opts, relay: state.relay, staticNext: state.staticNext,
+            staticReason: state.staticReason, configs: state.configs, revision: state.revision };
+          try {
+            if (changeFortinetOpts() === false) return;
+            const nodes = all ? configNodes("Fortinet") : [node($("confNode").value)];
+            if (!nodes.length || !nodes[0]) fail("Seleccione un Firewall Fortinet.");
+            const outputs = nodes.map((n) => [n, generateFortinet(n)]);
+            for (const [n, result] of outputs)
+              state.configs[n.id + "-Fortinet"] = { text: result, revision: state.revision };
+          } catch (e) {
+            Object.assign(state, previous);
+            throw e;
+          }
+          render();
+          toast("Propuesta FortiOS generada para revisión manual.");
+        });
+      } // Opciones y salidas se confirman juntas; un error conserva la propuesta anterior.
+      function fortinetView() {
+        const nodes = configNodes("Fortinet");
+        return title("Configuración Fortinet FortiOS", "FortiGate genérico de laboratorio · FortiOS 7.4 · sin VDOM · validación física pendiente.") +
+          `<details class="card"><summary>Documentación oficial Fortinet consultada</summary><ul>${[
+            ["https://docs.fortinet.com/document/fortigate/7.4.0/cli-reference/1620/config-system-global", "Global / hostname / criptografía"],
+            ["https://docs.fortinet.com/document/fortigate/7.4.0/cli-reference/8620/config-system-interface", "Interfaces / IPv4 / VLAN / relay"],
+            ["https://docs.fortinet.com/document/fortigate/7.4.1/administration-guide/402940/vlan", "VLAN y objetos de direcciones"],
+            ["https://docs.fortinet.com/document/fortigate/7.4.0/cli-reference/59620/config-system-dhcp-server", "DHCP y exclusiones"],
+            ["https://docs.fortinet.com/document/fortigate/7.4.0/cli-reference/522620/config-router-static", "Rutas estáticas"],
+            ["https://docs.fortinet.com/document/fortigate/7.4.0/cli-reference/526620/config-router-ospf", "OSPF"],
+            ["https://docs.fortinet.com/document/fortigate/7.4.2/cli-reference/297620", "Restricción local-in de administración"],
+          ].map(([url,label]) => `<li><a target="_blank" rel="noopener" href="${url}">${label}</a></li>`).join("")}</ul></details>` +
+          `<div class="notice warn">Mapee interfaces Fortinet reales en Topología y deje vacíos IP/red del nodo: se derivan del plan y de sus enlaces. Hostname e interfaces son obligatorios; rutas estáticas proceden de enlaces reales. No se crean VDOM ni se habilita multi-VDOM; las VLAN usan el contexto interno root. No se generan HA, LACP, NAT ni permisos de tránsito implícitos. OSPF usa área 0 y LAN pasivas; verifique adyacencias y rutas de retorno. Un firewall no puede reclamar gateways ya usados por cores. Las opciones compartidas de OSPF/DHCP/relay/ruta afectan a todas las marcas.</div>` + fortinetControls() +
+          `<div class="card"><div class="actions"><select id="confNode" aria-label="Equipo a configurar">${nodes.map((n) => `<option value="${n.id}">${esc(n.name)}</option>`).join("")}</select><button class="primary" onclick="generateSelected('Fortinet')">Generar equipo</button><button onclick="generateAll('Fortinet')">Generar todos los Fortinet</button><button onclick="downloadAll('Fortinet')">Descargar todos</button></div>${nodes.length ? nodes.map((n) => configBlock(n, "Fortinet")).join("") : '<div class="empty">Añada un Firewall Fortinet y sus enlaces explícitos en Topología.</div>'}</div>`;
+      }
       function trunkCommands(c, lan) {
         return c
           ? [
@@ -2716,6 +2958,7 @@
         return ipStr(4294967295 - ipNum(mask));
       } // Masque inversé exact utilisé pour OSPF.
       function generateSelected(vendor) {
+        if (vendor === "Fortinet") return generateFortinetFromForm(false);
         if (changeOpts() === false) return;
         safe(() => {
           const n = node($("confNode").value);
@@ -2730,6 +2973,7 @@
         });
       } // Ne marque une configuration comme générée qu'après succès.
       function generateAll(vendor) {
+        if (vendor === "Fortinet") return generateFortinetFromForm(true);
         if (changeOpts() === false) return;
         safe(() => {
           const ns = configNodes(vendor);
@@ -2826,7 +3070,7 @@
           "topologie-" + v.toLowerCase() + ".txt",
           entries
             .map(([k, x]) => x.text)
-            .join("\n\n" + "=".repeat(60) + "\n\n"),
+            .join("\n\n" + (v === "Fortinet" ? "# " : "") + "=".repeat(60) + "\n\n"),
           "text/plain",
         );
       } // Un seul fichier contient des blocs nommés pour tous les équipements générés.
@@ -3495,13 +3739,14 @@
               id: idVal(n.id),
               name: hostname(n.name),
               type: enumVal(n.type, kinds, "Tipo de equipo"),
-              vendor: enumVal(n.vendor, ["Cisco", "Huawei"], "Fabricante"),
+              vendor: enumVal(n.vendor, ["Cisco", "Huawei", "Fortinet"], "Fabricante"),
               site: n.site,
               ip: n.ip ? ipStr(ipNum(n.ip)) : "",
               network: n.network ? idVal(n.network) : "",
               x: num(n.x, 0, 100000, "X", false),
               y: num(n.y, 0, 100000, "Y", false),
             };
+          if (o.vendor === "Fortinet" && !fortinetNode(o)) fail("Fortinet requiere tipo Firewall.");
           if (o.network && (!r || r.site !== o.site || r.kind !== "vlan"))
             fail("Red de equipo inexistente.");
           if (o.ip && (!r || !isHost(o.ip, r) || o.ip === r.gateway))
@@ -3541,6 +3786,8 @@
             bc: interfaceName(l.bc),
             ah: interfaceName(l.ah),
             bh: interfaceName(l.bh),
+            ...(l.af !== undefined ? { af: fortinetInterfaceName(l.af, true) } : {}),
+            ...(l.bf !== undefined ? { bf: fortinetInterfaceName(l.bf, true) } : {}),
           };
         });
         unique(
@@ -3578,11 +3825,11 @@
           if (blocking.length) fail(blocking[0].msg);
           if (src.configs && typeof src.configs === "object")
             for (const [key, val] of Object.entries(src.configs)) {
-              const m = key.match(/^([A-Za-z0-9_-]+)-(Cisco|Huawei)$/),
+              const m = key.match(/^([A-Za-z0-9_-]+)-(Cisco|Huawei|Fortinet)$/),
                 n = m ? out.nodes.find((n) => n.id === m[1]) : null;
               if (
                 !n ||
-                !configurable(n) ||
+                !(m[2] === "Fortinet" ? fortinetNode(n) : configurable(n)) ||
                 typeof val.text !== "string" ||
                 val.text.length > 100000 ||
                 val.revision !== out.revision
