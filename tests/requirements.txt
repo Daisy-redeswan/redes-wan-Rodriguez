@@ -1,0 +1,2 @@
+# Única dependencia directa; instalar Chromium con: python -m playwright install chromium
+playwright==1.62.0
