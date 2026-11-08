@@ -1003,7 +1003,7 @@
             )
             .join(
               "",
-            )}</div><div id="siteIpv4Help" class="hint">Opcional: deje vacío para conservar el comportamiento heredado. Este bloque se guarda y valida, pero todavía no controla la asignación VLSM.</div><div class="hint">La redundancia reserva un gateway virtual y dos IP físicas por VLAN. Los pisos concurridos se usan para identificar prioridad de cobertura; la cantidad de AP requiere luego un estudio RF.</div><div class="actions" style="margin-top:16px"><button class="primary" onclick="saveSite()">Confirmar esta sede</button></div></div>`
+            )}</div><div id="siteIpv4Help" class="hint">Opcional: deje vacío para conservar el comportamiento heredado. Este bloque se valida y delimita la asignación VLSM automática de sus VLAN.</div><div class="hint">La redundancia reserva un gateway virtual y dos IP físicas por VLAN. Los pisos concurridos se usan para identificar prioridad de cobertura; la cantidad de AP requiere luego un estudio RF.</div><div class="actions" style="margin-top:16px"><button class="primary" onclick="saveSite()">Confirmar esta sede</button></div></div>`
         );
       }
       function saveProject() {
@@ -1332,17 +1332,48 @@
             );
         return req;
       } // WAN en estrella; sedes desconectadas no reciben enlaces entre sí.
-      function allocate(vlans, base, growth, transits) {
-        const b = subnet(base);
+      function allocationPools(base) {
+        const b = privateIPv4Block(base, "Bloque global");
         if (b.prefix > 30) fail("El bloque base debe ser /30 o mayor.");
-        if (
-          !b.type.startsWith("Privada") ||
-          !ipType(b.end).startsWith("Privada") ||
-          Math.floor(b.net / 16777216) !== Math.floor(b.end / 16777216)
-        )
-          fail(
-            "Use un bloque completo privado RFC1918 para el plan de laboratorio.",
-          );
+        const project = { ...state.project, base };
+        validateSiteBlocks(project, state.sites);
+        const sites = new Map(
+          state.sites
+            .filter((s) => s.ipv4Base)
+            .map((s) => [s.id, subnet(s.ipv4Base)]),
+        );
+        const transit = project.transitBase
+          ? privateIPv4Block(project.transitBase, "Bloque de tránsito")
+          : null;
+        if (transit && (transit.net < b.net || transit.end > b.end))
+          fail("El bloque de tránsito queda fuera del bloque global " + base + ".");
+        return { global: b, sites, transit };
+      } // Reservas de pools; nunca modifica el estado confirmado.
+      function findIPv4Space(pool, size, blocked) {
+        let cursor = Math.ceil(pool.net / size) * size;
+        const ranges = blocked
+          .filter((r) => r.net <= pool.end && pool.net <= r.end)
+          .slice()
+          .sort((a, b) => a.net - b.net || a.end - b.end);
+        for (const r of ranges) {
+          if (r.end < cursor) continue;
+          if (cursor + size - 1 < r.net) break;
+          cursor = Math.ceil((r.end + 1) / size) * size;
+        }
+        return cursor + size - 1 <= pool.end ? cursor : null;
+      } // Primer hueco CIDR contiguo; no confunde espacio total con alineación.
+      function allocate(vlans, base, growth, transits) {
+        for (const v of vlans)
+          if (v.ipv4Cidr)
+            fail(
+              "Sede «" + siteName(v.site) + "», VLAN " + v.id +
+                ": la subred manual será soportada en la siguiente etapa.",
+            );
+        const pools = allocationPools(base),
+          b = pools.global,
+          scoped = pools.sites.size > 0 || pools.transit !== null,
+          reserved = [...pools.sites.values(), ...(pools.transit ? [pools.transit] : [])],
+          assigned = [];
         const req = vlans
           .map((v) => {
             const s = state.sites.find((s) => s.id === v.site),
@@ -1371,10 +1402,23 @@
         let cursor = b.net;
         const result = [];
         for (const r of req) {
-          cursor = Math.ceil(cursor / r.size) * r.size;
-          if (cursor + r.size - 1 > b.end)
+          const pool = r.kind === "vlan"
+            ? pools.sites.get(r.site) || b
+            : pools.transit || b;
+          cursor = scoped
+            ? findIPv4Space(pool, r.size, [
+                ...assigned,
+                ...(pool === b ? reserved : []),
+              ])
+            : Math.ceil(cursor / r.size) * r.size;
+          if (cursor === null || cursor + r.size - 1 > pool.end)
             fail(
-              "El bloque base no tiene espacio suficiente. Amplíelo o reduzca hosts.",
+              (r.kind === "vlan"
+                ? "Sede «" + siteName(r.site) + "», VLAN " + r.id + " «" + r.name + "»"
+                : "Tránsito «" + r.name + "», " + siteName(r.site)) +
+                ": no hay hueco CIDR contiguo /" + r.prefix + " (" + r.size +
+                " direcciones, " + r.required + " IP útiles requeridas) en " +
+                pool.network + "/" + pool.prefix + ". Amplíe el bloque o reduzca hosts.",
             );
           const info = subnet(ipStr(cursor) + "/" + r.prefix);
           const row = {
@@ -1395,6 +1439,7 @@
                 " fuera de su nueva subred. Bórrelo antes de recalcular.",
             );
           result.push(row);
+          assigned.push({ net: info.net, end: info.end });
           cursor += r.size;
         }
         return result;
@@ -3126,24 +3171,29 @@
           input.value = "";
         }
       } // No ejecuta datos ni acepta texto arbitrario como configuración.
+      function privateIPv4Block(value, label) {
+        let block;
+        try {
+          block = subnet(value);
+        } catch (e) {
+          fail(label + ": bloque IPv4 inválido. " + e.message);
+        }
+        if (block.ip !== block.network)
+          fail(label + ": la dirección debe ser la red alineada con el prefijo.");
+        const privateBlock = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+          .map(subnet)
+          .some((r) => block.net >= r.net && block.end <= r.end);
+        if (!privateBlock)
+          fail(label + ": el bloque debe estar completamente dentro de RFC1918.");
+        return block;
+      } // Parser común y contención numérica; no normaliza redes desalineadas.
       function validateSiteBlocks(project, sites) {
         const blocks = [];
         for (const site of sites) {
           if (!site.ipv4Base) continue;
           const label = "Sede «" + site.name + "»: ";
-          let block, global, transit;
-          try {
-            block = subnet(site.ipv4Base);
-          } catch (e) {
-            fail(label + "bloque IPv4 inválido. " + e.message);
-          }
-          if (block.ip !== block.network)
-            fail(label + "la dirección debe ser la red alineada con el prefijo.");
-          const privateBlock = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
-            .map(subnet)
-            .some((r) => block.net >= r.net && block.end <= r.end);
-          if (!privateBlock)
-            fail(label + "el bloque debe estar completamente dentro de RFC1918.");
+          const block = privateIPv4Block(site.ipv4Base, label.slice(0, -2));
+          let global, transit;
           try {
             global = subnet(project.base);
           } catch (e) {
