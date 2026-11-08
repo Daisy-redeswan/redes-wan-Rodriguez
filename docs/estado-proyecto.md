@@ -3,15 +3,15 @@
 ## Alcance y referencia
 
 Repositorio: `https://github.com/Daisy-redeswan/redes-wan-Rodriguez`.
-Rama auditada: `feature/direccionamiento-v3-base`, PR #3.
-Código auditado: `7c97321a79eed489d007a296a468b7af57be24e0`; base verificada de `origin/main`: `7735efa11425a41b4970d1ce63ede0ec59ae9e26`.
-Auditoría integral I1–I9: 8 de noviembre de 2026, America/Bogota.
+Rama actual: `feature/fortinet-fortios`.
+Código Fortinet inspeccionado y probado: `5d87d76d3e78ded591220f75e2960f736fcf28ce`; base verificada de `origin/main`: `c33859758c717b1f777174183409dcdf5376aaab`.
+Pruebas Fortinet y revisión crítica: 8 de noviembre de 2026, America/Bogota. La auditoría I1–I9 del PR #3 se conserva con su referencia histórica.
 Antecedente P1–P6/R1: 7 de noviembre de 2026 sobre `6f45dc1e54051a2467241ee50f59fa18906cf23c`; se conserva como evidencia histórica.
 Antecedente conservado: commit de documentación `ce35714047c1e86a4823f5513b2a76867c06a188`, publicado sobre la base histórica `6f45dc1e54051a2467241ee50f59fa18906cf23c`. Aquella revisión reutilizó su rama sin reescribir el historial y verificó el adjunto de `AGENTS.md`.
 
 Objetivo general: apoyar el diseño y la gestión de redes WAN por sedes, calcular direccionamiento, representar dispositivos y enlaces y generar propuestas de configuración por fabricante, con ciberdefensa integrada y evidencia académica reproducible. La aplicación genera texto; no aplica configuraciones a dispositivos.
 
-Esta revisión actualiza únicamente los tres documentos de orientación autorizados, sin modificar `WAN_v4.html`. Describe el contrato v3 y las funciones del PR #3 ya implementadas; no instala dependencias ni ejecuta configuraciones sobre redes. La guía docente define requisitos; el código define implementación; una inspección no demuestra funcionamiento.
+El commit documental actualiza únicamente los tres documentos de orientación autorizados, sin modificar el HTML ya incluido en el commit de código. Describe el contrato v3 integrado mediante PR #3 y el adaptador Fortinet implementado en el commit indicado; no instala dependencias ni ejecuta configuraciones sobre redes. La guía docente define requisitos; el código define implementación; una inspección no demuestra funcionamiento.
 
 ## Fuentes y clasificación
 
@@ -28,7 +28,7 @@ Estados usados: **requisito oficial** (guía), **inspeccionado** (código existe
 
 Aplicación autónoma en `WAN_v4.html`: HTML, CSS y JavaScript integrados; sin backend, base de datos ni dependencias externas de ejecución. No hay manifiesto de paquetes ni suite de pruebas o CI versionada en esta base.
 
-`state = fresh()` centraliza proyecto, sedes, VLAN, plan, nodos, enlaces, opciones, configuraciones y revisión. `state.version` es 3. `render()` y `go()` presentan once etapas desde resumen hasta evidencias Corte 2. Los formularios editan valores visibles que se confirman mediante funciones específicas; el DOM y el estado confirmado pueden diferir.
+`state = fresh()` centraliza proyecto, sedes, VLAN, plan, nodos, enlaces, opciones, configuraciones y revisión. `state.version` es 3. `render()` y `go()` presentan doce etapas, incluidas evidencias Corte 2 y la nueva pantalla Fortinet. Los formularios editan valores visibles que se confirman mediante funciones específicas; el DOM y el estado confirmado pueden diferir.
 
 La persistencia guarda en `WAN-Architect-v3`; `loadLocal()` busca primero esa clave y, si no existe, carga `WAN-Architect-v2` y migra en memoria sin eliminarla ni sobrescribirla. `exportJSON()` serializa `{ state, imageData }` en versión 3; `validateImport()` admite v2 mediante `migrateV2()` y valida v3 antes de `applyImport()`, rechazando versiones desconocidas. La migración conserva el plan, gateways, nodos, enlaces, configuraciones y opciones; no llama a `allocate()` ni infiere subredes manuales. Los archivos v3 no son compatibles con la aplicación antigua. Los datos permanecen en el navegador o archivos exportados. El JSON no es un mecanismo para ejecutar comandos.
 
@@ -38,9 +38,23 @@ La persistencia guarda en `WAN-Architect-v3`; `loadLocal()` busca primero esa cl
 | VLAN y VLSM | `proposeVlans`, `readVlans`, `allocate`, `confirmVlans`, `editGateway` | Segmentación por sede, bloque privado global, bloques opcionales por sede/tránsito, CIDR manual por VLAN, asignación automática o mixta, reservas y tránsitos /30 |
 | Calculadora IPv4 | `ipNum`, `ipType`, `subnet`, `calculate` | CIDR, red, broadcast, máscara, hosts y clasificación de direcciones; no IPv6 |
 | Topología | `buildTopology`, `editNode`, `editLink`, `validateLink`, `svgTopology` | Generación y edición de nodos/enlaces, ISP, VLAN, interfaces, imagen manual de referencia y exportación SVG |
-| Fabricantes | `configNodes`, `assertReady`, `generate`, `generateCompare` | Cisco/Huawei para routers y switches compatibles con los tipos del programa; no adaptadores Fortinet/MikroTik |
+| Fabricantes | `configNodes`, `assertReady`, `generate`, `generateFortinet`, `generateCompare` | Cisco/Huawei para routers y switches; Fortinet separado para nodos Firewall; MikroTik pendiente |
 | Ciberdefensa | `esc`, `hostname`, `interfaceName`, `topologyIssues`, `securityWarnings` | Escape de textos, validación, advertencias y marcadores de secretos; no auditoría integral |
 | Persistencia y entregas | `saveLocal`, `loadLocal`, `importJSON`, `exportJSON`, `downloadPlan`, `downloadReport` | Guardado, importación validada, exportación JSON, CSV y resumen HTML |
+
+## Fortinet FortiOS: implementado y validado como texto
+
+**Supuesto técnico autorizado:** FortiGate genérico de laboratorio, FortiOS 7.4, modo sin VDOM adicionales; no es un modelo físico verificado. Las VLAN usan el contexto interno `root` requerido por los ejemplos oficiales, sin crear dominios ni activar multi-VDOM.
+
+`generateFortinet()` es un adaptador separado. `fortinetInterfaces()` consume VLAN, gateways, máscaras y extremos /30 reales; `fortinetPath()`/`fortinetRoute()` buscan caminos de la topología. Incluye hostname/criptografía, interfaces físicas y VLAN, HTTPS/SSH restringidos a Gestión con denegación local-in, objetos de direcciones, DHCP con exclusiones automáticas o relay, OSPF área 0 con LAN pasivas y rutas estáticas cuando OSPF está desactivado. Una ruta por defecto exige siguiente salto conectado y justificación explícitos. Las políticas de tránsito quedan marcadas para revisión; no se generan permisos activos ni NAT implícitos. Las cuentas y certificados se revisan externamente con marcadores, sin secretos reales.
+
+Los formularios e importación admiten `vendor: Fortinet` únicamente para tipo Firewall. Los enlaces conservan `af`/`bf` opcionales para interfaces Fortinet, separados de `ac`/`bc` y `ah`/`bh`. La versión y claves de almacenamiento siguen en v3; F1/F3 comprueban selección, persistencia e ida/vuelta JSON con propuesta regenerada. El firewall deriva sus IP de interfaces del plan: IP/red del nodo deben quedar vacíos. Bloquea ausencia de plan/enlaces, interfaces inválidas/duplicadas, gateways ya usados por cores y HA no modelada. La generación confirma opciones y salidas juntas o conserva la propuesta previa.
+
+**Pruebas ejecutadas:** F1–F18 (18/18) más regresión integral v3 I1–I9 (9/9): **27/27 superadas = 100% del conjunto ejecutado**, sin fallidas, bloqueadas ni no ejecutadas dentro de ese conjunto. Python/Playwright, Chromium 154.0.8037.57, HTTP local, contextos limpios y datos ficticios. Se verificaron administración/políticas no permisivas, DHCP/relay, direccionamiento/rutas/OSPF, rechazo de hostname/interfaz maliciosos, separación y estructura de CLI, importación/exportación, guardado y descarga conjunta. Se comprobó presentación a 1440/390 px y ausencia de errores de página/consola. El caso F4 del harness ajustó una coincidencia literal del mensaje de bloqueo; no fue un defecto funcional.
+
+Antes de publicar se repitieron solo F1/F2/F3/F5/F6/F7/F8/F10/F12/F14/F15 e I1/I4/I8: **14/14 críticas superadas**, sin sumarlas como casos independientes al 27/27 histórico. Ambos conjuntos corresponden al SHA-256 `dca2f5ac15e9de848f50205e18ece204e6aef2247304d1203e81f46df3da30ff`. La comparación conserva exactamente las 28 salidas Cisco/Huawei de referencia y el cuerpo anterior del generador; no cambia el asignador v3. Evidencia temporal de sesión: `/workspace/work/wan-fortinet/verify.py`, `historical-fortinet-results.json`, `historical-integral-results.json` y resultados críticos. No hay suite versionada ni reporte académico nuevo.
+
+**Límites y pendientes:** validación únicamente local/estática del texto; no se ejecutaron comandos en FortiGate ni simuladores y no se certifica compatibilidad física. Revisar puertos, objetos, IDs `edit 0`, adyacencias, rutas de retorno y configuración existente; las propuestas no son respaldos completos ni aplicaciones idempotentes. La captura oficial `docs/capturas/06-config-fortinet.png` sigue pendiente. MikroTik, IPv6, HA/LACP Fortinet, pools DHCP y reservas editables continúan fuera de este alcance. Las fuentes oficiales consultadas están en la pantalla Fortinet y en [matriz-fabricantes.md](matriz-fabricantes.md).
 
 ## Direccionamiento IPv4 v3: implementado y probado
 
@@ -52,7 +66,7 @@ La confirmación solo sustituye el plan e invalida topología/configuraciones tr
 
 ## Auditoría integral del PR #3
 
-Se ejecutó `python /workspace/work/wan-audit/integral.py` desde un clon independiente limpio en el commit indicado, servido por HTTP local temporal, con Python/Playwright y Chromium 154.0.8037.57. Cada flujo usó contextos de navegador nuevos y datos ficticios. Scripts, resultados JSON y capturas son evidencia temporal de sesión fuera del repositorio; no constituyen una suite versionada ni el reporte académico `docs/pruebas.md`. SHA-256 del HTML probado: `3cc891c1a867215f466769772e7c5bb7d265d1a93ed8dcb3b73b97534278c163`.
+Antecedente del PR #3: se ejecutó `python /workspace/work/wan-audit/integral.py` desde un clon independiente limpio en `7c97321a79eed489d007a296a468b7af57be24e0`, servido por HTTP local temporal, con Python/Playwright y Chromium 154.0.8037.57. Cada flujo usó contextos de navegador nuevos y datos ficticios. Scripts, resultados JSON y capturas son evidencia temporal de sesión fuera del repositorio; no constituyen una suite versionada ni el reporte académico `docs/pruebas.md`. SHA-256 del HTML probado: `3cc891c1a867215f466769772e7c5bb7d265d1a93ed8dcb3b73b97534278c163`.
 
 | Caso | Esperado y acción | Obtenido / estado |
 | --- | --- | --- |
@@ -94,7 +108,7 @@ Reproducción histórica: abrir el HTML de aquella base servido localmente en un
 | --- | --- | --- |
 | Resuelta en el alcance probado | R1 histórico corregido por PR #2; `deleteVlan` lee las filas antes de eliminar | I7 conserva nombre, hosts y CIDR pendientes; antecedentes V1–V8/R1–R3 cubren cancelación, última fila y dependencias |
 | Implementada y probada | Direccionamiento IPv4 v3 automático/mixto por global, sede, tránsito y CIDR manual por VLAN | I1–I6/I8; gateway independiente. Pools DHCP y reservas editables pendientes, sin confundirlos con subredes |
-| Alta | Fortinet/MikroTik ausentes; guía exige cuatro marcas | Confirmar modelos/versiones y diseñar adaptadores coherentes con plan/topología; ver matriz de fabricantes |
+| Parcial / alta | Fortinet implementado y probado como texto; MikroTik pendiente; guía exige cuatro marcas | Validación física y captura 06 de Fortinet pendientes; implementar MikroTik y su evidencia 07; ver matriz de fabricantes |
 | Alta | IPv6 es requisito oficial general; calculadora y plan actuales son IPv4 | Confirmar alcance para Corte 3; no ocultar la brecha ni atribuirle un peso independiente |
 | Media | Interfaz mezcla español y francés; Correcciones pide tanto solo botones como traducción integral | Decidir parche localizado frente a i18n total antes de modificar; son tareas distintas |
 | Media | README marca filtro Huawei pendiente; `configNodes` ya ofrece equivalencias cuando no hay nodos Huawei | Verificar específicamente selección alternativa, equipos manuales y mixtos; P5 solo prueba Comparación, no certifica ese filtro |
@@ -107,9 +121,9 @@ Flujo actual: proyecto/sedes → inventario → VLAN → plan VLSM → topologí
 
 `invalidate` aumenta revisión y vacía datos derivados según nivel. `confirmVlans` y `editGateway` eliminan topología y configuraciones previas para evitar salidas obsoletas. Cambiar VLAN puede afectar gateway, DHCP, OSPF, enlaces y ambos fabricantes. La conservación al eliminar VLAN está probada en I7. `saveSite()` mantiene su invalidación histórica de VLAN, plan y derivados al confirmar cambios; corregirla sigue pendiente. Persiste el desbordamiento histórico a 320 px del selector de sede; no se modificó en este PR.
 
-El validador de importación solo acepta fabricantes Cisco/Huawei. Añadir marcas o IPv6 necesita un diseño de compatibilidad y pruebas de migración sobre el esquema v3. IPv6, Fortinet y MikroTik continúan pendientes.
+El validador de importación acepta Cisco/Huawei y Fortinet para Firewall. Añadir MikroTik o IPv6 necesita diseño de compatibilidad y pruebas sobre el esquema v3; ambos siguen pendientes. Fortinet tiene supuesto 7.4 autorizado y validación textual, sin certificación física.
 
-Las configuraciones son propuestas: no hay modelo/versión de equipo verificados. HSRP y VRRP no forman un grupo común; el programa advierte pares de cores de fabricantes distintos. DHCP se configura solo en el core primario y no tiene replicación de concesiones. La WAN dibujada no aporta VPN, cifrado ni servicio de ISP; las ACL de administración no equivalen a aislamiento entre servicios. Estas advertencias existen por inspección; no se probó cada rama de validación.
+Las configuraciones son propuestas: no hay modelo/versión de equipo verificados. HSRP y VRRP no forman un grupo común; el programa advierte pares de cores de fabricantes distintos. En Cisco/Huawei, DHCP se configura solo en el core primario y no tiene replicación de concesiones. En Fortinet, DHCP/relay solo se generan en las LAN cuyo gateway asume el firewall, sin HA compartida. La WAN dibujada no aporta VPN, cifrado ni servicio de ISP; las ACL de administración no equivalen a aislamiento entre servicios. Estas advertencias existen por inspección; no se probó cada rama de validación.
 
 El guardado local depende del origen, navegador y cuota. La imagen es referencia manual, sin OCR ni reconocimiento automático. I2/I6 verificaron JSON y restauración, e I9 presentación a 1440/390 px; otras descargas, portapapeles, accesibilidad integral, otros tamaños/navegadores y todos los casos de seguridad siguen sin validación completa. Las capturas 01–04 y el PDF Corte 2 existen, pero no se auditó su contenido ni vigencia frente al commit base. Falta `05-github-commits.png`; la base histórica tenía 22 commits alcanzables, lo que no demuestra calidad de mensajes ni 2FA. El conector GitHub confirmó en aquella revisión `visibility: public` y rama principal `main`; 2FA no se verificó.
 
@@ -117,9 +131,9 @@ El guardado local depende del origen, navegador y cuota. La imagen es referencia
 
 1. Revisar esta documentación y usar la trazabilidad como lista de aceptación, sin tratarla como evidencia de cumplimiento completo.
 2. Crear harness versionado y casos de conservación de estado, migración v2→v3, importación/exportación v3 y salidas Cisco/Huawei de referencia.
-3. Revisar el PR #3 sin fusionarlo automáticamente; tratar `saveSite()` y el desbordamiento a 320 px en tareas separadas.
+3. Revisar las propuestas Fortinet y su PR sin fusionarlo automáticamente; tratar `saveSite()` y el desbordamiento a 320 px en tareas separadas.
 4. Resolver i18n, alcance IPv6 y versiones de fabricantes; pools DHCP y reservas editables requieren diseño y autorización posteriores.
-5. Implementar Fortinet y MikroTik por separado con pruebas y revisión de sintaxis por plataforma.
+5. Completar validación de plataforma y captura 06 de Fortinet; implementar MikroTik con pruebas y revisión de sintaxis por separado.
 6. Completar ciberdefensa, pruebas formales, documentos y capturas, y ensayar sustentación en vivo.
 
 `AGENTS.md` contiene ahora las instrucciones permanentes que gobiernan el análisis, desarrollo, corrección, pruebas, documentación y publicación de WAN Architect. Sustituye el instructivo temporal utilizado para crear esta documentación y aplica autorizaciones diferentes según el tipo de tarea. Su existencia no modifica por sí misma el código de la aplicación ni demuestra el cumplimiento de requisitos; cada resultado debe confirmarse mediante inspección y pruebas. Esta revisión documental no cambia `WAN_v4.html`.
