@@ -1,61 +1,74 @@
-# redes-wan-Rodriguez
-# Herramienta de Redes WAN — WAN Architect (trabajo individual)
+# WAN Architect — Corte 3
 
-**Materia:** Interconexión de Redes WAN
-**Repositorio:** [https://github.com/Daisy-redeswan/redes-wan-Rodriguez.git](https://github.com/Daisy-redeswan/redes-wan-Rodriguez.git)
+Herramienta académica local para diseñar redes WAN por sedes, planificar IPv4/IPv6 y generar **propuestas IPv4** separadas para Cisco IOS/IOS XE, Huawei VRP, Fortinet FortiOS y MikroTik RouterOS. No aplica configuraciones a equipos.
 
-## Qué hace esta herramienta
+- **Autora:** Daisy Jurleny Rodriguez Rodriguez, según el informe del Corte 2.
+- **Materia:** Interconexión de Redes WAN · Ingeniería de Telecomunicaciones.
+- **Repositorio:** [Daisy-redeswan/redes-wan-Rodriguez](https://github.com/Daisy-redeswan/redes-wan-Rodriguez).
+- **Institución, docente y grupo:** pendientes de confirmar; no se inventan datos académicos.
+- **Base técnica de esta entrega:** `f7ed2b907d6edad6f1ed7bd5274c49956a7a77d8`; esquema de proyecto **v4**.
 
-WAN Architect permite planificar una red por sedes, calcular subredes IPv4 y representar su topología. Genera configuraciones para equipos Cisco y Huawei a partir de los datos del proyecto.
+## Abrir la aplicación
 
-La aplicación funciona en un único archivo HTML, sin conexión a Internet, servidor ni archivos externos.
+El archivo real de entrada es [WAN_v4.html](WAN_v4.html). Puede abrirse directamente en un navegador actualizado; no requiere backend, cuenta ni dependencias de ejecución. Para reproducir las pruebas y capturas se recomienda HTTP local:
 
-## Funciones
+```bash
+python -m http.server 8000 --bind 127.0.0.1
+```
 
-- **Subnetting / IP Planning:** cálculo IPv4, clasificación de direcciones públicas y privadas, planificación VLSM y asignación de VLAN. IPv6 está pendiente.
-- **Carga y edición de topología:** creación automática y manual de dispositivos y enlaces, incluyendo nodos ISP. Permite cargar una imagen como referencia; su interpretación automática está pendiente.
-- **Configuraciones Cisco:** generación de comandos para routers y switches, según las características del proyecto.
-- **Configuraciones Huawei:** generación de comandos VRP y comparación con Cisco. Está pendiente corregir el filtro del módulo Huawei para que también muestre los equipos creados automáticamente.
-- **Fortinet y MikroTik:** pendientes de implementación para el Corte 3.
-- **Ciberdefensa y uso de IA:** validación de entradas, tratamiento seguro del contenido mostrado, políticas visibles y contraseñas representadas mediante marcadores. Falta verificar y publicar su documentación en `docs/politicas-ia.md`.
-- **Gestión del proyecto:** guardado local, importación y exportación JSON, exportación de configuraciones y topología SVG.
+Abrir `http://127.0.0.1:8000/WAN_v4.html`. Detener el servidor con Ctrl+C. No exponer la carpeta a una red pública. Las referencias técnicas enlazadas requieren Internet, pero el funcionamiento principal de la app es local. El almacenamiento del navegador depende del origen; conservar además una exportación JSON.
 
-## Cómo ejecutarla
+## Funciones y alcance confirmado
 
-1. Descargar el repositorio o el archivo de la aplicación.
-2. Abrir `WAN.html` directamente en un navegador actualizado. Si se conserva el nombre `Versión3.html`, abrir ese archivo.
-3. Registrar los datos del proyecto y revisar el inventario, las VLAN y el direccionamiento.
-4. Generar la topología y consultar las configuraciones Cisco y Huawei.
-5. Guardar o exportar el proyecto para conservar una copia.
+- Proyecto, fichas por sede, estimación de inventario y VLAN con claves estables.
+- IPv4: bloque global, bloques opcionales por sede/tránsito, VLSM automático y CIDR manual opcional por VLAN; gateway independiente y validación de capacidad/solapamientos.
+- IPv6: calculadora y planificación ULA separada; /48 propuesto, /56 por sede y /64 por VLAN, reservas según redundancia. Sin broadcast, tránsitos ni comandos IPv6.
+- Topología automática/manual y mapeo de interfaces; una imagen importada es **referencia manual**, no OCR ni reconocimiento automático.
+- Cuatro generadores separados desde el mismo plan/topología. Huawei ofrece equivalencias cuando no hay nodos Huawei; esto no certifica hardware equivalente.
+- Fortinet: supuesto FortiGate genérico/FortiOS 7.4 sin multi-VDOM; MikroTik: RouterOS 7.x genérico sin VRF/CAPsMAN. Ambos requieren puertos propios y roles compatibles.
+- JSON v4, migración v2→v3→v4 sin reasignar, localStorage v4 con fallback no destructivo v3/v2 y exportaciones de texto/SVG.
+- Validación, escape de contenido, marcadores de secretos y advertencias de ciberdefensa. No equivale a auditoría completa ni validación física.
 
-No requiere instalación ni conexión a Internet. Los comandos generados deben revisarse según el modelo y la versión del sistema operativo del equipo antes de aplicarlos.
+## Flujo de uso
 
-## Pruebas y % de confianza (Corte 3)
+Proyecto → fichas de sede → estimación → propuesta/confirmación de VLAN → IPv4/VLSM → cálculo/planificación IPv6 opcional → topología → fabricante → revisión de propuestas → guardado/exportación. El [manual](docs/manual.md) explica los pasos y los escenarios compatibles para cada marca.
 
-## Documentos
+**Importante:** confirmar una sede mantiene la invalidación histórica de VLAN y derivados. Revisar las fichas antes de avanzar. Las ediciones visibles de un formulario todavía no son datos confirmados; una validación fallida conserva el texto. Los cuatro generadores siguen siendo IPv4 hasta aclaración docente sobre configuraciones IPv6.
 
-Documentación prevista, pendiente de verificar o publicar en el repositorio:
+## Pruebas reproducibles
 
-- `docs/informe-corte2.pdf`
-- `docs/manual.md`
-- `docs/seguridad.md`
-- `docs/politicas-ia.md`
-- `docs/pruebas.md`
+Python 3.10+, Playwright 1.62.0 y Chromium; dependencias solo para pruebas:
 
-## Capturas (evidencias)
+```bash
+python -m pip install -r tests/requirements.txt
+python -m playwright install chromium
+python tests/test_corte3.py
+```
 
-Carpeta prevista: `docs/capturas/`.
+El runner inicia/cierra HTTP local, usa un contexto limpio por caso, imprime resultados y devuelve un código no cero ante fallos. La ejecución normal guarda el reporte fuera del repositorio. [Instalación, casos, resultados y sustentación](docs/pruebas.md).
 
-Las capturas deben obtenerse de la aplicación y de las pruebas realizadas. Está pendiente verificar la existencia de las evidencias desde `01-subnetting.png` hasta `10-app-final.png`.
+**Resultado registrado:** 20/20 superadas = **100% del conjunto ejecutado**, 0 fallidas, bloqueadas o no ejecutadas; ratificado sobre el main indicado durante esta entrega. Validación de navegador y texto, sin ejecutar CLI ni certificar conectividad, modelos o firmware.
 
-## Autoevaluación
+## Entregables y evidencias del Corte 3
 
-| Criterio                                      | ¿Cumplido?                                                  | Evidencia prevista                             |
-| --------------------------------------------- | ----------------------------------------------------------- | ---------------------------------------------- |
-| Subnetting funciona                           | Sí, para IPv4                                               | `01-subnetting.png`                            |
-| Carga de topología                            | Sí                                                          | `02-topologia.png`                             |
-| Config Cisco y Huawei                         | No, pendiente completar el funcionamiento del módulo Huawei | `03-config-cisco.png` / `04-config-huawei.png` |
-| Config Fortinet y MikroTik (C3)               | No                                                          |                                                |
-| Ciberdefensa documentada en `politicas-ia.md` | No                                                          |                                                |
-| Pruebas con % de confianza (C3)               | No                                                          |                                                |
+| Evidencia | Qué demuestra | Archivo |
+| --- | --- | --- |
+| 06 | Propuesta Fortinet realmente generada en la aplicación | [06-config-fortinet.png](docs/capturas/06-config-fortinet.png) |
+| 07 | Propuesta MikroTik realmente generada en la aplicación | [07-config-mikrotik.png](docs/capturas/07-config-mikrotik.png) |
+| 08 | Rechazo real de una IPv4 inválida, conservando el resultado anterior | [08-ciberdefensa.png](docs/capturas/08-ciberdefensa.png) |
+| 09 | Suite ejecutada, 20 casos y 20/20 = 100%; evidencia conservada íntegra | [09-pruebas.png](docs/capturas/09-pruebas.png) |
+| 10 | Pantalla principal del laboratorio funcionando | [10-app-final.png](docs/capturas/10-app-final.png) |
 
+- [Informe académico Corte 3](docs/informe-corte3.pdf).
+- [Manual de usuario](docs/manual.md).
+- [Medidas y límites de seguridad](docs/seguridad.md).
+- [Políticas de ciberdefensa y uso de IA](docs/politicas-ia.md).
+- [Pruebas, entorno y evidencia real](docs/pruebas.md) y [reporte HTML](tests/reporte-corte3.html).
+- Orientación técnica: [estado](docs/estado-proyecto.md), [trazabilidad](docs/trazabilidad-corte3.md) y [matriz de fabricantes](docs/matriz-fabricantes.md). Sus registros históricos deben leerse junto con esta entrega documental.
+- Se conservan sin cambios el [informe Corte 2](docs/informe-corte2.pdf) y las capturas anteriores. No se inventó la captura 05 ausente.
+
+## Límites y pendientes
+
+No hay certificación de compatibilidad física, aplicación automática de CLI, pruebas de conectividad, convergencia ni auditoría integral de seguridad. Las políticas entre servicios requieren intención explícita: MikroTik bloquea forward por defecto; Fortinet no inventa permisos ni NAT. No se asume Internet, VPN ni interoperabilidad HSRP/VRRP.
+
+Pendientes: aclaración docente de configuraciones IPv6, pools DHCP/reservas editables, corrección de `saveSite()`, desbordamientos históricos ajenos a los flujos verificados, validación de plataforma, datos académicos faltantes y sustentación en vivo. La entrega documental no adjudica una nota ni declara completado todo requisito del curso.
