@@ -1268,9 +1268,13 @@
         if (
           confirm("¿Eliminar esta VLAN y reiniciar las etapas dependientes?")
         ) {
-          state.vlans.splice(i, 1);
-          invalidate("plan");
-          render();
+          safe(() => {
+            const vlans = readVlans();
+            vlans.splice(i, 1);
+            state.vlans = vlans;
+            invalidate("plan");
+            render();
+          });
         }
       } // Elimina también el plan que dependía del segmento.
       function readVlans() {
