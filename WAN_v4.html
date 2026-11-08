@@ -628,6 +628,7 @@
         "Ciberdefensa y uso de IA",
         "Evidencias Corte 2",
         "Configuración Fortinet",
+        "Configuración MikroTik",
       ]; // Etapas visibles del flujo.
       const kinds = [
         "Router",
@@ -927,6 +928,7 @@
           securityView,
           evidenceView,
           fortinetView,
+          mikrotikView,
         ][page]();
         $("stepfoot").innerHTML =
           `<button ${page === 0 ? "disabled" : ""} onclick="go(${page - 1})">← Anterior</button><button class="primary" ${page === steps.length - 1 ? "disabled" : ""} onclick="go(${page + 1})">Siguiente →</button>`;
@@ -1633,7 +1635,7 @@
         return n && ["Switch", "Switch capa 3"].includes(n.type);
       } // Roles con VLAN y puertos de switching.
       function configurable(n) {
-        return !fortinetNode(n) && (routed(n) || switching(n));
+        return !fortinetNode(n) && !mikrotikNode(n) && (routed(n) || switching(n));
       } // Firewalls y endpoints necesitan software específico, no IOS/VRP genérico.
       function availableIPs(r, n, excluded = []) {
         const skip = new Set([r.gateway, ...excluded].filter(Boolean));
@@ -1967,7 +1969,7 @@
               y: 100,
             };
         modal(
-          `<h2>${id ? "Editar" : "Agregar"} equipo</h2><div class="grid">${field("Hostname *", "nname", n.name)}<div class="field"><label>Tipo</label><select id="ntype">${optsHTML(kinds, n.type)}</select></div><div class="field"><label>Fabricante</label><select id="nvendor">${optsHTML(["Cisco", "Huawei", "Fortinet"], n.vendor)}</select></div><div class="field"><label>Sede</label><select id="nsite">${state.sites.map((s) => `<option value="${s.id}" ${s.id === n.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></div>${field("IP de gestión / endpoint (opcional)", "nip", n.ip)}<div class="field"><label>VLAN de gestión / endpoint</label><select id="nnetwork"><option value="">Sin asignar</option>${state.plan
+          `<h2>${id ? "Editar" : "Agregar"} equipo</h2><div class="grid">${field("Hostname *", "nname", n.name)}<div class="field"><label>Tipo</label><select id="ntype">${optsHTML(kinds, n.type)}</select></div><div class="field"><label>Fabricante</label><select id="nvendor">${optsHTML(["Cisco", "Huawei", "Fortinet", "MikroTik"], n.vendor)}</select></div><div class="field"><label>Sede</label><select id="nsite">${state.sites.map((s) => `<option value="${s.id}" ${s.id === n.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></div>${field("IP de gestión / endpoint (opcional)", "nip", n.ip)}<div class="field"><label>VLAN de gestión / endpoint</label><select id="nnetwork"><option value="">Sin asignar</option>${state.plan
             .filter((r) => r.kind === "vlan")
             .map(
               (r) =>
@@ -1984,11 +1986,12 @@
             ...(id ? node(id) : { id: "n" + Date.now(), x: 50, y: 100 }),
             name: hostname($("nname").value),
             type: $("ntype").value,
-            vendor: enumVal($("nvendor").value, ["Cisco", "Huawei", "Fortinet"], "Fabricante"),
+            vendor: enumVal($("nvendor").value, ["Cisco", "Huawei", "Fortinet", "MikroTik"], "Fabricante"),
             site: $("nsite").value,
             ip: $("nip").value.trim(),
             network: $("nnetwork").value,
           };
+          if (n.vendor === "MikroTik" && !mikrotikNode(n)) fail("MikroTik requiere tipo Router.");
           if (n.vendor === "Fortinet" && n.type !== "Firewall")
             fail("Fortinet requiere tipo Firewall.");
           if (state.nodes.some((x) => x.id !== id && x.name === n.name))
@@ -2020,7 +2023,7 @@
               fail("Quite los enlaces enrutados antes de cambiar este tipo.");
             if (
               l.type === "trunk" &&
-              !switching(n) && !fortinetNode(n) &&
+              !switching(n) && !fortinetNode(n) && !mikrotikNode(n) &&
               n.type !== "Access Point"
             )
               fail("Un trunk requiere un switch en ambos extremos.");
@@ -2085,7 +2088,7 @@
             )
             .join(
               "",
-            )}</select></div>${field("VLAN (solo access)", "lvlan", l.vlan, "number")}${field("Grupo LACP (0 = sin agrupación)", "lbundle", l.bundle, "number")}${field("Interfaz A · Cisco", "lac", l.ac)}${field("Interfaz B · Cisco", "lbc", l.bc)}${field("Interfaz A · Huawei", "lah", l.ah)}${field("Interfaz B · Huawei", "lbh", l.bh)}${field("Interfaz A · Fortinet (solo Firewall)", "laf", l.af || "", "text", 'placeholder="port1"')}${field("Interfaz B · Fortinet (solo Firewall)", "lbf", l.bf || "", "text", 'placeholder="port2"')}</div><div class="notice">Trunk transporta las VLAN de la sede (hacia AP: gestión, WiFi e invitados). Access conecta un terminal a una VLAN. Routed utiliza /30 y OSPF. LACP requiere dos enlaces físicos entre los mismos switches con el mismo número de grupo; se usa modo activo en ambos extremos.</div><div class="actions"><button class="primary" onclick="saveLink('${id}')">Confirmar enlace</button><button onclick="closeModal()">Cancelar</button></div>`,
+            )}</select></div>${field("VLAN (solo access)", "lvlan", l.vlan, "number")}${field("Grupo LACP (0 = sin agrupación)", "lbundle", l.bundle, "number")}${field("Interfaz A · Cisco", "lac", l.ac)}${field("Interfaz B · Cisco", "lbc", l.bc)}${field("Interfaz A · Huawei", "lah", l.ah)}${field("Interfaz B · Huawei", "lbh", l.bh)}${field("Interfaz A · Fortinet (solo Firewall)", "laf", l.af || "", "text", 'placeholder="port1"')}${field("Interfaz B · Fortinet (solo Firewall)", "lbf", l.bf || "", "text", 'placeholder="port2"')}${field("Interfaz A · MikroTik (solo Router)", "lam", l.am || "", "text", 'placeholder="ether1"')}${field("Interfaz B · MikroTik (solo Router)", "lbm", l.bm || "", "text", 'placeholder="ether2"')}</div><div class="notice">Trunk transporta las VLAN de la sede (hacia AP: gestión, WiFi e invitados). Access conecta un terminal a una VLAN. Routed utiliza /30 y OSPF. LACP requiere dos enlaces físicos entre los mismos switches con el mismo número de grupo; se usa modo activo en ambos extremos.</div><div class="actions"><button class="primary" onclick="saveLink('${id}')">Confirmar enlace</button><button onclick="closeModal()">Cancelar</button></div>`,
         );
       } // Interfaces de cada fabricante se editan separadamente.
       function interfaceName(v) {
@@ -2123,6 +2126,12 @@
             const value = $("l" + side + "f").value.trim();
             if (value || fortinetNode(node(l[side]))) l[side + "f"] = fortinetInterfaceName(value);
           }
+          for (const side of ["a", "b"]) {
+            const value = $("l" + side + "m").value.trim();
+            if (value || mikrotikNode(node(l[side]))) l[side + "m"] = mikrotikInterfaceName(value);
+          }
+          if (l.type === "routed" && !l.network && (mikrotikNode(node(l.a)) || mikrotikNode(node(l.b))))
+            fail("MikroTik: seleccione una /30 existente del plan; no se asigna tránsito fuera de sus pools.");
           if (l.type === "routed" && !l.network && (fortinetNode(node(l.a)) || fortinetNode(node(l.b))))
             fail("Fortinet: seleccione una /30 existente del plan; no se asigna tránsito fuera de sus pools.");
           validateLink(
@@ -2177,6 +2186,8 @@
         const a = node(l.a),
           b = node(l.b);
         if (!a || !b) fail("Extremo inexistente.");
+        if ((mikrotikNode(a) || mikrotikNode(b)) && l.bundle)
+          fail("MikroTik: LACP no está modelado en este adaptador.");
         if (l.type === "routed") {
           if (!routed(a) || !routed(b))
             fail("Routed requiere router, switch capa 3 o Firewall Fortinet.");
@@ -2194,12 +2205,17 @@
             !(
               (switching(a) && (switching(b) || b.type === "Access Point")) ||
               (switching(b) && a.type === "Access Point") ||
-              (fortinetNode(a) && switching(b)) || (fortinetNode(b) && switching(a))
+              (fortinetNode(a) && switching(b)) || (fortinetNode(b) && switching(a)) ||
+              (mikrotikNode(a) && switching(b)) || (mikrotikNode(b) && switching(a))
             )
           )
             fail("Trunk requiere switches o un switch y un AP empresarial.");
           if (l.type === "access") {
-            if (!switching(a) && !switching(b))
+            const mt = mikrotikNode(a) ? a : mikrotikNode(b) ? b : null,
+              peer = mt === a ? b : a;
+            if (mt && !["Switch", "PC", "Servidor", "Access Point"].includes(peer.type))
+              fail("MikroTik: rol LAN access no soportado.");
+            if (!mt && !switching(a) && !switching(b))
               fail("Access requiere un switch.");
             if (l.bundle) fail("Access no admite LACP.");
             if (
@@ -2209,14 +2225,14 @@
               )
             )
               fail("La VLAN access no existe en esta sede.");
-            const end = switching(a) ? b : a;
+            const end = mt ? peer : switching(a) ? b : a;
             if (end.network && row(end.network).id !== l.vlan)
               fail("La VLAN del terminal debe coincidir con el enlace access.");
           }
         }
         for (const side of ["a", "b"])
-          for (const vendor of (fortinetNode(node(l[side])) ? ["f"] : ["c", "h"])) {
-            const name = vendor === "f" ? fortinetInterfaceName(l[side + vendor]) : l[side + vendor];
+          for (const vendor of (mikrotikNode(node(l[side])) ? ["m"] : fortinetNode(node(l[side])) ? ["f"] : ["c", "h"])) {
+            const name = vendor === "m" ? mikrotikInterfaceName(l[side + vendor]) : vendor === "f" ? fortinetInterfaceName(l[side + vendor]) : l[side + vendor];
             for (const x of others) {
               if (
                 (x.a === l[side] && x["a" + vendor] === name) ||
@@ -2284,7 +2300,7 @@
         const side = l.a === n.id ? "a" : "b",
           r = row(l.network);
         return {
-          iface: l[side + (vendor === "Fortinet" ? "f" : vendor === "Cisco" ? "c" : "h")],
+          iface: l[side + (vendor === "MikroTik" ? "m" : vendor === "Fortinet" ? "f" : vendor === "Cisco" ? "c" : "h")],
           ip: r ? (side === "a" ? r.first : r.last) : "",
           r,
           peer: node(l.a === n.id ? l.b : l.a),
@@ -2297,6 +2313,7 @@
       // Huawei: ofrece equivalencias si la topología automática solo contiene Cisco.
       // No modifica fabricantes, nodos, enlaces, direccionamiento ni el generador Cisco.
       function configNodes(vendor) {
+        if (vendor === "MikroTik") return state.nodes.filter(mikrotikNode);
         if (vendor === "Fortinet") return state.nodes.filter(fortinetNode);
         const nodes = state.nodes.filter(
           (n) => configurable(n) && n.vendor === vendor,
@@ -2409,8 +2426,9 @@
           fail("Interfaces de switching requieren crear VLAN.");
       } // Bloqueos técnicos concretos, sin afirmar funcionalidad incompleta.
       function generate(n, vendor) {
+        if (vendor === "MikroTik") return generateMikroTik(n);
         if (vendor === "Fortinet") return generateFortinet(n);
-        if (!["Cisco", "Huawei"].includes(vendor) || fortinetNode(n))
+        if (!["Cisco", "Huawei"].includes(vendor) || fortinetNode(n) || mikrotikNode(n))
           fail("No existe adaptador para esta combinación de equipo y fabricante.");
         assertReady(n);
         const c = vendor === "Cisco",
@@ -2943,6 +2961,235 @@
           `<div class="notice warn">Mapee interfaces Fortinet reales en Topología y deje vacíos IP/red del nodo: se derivan del plan y de sus enlaces. Hostname e interfaces son obligatorios; rutas estáticas proceden de enlaces reales. No se crean VDOM ni se habilita multi-VDOM; las VLAN usan el contexto interno root. No se generan HA, LACP, NAT ni permisos de tránsito implícitos. OSPF usa área 0 y LAN pasivas; verifique adyacencias y rutas de retorno. Un firewall no puede reclamar gateways ya usados por cores. Las opciones compartidas de OSPF/DHCP/relay/ruta afectan a todas las marcas.</div>` + fortinetControls() +
           `<div class="card"><div class="actions"><select id="confNode" aria-label="Equipo a configurar">${nodes.map((n) => `<option value="${n.id}">${esc(n.name)}</option>`).join("")}</select><button class="primary" onclick="generateSelected('Fortinet')">Generar equipo</button><button onclick="generateAll('Fortinet')">Generar todos los Fortinet</button><button onclick="downloadAll('Fortinet')">Descargar todos</button></div>${nodes.length ? nodes.map((n) => configBlock(n, "Fortinet")).join("") : '<div class="empty">Añada un Firewall Fortinet y sus enlaces explícitos en Topología.</div>'}</div>`;
       }
+      /* RouterOS 7.x: router de laboratorio, sin VRF/CAPsMAN ni ejecución remota. */
+      function mikrotikNode(n) {
+        return n?.vendor === "MikroTik" && n.type === "Router";
+      }
+      function mikrotikInterfaceName(value, optional = false) {
+        if (optional && (value === undefined || value === "")) return "";
+        if (typeof value !== "string" || !/^[A-Za-z][A-Za-z0-9_-]{0,30}$/.test(value) || value.startsWith("wan-"))
+          fail("Interfaz MikroTik inválida: indique un puerto físico real, por ejemplo ether1, sin comandos ni prefijo wan-.");
+        return value;
+      }
+      function mikrotikInterfaces(n) {
+        const physical = [], lan = new Map(), used = new Set();
+        for (const l of connected(n).slice().sort((a, b) => a.id.localeCompare(b.id))) {
+          const e = endpoint(l, n, "MikroTik"), name = mikrotikInterfaceName(e.iface);
+          if (used.has(name)) fail("MikroTik: interfaz repetida " + name);
+          used.add(name);
+          if (l.bundle) fail("MikroTik: LACP no está modelado.");
+          if (l.type === "routed") {
+            if (!e.r || e.r.kind === "vlan" || e.r.prefix !== 30 || !isHost(e.ip, e.r))
+              fail("MikroTik: seleccione una /30 confirmada para " + name);
+            physical.push({ name, ...e, link: l });
+            continue;
+          }
+          if ((l.type === "trunk" && !switching(e.peer)) ||
+              (l.type === "access" && !["Switch", "PC", "Servidor", "Access Point"].includes(e.peer?.type)))
+            fail("MikroTik: rol LAN no soportado en " + name);
+          const rows = state.plan.filter((r) => r.site === n.site && r.kind === "vlan" && (l.type === "trunk" || r.id === l.vlan));
+          if (!rows.length) fail("MikroTik: enlace LAN sin VLAN del plan.");
+          if (state.sites.find((s) => s.id === n.site)?.redundant ||
+              state.nodes.some((x) => x.site === n.site && x.type === "Switch capa 3"))
+            fail("MikroTik: gateways con cores/redundancia requieren un diseño explícito; VRRP no está modelado.");
+          physical.push({ name, link: l });
+          for (const r of rows) {
+            if (state.nodes.some((x) => x.id !== n.id && (x.ip === r.gateway ||
+                (x.site === n.site && (fortinetNode(x) || mikrotikNode(x)) && connected(x).some((y) =>
+                  y.type === "trunk" || (y.type === "access" && y.vlan === r.id))))))
+              fail("MikroTik: gateway compartido sin redundancia modelada, VLAN " + r.id);
+            if (!lan.has(r.key)) lan.set(r.key, { name: "wan-v" + r.id, ip: r.gateway, r, tagged: ["wan-lan"], untagged: [] });
+            lan.get(r.key)[l.type === "trunk" ? "tagged" : "untagged"].push(name);
+          }
+        }
+        return { physical, lan: [...lan.values()].sort((a, b) => a.r.id - b.r.id) };
+      }
+      function mikrotikRoute(n, r) {
+        const queue = [{ n, first: null }], seen = new Set([n.id]);
+        while (queue.length) {
+          const current = queue.shift();
+          if (current.n.id !== n.id && current.n.site === r.site &&
+              (current.n.type === "Switch capa 3" || ((fortinetNode(current.n) || mikrotikNode(current.n)) &&
+                connected(current.n).some((l) => l.type === "trunk" || (l.type === "access" && l.vlan === r.id)))))
+            return current.first;
+          for (const l of connected(current.n).filter((l) => l.type === "routed").sort((a, b) => a.id.localeCompare(b.id))) {
+            const peer = node(l.a === current.n.id ? l.b : l.a), network = row(l.network);
+            if (!network || !routed(peer) || seen.has(peer.id)) continue;
+            seen.add(peer.id);
+            queue.push({ n: peer, first: current.first || {
+              iface: mikrotikInterfaceName(endpoint(l, n, "MikroTik").iface),
+              gateway: l.a === n.id ? network.last : network.first,
+            } });
+          }
+        }
+        return null;
+      }
+      function mikrotikDhcpRanges(r) {
+        const excluded = [...new Set([r.gateway, ...state.nodes.filter((n) => n.network === r.key && n.ip).map((n) => n.ip)])]
+          .map(ipNum).filter((ip) => ip > r.net && ip < r.end).sort((a, b) => a - b);
+        const ranges = []; let start = r.net + 1;
+        for (const ip of [...excluded, r.end]) {
+          if (start < ip) ranges.push(ipStr(start) + "-" + ipStr(ip - 1));
+          start = ip + 1;
+        }
+        if (!ranges.length) fail("MikroTik: no quedan IP para DHCP en VLAN " + r.id);
+        return ranges.join(",");
+      }
+      function generateMikroTik(n) {
+        if (!mikrotikNode(n)) fail("RouterOS solo admite nodos Router de fabricante MikroTik.");
+        if (!state.approved || !state.plan.length) fail("MikroTik: confirme primero el plan v3.");
+        hostname(n.name);
+        if (n.ip || n.network) fail("MikroTik: deje vacíos IP/red del nodo; se derivan del plan y de sus enlaces.");
+        if (!connected(n).length) fail("MikroTik: el router no tiene enlaces.");
+        const problems = topologyIssues().filter((x) => x.block);
+        if (problems.length) fail(problems.map((x) => x.msg).join(" · "));
+        if (state.opts.dhcp && state.opts.relay) fail("Elija DHCP o relay, no ambos.");
+        const o = state.opts, { physical, lan } = mikrotikInterfaces(n),
+          routedPorts = physical.filter((e) => e.r),
+          direct = new Set([...routedPorts, ...lan].map((e) => e.r.key)),
+          mgmt = state.plan.find((r) => r.site === n.site && r.kind === "vlan" && r.role === "Gestión"),
+          mgmtIf = mgmt && (lan.find((e) => e.r.key === mgmt.key)?.name || mikrotikRoute(n, mgmt)?.iface),
+          relay = o.relay ? ipStr(ipNum(state.relay)) : "", routes = [];
+        ipNum(state.project.dns);
+        for (const r of state.plan.filter((r) => !o.ospf && r.kind === "vlan" && !direct.has(r.key))) {
+          const path = mikrotikRoute(n, r);
+          if (path) routes.push({ ...path, cidr: r.network + "/" + r.prefix });
+        }
+        if (o.static) {
+          const next = ipStr(ipNum(state.staticNext));
+          text(state.staticReason, "Justificación de ruta por defecto");
+          const e = routedPorts.find((e) => isHost(next, e.r) && next !== e.ip);
+          if (!e) fail("MikroTik: el siguiente salto debe ser el otro extremo de una /30 conectada.");
+          routes.push({ iface: e.name, gateway: next, cidr: "0.0.0.0/0" });
+        }
+        const lines = [
+          "# Propuesta MikroTik genérico / RouterOS 7.x; validación física pendiente.",
+          "# Sin VRF, CAPsMAN, IPv6, NAT ni Internet implícitos. Área OSPF 0, Ethernet broadcast.",
+          "# Revisar en laboratorio limpio, puertos reales, versión exacta, rutas de retorno y reglas existentes.",
+          "# No es un respaldo ni una aplicación idempotente. Los controles previos detienen nombres/puertos ocupados.",
+          "# Sin intención explícita de tráfico: forward queda BLOQUEADO; definir permisos antes de uso productivo.",
+          "# Cuentas/claves SSH: <CAMBIAR_EN_PRODUCCION> por procedimiento externo; no se crean credenciales.",
+        ], add = (...items) => lines.push(...items),
+          guard = (find, condition, message) => add(':if ([:len [' + find + ']] ' + condition + ') do={:error "' + message + '"}');
+        for (const menu of ["/interface", "/ip pool", "/ip dhcp-server", "/ip dhcp-relay", "/routing ospf instance", "/routing ospf area"])
+          guard(menu + ' find where name~"^wan-"', "> 0", "Revise objetos wan- existentes antes de aplicar");
+        guard('/ip firewall filter find where chain="wan-input"', "> 0", "Revise cadena wan-input existente");
+        for (const e of physical) {
+          guard('/interface ethernet find where name="' + e.name + '"', "!= 1", "Puerto fisico inexistente: " + e.name);
+          for (const menu of ["/interface bridge port", "/ip address", "/ip dhcp-client"])
+            guard(menu + ' find where interface="' + e.name + '"', "> 0", "Puerto ya configurado: " + e.name);
+        }
+        add('/system identity set name="' + n.name + '"');
+        for (const e of physical) add('/interface ethernet set [find where name="' + e.name + '"] disabled=no');
+        if (lan.length) {
+          add('/interface bridge add name="wan-lan" vlan-filtering=no frame-types=admit-only-vlan-tagged');
+          for (const e of physical.filter((e) => !e.r)) {
+            const access = e.link.type === "access";
+            add('/interface bridge port add bridge="wan-lan" interface="' + e.name + '" ingress-filtering=yes frame-types=' +
+              (access ? "admit-only-untagged-and-priority-tagged pvid=" + e.link.vlan : "admit-only-vlan-tagged"));
+          }
+          for (const e of lan) {
+            add('/interface bridge vlan add bridge="wan-lan" vlan-ids=' + e.r.id + ' tagged=' + e.tagged.join(",") +
+              (e.untagged.length ? " untagged=" + e.untagged.join(",") : ""),
+              '/interface vlan add name="' + e.name + '" interface="wan-lan" vlan-id=' + e.r.id);
+          }
+        }
+        for (const e of [...routedPorts, ...lan])
+          add('/ip address add address=' + e.ip + "/" + e.r.prefix + ' interface="' + e.name + '"');
+        for (const route of routes)
+          add('/ip route add dst-address=' + route.cidr + ' gateway=' + route.gateway + '%' + route.iface);
+        if (o.ospf) {
+          add('/routing ospf instance add name="wan-ospf" version=2 router-id=' + routerId(n),
+            '/routing ospf area add name="wan-backbone" instance="wan-ospf" area-id=0.0.0.0');
+          for (const e of [...routedPorts, ...lan])
+            add('/routing ospf interface-template add area="wan-backbone" interfaces="' + e.name + '" networks=' + e.r.network + "/" + e.r.prefix +
+              (e.r.kind === "vlan" ? " passive=yes" : " type=broadcast"));
+        }
+        for (const e of lan.filter((e) => e.r.dhcp)) {
+          if (o.dhcp) {
+            add('/ip pool add name="wan-p' + e.r.id + '" ranges=' + mikrotikDhcpRanges(e.r),
+              '/ip dhcp-server add name="wan-dhcp' + e.r.id + '" interface="' + e.name + '" address-pool="wan-p' + e.r.id + '" lease-time=1d disabled=no',
+              '/ip dhcp-server network add address=' + e.r.network + "/" + e.r.prefix + ' gateway=' + e.ip + ' dns-server=' + state.project.dns + ' netmask=' + e.r.prefix);
+          } else if (o.relay) {
+            add('/ip dhcp-relay add name="wan-relay' + e.r.id + '" interface="' + e.name + '" dhcp-server=' + relay + ' local-address=' + e.ip + ' disabled=no');
+          }
+        }
+        for (const service of ["telnet", "ftp", "www", "www-ssl", "api", "api-ssl", "winbox"])
+          add('/ip service set ' + service + ' disabled=yes');
+        add('/ip ssh set strong-crypto=yes', '/tool mac-server set allowed-interface-list=none',
+          '/tool mac-server mac-winbox set allowed-interface-list=none', '/tool mac-server ping set enabled=no',
+          '/ip neighbor discovery-settings set discover-interface-list=none', '/tool bandwidth-server set enabled=no',
+          '/ip dns set allow-remote-requests=no');
+        const ssh = o.ssh && mgmtIf;
+        add('/ip service set ssh disabled=' + (ssh ? 'no port=22 address=' + mgmt.network + '/' + mgmt.prefix : 'yes'));
+        // Solo control local explícito; el tráfico reenviado no obtiene permisos implícitos.
+        add('/ip firewall filter add chain=wan-input action=drop connection-state=invalid',
+          '/ip firewall filter add chain=wan-input action=accept connection-state=established,related');
+        if (ssh) add('/ip firewall filter add chain=wan-input action=accept protocol=tcp dst-port=22 src-address=' +
+          mgmt.network + '/' + mgmt.prefix + ' in-interface="' + mgmtIf + '"');
+        for (const e of routedPorts) {
+          const peer = e.ip === e.r.first ? e.r.last : e.r.first;
+          if (o.ospf) add('/ip firewall filter add chain=wan-input action=accept protocol=ospf src-address=' + peer + '/32 in-interface="' + e.name + '"');
+        }
+        for (const e of lan.filter((e) => e.r.dhcp && o.dhcp))
+          add('/ip firewall filter add chain=wan-input action=accept protocol=udp src-port=68 dst-port=67 in-interface="' + e.name + '"');
+        if (o.relay && lan.some((e) => e.r.dhcp))
+          add('/ip firewall filter add chain=wan-input action=accept protocol=udp src-address=' + relay + '/32 src-port=67 dst-port=67');
+        add('/ip firewall filter add chain=wan-input action=drop',
+          '/ip firewall filter add chain=input action=jump jump-target=wan-input place-before=0',
+          '/ip firewall filter add chain=forward action=drop place-before=0 comment="Revisar intencion de trafico"');
+        if (lan.length) add('/interface bridge set [find where name="wan-lan"] vlan-filtering=yes');
+        return lines.join("\n");
+      }
+      function mikrotikControls() {
+        return `<div class="card"><h3>Opciones RouterOS 7</h3><div class="grid">${Object.entries({ssh: "SSH restringido a Gestión", ospf: "OSPF área 0 (LAN pasivas)", dhcp: "DHCP local en VLAN marcadas", relay: "Relay DHCP externo", static: "Ruta por defecto explícita"}).map(([k,v]) => `<label class="check"><input id="mo${k}" type="checkbox" ${state.opts[k] ? "checked" : ""}>${v}</label>`).join("")}</div><div class="grid">${field("Servidor DHCP externo", "mrelay", state.relay)}${field("Siguiente salto por defecto", "mstaticNext", state.staticNext)}${field("Justificación de ruta por defecto", "mstaticReason", state.staticReason)}</div></div>`;
+      }
+      function generateMikroTikFromForm(all) {
+        safe(() => {
+          const previous = { opts: state.opts, relay: state.relay, staticNext: state.staticNext,
+            staticReason: state.staticReason, configs: state.configs, revision: state.revision };
+          try {
+            const opts = { ...state.opts };
+            for (const k of ["ssh", "ospf", "dhcp", "relay", "static"]) opts[k] = $("mo" + k).checked;
+            const relay = $("mrelay").value.trim(), next = $("mstaticNext").value.trim(), reason = $("mstaticReason").value.trim();
+            if (relay) ipNum(relay);
+            if (next) ipNum(next);
+            if (reason) text(reason, "Justificación");
+            if (opts.dhcp && opts.relay) fail("Elija DHCP o relay, no ambos.");
+            if (opts.relay && !relay) fail("Indique servidor DHCP externo.");
+            if (opts.static && (!next || !reason)) fail("Ruta por defecto requiere siguiente salto y justificación.");
+            if (JSON.stringify([opts, relay, next, reason]) !== JSON.stringify([state.opts, state.relay, state.staticNext, state.staticReason])) {
+              state.opts = opts; state.relay = relay; state.staticNext = next; state.staticReason = reason;
+              state.configs = {}; state.revision++;
+            } else state.configs = { ...state.configs };
+            const nodes = all ? configNodes("MikroTik") : [node($("confNode").value)];
+            if (!nodes.length || !nodes[0]) fail("Seleccione un Router MikroTik.");
+            const outputs = nodes.map((n) => [n, generateMikroTik(n)]);
+            for (const [n, result] of outputs)
+              state.configs[n.id + "-MikroTik"] = { text: result, revision: state.revision };
+          } catch (e) { Object.assign(state, previous); throw e; }
+          render(); toast("Propuesta RouterOS generada para revisión manual.");
+        });
+      }
+      function mikrotikView() {
+        const nodes = configNodes("MikroTik");
+        return title("Configuración MikroTik RouterOS", "Router genérico de laboratorio · RouterOS 7.x · sin VRF/CAPsMAN · compatibilidad física pendiente.") +
+          `<details class="card"><summary>Documentación oficial MikroTik consultada</summary><ul>${[
+            ["https://help.mikrotik.com/docs/spaces/ROS/pages/40992856/Identity", "Identidad del sistema"],
+            ["https://help.mikrotik.com/docs/spaces/ROS/pages/328068/Bridging+and+Switching", "Bridge, puertos y filtrado VLAN"],
+            ["https://help.mikrotik.com/docs/spaces/ROS/pages/28606465/Bridge+VLAN+Table", "VLAN de CPU y puertos tagged/untagged"],
+            ["https://help.mikrotik.com/docs/spaces/ROS/pages/328084/IP+Routing", "IPv4 y rutas"],
+            ["https://help.mikrotik.com/docs/spaces/ROS/pages/331612216/routing+ospf", "OSPF RouterOS 7"],
+            ["https://help.mikrotik.com/docs/spaces/ROS/pages/24805500/DHCP", "Servidor y relay DHCP"],
+            ["https://help.mikrotik.com/docs/spaces/ROS/pages/129531938/IP+Pools", "Pools automáticos"],
+            ["https://help.mikrotik.com/docs/spaces/ROS/pages/328353/Securing+your+router", "Servicios, SSH y acceso MAC"],
+            ["https://help.mikrotik.com/docs/spaces/ROS/pages/328513/Building+Advanced+Firewall", "Filtrado de entrada y tránsito"],
+            ["https://help.mikrotik.com/docs/spaces/ROS/pages/47579229/Scripting", "Controles previos y sintaxis"],
+          ].map(([url,label]) => `<li><a target="_blank" rel="noopener" href="${url}">${label}</a></li>`).join("")}</ul></details>` +
+          `<div class="notice warn">Mapee puertos MikroTik reales en Topología y deje IP/red del nodo vacíos. Solo Router; bridge/VLAN filtering para LAN, /30 para enlaces enrutados. No se modelan VRRP, LACP, VRF, CAPsMAN, IPv6 ni NAT. No reclame gateways de cores u otros routers/firewalls. SSH solo desde Gestión; MAC y servicios innecesarios deshabilitados. Sin permisos de tráfico explícitos se bloquea forward: revise políticas antes de uso. Cuentas/claves y configuración existente requieren revisión externa. Las opciones de OSPF/DHCP/relay/ruta son compartidas entre fabricantes.</div>` + mikrotikControls() +
+          `<div class="card"><div class="actions"><select id="confNode" aria-label="Equipo a configurar">${nodes.map((n) => `<option value="${n.id}">${esc(n.name)}</option>`).join("")}</select><button class="primary" onclick="generateSelected('MikroTik')">Generar equipo</button><button onclick="generateAll('MikroTik')">Generar todos los MikroTik</button><button onclick="downloadAll('MikroTik')">Descargar todos</button></div>${nodes.length ? nodes.map((n) => configBlock(n, "MikroTik")).join("") : '<div class="empty">Añada un Router MikroTik y sus enlaces explícitos en Topología.</div>'}</div>`;
+      }
+
       function trunkCommands(c, lan) {
         return c
           ? [
@@ -2958,6 +3205,7 @@
         return ipStr(4294967295 - ipNum(mask));
       } // Masque inversé exact utilisé pour OSPF.
       function generateSelected(vendor) {
+        if (vendor === "MikroTik") return generateMikroTikFromForm(false);
         if (vendor === "Fortinet") return generateFortinetFromForm(false);
         if (changeOpts() === false) return;
         safe(() => {
@@ -2973,6 +3221,7 @@
         });
       } // Ne marque une configuration comme générée qu'après succès.
       function generateAll(vendor) {
+        if (vendor === "MikroTik") return generateMikroTikFromForm(true);
         if (vendor === "Fortinet") return generateFortinetFromForm(true);
         if (changeOpts() === false) return;
         safe(() => {
@@ -3070,7 +3319,7 @@
           "topologie-" + v.toLowerCase() + ".txt",
           entries
             .map(([k, x]) => x.text)
-            .join("\n\n" + (v === "Fortinet" ? "# " : "") + "=".repeat(60) + "\n\n"),
+            .join("\n\n" + (["Fortinet", "MikroTik"].includes(v) ? "# " : "") + "=".repeat(60) + "\n\n"),
           "text/plain",
         );
       } // Un seul fichier contient des blocs nommés pour tous les équipements générés.
@@ -3090,6 +3339,9 @@
         }
         for (const n of state.nodes) {
           if (!connected(n).length) warn(n.name + " sin enlaces.");
+          if (mikrotikNode(n) && connected(n).length) {
+            try { mikrotikInterfaces(n); } catch (e) { warn(e.message, true); }
+          }
           if (n.type === "Switch" && !n.ip)
             warn(n.name + " sin dirección de gestión.");
           if (n.type === "Switch capa 3") {
@@ -3739,13 +3991,14 @@
               id: idVal(n.id),
               name: hostname(n.name),
               type: enumVal(n.type, kinds, "Tipo de equipo"),
-              vendor: enumVal(n.vendor, ["Cisco", "Huawei", "Fortinet"], "Fabricante"),
+              vendor: enumVal(n.vendor, ["Cisco", "Huawei", "Fortinet", "MikroTik"], "Fabricante"),
               site: n.site,
               ip: n.ip ? ipStr(ipNum(n.ip)) : "",
               network: n.network ? idVal(n.network) : "",
               x: num(n.x, 0, 100000, "X", false),
               y: num(n.y, 0, 100000, "Y", false),
             };
+          if (o.vendor === "MikroTik" && !mikrotikNode(o)) fail("MikroTik requiere tipo Router.");
           if (o.vendor === "Fortinet" && !fortinetNode(o)) fail("Fortinet requiere tipo Firewall.");
           if (o.network && (!r || r.site !== o.site || r.kind !== "vlan"))
             fail("Red de equipo inexistente.");
@@ -3788,6 +4041,8 @@
             bh: interfaceName(l.bh),
             ...(l.af !== undefined ? { af: fortinetInterfaceName(l.af, true) } : {}),
             ...(l.bf !== undefined ? { bf: fortinetInterfaceName(l.bf, true) } : {}),
+            ...(l.am !== undefined ? { am: mikrotikInterfaceName(l.am, true) } : {}),
+            ...(l.bm !== undefined ? { bm: mikrotikInterfaceName(l.bm, true) } : {}),
           };
         });
         unique(
@@ -3825,11 +4080,11 @@
           if (blocking.length) fail(blocking[0].msg);
           if (src.configs && typeof src.configs === "object")
             for (const [key, val] of Object.entries(src.configs)) {
-              const m = key.match(/^([A-Za-z0-9_-]+)-(Cisco|Huawei|Fortinet)$/),
+              const m = key.match(/^([A-Za-z0-9_-]+)-(Cisco|Huawei|Fortinet|MikroTik)$/),
                 n = m ? out.nodes.find((n) => n.id === m[1]) : null;
               if (
                 !n ||
-                !(m[2] === "Fortinet" ? fortinetNode(n) : configurable(n)) ||
+                !(m[2] === "MikroTik" ? mikrotikNode(n) : m[2] === "Fortinet" ? fortinetNode(n) : configurable(n)) ||
                 typeof val.text !== "string" ||
                 val.text.length > 100000 ||
                 val.revision !== out.revision
