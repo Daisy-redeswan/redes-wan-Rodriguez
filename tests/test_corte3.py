@@ -643,6 +643,8 @@ def write_report(path, records, environment, elapsed):
     counts, executed, percent = summary(records)
     score = f"{counts['superada']}/{executed} · {percent:.2f}%" if percent is not None else "0/0 · no calculable"
     escape = lambda value: html.escape(str(value))
+    status = "Ejecución incompleta: error de entorno/artefacto" if environment.get("fatal_error") else "Ejecución real finalizada"
+    warning = ("<p><b>Error global:</b> " + escape(environment["fatal_error"]) + "</p>") if environment.get("fatal_error") else ""
     rows = "".join(f"<tr><td>{r['id']}</td><td><b>{escape(r['name'])}</b><small>{escape(r['expected'])}</small></td>"
                    f"<td>{escape(r['actual'])}</td><td class='{r['state'].split()[0]}'>{escape(r['state'].upper())}"
                    f"<small>{r['seconds']:.2f} s</small></td></tr>" for r in records)
@@ -656,7 +658,7 @@ def write_report(path, records, environment, elapsed):
 main{{max-width:1400px;margin:auto;padding:30px}}header{{background:#132b43;color:white;border-radius:12px;padding:24px}}
 h1{{margin:0 0 8px;font-size:29px}}.score{{font-size:38px;font-weight:800;color:#88e5c2}}.details{{font-size:12px;word-break:break-word}}
 .counts{{padding:14px 0;font-weight:700}}table{{width:100%;border-collapse:collapse;background:white}}th,td{{text-align:left;border:1px solid #d5dfe8;padding:10px;vertical-align:top}}th{{background:#dce8f2}}td:first-child{{width:55px}}td:last-child{{width:115px;font-size:12px;font-weight:800}}small{{display:block;color:#50677a;font-size:12px;margin-top:4px}}.superada{{color:#08744f}}.fallida,.bloqueada{{color:#a92626}}footer{{padding:15px;background:#fff7dd;border-radius:8px;margin-top:16px}}</style>
-<main><header><h1>WAN Architect · Regresión automatizada Corte 3</h1><div>Ejecución real finalizada · Python / Playwright · HTTP local</div>
+<main><header><h1>WAN Architect · Regresión automatizada Corte 3</h1><div>{status} · Python / Playwright · HTTP local</div>{warning}
 <div class="score">{score}</div><div class="details">{escape(environment['date'])} · {escape(environment['python'])} · Playwright {escape(environment['playwright'])} · Chromium {escape(environment['browser'])}<br>
 Commit: {escape(environment['commit'])}<br>SHA-256 WAN_v4.html: {environment['application_sha256']}<br>Suite SHA-256: {environment['suite_sha256']} · Duración: {elapsed:.1f} s</div></header>
 <div class="counts">Superadas: {counts['superada']} · Fallidas: {counts['fallida']} · Bloqueadas: {counts['bloqueada']} · No ejecutadas: {counts['no ejecutada']} · Total definido: {len(records)}</div>
@@ -674,6 +676,11 @@ def main():
     parser.add_argument("--browser", type=Path, help="Ejecutable Chromium alternativo (también CHROMIUM_EXECUTABLE)")
     args = parser.parse_args()
     report = args.report.resolve() if args.report else Path(tempfile.mkdtemp(prefix="wan-corte3-")) / "reporte.html"
+    targets = {report, *([args.capture.resolve()] if args.capture else [])}
+    if targets & {APPLICATION.resolve(), FIXTURE.resolve(), Path(__file__).resolve()}:
+        parser.error("El reporte/captura no puede sobrescribir aplicación, fixture o runner.")
+    if args.capture and report == args.capture.resolve():
+        parser.error("HTML y PNG requieren rutas distintas.")
     if not APPLICATION.is_file() or not FIXTURE.is_file():
         parser.error("Falta WAN_v4.html o tests/fixtures/laboratorio-v2.json; ejecute desde un checkout completo.")
     initial_hash = hashlib.sha256(APPLICATION.read_bytes()).hexdigest()
@@ -737,7 +744,9 @@ def main():
                     args.capture.parent.mkdir(parents=True, exist_ok=True)
                     with browser.new_context(viewport={"width": 1400, "height": 1000}, device_scale_factor=1) as context:
                         page = context.new_page()
-                        page.goto(report.as_uri(), wait_until="load")
+                        # Renderizar exactamente el HTML generado: funciona también
+                        # donde la política de Chromium bloquea navegación file://.
+                        page.set_content(report.read_text(encoding="utf-8"), wait_until="load")
                         page.screenshot(path=str(args.capture.resolve()), full_page=True, animations="disabled")
     except Exception as error:
         fatal = f"{type(error).__name__}: {error}"
@@ -751,6 +760,7 @@ def main():
     completed = {record["id"] for record in records}
     for identifier, name, expected, _function in CASES:
         if identifier not in completed:
+            print(f"{identifier} {'BLOQUEADA' if fatal else 'NO EJECUTADA'}: {name} — {fatal or 'No se llegó a ejecutar'}", flush=True)
             records.append({"id": identifier, "name": name, "expected": expected,
                             "actual": fatal or "No se llegó a ejecutar", "state": "bloqueada" if fatal else "no ejecutada", "seconds": 0})
     if hashlib.sha256(APPLICATION.read_bytes()).hexdigest() != initial_hash:
