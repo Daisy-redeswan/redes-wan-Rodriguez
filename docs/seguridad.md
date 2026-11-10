@@ -1,6 +1,6 @@
 # Seguridad aplicada y límites — Corte 3
 
-Base inspeccionada: main `f7ed2b907d6edad6f1ed7bd5274c49956a7a77d8`. Esta entrega documenta controles existentes y evidencia local; no modifica `WAN_v4.html`, no añade mecanismos de seguridad al código y **no declara una auditoría completa**.
+Base inspeccionada: main `6ac46f9257143f88ec8cb7b47c020bb3739adbfa`, con interfaz bilingüe en esta rama. La entrega bilingüe conserva los controles de red e importación, localiza mensajes y refuerza el acceso por teclado. **No declara una auditoría completa**.
 
 ## Modelo de uso y datos
 
@@ -30,7 +30,14 @@ Una ruta por defecto requiere siguiente salto y justificación; no implica Inter
 
 `<CAMBIAR_EN_PRODUCCION>` es un marcador, **no una contraseña válida**. Debe sustituirse por un procedimiento externo seguro, después de revisar la propuesta y únicamente en un laboratorio autorizado. No introducir secretos reales en el código, JSON, capturas, conversaciones de IA, historial Git ni documentos.
 
-La guía establece `.env` protegido por `.gitignore` para secretos. En esta app estática no se necesitan ni se crean secretos o `.env`; un `.env` servido por HTTP o incluido en un frontend no es un almacén seguro. El repositorio base no contiene una política `.gitignore` que pueda declararse implementada aquí. Si se añade un backend/integración futura, gestionar secretos fuera del contenido público, añadir exclusiones antes de trabajar con ellos y obtener autorización para ese cambio de alcance. No se creó `.env` ni se modificó `.gitignore` en esta entrega documental.
+La guía establece `.env` protegido por `.gitignore`. Se creó [.gitignore](../.gitignore) con `.env`, `.env.*` y excepción `!.env.example`, además de cachés Python/entornos de pruebas. Se verificó que los secretos se excluyan y la excepción no quede ignorada. No existe ni se necesita un `.env` en esta app estática. Un futuro backend deberá gestionar secretos fuera del frontend y del directorio servido; un `.env` público no es almacenamiento seguro. No se introdujeron credenciales ni un archivo de ejemplo con secretos.
+
+## Idiomas y controles
+
+`I18N`/`t()` localizan únicamente interfaz y mensajes; los datos de usuario se escapan y las opciones conservan sus valores internos. `WAN-Architect-language` guarda la preferencia fuera del contrato v4. Cambiar idioma no confirma formularios, no cambia planes/CLI/JSON ni envía datos a un traductor o IA. La copia/descarga mantiene las CLI byte por byte; los marcadores siguen siendo técnicos e intencionales, no datos académicos faltantes.
+
+La auditoría inventarió 58 plantillas de botón, dos importadores y un selector. Todos tenían acción; no se eliminaron controles válidos. Se deshabilita Vista automática cuando no procede, se muestran validaciones si falta una configuración y los importadores admiten Enter/Espacio. Nombres accesibles y tooltips identifican eliminar equipo/enlace. El [inventario completo](manual.md) y las pruebas C21–C31 delimitan lo comprobado.
+
 
 ## Evidencia ejecutada
 
@@ -39,7 +46,7 @@ La guía establece `.env` protegido por `.gitignore` para secretos. En esta app 
 - **C18 y revisión por caso:** compilación JavaScript en Chromium; sin errores de página/consola ni solicitudes externas en el conjunto ejecutado.
 - **C14/C15/C16:** estructura y separación de gramáticas FortiOS/RouterOS, controles propuestos y aislamiento de cuatro fabricantes, como texto.
 - **[Captura 08](capturas/08-ciberdefensa.png):** el formulario contiene `192.168.10.999/26`, muestra «IPv4 inválida» y conserva el resultado de `192.168.10.50/26` (red .0, broadcast .63, 62 hosts).
-- **[Captura 09](capturas/09-pruebas.png):** 20/20 del conjunto identificado en [pruebas.md](pruebas.md), ratificado en el main actual. El 100% no mide toda la seguridad ni la cobertura de cada rama del código.
+- **[Captura 09](capturas/09-pruebas.png):** 31/31 del conjunto identificado en [pruebas.md](pruebas.md), ratificado en el main actual. El 100% no mide toda la seguridad ni la cobertura de cada rama del código. C26 conserva exactamente los planes IPv4/IPv6, la topología y las CLI de cuatro fabricantes frente a la base; C28/C29 comprueban teclado, copia, descargas y validaciones.
 
 La revisión documental y de publicación comprueba secretos conocidos, nombres/rutas, hashes, diff y temporales. No es un escáner de vulnerabilidades certificado ni asegura que un usuario nunca introduzca un dato sensible.
 

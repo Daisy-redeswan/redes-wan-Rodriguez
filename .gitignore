@@ -1,0 +1,10 @@
+# Secretos: no se necesitan para la aplicación estática.
+.env
+.env.*
+!.env.example
+
+# Entornos y cachés locales de las pruebas.
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/

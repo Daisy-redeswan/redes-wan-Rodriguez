@@ -1,75 +1,52 @@
 # Trazabilidad del Corte 3
 
-## Fuente y alcance
+## Fuente y versión
 
-Fuente principal: [Guía Docente.html](<requisitos/Guía Docente.html>), secciones «Rúbrica de evaluación», «Actividades y entrega», «La herramienta» y «Uso de la IA y pruebas». Código IPv6 auditado: `11a8d212827063080112bac659a2bba1f64780ea`, base main `01886058e6e63ba8171525e6552bca1ef97061a5`. Antecedente: código MikroTik auditado: `a31d6554c72b815c1d7b8a799a072d90d8ddac27`, base main `42b6167cbcd6b2a6a1992b99eaabb7ba377c9ca6`. Antecedente: código Fortinet auditado: `5d87d76d3e78ded591220f75e2960f736fcf28ce`, base main `c33859758c717b1f777174183409dcdf5376aaab`; la auditoría anterior del PR #3 se conserva como antecedente, archivo [WAN_v4.html](../WAN_v4.html).
+Fuente normativa: [Guía Docente.html](<requisitos/Guía Docente.html>), rúbrica Corte 3, actividades, plantilla README y políticas IA. Base main `6ac46f9257143f88ec8cb7b47c020bb3739adbfa`; código bilingüe `71d56cb469a1f9049d24fc0bf2804adefdd256db`, rama `feature/i18n-evidencias-finales`. Revisión: 9 de noviembre de 2026, America/Bogota.
 
-La guía define seis criterios cuyos pesos suman 100%. Los pesos siguientes son oficiales; no son una calificación otorgada ni porcentaje de confianza. Los estados y pruebas ejecutadas se detallan en [estado-proyecto.md](estado-proyecto.md); los límites de plataformas en [matriz-fabricantes.md](matriz-fabricantes.md).
+Los seis pesos oficiales suman 100%; **no son una nota asignada ni el porcentaje de pruebas**. Resultado local vigente: C01–C31, 31/31 = 100% del conjunto ejecutado, con límites en [pruebas.md](pruebas.md) y [estado-proyecto.md](estado-proyecto.md). Las matrices y cantidades históricas quedan en Git y no se suman a este conjunto.
 
-## Matriz de evaluación
+## Matriz de evaluación vigente
 
-| Criterio del docente | Peso oficial | Requisito funcional | Módulo | Estado actual | Prueba necesaria | Evidencia requerida | Documento de entrega | Observaciones y pendientes |
+| Criterio del docente | Peso oficial | Requisito funcional | Módulo | Estado actual | Prueba necesaria / ejecutada | Evidencia requerida | Documento de entrega | Observaciones y pendientes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Config Fortinet + 4.ª marca | 25% | Completar Cisco, Huawei, Fortinet y MikroTik desde el mismo plan/topología | Generadores y Comparación | Fortinet y MikroTik implementados y probados estáticamente; T1–T21/I1–I9: 30/30, con Cisco/Huawei/Fortinet sin regresión. Ninguna marca certificada físicamente | Comprobar VLAN, IP, rutas, acceso y sintaxis de cada marca con casos reproducibles; revisar en plataforma/versiones confirmadas | `docs/capturas/06-config-fortinet.png` y `docs/capturas/07-config-mikrotik.png` | `docs/informe-corte3.pdf`; instrucciones en `docs/manual.md` | Existe adaptador Fortinet separado bajo supuesto FortiGate genérico/FortiOS 7.4/sin VDOM adicionales; capturas 06/07 y compatibilidad física pendientes. MikroTik RouterOS 7.x genérico, solo Router, sin VRF/CAPsMAN; cuatro adaptadores con validación textual, criterio académico aún pendiente de evidencias y plataforma |
-| Ciberdefensa integrada | 15% | No guardar secretos, validar entradas, advertir configuraciones inseguras y aplicar políticas anti-IA | Validadores, importación y Ciberdefensa | Controles inspeccionados; P2 conserva cálculo previo ante IPv4 inválida. Cumplimiento integral pendiente | Rechazo de entradas inválidas e inyección, JSON alterado, advertencias, revisión de secretos y mínimo privilegio | `docs/capturas/08-ciberdefensa.png`: rechazo o advertencia real | `docs/politicas-ia.md`, `docs/seguridad.md` e informe final | No existen esos documentos en la base ni `.gitignore`; documentar la política oficial y cómo se aplica a esta app sin backend; no introducir secretos o un `.env` innecesario |
-| Pruebas y % de confianza | 20% | Ejecutar pruebas y reportar proporción superada; repetir en sustentación | Pruebas transversales | IPv6 P1–P31: 31/31 superadas; migración, atomicidad y 36 salidas IPv4 de cuatro marcas conservadas. Antecedentes multimarca conservados sin sumarlos al conjunto actual. Sin harness versionado ni reporte académico formal | Suite con datos, resultado esperado/real y contadores; casos normales, inválidos, límites y regresión; separar no ejecutados/bloqueados | `docs/capturas/09-pruebas.png` con pruebas corriendo y X de Y visible | `docs/pruebas.md` y resultados en informe final | No calcular porcentaje de confianza a partir de código existente o casos solo diseñados; distinguir reproducción histórica R1 de la conservación actual comprobada en I7 |
-| Documento + manual | 15% | Explicar mejoras, cuatro marcas, seguridad, resultados y uso paso a paso | Documentación y flujo completo | Hay PDF Corte 2; faltan informe y manual finales | Seguir manual en navegador limpio y cotejar informe con funciones y evidencia reales | Capturas pertinentes 06–10 insertadas en el informe | `docs/informe-corte3.pdf` y `docs/manual.md` | Los documentos de orientación organizan el trabajo; no sustituyen informe, manual o políticas |
-| Sustentación | 15% | Demostrar en vivo la herramienta, correr pruebas y explicar construcción y funcionamiento | Aplicación completa y pruebas | Pendiente; no se ha realizado una sustentación en esta tarea | Ensayo y ejecución en vivo de flujo completo, cuatro marcas y pruebas reproducibles | Demostración en vivo; no es un archivo exigido por este criterio | Apoyo: informe, manual y `docs/pruebas.md` | Fecha no fijada en la guía. Un ensayo futuro no debe registrarse como sustentación ya realizada |
-| Repositorio y versiones | 10% | Historial limpio, uso de ramas y app final funcionando | Git/GitHub, README y aplicación | IPv4 v3 y cuatro fabricantes integrados en main; rama IPv6 con contrato v4, código/documentación y pruebas para revisión; sin certificar app Corte 3 final | Revisar historial, rama, ausencia de secretos, acceso público y flujo final; confirmar ref remota después del push | `docs/capturas/10-app-final.png` con pantalla principal final | Repositorio público, `README.md` e informe final | No hay captura 10; 2FA no verificada. No afirmar app Corte 3 final por haber publicado documentación |
+| Config Fortinet + 4.ª marca | 25% | Completar Cisco, Huawei, Fortinet y MikroTik desde plan/topología comunes | Cuatro adaptadores y Comparación | Implementado y probado como texto; sin certificación física | C12–C16/C26: redes, interfaces, DHCP/relay, rutas/OSPF y separación; CLI exactas frente a base en ES/EN | Capturas 06 y 07; apoyo 03/04 | Informe Corte 3, manual y matriz de fabricantes | FortiOS 7.4 y RouterOS 7.x genéricos; modelo/firmware y tráfico real sin validar. No se adjudica puntaje automáticamente |
+| Ciberdefensa integrada | 15% | No guardar secretos, validar entradas, advertir riesgos y documentar políticas IA | Validadores, importador y Ciberdefensa | Controles y documentos presentes; `.gitignore` verificado | C08/C10/C17: rechazo atómico; revisión de secretos, exclusiones y texto de configuraciones | Captura 08 real | `politicas-ia.md`, `seguridad.md` e informe | No es auditoría exhaustiva. Marcadores técnicos intencionales; no `.env` innecesario en frontend |
+| Pruebas y % de confianza | 20% | Suite reproducible y porcentaje real; ejecución durante sustentación | Python/Playwright | 31/31 ejecutadas/superadas; 0 fallidas/bloqueadas/no ejecutadas | `python tests/test_corte3.py`; 20 casos previos + 11 de idiomas/controles/regresión | Captura 09 y reporte real | `pruebas.md`, reporte HTML e informe | Denominador solo ejecutadas; repetir ante evaluación sin simular resultados |
+| Documento + manual | 15% | Explicar mejoras, cuatro marcas, ciberdefensa, resultados y uso | Documentación y evidencias | Informe, manual, políticas y seguridad presentes; capturas corregidas e insertadas | PDF renderizado completo, pdfinfo/texto y revisión visual; enlaces y datos académicos autorizados | Capturas 01–10; 06–10 exigidas para Corte 3 | `informe-corte3.pdf`, `manual.md` | Estudiante e institución autorizados; no se incluyen campos académicos sin datos. Corte 2 se conserva |
+| Sustentación | 15% | Demostrar en vivo la herramienta, pruebas y comprensión | Flujo completo | **No realizada** en esta tarea | Demostrar proyecto, IPv4/IPv6, topología, cuatro marcas, idioma y suite | Presentación en vivo | Informe, manual y pruebas como apoyo | Preparación y evidencia local no equivalen a sustentación realizada |
+| Repositorio y versiones | 10% | Historial limpio, ramas y app final funcionando | GitHub, README y app | Repositorio público e historial de más de cinco commits; rama de trabajo y autoevaluación verificable | Revisión remota antes/después de push, alcance, archivos y ausencia de secretos/temporales | Capturas 05 y 10 | README y repositorio público | 05 es GitHub real, HTTPS 200, render sin estilos externos bloqueados; no se fabricaron mensajes. PR para revisión, sin merge automático |
 
-## Requisitos oficiales transversales
+## Requisitos transversales
 
-Estos requisitos no tienen un peso independiente en la rúbrica Corte 3; no se redistribuyen los seis pesos anteriores.
-
-| Requisito de la guía | Relación con módulos/criterios | Situación y aceptación pendiente |
+| Requisito | Implementado y probado | Límite |
 | --- | --- | --- |
-| Subnetting IPv4/IPv6, público/privado y plan por sede o piso | Base de las configuraciones y del flujo completo | IPv4 heredado conservado; v4 añade cálculo IPv6 y plan ULA /48–/56–/64 separado, probado en P1–P31. Router/reservas propuestos; sin conectividad ni comandos IPv6. Aclarar generación IPv6 con docente. Pools DHCP y reservas editables IPv4 pendientes; no declarar cumplimiento integral |
-| Ingresar/importar dispositivos, roles, enlaces WAN e ISP | Topología y generación multimarca | Generación comprobada en I8; migración/ida y vuelta JSON v2→v3 probadas en I2/I6. Edición manual de todos los tipos de nodos/enlaces sin cobertura integral. Imagen es referencia manual, no reconocimiento automático |
-| Repositorio público, mínimo cinco commits, al menos una rama y datos de laboratorio | Repositorio y versiones | Historial local suficiente en cantidad, sin auditoría de calidad; verificar publicación, acceso público y protección de datos. 2FA es requisito de cuenta que esta tarea no verifica |
-| Conservar entrega Corte 2 y nombres exactos | Continuidad de entrega | Existen informe Corte 2 y capturas 01–04; falta `docs/capturas/05-github-commits.png`; contenido de evidencias históricas sin auditar |
-| Política de secretos y revisión de lo generado por IA | Ciberdefensa | Guía exige `.gitignore` con `.env`; ausente en base. Revisar en una tarea autorizada: no crear archivos fuera de los tres documentos permitidos en esta revisión |
+| IPv4/IPv6, público/privado y plan por sede | C01/C02/C07/C09/C26: calculadoras, VLSM por pools y CIDR manual; IPv6 ULA /48–/56–/64 separado | Los cuatro generadores continúan IPv4; alcance de comandos IPv6 por aclarar |
+| Estado y migraciones | V4; v2→v3→v4 sin reasignar; JSON y localStorage v4 con fallback v3/v2 | Almacenamiento local sin cifrar; no se convierten proyectos v4 hacia apps antiguas |
+| Dispositivos, enlaces e interfaces | C11/C28: generar, editar, validar, eliminar y exportar | Imagen solo de referencia, sin OCR; no conectividad real |
+| Español/English sin alterar datos | C21–C26/C30/C31: catálogo, mensajes, atributos, persistencia independiente y CLI intactas | Nombres de usuario/CLI/JSON no se traducen; no equivale a cobertura lingüística de datos introducidos |
+| Botones y accesibilidad de teclado | 58 plantillas con acciones, dos importadores y selector; 54 familias/objetivos con Enter, fallback y archivo con Enter/Espacio | 0 botones decorativos detectados/eliminados; no certifica accesibilidad completa |
+| Entrega Corte 2 y nombres exactos | Informe Corte 2 conservado; capturas 01–05 presentes y verificadas, incluidos commits reales | No se reescribió el informe histórico ni se declara una calificación del corte anterior |
+| Secretos | `.env`/`.env.*` excluidos; `.env.example` permitido; sin secretos detectados | Frontend sin secretos; no se creó `.env` ni un backend |
 
-## Inventario de entregables del Corte 3
+## Inventario de entregables
 
-Inventario de rutas previo a este cambio, sin validar resultados por existencia:
+README sigue el orden de la plantilla, contiene identidad autorizada, funciones, ejecución, pruebas, documentos, diez evidencias y autoevaluación Sí/No. Solo se marca Sí con evidencia local concreta; la sustentación permanece No.
 
-| Ruta exacta oficial | Estado en la base | Trabajo requerido |
-| --- | --- | --- |
-| `docs/informe-corte3.pdf` | Ausente | Informe final con mejoras, cuatro marcas, seguridad, pruebas y capturas |
-| `docs/manual.md` | Ausente | Ejecución y uso verificados paso a paso |
-| `docs/seguridad.md` | Ausente | Medidas realmente aplicadas y límites |
-| `docs/politicas-ia.md` | Ausente | Política de la guía y aplicación comprobable |
-| `docs/pruebas.md` | Ausente | Casos reales, resultados, X/Y y porcentaje trazable |
-| `docs/capturas/06-config-fortinet.png` | Pendiente | Captura oficial de generación del adaptador Fortinet; las capturas temporales de pruebas no sustituyen esta entrega |
-| `docs/capturas/07-config-mikrotik.png` | Ausente | Generación MikroTik real |
-| `docs/capturas/08-ciberdefensa.png` | Ausente | Entrada rechazada o advertencia insegura |
-| `docs/capturas/09-pruebas.png` | Ausente | Ejecución y resultado visible de pruebas |
-| `docs/capturas/10-app-final.png` | Ausente | Pantalla principal de versión final funcionando |
+| Rutas exactas | Estado / evidencia |
+| --- | --- |
+| `docs/informe-corte2.pdf` | Conservado sin cambios |
+| `docs/informe-corte3.pdf` | Actualizado, renderizado completo y texto extraíble; páginas y revisión en pruebas |
+| `docs/manual.md` | Flujo, idiomas, controles, escenarios y manifiesto de 58 plantillas |
+| `docs/seguridad.md` y `docs/politicas-ia.md` | Controles, siete políticas y límites comprobables |
+| `docs/pruebas.md` y `tests/reporte-corte3.html` | Esperado/obtenido/estado C01–C31, entorno, hashes y porcentaje |
+| `01-subnetting.png` | IP, prefijo, red, broadcast y hosts visibles |
+| `02-topologia.png` | Diagrama completo con dispositivos y enlaces |
+| `03-config-cisco.png` y `04-config-huawei.png` | Hostname/sysname, VLAN e IP visibles |
+| `05-github-commits.png` | Cinco o más mensajes reales de GitHub |
+| `06-config-fortinet.png` y `07-config-mikrotik.png` | Propuestas reales de adaptadores separados |
+| `08-ciberdefensa.png` | Rechazo real conservando cálculo previo |
+| `09-pruebas.png` | Nueva ejecución 31/31 = 100% |
+| `10-app-final.png` | Aplicación y selector de idioma visibles |
 
-## Registro de resultados y mantenimiento
-
-Para cada prueba futura registrar identificador, commit, datos ficticios, entorno, pasos, expectativa, resultado real y evidencia. Distinguir aprobada, fallida, bloqueada y no ejecutada. El porcentaje debe usar un conjunto definido y resultados ejecutados; informar aparte la cobertura pendiente. Los ejemplos numéricos de la guía son plantillas y no resultados de WAN Architect.
-
-Las seis comprobaciones P1–P6 y la reproducción R1 se repitieron el 7 de noviembre de 2026 (America/Bogota) y están documentadas en estado-proyecto con sus límites. No hay captura 09 de esta ejecución ni informe formal: esta matriz no adjudica puntajes ni certifica Corte 3.
-
-Actualización del 8 de noviembre de 2026 (America/Bogota): I1–I9 se ejecutaron en clon limpio y contextos nuevos, con Python/Playwright, Chromium 154.0.8037.57 y HTTP local. Datos, esperado/obtenido y límites se registran en [estado-proyecto.md](estado-proyecto.md). No hubo errores de consola/página ni desbordamiento de página a 1440/390 px. Evidencias temporales de sesión, sin nueva captura 09 oficial ni informe formal. Las matrices históricas M/S/A/C/V se conservaron como antecedentes, sin repetirlas completas ni sumarlas al 9/9.
-
-La persistencia usa `WAN-Architect-v3`, con prioridad sobre v2; el fallback migra sin reasignar ni sobrescribir v2. El JSON exporta v3 y conserva intención y plan efectivo; las importaciones se validan antes de sustituir estado. Estas pruebas aportan evidencia técnica y no cambian los pesos de la rúbrica ni certifican compatibilidad física. Siguen pendientes `saveSite()` (invalidación histórica), desbordamiento a 320 px, compatibilidad física/capturas 06/07 de Fortinet/MikroTik, IPv6, pools DHCP/reservas editables y entregables académicos del inventario.
-
-Actualización Fortinet (8 de noviembre de 2026): adaptador separado con hostname, interfaces/VLAN/IPv4, administración restringida, DHCP o relay, rutas/OSPF y objetos del plan; tránsito marcado para revisión sin permisos ni NAT implícitos. Supuesto FortiGate genérico, FortiOS 7.4, sin multi-VDOM (contexto interno root solo para VLAN). Las 27/27 pruebas registradas y las 14/14 críticas repetidas son locales y de texto, no una certificación física ni una nota del criterio 25%. En esa etapa MikroTik seguía pendiente; su actualización actual se registra a continuación. Se conservan los pesos oficiales; IPv6 y captura 06 siguen pendientes. Detalle y límites en [estado-proyecto.md](estado-proyecto.md) y [matriz-fabricantes.md](matriz-fabricantes.md).
-
-Actualización MikroTik (8 de noviembre de 2026, UTC): adaptador separado RouterOS 7.x genérico, sin VRF/CAPsMAN. Consume el plan v3 y puertos/enlaces reales para identidad, físicas, bridge/VLAN, IPv4, rutas, OSPF v7 y DHCP/relay. SSH queda restringido a Gestión; servicios innecesarios y acceso MAC deshabilitados, input controlado y forward bloqueado hasta definir permisos, sin NAT/Internet implícitos. No modifica el asignador v3 ni las salidas de referencia Cisco/Huawei/Fortinet.
-
-T1–T21 (21/21) + regresión integral I1–I9 (9/9): **30/30 = 100% del conjunto final ejecutado**, sin fallidas, bloqueadas ni no ejecutadas dentro de ese conjunto. Pruebas de navegador/estructura textual, sin ejecutar configuraciones; entorno, esperado/obtenido, fuentes oficiales y límites en los otros dos documentos. Persistencia e importación siguen en v3, con migración v2 no destructiva. Captura oficial 07 y compatibilidad física pendientes; IPv6, pools DHCP y reservas editables continúan pendientes. `saveSite()` y desbordamientos históricos (320 px y tabla de topología a 390 px según datos) no fueron corregidos. Estos resultados no adjudican el 25% ni certifican Corte 3 completo.
-
-## Actualización IPv6 v4 y alcance académico aprobado
-
-La guía exige «Calcula subredes (IPv4/IPv6), direccionamiento público/privado y el plan de direcciones por sede o piso». El MVP implementa cálculo/clasificación y planificación ULA; **no cierra por sí solo Corte 3**. La exigencia general de configuraciones desde subnetting/topología no detalla IPv6 por marca: Cisco/Huawei/Fortinet/MikroTik siguen generando exclusivamente IPv4, con aviso visible, hasta aclaración docente.
-
-Estado v4 con `project.ipv6Base`, `sites[].ipv6Base` y `ipv6Plan` separado por claves VLAN; cadenas persistidas, BigInt solo en memoria. ULA /48 propuesto al habilitar, /56 manual/automático por sede y /64 por VLAN, reservas ::1 virtual y ::2/::3 físicas con redundancia o ::1 física sin ella. No hay broadcast, tránsitos, DHCPv6, SLAAC avanzado, NAT66 ni políticas IPv6. Migración v2→v3→v4 sin reasignar y persistencia v4 con fallback v3/v2 intacto. Fuentes: [RFC 4291](https://www.rfc-editor.org/rfc/rfc4291.html), [RFC 4193](https://www.rfc-editor.org/rfc/rfc4193.html), [RFC 5952](https://www.rfc-editor.org/rfc/rfc5952.html) y [registro IPv6 especial de IANA](https://www.iana.org/assignments/iana-ipv6-special-registry/iana-ipv6-special-registry.xhtml).
-
-**P1–P31: 31/31 = 100% del conjunto final ejecutado**, 0 fallidas/bloqueadas/no ejecutadas dentro del conjunto; Python/Playwright, Chromium 154.0.8037.57, HTTP local y datos ficticios. Sintaxis, consola, 1440/390 px y revisión de secretos satisfactorios. Se conservan exactamente plan/topología IPv4 y 36 salidas de los cuatro fabricantes; detalle de esperado/obtenido y evidencia temporal en [estado-proyecto.md](estado-proyecto.md). No se suma esta ejecución a porcentajes históricos ni se certifica conectividad o hardware.
-
-Evidencia requerida: conservar `01-subnetting.png` de IPv4; añadir al informe/manual un cálculo y plan IPv6 reales con IP, prefijo, red/rango, cantidad de direcciones y **broadcast: no aplica**, sin inventar broadcast/hosts IPv4. La captura oficial 09, reporte `docs/pruebas.md`, informe/manual finales y aclaración sobre configuraciones IPv6 siguen pendientes. No hay nueva captura académica versionada en esta tarea; solo capturas temporales de pruebas. Los pesos oficiales no cambian. Las menciones previas de IPv6 pendiente corresponden a entregas históricas anteriores al commit actual.
-
-Actualizar la matriz después de cambios y pruebas autorizados, contrastando la guía vigente. Como apoyo técnico consultar [Arquitectura_Agente_WAN_Architect.docx](requisitos/Arquitectura_Agente_WAN_Architect.docx) y [Correcciones Pendientes.txt](<requisitos/Correcciones Pendientes.txt>); no reemplazan los criterios del docente.
+Las rutas PNG están bajo `docs/capturas/`; enlaces y escenarios en el [manual](manual.md). Las capturas pequeñas/de perímetro/integradas son laboratorios alternativos, no un diseño con gateways duplicados. Los antecedentes siguen disponibles en el [historial de trazabilidad de la base](https://github.com/Daisy-redeswan/redes-wan-Rodriguez/blob/6ac46f9257143f88ec8cb7b47c020bb3739adbfa/docs/trazabilidad-corte3.md).
