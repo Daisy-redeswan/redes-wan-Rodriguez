@@ -2073,6 +2073,8 @@
             state.project,
             state.sites.map((x) => (x.id === s.id ? s : x)),
           );
+          // No guardar una intención manual que quedaría fuera del nuevo pool.
+          manualVlanNetworks(state.project,state.sites.map(x=>x.id===s.id?s:x),state.vlans,state.nodes);
           // Confirmar sin cambios no destruye un diseño válido.
           if (JSON.stringify(old) !== JSON.stringify(s)) {
             const addressOnly = Object.keys(old).filter(k => !["name","ipv4Base","bandwidth"].includes(k)).every(k => JSON.stringify(old[k])===JSON.stringify(s[k]));
@@ -2169,25 +2171,37 @@
           render();
         }
       } // Restauración explícita, sin sobrescribir correcciones silenciosamente.
-      function proposeVlans() {
+      /**
+       * Entradas: inventario confirmado y opción explícita de reemplazar todo.
+       * Salida: propuesta parcial para sedes sin VLAN o reemplazo completo confirmado.
+       * Conserva claves, CIDR manuales y dependencias de otras sedes al completar faltantes.
+       */
+      function proposeVlans(replaceAll = false) {
         safe(() => {
           projectValid();
+          const missing=new Set(state.sites.filter(site=>!state.vlans.some(v=>v.site===site.id)).map(site=>site.id));
+          const partial=!replaceAll && state.vlans.length>0 && missing.size>0;
           if (
-            state.vlans.length &&
+            !partial && state.vlans.length &&
             !confirm(
               t("¿Reemplazar VLAN y diseño actual por una nueva propuesta?"),
             )
           )
             return;
-          const out = [];
+          const out = [], used=new Set(partial?state.vlans.map(v=>v.key):[]);
+          let nextKey=state.vlans.length;
           for (const s of state.sites) {
+            if (partial && !missing.has(s.id)) continue;
             const c = counts(s),
               p = proposal(s);
             let id = 10;
             const add = (name, role, hosts) => {
               if (hosts > 0) {
+                let key="v"+out.length;
+                while(used.has(key)) key="v"+(nextKey++);
+                used.add(key);
                 out.push({
-                  key: "v" + out.length,
+                  key,
                   site: s.id,
                   id,
                   name,
@@ -2246,8 +2260,12 @@
             )
               add("WiFi invitados", "Invitados", Math.ceil(s.users * 0.25));
           }
-          state.vlans = out;
-          invalidate("plan");
+          if (partial) {
+            state.vlans=[...state.vlans,...out];
+            state.approved=false; state.revision++;
+            Object.values(state.configs).forEach(item=>item.revision=state.revision);
+          } else { state.vlans = out; invalidate("plan"); }
+          formDrafts.delete("vlans"); vlanEditing=false;
           go(3);
           toast(t("Revise la propuesta y confirme las VLAN."));
         });
@@ -2267,7 +2285,7 @@
             t("VLAN y plan de direccionamiento"),
             "Confirme los segmentos; el VLSM los ordena por tamaño y asigna redes sin solaparse. Incluye tránsito router–core y WAN entre sedes.",
           ) +
-          `<div class="card"><div class="grid">${field(t("Bloque predeterminado del proyecto"), "base", state.project.base)}${field(t("Bloque de tránsito (opcional)"), "transitBase", state.project.transitBase)}${field(t("Reserva de crecimiento (%)"), "growth", state.project.growth, "number", 'min="0" max="100"')}${field(t("DNS para DHCP"), "dns", state.project.dns)}</div><div class="notice">${t("Hosts solicitados son terminales; el cálculo añade crecimiento y una IP de gateway, o tres IP si hay dos cores. El gateway no cuenta como host disponible para terminales. Las redes de tránsito son /30 y no usan VLAN.")}</div><div class="actions"><button onclick="proposeVlans()">${t("Volver a proponer")}</button><button onclick="addVlan()">${t("Agregar VLAN")}</button><span id="vlanStatus" class="badge ${state.approved && !vlanEditing ? "" : "warn"}">${t(state.approved && !vlanEditing ? "VLAN confirmadas" : "Pendiente de confirmación")}</span><button class="primary" onclick="confirmVlans()">${t(state.approved ? "Recalcular VLAN" : "Confirmar VLAN y calcular VLSM")}</button></div></div><div class="card"><h2>${t("Segmentos editables por sede")}</h2><p id="vlanCidrHelp" class="hint">${t("Subred IPv4 / CIDR (opcional): deje vacío para asignación automática. Define la red completa de la VLAN; no es el gateway ni un rango DHCP.")}</p>${state.vlans.length ? `<div class="tablewrap"><table><thead><tr><th>${t("Sede")}</th><th>${t("VLAN")}</th><th>${t("Nombre")}</th><th>${t("Subred IPv4 / CIDR (opcional)")}</th><th>${t("Servicio")}</th><th>${t("Hosts terminales")}</th><th>${t("DHCP local")}</th><th>${t("Acción")}</th></tr></thead><tbody>${state.vlans.map((v, i) => `<tr><td><select id="vs${i}" aria-label="${t("Sede de VLAN")}">${state.sites.map((s) => `<option value="${s.id}" ${s.id === v.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></td><td><input class="num" aria-label="${t("VLAN")}" id="vi${i}" value="${v.id}" type="number" min="2" max="4094"></td><td><input aria-label="${t("Nombre VLAN")}" id="vn${i}" value="${esc(v.name)}"></td><td><input aria-label="${t("Subred IPv4 / CIDR (opcional)")}" id="vc${i}" value="${esc(v.ipv4Cidr || "")}" placeholder="${t("Automática · 10.10.20.0/24")}" aria-describedby="vlanCidrHelp"></td><td><select aria-label="${t("Servicio")}" id="vr${i}">${optsHTML(roles, v.role)}</select></td><td><input class="num" aria-label="${t("Hosts")}" id="vh${i}" type="number" value="${v.hosts}"></td><td><input aria-label="${t("DHCP local")}" id="vd${i}" type="checkbox" ${v.dhcp ? "checked" : ""}></td><td><button class="small danger" onclick="deleteVlan(${i})">${t("Eliminar")}</button></td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">${t("Confirme los datos y genere una propuesta desde Estimación, o agregue sus segmentos manualmente.")}</div>`}</div>${planTable()}`
+          `<div class="card"><div class="grid">${field(t("Bloque predeterminado del proyecto"), "base", state.project.base)}${field(t("Bloque de tránsito (opcional)"), "transitBase", state.project.transitBase)}${field(t("Reserva de crecimiento (%)"), "growth", state.project.growth, "number", 'min="0" max="100"')}${field(t("DNS para DHCP"), "dns", state.project.dns)}</div><div class="notice">${t("Hosts solicitados son terminales; el cálculo añade crecimiento y una IP de gateway, o tres IP si hay dos cores. El gateway no cuenta como host disponible para terminales. Las redes de tránsito son /30 y no usan VLAN.")}</div><div class="actions"><button onclick="proposeVlans(true)">${t("Volver a proponer")}</button><button onclick="addVlan()">${t("Agregar VLAN")}</button><span id="vlanStatus" class="badge ${state.approved && !vlanEditing ? "" : "warn"}">${t(state.approved && !vlanEditing ? "VLAN confirmadas" : "Pendiente de confirmación")}</span><button class="primary" onclick="confirmVlans()">${t(state.approved ? "Recalcular VLAN" : "Confirmar VLAN y calcular VLSM")}</button></div></div><div class="card"><h2>${t("Segmentos editables por sede")}</h2><p id="vlanCidrHelp" class="hint">${t("Subred IPv4 / CIDR (opcional): deje vacío para asignación automática. Define la red completa de la VLAN; no es el gateway ni un rango DHCP.")}</p>${state.vlans.length ? `<div class="tablewrap"><table><thead><tr><th>${t("Sede")}</th><th>${t("VLAN")}</th><th>${t("Nombre")}</th><th>${t("Subred IPv4 / CIDR (opcional)")}</th><th>${t("Servicio")}</th><th>${t("Hosts terminales")}</th><th>${t("DHCP local")}</th><th>${t("Acción")}</th></tr></thead><tbody>${state.vlans.map((v, i) => `<tr><td><select id="vs${i}" aria-label="${t("Sede de VLAN")}">${state.sites.map((s) => `<option value="${s.id}" ${s.id === v.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></td><td><input class="num" aria-label="${t("VLAN")}" id="vi${i}" value="${v.id}" type="number" min="2" max="4094"></td><td><input aria-label="${t("Nombre VLAN")}" id="vn${i}" value="${esc(v.name)}"></td><td><input aria-label="${t("Subred IPv4 / CIDR (opcional)")}" id="vc${i}" value="${esc(v.ipv4Cidr || "")}" placeholder="${t("Automática · 10.10.20.0/24")}" aria-describedby="vlanCidrHelp"></td><td><select aria-label="${t("Servicio")}" id="vr${i}">${optsHTML(roles, v.role)}</select></td><td><input class="num" aria-label="${t("Hosts")}" id="vh${i}" type="number" value="${v.hosts}"></td><td><input aria-label="${t("DHCP local")}" id="vd${i}" type="checkbox" ${v.dhcp ? "checked" : ""}></td><td><button class="small danger" onclick="deleteVlan(${i})">${t("Eliminar")}</button></td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">${t("Confirme los datos y genere una propuesta desde Estimación, o agregue sus segmentos manualmente.")}</div>`}</div>${planTable()}`
         );
       }
       /**
