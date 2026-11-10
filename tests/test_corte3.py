@@ -594,7 +594,7 @@ def downloads(lab):
     outputs = lab.configs("Cisco")
     expected = next(iter(outputs.values()))
     with lab.page.expect_download() as download:
-        lab.button("Télécharger").first.click()
+        lab.button("Descargar").first.click()
     check(Path(download.value.path()).read_text(encoding="utf-8") == expected, "La descarga individual alteró la CLI")
     with lab.page.expect_download() as download:
         lab.button("Descargar todos").click()
@@ -667,6 +667,263 @@ Commit: {escape(environment['commit'])}<br>SHA-256 WAN_v4.html: {environment['ap
 <script id="results" type="application/json">{data}</script></html>"""
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8")
+
+@case("C21", "Español predeterminado", "Contexto limpio: lang=es, selector Español y navegación española.")
+def language_default(lab):
+    check(lab.evaluate("uiLanguage==='es' && document.documentElement.lang==='es' && localStorage.length===0"), "Idioma inicial incorrecto")
+    check(lab.page.locator('#languageSelect').input_value() == 'es', "Falta selector")
+    check(lab.button('Guardar proyecto').count() == 1, "Botón sin traducir")
+    return "Español inicial, selector accesible y preferencia todavía no escrita."
+
+
+@case("C22", "Vistas ES/EN", "Las 14 vistas y editores muestran títulos, etiquetas y controles traducidos.")
+def translated_views(lab):
+    lab.lab(scoped=True); lab.topology(); lab.configs('Cisco'); lab.configs('Huawei'); lab.ipv6()
+    expected = ['Overview','Project details','Estimation and infrastructure','VLANs and VLSM','IPv4 / IPv6 subnetting','Topology','Cisco configuration','Huawei configuration','Comparison','Cyberdefense and AI use','Corte 2 evidence','Fortinet configuration','MikroTik configuration','IPv6 planning']
+    for language in ['en','es']:
+        lab.page.locator('#languageSelect').select_option(language)
+        for i in range(14):
+            lab.page.locator(f'#nav button[onclick="go({i})"]').focus()
+            lab.page.keyboard.press('Enter')
+            check(lab.evaluate('page') == i, f"Navegación teclado {i}")
+            if language == 'en':
+                check(lab.page.locator('#nav button.active').inner_text()[2:].strip() == expected[i], f"Vista {i} sin traducir")
+                check(lab.button('Save project').count() == 1, 'Chrome sin traducción')
+            else: check(lab.button('Guardar proyecto').count() == 1, 'Chrome ES ausente')
+        lab.go(5)
+        first_node=lab.evaluate('state.nodes[0].id');first_link=lab.evaluate('state.links[0].id')
+        editors=[('editNode()','Add device','Agregar equipo'),('editLink()','Create link','Crear enlace'),
+                 ('editNode('+json.dumps(first_node)+')','Edit device','Editar equipo'),
+                 ('editLink('+json.dumps(first_link)+')','Edit link','Editar enlace')]
+        for function, english, spanish in editors:
+            lab.evaluate(function)
+            check(lab.page.locator('#modalbody h2').inner_text()==(english if language=='en' else spanish),'Título de editor sin traducción')
+            check(lab.button('Confirm device' if function.startswith('editNode') and language=='en' else 'Confirm link' if language=='en' else 'Confirmar equipo' if function.startswith('editNode') else 'Confirmar enlace').count()==1, 'Editor sin traducción')
+            lab.page.keyboard.press('Escape')
+    return "14 vistas × 2 idiomas y 4 variantes de editor × 2; títulos y navegación con Enter."
+
+
+@case("C23", "Mensajes y confirmaciones bilingües", "Errores, guardado y confirmación nativa traducidos sin cambiar datos introducidos.")
+def translated_messages(lab):
+    for language, invalid, saved, confirm_text in [('es','IPv4 inválida','Proyecto guardado','¿Crear un proyecto nuevo?'),('en','Invalid IPv4','Project saved','Create a new project?')]:
+        lab.evaluate('lang=>setLanguage(lang)', language)
+        lab.go(4); lab.page.locator('#calc').fill('192.168.1.999/24')
+        lab.button('Calcular' if language=='es' else 'Calculate').click()
+        check(invalid in lab.page.locator('#toast').inner_text(), 'Error en idioma incorrecto')
+        check(lab.page.locator('#calc').input_value()=='192.168.1.999/24','Texto perdido')
+        lab.button('Guardar proyecto' if language=='es' else 'Save project').click()
+        check(saved in lab.page.locator('#toast').inner_text(),'Guardado sin traducir')
+        lab.go(4);lab.page.locator('#calc').fill('::/128');lab.button('Calcular' if language=='es' else 'Calculate').click()
+        check(('Sin especificar' if language=='es' else 'Unspecified') in lab.page.locator('#calcResult').inner_text(),'Clasificación sin traducir')
+        lab.accept_dialog=False
+        messages=[]; lab.page.on('dialog', lambda dialog: messages.append(dialog.message))
+        lab.button('Nuevo' if language=='es' else 'New').click()
+        check(confirm_text in messages[-1], 'Confirmación sin traducir')
+        previous=lab.snapshot()
+        # Inconsistent laboratory data exercises the defensive warning view, never a device.
+        lab.evaluate("""state.nodes=['USER-A','USER-B'].map((name,i)=>({id:'warning-'+i,name,type:'PC',vendor:'Cisco',site:'s1',ip:'10.0.0.1',network:'',x:0,y:0}));
+            state.opts.static=true;state.staticReason='';go(9)""")
+        warnings=lab.page.locator('#view').inner_text()
+        check(('IP duplicada: 10.0.0.1' if language=='es' else 'Duplicate IP: 10.0.0.1') in warnings,'Advertencia dinámica sin traducción')
+        check(('sin justificación' if language=='es' else 'no justification') in warnings,'Advertencia de ruta sin traducción')
+        check('USER-A' in warnings,'Nombre de usuario alterado')
+        lab.evaluate("saved=>{state=saved.state;imageData=saved.imageData;render()}",previous)
+    return "Validación IPv4/IPv6, guardado, cancelación y advertencias dinámicas comprobados en ES/EN."
+
+
+@case("C24", "Persistencia independiente del idioma", "Idioma persiste tras recargar sin entrar en JSON ni borrar proyectos.")
+def language_persistence(lab):
+    lab.lab(); lab.evaluate('saveLocal()'); before=lab.evaluate("localStorage.getItem('WAN-Architect-v4')")
+    lab.page.locator('#languageSelect').select_option('en'); lab.page.reload()
+    check(lab.page.locator('#languageSelect').input_value()=='en','Preferencia perdida')
+    check(lab.evaluate("localStorage.getItem('WAN-Architect-v4')")==before,'Almacenamiento del proyecto cambió')
+    lab.button('Load saved project').click()
+    check(lab.evaluate("state.version===4 && !('language' in state) && localStorage.getItem(UI_LANGUAGE_KEY)==='en'"),'Idioma mezclado con esquema')
+    lab.button('New').click()
+    check(lab.page.locator('#languageSelect').input_value()=='en','Nuevo proyecto borró idioma')
+    return "Clave WAN-Architect-language independiente; recarga/carga/nuevo conservan la preferencia."
+
+
+@case("C25", "Cambio de idioma atómico", "Estado, CLI, JSON, campos pendientes y nombres permanecen exactamente iguales.")
+def language_invariants(lab):
+    lab.lab(scoped=True); lab.topology(); lab.configs('Cisco'); lab.configs('Huawei'); lab.ipv6()
+    lab.evaluate("state.project.name='Resumen';state.sites[0].name='Nombre';render()")
+    before=lab.snapshot(); lab.go(3); lab.page.locator('#vn0').fill('Sin traducir: Gestión')
+    lab.page.locator('#vc1').fill('texto pendiente inválido')
+    lab.page.locator('#languageSelect').select_option('en')
+    check(lab.snapshot()==before,'Idioma modificó estado/CLI')
+    check(lab.page.locator('#vn0').input_value()=='Sin traducir: Gestión' and lab.page.locator('#vc1').input_value()=='texto pendiente inválido','Se perdieron ediciones')
+    lab.go(0);check(lab.page.locator('h1').inner_text()=='Resumen','Nombre de usuario traducido')
+    lab.go(5);lab.evaluate('editNode()');lab.page.locator('#nname').fill('NOMBRE-LAB')
+    # A modal is modal: exercise the same setter without bypassing pointer accessibility.
+    lab.evaluate("setLanguage('es')")
+    check(lab.page.locator('#nname').input_value()=='NOMBRE-LAB','Edición modal perdida')
+    check('Nombre' in lab.page.locator('#nsite').inner_text(),'Nombre de sede traducido')
+    lab.page.keyboard.press('Escape');check(lab.snapshot()==before,'Editor/idioma cambió estado')
+    return "Estado e imageData idénticos; nombres iguales a claves de catálogo, CLI y ediciones inválidas conservados."
+
+
+@case("C26", "Salidas de cuatro fabricantes contra main", "Hashes de CLI idénticos a main 6ac46f9 en español e inglés.")
+def manufacturer_baseline(lab):
+    expected=json.loads((ROOT/'tests/fixtures/generator-reference.json').read_text())
+    for language in ['es','en']:
+        lab.evaluate("lang=>{uiLanguage=lang;state=fresh();render()}",language)
+        # Helpers exercise Spanish button names; generate language-neutral inputs first.
+        lab.evaluate("uiLanguage='es';render()")
+        lab.lab(scoped=True);lab.topology()
+        if language=='en':
+            lab.evaluate("setLanguage('en')");lab.go(3);lab.button('Confirm VLANs and calculate VLSM').click();lab.valid()
+            lab.go(5);lab.button('Generate from plan').click();lab.valid()
+        current=lab.snapshot()['state']
+        digest=lambda value:hashlib.sha256(json.dumps(value,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
+        check(digest(current['plan'])==expected['plan_ipv4'],'Plan IPv4 cambió')
+        check(digest([current['nodes'],current['links']])==expected['topology'],'Topología cambió')
+        lab.evaluate("uiLanguage='es';render()");lab.ipv6()
+        check(digest(lab.snapshot()['state']['ipv6Plan'])==expected['plan_ipv6'],'Plan IPv6 cambió')
+        if language=='en':lab.evaluate("setLanguage('en')")
+        for vendor in ['Cisco','Huawei']:
+            if language=='es':actual=lab.configs(vendor)
+            else:
+                lab.evaluate("setLanguage('en')");lab.go(6 if vendor=='Cisco' else 7)
+                lab.button(f'Generate all {vendor}').click();lab.valid()
+                actual={k:v['text'] for k,v in lab.snapshot()['state']['configs'].items() if k.endswith('-'+vendor)}
+            check(hashlib.sha256(json.dumps(actual,sort_keys=True,ensure_ascii=False).encode()).hexdigest()==expected[vendor],f'CLI {vendor}/{language} cambió')
+        for vendor in ['Fortinet','MikroTik']:
+            lab.evaluate("uiLanguage='es';state=fresh();render()")
+            text=lab.edge(vendor)
+            if language=='en':
+                lab.evaluate("setLanguage('en')");lab.button(f'Generate all {vendor}').click();lab.valid();text=lab.snapshot()['state']['configs']['edge-'+vendor]['text']
+            check(hashlib.sha256(text.encode()).hexdigest()==expected[vendor],f'CLI {vendor}/{language} cambió')
+    return "8 comparaciones exactas: 4 fabricantes × ES/EN, referencias de main 6ac46f9."
+
+
+@case("C27", "Inventario de controles", "Todo button tiene handler; importadores accesibles y controles sin acción ausentes.")
+def button_inventory(lab):
+    import re
+    source=APPLICATION.read_text()
+    tags=re.findall(r'<button\b[^\n]*?(?=>)',source)
+    check(len(tags)>=50, 'Inventario incompleto')
+    check(all('onclick=' in tag for tag in tags),'Botón sin acción')
+    check(lab.page.locator('label.filebtn[role=button][tabindex="0"][onkeydown]').count()==1,'Importador sin teclado')
+    check(lab.button('← Anterior').is_disabled(),'Anterior activo al inicio')
+    lab.go(13);check(lab.button('Siguiente →').is_disabled(),'Siguiente activo al final')
+    lab.go(5)
+    check(lab.button('Vista automática').is_disabled(),'Vista automática activa sin imagen')
+    lab.button('Descargar topología SVG').click();check(lab.page.locator('#toast.error').count()==1,'Descarga vacía sin validación')
+    lab.go(6);lab.button('Generar equipo').click();check(lab.page.locator('#toast.error').count()==1,'Generación vacía sin validación')
+    return f"{len(tags)} plantillas button con handler; 2 importadores de archivo y 1 selector de idioma accesibles; 0 controles decorativos detectados."
+
+
+@case("C28", "Acciones observables de botones", "Cada familia de botones ejecuta render, estado, validación, diálogo, copia, descarga o impresión.")
+def button_actions(lab):
+    import re
+    lab.context.grant_permissions(['clipboard-read','clipboard-write'])
+    lab.lab(scoped=True);lab.topology();lab.configs('Cisco');lab.configs('Huawei')
+    baseline=lab.snapshot();downloads=[];lab.page.on('download',lambda d:downloads.append(d.suggested_filename))
+    lab.evaluate("window.__printed=0;window.print=()=>__printed++")
+    found=set();visited=[]
+    pixel='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jp1sAAAAASUVORK5CYII='
+    def restore(page,editor=None):
+        lab.evaluate("arg=>{state=structuredClone(arg[0].state);imageData=arg[1];imageMode=true;page=arg[2];selectedSite=0;render();$('toast').className='toast hidden';$('toast').textContent='';if($('modal').open)closeModal()}",[baseline,pixel,page])
+        if editor:lab.evaluate(editor)
+    for page,editor in [(i,None) for i in range(14)]+[(5,'editNode()'),(5,'editLink()')]:
+        restore(page,editor)
+        actions=lab.page.locator('button:visible').evaluate_all('(els)=>els.map(e=>({action:e.getAttribute("onclick"),disabled:e.disabled}))')
+        for entry in actions:
+            action=entry['action']
+            family=re.sub(r'\([^)]*\)', '(…)',action or '')
+            if action and action.startswith('go('):family=action  # all navigation targets
+            if not action or entry['disabled'] or family in found:continue
+            restore(page,editor)
+            # Attribute comparison avoids quoting imported names in a selector.
+            handles=lab.page.locator('button:visible').element_handles();target=next((h for h in handles if h.get_attribute('onclick')==action),None)
+            check(target is not None,'Botón desaparecido: '+action)
+            before=lab.evaluate("JSON.stringify({state,render:__renders,modal:$('modal').open,toast:$('toast').textContent,printed:__printed,imageMode})")
+            previous_downloads=len(downloads)
+            target.focus();lab.page.keyboard.press('Enter')
+            lab.page.wait_for_timeout(40)
+            after=lab.evaluate("JSON.stringify({state,render:__renders,modal:$('modal').open,toast:$('toast').textContent,printed:__printed,imageMode})")
+            check(before!=after or len(downloads)>previous_downloads,'Sin efecto observable: '+action)
+            found.add(family);visited.append(action)
+    required={'saveLocal','loadLocal','exportJSON','newProject','saveProject','resizeSites','demo','removeSite','saveSite','saveCounts','resetCounts','proposeVlans','addVlan','deleteVlan','confirmVlans','downloadPlan','editGateway','inspectSubnet','calculate','confirmIPv6','buildTopology','editNode','editLink','downloadSVG','deleteNode','deleteLink','saveNode','saveLink','closeModal','generateSelected','generateAll','downloadAll','generateCompare','copyConfig','downloadConfig','downloadReport','window.print','go'}
+    actual={a.split('(')[0] for a in visited}
+    check(required<=actual,'Handlers no ejercitados: '+repr(required-actual))
+    return f"{len(found)} familias/objetivos activados con Enter; 38 handlers, descargas, impresión invocada y validaciones observables."
+
+
+@case("C29", "Portapapeles e importadores con teclado", "Copia real, descarga intacta y file chooser accesible; fallback selecciona CLI.")
+def clipboard_and_files(lab):
+    lab.context.grant_permissions(['clipboard-read','clipboard-write'])
+    lab.lab();lab.topology();configs=lab.configs('Cisco');first=next(iter(configs.values()))
+    # Canonical persisted project: the existing importer drops the volatile subnetOK UI checkpoint.
+    lab.upload(lab.snapshot());lab.valid();lab.go(6)
+    lab.button('Copiar configuración').first.focus();lab.page.keyboard.press('Enter')
+    lab.page.wait_for_function("$('toast').textContent==='Configuración copiada.'")
+    check(lab.evaluate('navigator.clipboard.readText()')==first,'Portapapeles no coincide')
+    lab.evaluate("setLanguage('en')")
+    with lab.page.expect_download() as download:lab.button('Download').first.click()
+    check(Path(download.value.path()).read_text()==first,'Descarga CLI traducida')
+    # Force only the unavailable browser APIs; the fallback itself is production code.
+    lab.evaluate("Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:()=>Promise.reject(Error('unavailable'))}});document.execCommand=()=>false")
+    lab.button('Copy configuration').first.click();lab.page.wait_for_selector('#manualcopy')
+    lab.button('Select all').focus();lab.page.keyboard.press('Enter')
+    check(lab.page.locator('#manualcopy').evaluate('(e)=>e.selectionEnd-e.selectionStart')==len(first),'Fallback no selecciona texto')
+    lab.button('Close').click()
+    with lab.page.expect_file_chooser() as chooser:
+        lab.page.locator('label.filebtn').first.focus();lab.page.keyboard.press('Enter')
+    check(not chooser.value.is_multiple(),'Selector de archivos no accesible')
+    payload=lab.snapshot()
+    chooser.value.set_files({'name':'roundtrip.json','mimeType':'application/json','buffer':json.dumps(payload).encode()})
+    lab.page.wait_for_function("$('toast').textContent==='Project imported and validated.'")
+    check(lab.snapshot()==payload,'Importación de teclado cambió datos')
+    lab.go(5)
+    with lab.page.expect_file_chooser() as image_chooser:
+        lab.page.locator('#view label.filebtn').focus();lab.page.keyboard.press('Space')
+    image_chooser.value.set_files(str(ROOT/'docs/capturas/01-subnetting.png'))
+    lab.page.wait_for_function('imageData.length>0')
+    check(lab.button('Show / hide image').count()==1,'Carga de imagen sin efecto')
+    lab.go(0)
+    with lab.page.expect_download() as summary:lab.button('Download HTML summary').click()
+    content=Path(summary.value.path()).read_text()
+    check(summary.value.suggested_filename=='WAN-summary.html' and '<html lang="en">' in content and 'Project sites' in content,'Resumen sin traducir')
+    lab.go(3)
+    with lab.page.expect_download() as csv:lab.button('Download CSV').click()
+    check(csv.value.suggested_filename=='addressing-plan.csv' and '"Site";"VLAN";"Name"' in Path(csv.value.path()).read_text(),'CSV sin traducir')
+    lab.go(5)
+    with lab.page.expect_download() as svg:lab.button('Download topology SVG').click()
+    check(svg.value.suggested_filename=='topology.svg','SVG sin traducir')
+    return "Clipboard/CLI exactos; fallback e importadores por teclado; HTML, CSV y SVG con interfaz/nombres en inglés."
+
+
+@case("C30", "Responsive bilingüe", "Navegación, idioma y controles caben a 1440 y 390 px en ES/EN.")
+def bilingual_responsive(lab):
+    lab.lab();lab.topology()
+    for width in [1440,390]:
+        lab.page.set_viewport_size({'width':width,'height':900})
+        for language in ['es','en']:
+            lab.evaluate('lang=>setLanguage(lang)',language)
+            for i in [0,1,3,4,5,6,7,8,9,10,11,12,13]:
+                lab.go(i)
+                check(lab.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),f'Desbordamiento {width}/{language}/{i}')
+                check(lab.page.locator('#languageSelect').is_visible(),'Selector oculto')
+    return "52 combinaciones vista/idioma/ancho sin desbordamiento de página; selector visible."
+
+
+@case("C31", "Catálogo y atributos traducibles", "Todas las claves literales t() y atributos de formulario tienen traducción; opciones conservan valores internos.")
+def translation_catalog(lab):
+    import re
+    source=APPLICATION.read_text()
+    keys=[json.loads('"'+match+'"') for match in re.findall(r'\bt\("((?:[^"\\]|\\.)*)"',source)]
+    missing=lab.evaluate("keys=>keys.filter(key=>!Object.hasOwn(I18N.en,key))",keys)
+    check(not missing,'Claves sin inglés: '+repr(missing))
+    lab.go(1); before=lab.page.locator('#ptype').input_value()
+    lab.evaluate("setLanguage('en')")
+    check(lab.page.locator('#ptype').input_value()==before,'Enum interno traducido')
+    check(lab.page.locator('#ptype option:checked').inner_text()=='Office','Etiqueta de enum sin traducir')
+    lab.go(3);lab.button('Add VLAN').click()
+    check(lab.page.locator('#vc0').get_attribute('placeholder').startswith('Automatic'),'Placeholder sin traducir')
+    check(lab.page.locator('#vn0').get_attribute('aria-label')=='VLAN name','Nombre accesible sin traducir')
+    return f"{len(set(keys))} claves literales cubiertas; placeholder, aria-label y valores de opciones comprobados."
 
 
 def main():
