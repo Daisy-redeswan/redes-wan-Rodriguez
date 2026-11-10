@@ -1,4 +1,99 @@
-# Pruebas reproducibles de WAN Architect — Corte 3
+# Pruebas reproducibles de WAN Architect — Corte 3 y revisión integral
+
+## Resultado vigente: revisión integral de las nueve correcciones
+
+- Base main: `1956d1872363c88399f5e8240abb1d7a13bca340`; rama `fix/revision-integral-wan-architect`.
+- Código ejecutado: `8a27f672e03b6e777b077a8910915d13adeb7127`; suite identificada por hash antes de su commit separado.
+- Fecha: 2026-11-09T23:32:21-05:00 · America/Bogota; Linux-6.18.57-x86_64-with-glibc2.41; Python 3.12.14, Playwright 1.62.0, Chromium 154.0.8037.57.
+- **50/50 = 100% del conjunto ejecutado**: 0 fallidas, 0 bloqueadas y 0 no ejecutadas. C01–C31 anteriores y N01–N19 nuevas. Duración de casos: 50.9 s.
+- [Reporte actual real](../tests/reporte-revision-integral.html); HTTP local y un contexto limpio por caso. Ninguna configuración se ejecuta en equipos.
+- Aplicación SHA-256: `8f70a30e21a2c47677a0f0f0e29b40153391cbe872eb8f7c07a9b8848debb19a`.
+- Suite SHA-256: `f0f87a84b095a636017b9158ee42cec2fb590a3be691d91b1649245e000d8221`.
+- Fixture histórica v4 SHA-256: `5c7297c10ff21f837d1cfabaca762968e51b01745a759d41603b54e701cdade2`.
+
+Instalación y comando continúan iguales:
+
+```bash
+python -m pip install -r tests/requirements.txt
+python -m playwright install chromium
+python tests/test_corte3.py
+```
+
+No se añaden dependencias del proyecto. El runner inicia/cierra servidor y navegador, devuelve no cero si falla y produce reporte temporal por defecto. Para registrar expresamente esta revisión: `python tests/test_corte3.py --report tests/reporte-revision-integral.html`. No sustituir la captura 09 histórica con un resultado no renderizado.
+
+### Esperado, obtenido y estado de la ejecución actual
+
+| Caso | Esperado | Obtenido / evidencia | Estado |
+| --- | --- | --- | --- |
+| C01 · Calculadora IPv4 | 192.168.10.50/26: red .0, broadcast .63 y 62 hosts; /31 y /32 correctos. | Red 192.168.10.0/26, broadcast .63, 62 hosts; límites /31 y /32 verificados. | Superada |
+| C02 · Calculadora IPv6 | 128 bits exactos, forma canónica, clasificación y broadcast no aplicable. | 6 vectores frente a ipaddress, 8 categorías y /64 = 18446744073709551616 direcciones. | Superada |
+| C03 · Migración v2 → v3 → v4 | Migrar sin reasignar ni perder plan, topología, opciones o CLI válidas. | v2→v4 sin asignar; 15 VLAN, 28 nodos, 34 enlaces y 4 CLI preservados. | Superada |
+| C04 · Migración v3 → v4 y JSON | Migrar v3 y exportar/importar v4 sin cambiar datos ni llamar asignadores. | v3→v4 e ida/vuelta JSON exactos; cero llamadas a allocate/allocateIPv6. | Superada |
+| C05 · Persistencia local v2/v3/v4 | Priorizar v4, migrar fallbacks y no sobrescribir claves antiguas. | v4 prioritario y restaurado; fallback v3/v2 en memoria; contenido antiguo intacto. | Superada |
+| C06 · Eliminar VLAN sin perder ediciones | Conservar nombre/hosts pendientes; cancelar o validar mal no debe eliminar/renderizar. | Solo se eliminó la tercera VLAN; nombre/hosts conservados; cancelar e inválido atómicos. | Superada |
+| C07 · IPv4 por sede y CIDR manual | Asignar dentro de pools, respetar manuales y separar /30 sin solapamientos. | 19 redes disjuntas; manuales 10.20.20.0/24 y 10.20.35.0/24 conservadas. | Superada |
+| C08 · Error IPv4 atómico | Entrada incompatible debe conservar estado, derivados, almacenamiento y texto. | CIDR fuera del bloque rechazado: estado/CLI/DOM/localStorage intactos. | Superada |
+| C09 · Planificación IPv6 | Asignar /48→/56→/64 de modo estable, con reservas según redundancia. | 15 /64 disjuntas; /56 manual reservado; orden estable, reservas e ida/vuelta exactos. | Superada |
+| C10 · Error IPv6 atómico | Insuficiencia o solapamiento no deben reemplazar planes ni formulario. | Capacidad /56 insuficiente y sedes solapadas rechazadas sin pérdidas. | Superada |
+| C11 · Topología e interfaces | Los enlaces routed deben usar las /30 y extremos reales del plan confirmado. | 40 nodos, 46 enlaces; 4 /30 coherentes y sin bloqueos. | Superada |
+| C12 · Cisco IOS / IOS XE (texto) | Generar VLAN/SVI, IP, DHCP y OSPF del plan sin mezclar fabricantes. | 14 textos Cisco; VLAN, gateways, OSPF y DHCP del plan, sin gramáticas ajenas. | Superada |
+| C13 · Huawei VRP (texto) | Generar Vlanif, IP, DHCP y OSPF del plan en gramática VRP separada. | 14 textos Huawei; VLAN, gateways, OSPF y DHCP del plan, sin gramáticas ajenas. | Superada |
+| C14 · Fortinet FortiOS 7.4 (texto) | Interfaces/VLAN/IP, DHCP o relay, rutas y administración restringida desde datos reales. | IP/máscaras reales; estructura CLI balanceada; DHCP, relay, OSPF, rutas y local-in verificados. | Superada |
+| C15 · MikroTik RouterOS 7 (texto) | Bridge/VLAN/IP, OSPF v7, DHCP/relay y forward bloqueado por defecto. | Bridge/VLAN y gateways reales; OSPF v7, DHCP/relay, servicios/MAC y forward drop verificados. | Superada |
+| C16 · Separación de cuatro fabricantes | Cada adaptador usa su gramática; los nuevos equipos no caen en IOS/VRP. | IOS, VRP, FortiOS y RouterOS separados; MikroTik excluido de equivalencias Cisco/Huawei. | Superada |
+| C17 · Entradas inseguras e importación | Rechazar hostname, puertos, CIDR y versión peligrosos sin sustituir el estado. | 4 payloads inseguros/futuros rechazados; estado y almacenamiento intactos. | Superada |
+| C18 · Sintaxis JavaScript y consola | Compilar los scripts, cargar la app y no registrar errores JS ni solicitudes externas. | 1 script compilado por Chromium; consola/página limpias; sin solicitudes externas. | Superada |
+| C19 · Descargas reales | Descargar JSON v4, una propuesta y el conjunto sin alterar su texto. | CLI individual exacta, 14 propuestas en descarga conjunta y JSON v4 exacto. | Superada |
+| C20 · Responsive 1440 / 390 px | Calculadora y planificación IPv6 caben en página y muestran límites IPv4. | 12 combinaciones etapa/viewport sin desbordamiento de página; avisos IPv4 visibles. | Superada |
+| C21 · Español predeterminado | Contexto limpio: lang=es, selector Español y navegación española. | Español inicial, selector accesible y preferencia todavía no escrita. | Superada |
+| C22 · Vistas ES/EN | Las 13 vistas y editores muestran títulos, etiquetas y controles traducidos. | 13 vistas × 2 idiomas y 4 variantes de editor × 2; títulos y navegación con Enter. | Superada |
+| C23 · Mensajes y confirmaciones bilingües | Errores, guardado y confirmación nativa traducidos sin cambiar datos introducidos. | Validación IPv4/IPv6, guardado, cancelación y advertencias dinámicas comprobados en ES/EN. | Superada |
+| C24 · Persistencia independiente del idioma | Idioma persiste tras recargar sin entrar en JSON ni borrar proyectos. | Clave WAN-Architect-language independiente; recarga/carga/nuevo conservan la preferencia. | Superada |
+| C25 · Cambio de idioma atómico | Estado, CLI, JSON, campos pendientes y nombres permanecen exactamente iguales. | Estado e imageData idénticos; nombres iguales a claves de catálogo, CLI y ediciones inválidas conservados. | Superada |
+| C26 · Salidas de cuatro fabricantes contra main | Hashes de CLI idénticos a main 6ac46f9 en español e inglés. | 8 comparaciones exactas: 4 fabricantes × ES/EN, referencias de main 6ac46f9. | Superada |
+| C27 · Inventario de controles | Todo button tiene handler; importadores accesibles y controles sin acción ausentes. | 62 plantillas button con handler; 2 importadores de archivo y 1 selector de idioma accesibles; 0 controles decorativos detectados. | Superada |
+| C28 · Acciones observables de botones | Cada familia de botones ejecuta render, estado, validación, diálogo, copia, descarga o impresión. | 56 familias/objetivos activados con Enter; 38 handlers, descargas, impresión invocada y validaciones observables. | Superada |
+| C29 · Portapapeles e importadores con teclado | Copia real, descarga intacta y file chooser accesible; fallback selecciona CLI. | Clipboard/CLI exactos; fallback e importadores por teclado; HTML, CSV y SVG con interfaz/nombres en inglés. | Superada |
+| C30 · Responsive bilingüe | Navegación, idioma y controles caben a 1440 y 390 px en ES/EN. | 48 combinaciones vista/idioma/ancho sin desbordamiento de página; selector visible. | Superada |
+| C31 · Catálogo y atributos traducibles | Todas las claves literales t() y atributos de formulario tienen traducción; opciones conservan valores internos. | 520 claves literales cubiertas; placeholder, aria-label y valores de opciones comprobados. | Superada |
+| N01 · Pools RFC1918 independientes | Dos sedes en rangos privados distintos y tránsito independiente, LAN contenidas y redes disjuntas. | 15 VLAN en 192.168.64.0/22 y 10.20.0.0/22; /30 en 192.168.200.0/24; JSON conserva el plan. | Superada |
+| N02 · Errores de bloque atómicos | Rechazar solapamiento, red desalineada, pública y capacidad insuficiente sin mutaciones. | CIDR desalineado/público/prefijo inválido y solapamiento rechazados; insuficiencia /24 conserva estado. | Superada |
+| N03 · VLAN manual independiente y fallback | Manual dentro de sede, fallback global sin invasión; error manual conserva texto y plan. | Manual en sede independiente, automáticas en pools correctos; manual exterior rechazada sin perder texto/plan. | Superada |
+| N04 · Inventario confirmado sin invalidación superflua | Formulario inicial, resumen, editar y confirmar cantidades idénticas conservando plan/topología/CLI. | Formulario→resumen→editar; mismas cantidades conservan plan, nodos y CLI. | Superada |
+| N05 · Inventario editado y borradores | Conservar borrador al navegar; cambio real invalida únicamente sede afectada. | Borrador conservado al navegar; cambio s1 conserva VLAN, LAN y equipos de s2. | Superada |
+| N06 · Restauración de inventario confirmada | Cancelar restauración conserva cantidades; aceptar restaura estimación y su disponibilidad. | Cancelación intacta; restauración explícita vuelve a 100 PCs estimados. | Superada |
+| N07 · Confirmación VLAN y dependencias | Sin cambios conserva derivados; borrador bloquea generación, conserva valores al navegar y permite confirmar. | Confirmación idéntica conserva todo; edición pendiente bloquea dependencias y conserva formulario. | Superada |
+| N08 · Componentes retirados y navegación | 13 módulos, sin Evidencias Corte 2 ni explicaciones retiradas; calculadoras intactas. | 13 módulos navegables, explicaciones ausentes; red/broadcast /26 correctos. | Superada |
+| N09 · Topología mixta real | Cisco router, Huawei core/switch, Fortinet firewall y MikroTik router secundario con puertos reales. | Cuatro fabricantes reales generados; perfiles, autoKey, puertos y equipos conservados en JSON. | Superada |
+| N10 · Perfiles y roles inválidos | Sin elección no genera; roles incompatibles/importación arbitraria se rechazan atómicamente. | Sin perfil explícito no genera; firewall/switch, core/RouterOS y campos arbitrarios rechazados. | Superada |
+| N11 · Regeneración estable y equipos manuales | Reorganizar/regenerar no elimina manuales ni cambia IDs de nodos/enlaces automáticos. | Manual conservado; IDs automáticos y enlaces estables tras regenerar y reorganizar. | Superada |
+| N12 · Lienzo, zoom, arrastre y SVG | Iconos autónomos, cajas separadas, zoom/arrastre y exportación SVG funcionales. | Sin cajas superpuestas; zoom y arrastre reales; SVG con iconos inline; 1440/390 sin desborde de página. | Superada |
+| N13 · Bilingüismo de nuevos controles | Nuevos perfiles, inventario, aprobación y diagrama traducidos sin cambiar datos. | Perfiles, zoom/reorganización y confirmación en inglés; proyecto intacto. | Superada |
+| N14 · Sede sin cambios y dependencias locales | Confirmar ficha idéntica no borra nada; cambiar bloque conserva datos de otra sede. | Guardar sin cambios conserva todo; nuevo pool solo invalida dependencias de la sede. | Superada |
+| N15 · Recalcular sin renumerar otra sede | Cambiar hosts s1 conserva redes, tránsito, nodos y CLI válidas s2, incluso tras JSON. | Redes/tránsito, IDs y CLI no afectadas de s2 idénticas; vecino WAN se invalida por enlace afectado, JSON conserva las restantes. | Superada |
+| N16 · Nombres únicos y gran diagrama | Códigos de sedes sin colisiones, 100 equipos sin cajas superpuestas, reorganización determinista. | 140 equipos sin superposición de cajas; códigos desambiguados y posiciones deterministas. | Superada |
+| N17 · Borradores aislados entre proyectos | Cargar laboratorio o proyecto nuevo elimina borradores anteriores sin cambiar idioma. | Borradores preservados en navegación y eliminados solo al reemplazar proyecto; idioma conservado. | Superada |
+| N18 · Editar sede conserva intención manual válida | Cambio de bloque incompatible con CIDR manual se rechaza sin sustituir estado ni formulario. | Cambio de pool incompatible con manual rechazado; estado, plan y texto conservados. | Superada |
+| N19 · Repropuesta parcial conserva otras sedes | Cambiar inventario y completar VLAN faltantes conserva CIDR, claves y plan de otra sede. | Solo se completaron VLAN de s1; claves/CIDR manual/plan de s2 intactos y VLSM válido. | Superada |
+
+### Integridad de las referencias y límites
+
+Los hashes de `tests/fixtures/generator-reference.json` permanecen intactos. La nueva fixture `pre-revision-v4.json` se capturó realmente desde el HTML de main 1956d18 y el mismo laboratorio de C26; conserva IDs/nombres/plan previos. C26 importa ese proyecto y verifica plan IPv4, IPv6, topología histórica y ocho CLI (cuatro marcas × ES/EN). No se regeneraron hashes para esconder cambios: nombres, posiciones y terminales representativos de las nuevas topologías sí cambian por autorización explícita.
+
+Las pruebas de Huawei distinguen asignación real y equivalencia: C13 selecciona Huawei; los escenarios monofabricante que comparan gramáticas usan Comparación expresamente, no un fallback implícito de `configNodes()`. Se actualizan índices 10/11/12, etiquetas de confirmación y cantidad de vistas conforme a la eliminación autorizada; no se omiten casos anteriores.
+
+Verificaciones adicionales: `node --check`, compilación Python, diff-check y revisión de secretos/enlaces. html5lib 1.1, instalado solo como herramienta temporal fuera del repositorio, analizó el documento y 26 fragmentos originales de vistas ES/EN sin errores; el SVG exportado se verificó como XML. No se añade html5lib al runner ni se afirma certificación W3C/WCAG.
+
+Revisión visual con Playwright: resumen de inventario, topología mixta de 44 nodos/51 enlaces y vista English a 390 px; diagramas con iconos originales, rutas fuera de cajas, hover/tablas para detalles y scroll. N16 comprueba 140 cajas sin superposición tras organizar. No se garantiza ausencia de todos los cruces de enlaces ni de superposiciones introducidas manualmente. C20/C30/N12 mantienen validación 1440/390 px.
+
+Confirmación sin cambios conserva diseño; el borrador bloquea dependencias sin sustituir el estado confirmado. N15 conserva CLI no afectadas de otra sede; el vecino WAN pierde su CLI cuando cambia su enlace, por coherencia. N18 rechaza pools incompatibles con manuales guardadas y N19 completa VLAN faltantes sin reemplazar otras sedes.
+
+Este 100% es `50 superadas / 50 ejecutadas × 100`, no cobertura absoluta, auditoría completa, interoperabilidad ni validación física. Los generadores continúan siendo IPv4. IPv6, ciberdefensa, JSON v2/v3/v4, localStorage, botones, portapapeles y descargas permanecen en la regresión. Las capturas 01–10, el reporte anterior y los PDF no se modifican: corresponden a la entrega histórica anterior.
+
+## Registro histórico: entrega bilingüe fusionada en main 1956d18
+
+**Las secciones restantes conservan su fecha, versión, reporte de 31 casos y capturas anteriores. No describen la ejecución actual ni se suman al denominador de 50.**
+
 
 ## Fuente, entorno y resultado registrado
 

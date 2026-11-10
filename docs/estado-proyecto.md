@@ -1,55 +1,48 @@
 # Estado de WAN Architect
 
-## Estado vigente de esta entrega
+## Versión y alcance de esta revisión
 
-Repositorio: [Daisy-redeswan/redes-wan-Rodriguez](https://github.com/Daisy-redeswan/redes-wan-Rodriguez). Base main: `6ac46f9257143f88ec8cb7b47c020bb3739adbfa`. Rama: `feature/i18n-evidencias-finales`; código bilingüe: `71d56cb469a1f9049d24fc0bf2804adefdd256db`. Auditoría: 9 de noviembre de 2026, America/Bogota. Estudiante: Daisy Jurleny Rodriguez · Fundación Universitaria Compensar.
+Repositorio: [Daisy-redeswan/redes-wan-Rodriguez](https://github.com/Daisy-redeswan/redes-wan-Rodriguez). Base main `1956d1872363c88399f5e8240abb1d7a13bca340`. Rama `fix/revision-integral-wan-architect`; código probado `8a27f672e03b6e777b077a8910915d13adeb7127`. Fecha de ejecución: 2026-11-09T23:32:21-05:00 (America/Bogota).
 
-Objetivo: apoyar el diseño WAN académico por sedes mediante requisitos, inventario, VLAN, direccionamiento, topología, propuestas por fabricante y evidencia reproducible. Genera texto; no ejecuta configuraciones.
+Implementación autónoma en `WAN_v4.html`: HTML/CSS/JavaScript/SVG, sin backend, servicios obligatorios ni ejecución de comandos. Flujo: proyecto → sedes → inventario → VLAN/IPv4 y planificación IPv6 separada → fabricantes por función → topología → cuatro adaptadores IPv4 → persistencia y exportación. Español predeterminado y English conservados.
 
-## Arquitectura y contrato actuales
+## Nueve correcciones implementadas e inspeccionadas
 
-`WAN_v4.html` contiene HTML/CSS/JavaScript, estado central y renderizado de vistas, sin backend ni credenciales. Flujo: proyecto → sedes → estimación → VLAN → plan IPv4 / plan IPv6 separado → topología → generadores IPv4 → exportación/persistencia y evidencias.
+| Corrección | Implementación | Evidencia actual |
+| --- | --- | --- |
+| 01 · IPv4 independiente por sede | Fallback del proyecto, bloques privados propios y tránsito independiente, sin exigir contención de sede en global; validación RFC1918/alineación/solapamientos | N01/N02/N03/N14/N18 |
+| 02 · Inventario confirmado | Formulario inicial, resumen confirmado, editar/restaurar con cancelación, borradores y guardado sin invalidar por igualdad | N04/N05/N06/N17 |
+| 03 · VLAN/VLSM por sede | Automáticas y manuales en pool efectivo, reservas/capacidad/huecos, conservación de redes y repropuestas no afectadas | C07/C08; N01/N03/N15/N19 |
+| 04 · Retirar explicación VLSM | Componente y traducciones exclusivas retirados; algoritmos y gateway permanecen | N08; C01/C07/C12–C16 |
+| 05 · Retirar Interpretación | Solo explicación de calculadora retirada; resultados IPv4/IPv6 completos | N08; C01/C02 |
+| 06 · Confirmación efectiva | Pendiente/confirmadas/recalcular, bloqueo de dependencias con borradores, igualdad conserva derivados y errores atómicos | N07; C08/C10 |
+| 07 · Topología | Jerarquías, iconos originales, nombres por sede, zoom/scroll, reorganización sin borrar, IDs estables, editores, imagen y SVG | N11/N12/N16; C11/C29/C30 |
+| 08 · Retirar Evidencias Corte 2 | Menú/pantalla exclusivos retirados; 13 módulos e índices corregidos; archivos académicos conservados | N08/C22/C27 |
+| 09 · Fabricantes mixtos | Perfiles por sede/función y editor individual; elección explícita, roles/puertos validados y selección real por marca, Comparación separada | N09/N10/N11/N13; C12–C16/C26 |
 
-- **V4:** `project.base`/`transitBase`/`ipv6Base`; `sites[].ipv4Base`/`ipv6Base`; `vlans[].ipv4Cidr`; `plan` IPv4 e `ipv6Plan` por claves VLAN; nodos, enlaces, opciones y configuraciones derivadas.
-- **Migración:** v2→v3→v4 sin asignar redes durante la carga. Importador reconstruye/valida el contrato y conserva CLI coherentes con su regeneración.
-- **Persistencia:** `WAN-Architect-v4`, fallback no destructivo v3/v2; JSON v4. Cadenas para IPv6, BigInt solo en memoria.
-- **I18N:** catálogo `I18N`, `t()` y `setLanguage()` en la misma aplicación. Español inicial; clave independiente `WAN-Architect-language`. No cambia el esquema ni traduce datos/CLI.
-- **Adaptadores:** Cisco IOS/IOS XE, Huawei VRP, Fortinet FortiOS y MikroTik RouterOS separados, con el mismo plan/topología/interfaces como entrada.
+## Modelo, compatibilidad e invalidación
 
-## Implementado e inspeccionado
+Se mantiene v4 y migración no destructiva v2→v3→v4. Los pools independientes se validan también al importar; no se llama a asignadores durante la carga. `vendorProfile`, `autoKey` y overrides de nombre/fabricante son extensiones opcionales validadas; `Genérico` identifica terminales sin adaptador. Proyectos antiguos sin esos campos no se reclasifican. No se garantiza que un lector antiguo acepte estas extensiones/enum nuevos.
 
-IPv4: cálculo público/privado, VLSM global y por bloques de sede, tránsito /30, CIDR manual opcional por VLAN, asignación mixta, capacidad/crecimiento/reservas, contención, alineación y solapamientos. Gateway independiente de la subred y del DHCP. Las redes manuales se reservan y no se mueven silenciosamente.
+Guardar una ficha o inventario idénticos mantiene datos. Cambios reales invalidan dependencias locales y vecinos WAN afectados; CLI realmente válidas de otras sedes conservan texto y revisión. La repropuesta parcial completa sedes sin VLAN; el reemplazo total sigue siendo explícito. Una sede no puede guardar un nuevo pool incompatible con un CIDR manual ya confirmado.
 
-IPv6: calculadora comprimida/expandida/canónica y clasificación; planificación ULA /48 de proyecto → /56 de sede → /64 de VLAN, router completo +1; redundancia virtual +1 y físicas +2/+3. Sin broadcast, tránsitos IPv6 ni comandos IPv6 por fabricante.
-
-Topología: generación, edición de equipos/enlaces, roles y puertos por fabricante, access/trunk/routed y controles de coherencia; imagen como referencia manual, sin OCR. CLI separadas con administración restringida, DHCP/relay y enrutamiento según rol/opciones. FortiOS 7.4 genérico sin multi-VDOM; RouterOS 7.x genérico sin VRF/CAPsMAN. No se asumen NAT/Internet/permisos de tránsito.
-
-Interfaz bilingüe: vistas, ayudas, botones, atributos accesibles, validaciones, confirmaciones y descargas de interfaz. Nombres del usuario, JSON, claves, hostnames, interfaces y CLI permanecen iguales. Se conservaron 58 plantillas de botón, dos importadores y un selector: todos tenían función real; 0 eliminados. La disponibilidad de Vista automática y los mensajes de copia/descarga sin configuración se ajustaron; importadores y controles tienen acceso por teclado.
+Los borradores viven en memoria de presentación y sobreviven a navegación/idioma; no se serializan como datos confirmados. Reemplazar el proyecto los limpia. Los equipos manuales se conservan; si una edición deja una IP/enlace incompatible, el generador se bloquea para revisión. No se renumeran intenciones manuales silenciosamente.
 
 ## Confirmado mediante pruebas ejecutadas
 
-[Suite y resultados](pruebas.md): **C01–C31, 31/31 = 100% del conjunto ejecutado**, 0 fallidas, bloqueadas o no ejecutadas. Se ejecutó en HTTP local, contextos limpios y datos ficticios con Python/Playwright/Chromium. Los 20 casos originales siguen incluidos; no se sumaron matrices históricas.
+[Pruebas actuales](pruebas.md) y [reporte real](../tests/reporte-revision-integral.html): **50/50 = 100%**, 0 fallidas, bloqueadas o no ejecutadas. Se conservaron los 31 casos anteriores y se añadieron 19; no se suman repeticiones de desarrollo. Python/Playwright/Chromium, HTTP local, contextos limpios y datos ficticios. C26 mantiene los hashes previos y ocho salidas CLI exactas para un proyecto histórico conservado; no se exige que una topología rediseñada tenga los nombres/posiciones anteriores.
 
-C26 compara referencias calculadas desde el main base: plan IPv4, topología y plan IPv6 exactos, y ocho comparaciones CLI (cuatro fabricantes × ES/EN). C28 activó 54 familias/objetivos con Enter; C29 comprueba portapapeles real, descarga, fallback e importadores por teclado. C30 cubre 52 combinaciones de vistas/idioma/ancho a 1440/390 px; no certifica todo ancho. El manifiesto de 58 plantillas está en [manual.md](manual.md).
+Se revisaron visualmente inventario y topología mixta, English a 390 px; pruebas a 1440/390 px y 140 cajas sin superposición automática. HTML5 estático y 26 vistas dinámicas sin errores de parseo, SVG XML, sintaxis y consola revisados. Estos resultados no certifican accesibilidad completa ni hardware.
 
-Las diez capturas se revisaron; 01–04 corrigen la calculadora/diagrama completo y VLAN/IP de cores, 05 muestra GitHub real y 06–10 corresponden a generación, rechazo, pruebas y app actual. GitHub devolvió HTTPS 200; sus estilos/avatares externos quedaron bloqueados, por lo que 05 conserva render nativo sin reconstrucción. PDF, README y entregables actualizados; detalles de maquetación, páginas y hashes en [pruebas.md](pruebas.md).
+## Documentación, pendientes y límites
 
-## Dependencias e invalidación
+[Documentación del código](documentacion-codigo.md) explica entradas, salidas, validaciones, efectos, funciones y dependencias. Los comentarios en español se agregan donde son seguros; no se insertan dentro de cadenas CLI ni se reescribe aritmética estable para comentar cada línea.
 
-Confirmar fichas de sede mantiene la invalidación histórica de VLAN y derivados de `saveSite()`. VLAN/plan condicionan gateways, topología y configuraciones; modificar gateway obliga a regenerar derivados. Una eliminación conserva ediciones válidas de otras VLAN antes de invalidar lo previsto. Confirmar IPv6 no sustituye IPv4 ni sus CLI. Cambiar idioma solo reconstruye presentación y restaura los campos pendientes; no confirma ni invalida el proyecto.
+- Los cuatro fabricantes son propuestas IPv4 verificadas como texto. Continúa pendiente validación física de modelos/firmware, conectividad, convergencia y compatibilidad real.
+- Dos cores redundantes con fabricantes diferentes siguen bloqueados; no se equiparan HSRP/VRRP. Fortinet solo Firewall; MikroTik solo Router en los adaptadores actuales.
+- IPv6 continúa como cálculo/planificación ULA, sin configuración de fabricantes, DHCPv6 avanzado, NAT66 ni políticas automáticas. Pools DHCP/reservas editables siguen fuera de alcance.
+- Los canales e iconos mejoran legibilidad, pero no resuelven todos los cruces posibles; el arrastre manual puede crear superposiciones. Los detalles completos están en tablas/títulos, no en etiquetas masivas.
+- Equipos antiguos sin `autoKey` se conservan como entidades no clasificadas al regenerar; no se infiere que puedan borrarse.
+- Capturas 01–10 e informes académicos se preservan intactos como entrega histórica de main 1956d18; no se presentan como capturas de esta revisión. La sustentación y validación física no se simulan.
 
-La importación no asigna nuevas redes; normaliza el contrato existente. El indicador transitorio `subnetOK` no pertenece al contrato reconstruido por el importador heredado; el roundtrip de teclado compara un proyecto ya canonicalizado. No se amplió ese comportamiento en esta tarea.
-
-## Límites, riesgos y pendientes
-
-- Ninguna propuesta se ejecutó: no hay validación física, conectividad, convergencia, compatibilidad de firmware/modelos ni auditoría exhaustiva de seguridad.
-- Los cuatro generadores permanecen IPv4; el alcance de configuraciones IPv6 requiere aclaración académica. IPv6 es cálculo/planificación ULA.
-- Pools DHCP y reservas editables, revisión de `saveSite()` y cobertura completa de accesibilidad/navegadores/datos masivos quedan para trabajos separados.
-- La auditoría 1440/390 px y los controles deshabilitados no certifican cada combinación de datos ni eliminan todos los riesgos históricos de interfaz.
-- La sustentación en vivo no se ha realizado en esta entrega. La autoevaluación de README usa evidencia local y no asigna una calificación.
-
-## Fuentes y antecedentes
-
-Prevalece [Guía Docente.html](<requisitos/Guía Docente.html>). [Trazabilidad](trazabilidad-corte3.md) conserva los pesos oficiales; [matriz de fabricantes](matriz-fabricantes.md) documenta objetivos y límites. Los resultados históricos M/S/A/C/V y etapas previas se conservan en el [historial de este documento en la base](https://github.com/Daisy-redeswan/redes-wan-Rodriguez/blob/6ac46f9257143f88ec8cb7b47c020bb3739adbfa/docs/estado-proyecto.md); no se vuelven a presentar como ejecuciones actuales.
-
-Siguiente etapa recomendada: revisar el PR, contrastar la entrega con la rúbrica y sustentar el funcionamiento y sus límites. Una prueba textual no autoriza aplicar CLI a equipos.
+Fuentes: [AGENTS.md](../AGENTS.md), [guía docente](<requisitos/Guía Docente.html>), [trazabilidad](trazabilidad-corte3.md), [matriz](matriz-fabricantes.md), fuentes oficiales ya documentadas en cada adaptador y el código confirmado. Ninguna configuración se aplicó sobre infraestructura.
