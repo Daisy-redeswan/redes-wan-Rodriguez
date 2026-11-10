@@ -1,43 +1,38 @@
-# WAN Architect — Corte 3
+# Herramienta de Redes WAN — WAN Architect (trabajo individual)
 
-Herramienta académica local para diseñar redes WAN por sedes, planificar IPv4/IPv6 y generar **propuestas IPv4** separadas para Cisco IOS/IOS XE, Huawei VRP, Fortinet FortiOS y MikroTik RouterOS. No aplica configuraciones a equipos.
+**Estudiante:** Daisy Jurleny Rodriguez
 
-- **Autora:** Daisy Jurleny Rodriguez Rodriguez, según el informe del Corte 2.
-- **Materia:** Interconexión de Redes WAN · Ingeniería de Telecomunicaciones.
-- **Repositorio:** [Daisy-redeswan/redes-wan-Rodriguez](https://github.com/Daisy-redeswan/redes-wan-Rodriguez).
-- **Institución, docente y grupo:** pendientes de confirmar; no se inventan datos académicos.
-- **Base técnica de esta entrega:** `f7ed2b907d6edad6f1ed7bd5274c49956a7a77d8`; esquema de proyecto **v4**.
+**Institución:** Fundación Universitaria Compensar
 
-## Abrir la aplicación
+**Materia:** Interconexión de Redes WAN · Ingeniería de Telecomunicaciones
 
-El archivo real de entrada es [WAN_v4.html](WAN_v4.html). Puede abrirse directamente en un navegador actualizado; no requiere backend, cuenta ni dependencias de ejecución. Para reproducir las pruebas y capturas se recomienda HTTP local:
+**Repositorio público:** https://github.com/Daisy-redeswan/redes-wan-Rodriguez
 
-```bash
-python -m http.server 8000 --bind 127.0.0.1
-```
+## Qué hace esta herramienta
 
-Abrir `http://127.0.0.1:8000/WAN_v4.html`. Detener el servidor con Ctrl+C. No exponer la carpeta a una red pública. Las referencias técnicas enlazadas requieren Internet, pero el funcionamiento principal de la app es local. El almacenamiento del navegador depende del origen; conservar además una exportación JSON.
+WAN Architect permite diseñar una WAN por sedes, calcular y planificar IPv4/IPv6 y representar dispositivos, enlaces e interfaces. Genera **propuestas IPv4** separadas para Cisco IOS/IOS XE, Huawei VRP, Fortinet FortiOS y MikroTik RouterOS. Funciona localmente en [WAN_v4.html](WAN_v4.html); no aplica comandos sobre equipos.
 
-## Funciones y alcance confirmado
+## Funciones
 
-- Proyecto, fichas por sede, estimación de inventario y VLAN con claves estables.
-- IPv4: bloque global, bloques opcionales por sede/tránsito, VLSM automático y CIDR manual opcional por VLAN; gateway independiente y validación de capacidad/solapamientos.
-- IPv6: calculadora y planificación ULA separada; /48 propuesto, /56 por sede y /64 por VLAN, reservas según redundancia. Sin broadcast, tránsitos ni comandos IPv6.
-- Topología automática/manual y mapeo de interfaces; una imagen importada es **referencia manual**, no OCR ni reconocimiento automático.
-- Cuatro generadores separados desde el mismo plan/topología. Huawei ofrece equivalencias cuando no hay nodos Huawei; esto no certifica hardware equivalente.
-- Fortinet: supuesto FortiGate genérico/FortiOS 7.4 sin multi-VDOM; MikroTik: RouterOS 7.x genérico sin VRF/CAPsMAN. Ambos requieren puertos propios y roles compatibles.
-- JSON v4, migración v2→v3→v4 sin reasignar, localStorage v4 con fallback no destructivo v3/v2 y exportaciones de texto/SVG.
-- Validación, escape de contenido, marcadores de secretos y advertencias de ciberdefensa. No equivale a auditoría completa ni validación física.
+- **Subnetting / IP Planning:** calculadora IPv4 pública/privada e IPv6; VLSM global, bloques opcionales por sede/tránsito y subred CIDR manual por VLAN. IPv6 se planifica separadamente con ULA /48, /56 por sede y /64 por VLAN; no tiene broadcast.
+- **Topología:** generación desde el plan, edición de dispositivos/enlaces e interfaces y exportación SVG. Una imagen importada es referencia manual, no reconocimiento automático.
+- **Cuatro fabricantes:** Cisco, Huawei, Fortinet y MikroTik consumen el mismo modelo validado. FortiOS 7.4 y RouterOS 7.x son supuestos genéricos de laboratorio; ninguna marca está certificada físicamente.
+- **Ciberdefensa y uso de IA:** validación de entradas, importación atómica, contenido escapado, administración restringida y marcadores de secretos; [políticas](docs/politicas-ia.md) y [límites](docs/seguridad.md). `.env` y sus variantes quedan excluidos por [.gitignore](.gitignore).
+- **Español/English:** español inicial, selector de idioma y preferencia independiente. Traduce la interfaz; conserva nombres introducidos, claves internas, JSON y CLI.
+- **Persistencia:** JSON v4, migración v2→v3→v4 sin reasignar y localStorage v4 con fallback no destructivo v3/v2.
 
-## Flujo de uso
+## Cómo ejecutarla
 
-Proyecto → fichas de sede → estimación → propuesta/confirmación de VLAN → IPv4/VLSM → cálculo/planificación IPv6 opcional → topología → fabricante → revisión de propuestas → guardado/exportación. El [manual](docs/manual.md) explica los pasos y los escenarios compatibles para cada marca.
+1. Descargar/clonar el repositorio completo y abrir `WAN_v4.html` en un navegador actualizado. No requiere backend, cuentas ni paquetes para usar la aplicación.
+2. Para reproducir pruebas y capturas, desde la raíz ejecutar `python -m http.server 8000 --bind 127.0.0.1` y abrir `http://127.0.0.1:8000/WAN_v4.html`. Detener con Ctrl+C; no exponer ese servidor a Internet.
+3. Seguir proyecto → sede → estimación → VLAN/IPv4 → IPv6 opcional → topología → fabricante → revisión y exportación. Confirmar las fichas de sede antes de avanzar: `saveSite()` conserva su invalidación histórica de VLAN y derivados.
+4. Cambiar **Idioma / Language** entre Español y English. La preferencia no modifica el proyecto ni sus configuraciones. Guardar/exportar un respaldo JSON; localStorage depende del origen y no cifra los datos.
 
-**Importante:** confirmar una sede mantiene la invalidación histórica de VLAN y derivados. Revisar las fichas antes de avanzar. Las ediciones visibles de un formulario todavía no son datos confirmados; una validación fallida conserva el texto. Los cuatro generadores siguen siendo IPv4 hasta aclaración docente sobre configuraciones IPv6.
+El [manual](docs/manual.md) explica controles, idiomas, escenarios y limitaciones. Los cuatro generadores siguen siendo IPv4; las configuraciones IPv6 requieren aclaración del alcance docente.
 
-## Pruebas reproducibles
+## Pruebas y % de confianza (Corte 3)
 
-Python 3.10+, Playwright 1.62.0 y Chromium; dependencias solo para pruebas:
+**Pruebas superadas: 31 de 31 = 100% del conjunto ejecutado.** Fallidas: 0; bloqueadas: 0; no ejecutadas: 0. Incluye los 20 casos previos y 11 nuevos de idiomas, controles, portapapeles, descargas y regresión exacta frente a la base.
 
 ```bash
 python -m pip install -r tests/requirements.txt
@@ -45,30 +40,49 @@ python -m playwright install chromium
 python tests/test_corte3.py
 ```
 
-El runner inicia/cierra HTTP local, usa un contexto limpio por caso, imprime resultados y devuelve un código no cero ante fallos. La ejecución normal guarda el reporte fuera del repositorio. [Instalación, casos, resultados y sustentación](docs/pruebas.md).
+El runner inicia/cierra HTTP local, crea contextos limpios y devuelve un código no cero ante fallos. El reporte normal es temporal y su ruta se imprime; [casos, resultados, hashes y entorno](docs/pruebas.md), [reporte HTML registrado](tests/reporte-corte3.html). El porcentaje no certifica toda la aplicación ni hardware, conectividad o seguridad integral.
 
-**Resultado registrado:** 20/20 superadas = **100% del conjunto ejecutado**, 0 fallidas, bloqueadas o no ejecutadas; ratificado sobre el main indicado durante esta entrega. Validación de navegador y texto, sin ejecutar CLI ni certificar conectividad, modelos o firmware.
+## Documentos
 
-## Entregables y evidencias del Corte 3
+- [Informe Corte 2](docs/informe-corte2.pdf) · [Informe Corte 3](docs/informe-corte3.pdf).
+- [Manual](docs/manual.md) · [Seguridad](docs/seguridad.md) · [Políticas IA](docs/politicas-ia.md) · [Pruebas](docs/pruebas.md).
+- [Estado del proyecto](docs/estado-proyecto.md) · [Trazabilidad Corte 3](docs/trazabilidad-corte3.md) · [Matriz de fabricantes](docs/matriz-fabricantes.md).
+- La matriz conserva antecedentes de soporte por plataforma; el inventario vigente de pruebas y capturas es el de esta entrega.
+- Fuente de requisitos: [Guía Docente.html](<docs/requisitos/Guía Docente.html>).
 
-| Evidencia | Qué demuestra | Archivo |
+## Capturas (evidencias)
+
+Las capturas de la aplicación se obtuvieron por HTTP local con Playwright, contexto limpio y datos ficticios. Las propuestas nunca se ejecutaron en infraestructura real.
+
+| Evidencia | Qué se verificó | Archivo exacto |
 | --- | --- | --- |
-| 06 | Propuesta Fortinet realmente generada en la aplicación | [06-config-fortinet.png](docs/capturas/06-config-fortinet.png) |
-| 07 | Propuesta MikroTik realmente generada en la aplicación | [07-config-mikrotik.png](docs/capturas/07-config-mikrotik.png) |
-| 08 | Rechazo real de una IPv4 inválida, conservando el resultado anterior | [08-ciberdefensa.png](docs/capturas/08-ciberdefensa.png) |
-| 09 | Suite ejecutada, 20 casos y 20/20 = 100%; evidencia conservada íntegra | [09-pruebas.png](docs/capturas/09-pruebas.png) |
-| 10 | Pantalla principal del laboratorio funcionando | [10-app-final.png](docs/capturas/10-app-final.png) |
+| 01 | IP, prefijo /26, red, broadcast y 62 hosts visibles | [01-subnetting.png](docs/capturas/01-subnetting.png) |
+| 02 | Diagrama completo de dos sedes; dispositivos y enlaces sin recorte | [02-topologia.png](docs/capturas/02-topologia.png) |
+| 03 | Core Cisco: hostname, VLAN e IP visibles | [03-config-cisco.png](docs/capturas/03-config-cisco.png) |
+| 04 | Core Huawei: sysname, VLAN e IP visibles | [04-config-huawei.png](docs/capturas/04-config-huawei.png) |
+| 05 | Página real de commits de main, con al menos cinco mensajes claros | [05-github-commits.png](docs/capturas/05-github-commits.png) |
+| 06 | Propuesta Fortinet generada por la aplicación | [06-config-fortinet.png](docs/capturas/06-config-fortinet.png) |
+| 07 | Propuesta MikroTik generada por la aplicación | [07-config-mikrotik.png](docs/capturas/07-config-mikrotik.png) |
+| 08 | IPv4 inválida rechazada; último cálculo válido conservado | [08-ciberdefensa.png](docs/capturas/08-ciberdefensa.png) |
+| 09 | Ejecución nueva: 31/31 y 100% visibles | [09-pruebas.png](docs/capturas/09-pruebas.png) |
+| 10 | Aplicación funcionando con selector de idioma visible | [10-app-final.png](docs/capturas/10-app-final.png) |
 
-- [Informe académico Corte 3](docs/informe-corte3.pdf).
-- [Manual de usuario](docs/manual.md).
-- [Medidas y límites de seguridad](docs/seguridad.md).
-- [Políticas de ciberdefensa y uso de IA](docs/politicas-ia.md).
-- [Pruebas, entorno y evidencia real](docs/pruebas.md) y [reporte HTML](tests/reporte-corte3.html).
-- Orientación técnica: [estado](docs/estado-proyecto.md), [trazabilidad](docs/trazabilidad-corte3.md) y [matriz de fabricantes](docs/matriz-fabricantes.md). Sus registros históricos deben leerse junto con esta entrega documental.
-- Se conservan sin cambios el [informe Corte 2](docs/informe-corte2.pdf) y las capturas anteriores. No se inventó la captura 05 ausente.
+La 05 procede de [Commits en GitHub](https://github.com/Daisy-redeswan/redes-wan-Rodriguez/commits/main/), respuesta HTTPS real 200. Los recursos externos de estilo/avatar quedaron bloqueados en el entorno: se conserva el render nativo sin estilos, legible y sin reconstruir ni alterar sus mensajes. Las otras capturas muestran laboratorios identificados en el manual; no representan un único despliegue de gateways duplicados.
 
-## Límites y pendientes
+## Autoevaluación (Sí/No con evidencia)
 
-No hay certificación de compatibilidad física, aplicación automática de CLI, pruebas de conectividad, convergencia ni auditoría integral de seguridad. Las políticas entre servicios requieren intención explícita: MikroTik bloquea forward por defecto; Fortinet no inventa permisos ni NAT. No se asume Internet, VPN ni interoperabilidad HSRP/VRRP.
+“Sí” indica implementación y evidencia local comprobadas, **no una nota otorgada ni certificación física**. Los pesos de la rúbrica no son el porcentaje de pruebas.
 
-Pendientes: aclaración docente de configuraciones IPv6, pools DHCP/reservas editables, corrección de `saveSite()`, desbordamientos históricos ajenos a los flujos verificados, validación de plataforma, datos académicos faltantes y sustentación en vivo. La entrega documental no adjudica una nota ni declara completado todo requisito del curso.
+| Criterio de la plantilla docente | ¿Cumplido? | Evidencia concreta |
+| --- | --- | --- |
+| Subnetting funciona | Sí | Captura 01; C01/C02/C07/C09: IPv4 e IPv6 |
+| Carga de topología | Sí | Captura 02; C11 y editores auditados en C28 |
+| Config Cisco y Huawei | Sí | Capturas 03/04; C12/C13/C26: generación y texto exacto |
+| Config Fortinet y MikroTik (C3) | Sí | Capturas 06/07; C14/C15/C26; validación textual |
+| Ciberdefensa (`politicas-ia.md`) | Sí | Captura 08; C08/C10/C17; `.gitignore` y políticas documentadas |
+| Pruebas con % de confianza (C3) | Sí | Captura 09; suite/reporte y `docs/pruebas.md`: 31/31 |
+| Documento y manual finales | Sí | Informe PDF revisado, capturas insertadas y manual de controles/idioma |
+| Repositorio y versiones | Sí | Repositorio público, ramas e historial; capturas 05 y 10 |
+| Sustentación en vivo realizada | No | Debe demostrarse ante evaluación; esta entrega no la simula |
+
+Límites: propuestas IPv4 revisadas como texto; IPv6 de cálculo/planificación, sin DHCPv6/SLAAC avanzado/NAT66 ni políticas IPv6. Pools DHCP y reservas editables, revisión de `saveSite()` y validación física quedan fuera de esta entrega. La revisión a 1440/390 px no certifica todos los dispositivos o anchos.

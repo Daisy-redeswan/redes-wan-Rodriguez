@@ -1,6 +1,6 @@
 # Manual de usuario — WAN Architect, Corte 3
 
-Versión documental basada en main `f7ed2b907d6edad6f1ed7bd5274c49956a7a77d8`, aplicación `WAN_v4.html`, esquema v4. Las configuraciones son propuestas para revisión manual; **no se ejecutan sobre equipos**. Usar exclusivamente datos ficticios o infraestructura de laboratorio autorizada.
+Versión documental de la interfaz bilingüe; base main `6ac46f9257143f88ec8cb7b47c020bb3739adbfa`, aplicación `WAN_v4.html`, esquema v4. Estudiante: Daisy Jurleny Rodriguez · Fundación Universitaria Compensar. Las configuraciones son propuestas para revisión manual; **no se ejecutan sobre equipos**. Usar exclusivamente datos ficticios o infraestructura de laboratorio autorizada.
 
 ## 1. Instalación y apertura
 
@@ -90,16 +90,129 @@ Seguir [docs/pruebas.md](pruebas.md) para instalar Playwright/Chromium y ejecuta
 python tests/test_corte3.py
 ```
 
-El runner abre/cierra HTTP local y contextos limpios, imprime C01–C20 y el porcentaje real. Detener la publicación si devuelve no cero. El 20/20 registrado es del conjunto ejecutado, no certificación de toda la app ni hardware. No volver a generar la captura 09 sin una tarea autorizada para actualizar su procedencia.
+El runner abre/cierra HTTP local y contextos limpios, imprime C01–C31 y el porcentaje real. Detener la publicación si devuelve no cero. El 31/31 registrado es del conjunto ejecutado, no certificación de toda la app ni hardware. La captura 09 y el reporte versionado identifican la nueva ejecución de 31 casos por commit base y hashes.
 
 Antes de compartir: usar datos ficticios, revisar nombres/IP/configuraciones, no introducir secretos y conservar `<CAMBIAR_EN_PRODUCCION>` como marcador externo. Consultar [seguridad](seguridad.md) y [políticas IA](politicas-ia.md). La [captura 08](capturas/08-ciberdefensa.png) muestra una IPv4 rechazada conservando el último resultado válido.
 
-| Evidencia | Lectura correcta |
-| --- | --- |
-| [06 Fortinet](capturas/06-config-fortinet.png) | Propuesta real de un nodo Firewall; no prueba de forwarding |
-| [07 MikroTik](capturas/07-config-mikrotik.png) | Propuesta RouterOS real; no configuración ejecutada |
-| [08 Ciberdefensa](capturas/08-ciberdefensa.png) | Rechazo de entrada inválida; no auditoría integral |
-| [09 Pruebas](capturas/09-pruebas.png) | 20/20 de la ejecución identificada; ratificado en main actual |
-| [10 Aplicación](capturas/10-app-final.png) | Resumen funcional con datos de laboratorio y estimaciones |
+## 9. Idioma y conservación de datos
 
-Pendientes: validación física/modelos/firmware, aclaración docente de comandos IPv6, pools DHCP y reservas editables, invalidación histórica de sedes y desbordamientos ajenos a las pantallas verificadas. No se aplicaron configuraciones sobre infraestructura real en esta entrega.
+En la barra superior, **Idioma / Language → Español / English**. El primer uso inicia en español; la selección se conserva en `WAN-Architect-language`, independiente de `WAN-Architect-v4`. Nueva/carga de proyecto no borra el idioma. Cambiar idioma conserva estado, planes, topología, CLI y ediciones visibles pendientes (incluidas entradas inválidas y selección de opciones); no confirma formularios. Navegar a otra vista sigue el flujo histórico: confirmar primero los datos que corresponda.
+
+El catálogo central `I18N` y `t()` traducen navegación, etiquetas, botones, ayudas, placeholders, tooltips, tablas, mensajes y confirmaciones. Los valores de las opciones conservan sus códigos originales. Los nombres del usuario, hostnames, interfaces, JSON y propuestas CLI **no se traducen**. Es normal que una sede llamada «Nombre» o un comentario CLI siga igual en English. Los nombres oficiales de fabricantes/protocolos se conservan.
+
+Usar Tab para enfocar y Enter para activar botones nativos; Espacio/Enter activa los importadores visibles. Escape cierra el diálogo. Los botones de eliminar equipo/enlace tienen nombre accesible y tooltip. «Anterior»/«Siguiente» se deshabilitan en los extremos; «Vista automática» se deshabilita cuando la imagen no está activa. Una generación sin requisitos o descarga sin datos muestra validación. Copiar usa el portapapeles real; si el navegador lo bloquea, ofrece copia manual con seleccionar todo/cerrar. Revisar la CLI antes de cualquier uso autorizado.
+
+## 10. Inventario y auditoría de controles
+
+Se inventariaron **58 plantillas `<button>` estáticas/dinámicas**, dos importadores con rol de botón y un selector de idioma: 61 controles de estas clases. No es un conteo fijo de instancias: cada fila VLAN, equipo, enlace o configuración puede crear botones. **0 eliminados**: todos tenían función real; se conservaron los que requieren datos. Se corrigió la disponibilidad de Vista automática y se añadieron validaciones explícitas a copia/descarga sin configuración. C28 activó 54 familias/objetivos con Enter; C29 cubre selección manual y ambos importadores, y C21–C25/C30–C31 el selector/idiomas.
+
+| Vista / controles | Acción observable o validación | Evidencia automatizada |
+| --- | --- | --- |
+| Navegación 00–13, Anterior, Siguiente, Continuar, Ver sección | Abre la etapa indicada; extremos deshabilitados | C22/C27/C28 |
+| Guardar / Cargar / Nuevo | Persistir, restaurar o confirmar sustitución; cancelar conserva datos | C05/C23/C24/C28 |
+| Importar / Exportar JSON | Selector de archivo accesible, validación atómica y descarga JSON | C03–C05/C17/C19/C28/C29 |
+| Idioma / Language | Cambia la interfaz y persiste solo la preferencia | C21–C26/C30/C31 |
+| Confirmar proyecto / Aplicar sedes / Cargar ejemplo | Guarda datos, ajusta sedes con confirmación o carga laboratorio ficticio | C28 |
+| Confirmar sede / Eliminar sede | Guarda ficha o pide confirmación; invalidación histórica vigente | C28; límite explicado en §2 |
+| Confirmar inventario / Restaurar estimación | Guarda cantidades o restaura cálculo con confirmación | C28 |
+| Proponer segmentación / Volver a proponer / Agregar VLAN | Crea propuesta revisable, solicita confirmación o añade fila | C06/C07/C28 |
+| Confirmar VLAN/VLSM / Eliminar fila | Calcula o valida antes de sustituir; elimina solo seleccionada y conserva otras ediciones | C06–C08/C28 |
+| Gateway / Validar / Validar red del proyecto | Prompt de gateway y validación; lleva subred a calculadora | C07/C08/C28 |
+| Calcular / Ejemplo /26 | Resultado válido o error sin perder cálculo previo | C01/C02/C23/C28 |
+| Confirmar IPv6 | Plan ULA separado o validación atómica | C09/C10/C26/C28 |
+| Generar topología / Agregar equipo / Crear enlace | Construye desde plan o abre editor | C11/C28 |
+| Editar / Confirmar equipo o enlace / Eliminar × / Cancelar | Diálogo, validación, modificación o confirmación/cierre | C11/C17/C25/C28 |
+| Descargar SVG / Cargar imagen / Ver-ocultar / Vista automática | Descarga real, referencia manual y alternancia; sin OCR | C28/C29 |
+| Generar equipo / Generar todos (cuatro marcas) | Genera texto del plan o explica requisitos faltantes | C12–C16/C26–C28 |
+| Generar ambas sintaxis | Compara Cisco/Huawei sin cambiar fabricante del nodo | C28 |
+| Copiar / Seleccionar todo / Cerrar | Copia exacta o fallback manual seleccionable | C28/C29 |
+| Descargar / Descargar todos | CLI individual/conjunto exacto, o validación si falta generar | C19/C28/C29 |
+| Descargar CSV / Resumen HTML / Imprimir-PDF | Exporta columnas/resumen en el idioma activo; invoca impresión del navegador | C28; CLI/JSON intactos en C19/C25/C26 |
+
+La prueba de impresión comprueba la llamada al navegador mediante un sustituto de la API; no afirma haber impreso una hoja física. Las opciones checkbox/select editan valores; no son botones decorativos. El inventario no certifica todas las combinaciones de datos posibles.
+
+## 11. Evidencias 01–10 y laboratorios
+
+| Archivo | Lectura correcta |
+| --- | --- |
+| [01-subnetting.png](capturas/01-subnetting.png) | Calculadora actual con IP /26, red .0, broadcast .63 y 62 hosts |
+| [02-topologia.png](capturas/02-topologia.png) | Laboratorio pequeño: dos sedes, dispositivos/enlaces completos |
+| [03-config-cisco.png](capturas/03-config-cisco.png) | Core Cisco real: hostname, VLAN y direcciones visibles |
+| [04-config-huawei.png](capturas/04-config-huawei.png) | Core Huawei equivalente: sysname, VLAN e IP visibles |
+| [05-github-commits.png](capturas/05-github-commits.png) | Página HTTPS real de commits de main, al menos cinco mensajes |
+| [06-config-fortinet.png](capturas/06-config-fortinet.png) | Propuesta perimetral real FortiOS; no forwarding probado |
+| [07-config-mikrotik.png](capturas/07-config-mikrotik.png) | Propuesta perimetral real RouterOS; no comandos ejecutados |
+| [08-ciberdefensa.png](capturas/08-ciberdefensa.png) | Rechazo real de IPv4 conservando resultado válido anterior |
+| [09-pruebas.png](capturas/09-pruebas.png) | Nueva ejecución de 31 casos con X/Y y porcentaje reales |
+| [10-app-final.png](capturas/10-app-final.png) | Resumen funcionando y selector de idioma visible |
+
+01–04 usan una calculadora o un laboratorio reducido de dos sedes con 12 usuarios por sede, sin WiFi/voz/CCTV/impresión/servidor y sin redundancia: permite mostrar el diagrama completo y ambos cores con VLAN e IP. En 03/04 SSH, OSPF y DHCP se desmarcaron para destacar interfaces; **no son plantillas de seguridad listas para producción**. 06/07 usan el laboratorio perimetral alternativo explicado en §6. 10 usa el laboratorio integrado de 15 VLAN, plan IPv4 por pools y plan IPv6. Cada escenario consume el mismo contrato v4; no se mezclan gateways duplicados.
+
+05 se obtuvo de `https://github.com/Daisy-redeswan/redes-wan-Rodriguez/commits/main/`, respuesta 200; TLS verificado mediante el proxy de confianza del entorno. Chromium renderizó los bytes auténticos recibidos. Recursos externos de estilos/avatares bloqueados: la imagen conserva el render nativo legible y no reconstruye mensajes ni DOM. Las capturas de la app usan HTTP local y contextos limpios; el informe identifica fuentes y resultados.
+
+Pendientes: modelos/firmware y validación física, aclaración de configuraciones IPv6, pools DHCP/reservas editables e invalidación histórica de sedes. La revisión responsive 1440/390 px no certifica todos los anchos o dispositivos. No se aplicaron configuraciones a infraestructura real.
+
+## Anexo: las 58 plantillas de botón inventariadas
+
+Cada fila identifica una plantilla del HTML/JavaScript. «…» representa datos o parámetros dinámicos; no otra acción sin implementar. Los importadores JSON/imagen y el selector de idioma se contabilizan por separado y se prueban en C29/C21–C25.
+
+| N.º | Origen | Etiqueta / dato | Handler o acción |
+| --- | --- | --- | --- |
+| 1 | `barra superior` | Guardar proyectoCargar guardadoExportar JSONImportar JSONNuevo | `saveLocal()` |
+| 2 | `barra superior` | Cargar guardadoExportar JSONImportar JSONNuevo | `loadLocal()` |
+| 3 | `barra superior` | Exportar JSONImportar JSONNuevo | `exportJSON()` |
+| 4 | `barra superior` | Nuevo | `newProject()` |
+| 5 | `render` | …… | `go(${i})` |
+| 6 | `render` | ← Anterior | `go(${page - 1})` |
+| 7 | `render` | Siguiente → | `go(${page + 1})` |
+| 8 | `projectView` | Confirmar datos del proyecto | `saveProject()` |
+| 9 | `projectView` | Aplicar número de sedes | `resizeSites()` |
+| 10 | `projectView` | Cargar ejemplo de laboratorio | `demo()` |
+| 11 | `projectView` | Eliminar sede | `removeSite()` |
+| 12 | `projectView` | Confirmar esta sede | `saveSite()` |
+| 13 | `estimateView` | Confirmar inventario de esta sede | `saveCounts(${i})` |
+| 14 | `estimateView` | Restaurar estimación | `resetCounts(${i})` |
+| 15 | `estimateView` | Proponer segmentación y continuar → | `proposeVlans()` |
+| 16 | `vlanView` | Volver a proponer | `proposeVlans()` |
+| 17 | `vlanView` | Agregar VLAN | `addVlan()` |
+| 18 | `vlanView` | Confirmar VLAN y calcular VLSM | `confirmVlans()` |
+| 19 | `vlanView` | Eliminar | `deleteVlan(${i})` |
+| 20 | `planTable` | Descargar CSV | `downloadPlan()` |
+| 21 | `planTable` | … | `editGateway('${r.key}')` |
+| 22 | `planTable` | Validar | `inspectSubnet(${i})` |
+| 23 | `subnetView` | Calcular | `calculate()` |
+| 24 | `subnetView` | Ejemplo obligatorio /26 | `state.calc='192.168.10.50/26';render()` |
+| 25 | `subnetView` | … · … · …/… | `inspectSubnet(${i})` |
+| 26 | `ipv6View` | Confirmar planificación IPv6 | `confirmIPv6()` |
+| 27 | `topologyView` | Generar desde el plan | `buildTopology()` |
+| 28 | `topologyView` | Agregar equipo | `editNode()` |
+| 29 | `topologyView` | Crear enlace | `editLink()` |
+| 30 | `topologyView` | Descargar topología SVG | `downloadSVG()` |
+| 31 | `topologyView` | Vista automática | `imageMode=false;render()` |
+| 32 | `topologyView` | Ver / ocultar imagen | `imageMode=!imageMode;render()` |
+| 33 | `topologyView` | Editar | `editNode('${n.id}')` |
+| 34 | `topologyView` | × | `deleteNode('${n.id}')` |
+| 35 | `topologyView` | Editar | `editLink('${l.id}')` |
+| 36 | `topologyView` | × | `deleteLink('${l.id}')` |
+| 37 | `editNode` | Confirmar equipo | `saveNode('${id}')` |
+| 38 | `editNode` | Cancelar | `closeModal()` |
+| 39 | `editLink` | Confirmar enlace | `saveLink('${id}')` |
+| 40 | `editLink` | Cancelar | `closeModal()` |
+| 41 | `configView` | Generar equipo | `generateSelected('${vendor}')` |
+| 42 | `configView` | Generar todos los … | `generateAll('${vendor}')` |
+| 43 | `configView` | Descargar todos | `downloadAll('${vendor}')` |
+| 44 | `fortinetView` | Generar equipo | `generateSelected('Fortinet')` |
+| 45 | `fortinetView` | Generar todos los Fortinet | `generateAll('Fortinet')` |
+| 46 | `fortinetView` | Descargar todos | `downloadAll('Fortinet')` |
+| 47 | `mikrotikView` | Generar equipo | `generateSelected('MikroTik')` |
+| 48 | `mikrotikView` | Generar todos los MikroTik | `generateAll('MikroTik')` |
+| 49 | `mikrotikView` | Descargar todos | `downloadAll('MikroTik')` |
+| 50 | `configBlock` | Copiar configuración | `copyConfig('${n.id}','${v}')` |
+| 51 | `configBlock` | Descargar | `downloadConfig('${n.id}','${v}')` |
+| 52 | `compareView` | Generar ambas sintaxis | `generateCompare(id)` |
+| 53 | `copyConfig` | Seleccionar todo | `$('manualcopy').select()` |
+| 54 | `copyConfig` | Cerrar | `closeModal()` |
+| 55 | `dashboard` | Continuar diseño → | `go(1)` |
+| 56 | `dashboard` | Descargar resumen HTML | `downloadReport()` |
+| 57 | `dashboard` | Imprimir / PDF | `window.print()` |
+| 58 | `evidenceView` | Ver sección | `go(${i})` |
