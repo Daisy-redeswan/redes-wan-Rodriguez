@@ -565,6 +565,11 @@
       .sitehead .actions, .sitecount { max-width:100%; }
       .language-control { display:flex; align-items:center; gap:6px; font-size:13px; }
       .language-control select { width:auto; min-width:100px; }
+      /* Lienzo grande autónomo: desplazamiento y zoom sin comprimir etiquetas. */
+      .diagram { overflow: auto; max-height: 75vh; overscroll-behavior: contain; }
+      .diagram svg { max-width: none; display: block; height: auto; }
+      .node { cursor: grab; outline: none; }
+      .node:focus rect { stroke: #d17700; stroke-width: 3; }
     </style>
   </head>
   <body>
@@ -1484,6 +1489,8 @@
         "Servidor",
         "PC",
         "ISP",
+        "Cámara",
+        "Impresora",
       ]; // Tipos de nodos admitidos.
       const roles = [
         "Datos",
@@ -1819,6 +1826,11 @@
       function badge(ok, yes = "Cumplido", no = "Pendiente") {
         return `<span class="badge ${ok ? "" : "warn"}">${t(ok ? yes : no)}</span>`;
       } // Estado comprobable, sin inventar evidencias externas.
+      /**
+       * Entradas: Índice de módulo solicitado.
+       * Proceso / salida: Conserva borradores, limita el índice al menú vigente y desplaza al encabezado.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function go(i) {
         captureDraft();
         page = Math.max(0, Math.min(steps.length-1, i));
@@ -1828,6 +1840,11 @@
       function title(n, desc) {
         return `<div class="eyebrow">${String(page).padStart(2, "0")} ${t("/ Flujo de diseño")}</div><h1>${n}</h1><p>${t(desc)}</p>`;
       } // Encabezado contextual de cada fase.
+      /**
+       * Entradas: Estado confirmado, idioma, página y preferencias visuales.
+       * Proceso / salida: Reconstruye únicamente la vista; restaura borradores y enlaza eventos de esa página.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function render() {
         document.documentElement.lang = uiLanguage;
         document.title = t("WAN Architect · Diseño empresarial");
@@ -1931,6 +1948,11 @@
         text(state.project.activity, "Actividad");
         if (!state.sites.length) fail(t("Añada al menos una sede."));
       } // Evita generar propuestas sin datos obligatorios.
+      /**
+       * Entradas: Proyecto y sede seleccionada.
+       * Proceso / salida: Devuelve HTML escapado para datos y bloque propio; no escribe estado.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function projectView() {
         const s = state.sites[selectedSite] || state.sites[0];
         selectedSite = state.sites.indexOf(s);
@@ -2006,6 +2028,11 @@
           render();
         }
       } // Nunca elimina datos sin confirmar.
+      /**
+       * Entradas: Ficha visible con nombre, bloque, usuarios y opciones.
+       * Proceso / salida: Valida una candidata completa; igualdad conserva diseño y cambio real invalida solo dependencias locales.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function saveSite() {
         safe(() => {
           const old = state.sites[selectedSite],
@@ -2062,6 +2089,11 @@
           toast(t("Sede confirmada; estimaciones recalculadas."));
         });
       } // Valida pisos, usuarios y nombres antes de reemplazar una ficha.
+      /**
+       * Entradas: Cantidades reales o fórmulas estimadas por sede.
+       * Proceso / salida: Devuelve formulario o resumen confirmado junto con infraestructura y ancho de banda, sin cambiar fórmulas.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function estimateView() {
         return (
           title(
@@ -2096,6 +2128,11 @@
           `<button class="primary" onclick="proposeVlans()">${t("Proponer segmentación y continuar →")}</button>`
         );
       }
+      /**
+       * Entradas: Cantidades visibles, dentro de límites numéricos.
+       * Proceso / salida: Valida todo antes de confirmar; diferencias reales invalidan su sede, cantidades iguales no destruyen diseño.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function saveCounts(i) {
         safe(() => {
           const c = {};
@@ -2113,6 +2150,11 @@
           toast(t("Inventario confirmado."));
         });
       } // Un inventario editado alimenta la propuesta y sus VLAN.
+      /**
+       * Entradas: Índice de sede y confirmación nativa del usuario.
+       * Proceso / salida: Cancelar conserva todo; aceptar retira la personalización y aplica estimación vigente.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function resetCounts(i) {
         if (
           confirm(
@@ -2214,6 +2256,11 @@
       function siteName(id) {
         return state.sites.find((s) => s.id === id)?.name || "WAN";
       } // Traduce referencias estables a nombres visibles.
+      /**
+       * Entradas: Intenciones, aprobación y último plan efectivo.
+       * Proceso / salida: Muestra fallback, tránsito, CIDR manual, estado pendiente/confirmado y redes calculadas; no asigna.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function vlanView() {
         return (
           title(
@@ -2223,6 +2270,11 @@
           `<div class="card"><div class="grid">${field(t("Bloque predeterminado del proyecto"), "base", state.project.base)}${field(t("Bloque de tránsito (opcional)"), "transitBase", state.project.transitBase)}${field(t("Reserva de crecimiento (%)"), "growth", state.project.growth, "number", 'min="0" max="100"')}${field(t("DNS para DHCP"), "dns", state.project.dns)}</div><div class="notice">${t("Hosts solicitados son terminales; el cálculo añade crecimiento y una IP de gateway, o tres IP si hay dos cores. El gateway no cuenta como host disponible para terminales. Las redes de tránsito son /30 y no usan VLAN.")}</div><div class="actions"><button onclick="proposeVlans()">${t("Volver a proponer")}</button><button onclick="addVlan()">${t("Agregar VLAN")}</button><span id="vlanStatus" class="badge ${state.approved && !vlanEditing ? "" : "warn"}">${t(state.approved && !vlanEditing ? "VLAN confirmadas" : "Pendiente de confirmación")}</span><button class="primary" onclick="confirmVlans()">${t(state.approved ? "Recalcular VLAN" : "Confirmar VLAN y calcular VLSM")}</button></div></div><div class="card"><h2>${t("Segmentos editables por sede")}</h2><p id="vlanCidrHelp" class="hint">${t("Subred IPv4 / CIDR (opcional): deje vacío para asignación automática. Define la red completa de la VLAN; no es el gateway ni un rango DHCP.")}</p>${state.vlans.length ? `<div class="tablewrap"><table><thead><tr><th>${t("Sede")}</th><th>${t("VLAN")}</th><th>${t("Nombre")}</th><th>${t("Subred IPv4 / CIDR (opcional)")}</th><th>${t("Servicio")}</th><th>${t("Hosts terminales")}</th><th>${t("DHCP local")}</th><th>${t("Acción")}</th></tr></thead><tbody>${state.vlans.map((v, i) => `<tr><td><select id="vs${i}" aria-label="${t("Sede de VLAN")}">${state.sites.map((s) => `<option value="${s.id}" ${s.id === v.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></td><td><input class="num" aria-label="${t("VLAN")}" id="vi${i}" value="${v.id}" type="number" min="2" max="4094"></td><td><input aria-label="${t("Nombre VLAN")}" id="vn${i}" value="${esc(v.name)}"></td><td><input aria-label="${t("Subred IPv4 / CIDR (opcional)")}" id="vc${i}" value="${esc(v.ipv4Cidr || "")}" placeholder="${t("Automática · 10.10.20.0/24")}" aria-describedby="vlanCidrHelp"></td><td><select aria-label="${t("Servicio")}" id="vr${i}">${optsHTML(roles, v.role)}</select></td><td><input class="num" aria-label="${t("Hosts")}" id="vh${i}" type="number" value="${v.hosts}"></td><td><input aria-label="${t("DHCP local")}" id="vd${i}" type="checkbox" ${v.dhcp ? "checked" : ""}></td><td><button class="small danger" onclick="deleteVlan(${i})">${t("Eliminar")}</button></td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">${t("Confirme los datos y genere una propuesta desde Estimación, o agregue sus segmentos manualmente.")}</div>`}</div>${planTable()}`
         );
       }
+      /**
+       * Entradas: Filas actuales del formulario.
+       * Proceso / salida: Incorpora primero ediciones válidas y añade una clave nueva; falla sin renderizar si otra fila es inválida.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function addVlan() {
         if (state.vlans.length) {
           const pending=safe(readVlans); if (!pending) return; state.vlans=pending;
@@ -2244,6 +2296,11 @@
         render();
         toast(t("VLAN añadida a {0}.", [siteName(state.vlans.at(-1).site)]));
       } // Los segmentos nuevos pertenecen a la sede activa.
+      /**
+       * Entradas: Índice elegido y confirmación del usuario.
+       * Proceso / salida: Lee todas las filas antes de eliminar una; conserva texto ante validación fallida e invalida el plan dependiente.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function deleteVlan(i) {
         if (
           confirm(t("¿Eliminar esta VLAN y reiniciar las etapas dependientes?"))
@@ -2258,6 +2315,11 @@
           });
         }
       } // Elimina también el plan que dependía del segmento.
+      /**
+       * Entradas: Controles de cada VLAN y opciones de direccionamiento visibles.
+       * Proceso / salida: Devuelve candidatas validadas; comprueba IDs, gestión e intenciones manuales sin sustituir estado.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function readVlans() {
         const vlans = state.vlans.map((v, i) => ({
           ...v,
@@ -2292,6 +2354,11 @@
           );
         return vlans;
       } // Permite repetir VLAN entre sedes, pero no dentro de una.
+      /**
+       * Entradas: Sedes, redundancia, interconexión y perfiles opcionales.
+       * Proceso / salida: Devuelve solicitudes /30 por clave estable, incluidos firewall y router secundario; no inventa Internet.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function initialTransits() {
         const req = [];
         for (const s of state.sites) {
@@ -2303,6 +2370,11 @@
               kind: "transit",
               hosts: 2,
             });
+        }
+        for (const site of state.sites) {
+          const profile=vendorProfile(site);
+          if (profile.firewall) req.push({key:"f-"+site.id,site:site.id,name:"Firewall ↔ Router",kind:"transit",hosts:2});
+          if (profile.backupRouter) for (let k=0;k<(site.redundant?2:1);k++) req.push({key:"b-"+site.id+"-"+k,site:site.id,name:"Router secundario ↔ Core",kind:"transit",hosts:2});
         }
         if (state.project.interconnect)
           state.sites
@@ -2318,6 +2390,11 @@
             );
         return req;
       } // WAN en estrella; sedes desconectadas no reciben enlaces entre sí.
+      /**
+       * Entradas: Fallback candidato, proyecto y lista de sedes.
+       * Proceso / salida: Devuelve pools numéricos independientes y reservas; valida RFC1918, alineación y separación.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function allocationPools(base, project = state.project, siteList = state.sites) {
         const b = privateIPv4Block(base, "Bloque global");
         if (b.prefix > 30) fail(t("El bloque base debe ser /30 o mayor."));
@@ -2392,6 +2469,11 @@
         }
         return manual;
       } // Valida y reserva intenciones; no asigna ni sustituye el plan efectivo.
+      /**
+       * Entradas: VLAN candidatas, fallback, crecimiento, solicitudes de tránsito y proyecto candidato.
+       * Proceso / salida: Reserva manuales y redes no afectadas válidas; busca huecos CIDR en cada pool y devuelve un plan completo o lanza error.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function allocate(vlans, base, growth, transits, project = state.project) {
         const pools = allocationPools(base, project),
           manual = manualVlanNetworks({ ...project, base, growth }, state.sites, vlans, state.nodes, pools),
@@ -2485,6 +2567,11 @@
         }
         return result;
       } // Alineación matemática al tamaño del bloque, con límite de capacidad.
+      /**
+       * Entradas: Formulario visible y último diseño confirmado.
+       * Proceso / salida: Calcula antes de guardar; error conserva todo, igualdad mantiene aprobación y cambios invalidan dependencias diferenciales.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function confirmVlans() {
         safe(() => {
           projectValid();
@@ -2522,6 +2609,11 @@
           toast(t("VLSM validado y confirmado. Continúe con la topología."));
         });
       } // Nada se guarda si una VLAN o el bloque resultan inválidos.
+      /**
+       * Entradas: Filas efectivas del plan.
+       * Proceso / salida: Devuelve tabla de redes/gateways/capacidad y origen manual o automático; no confunde intención con resultado.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function planTable() {
         if (!state.plan.length) return "";
         return `<div class="card"><div class="headingrow"><h2>${t("Plan confirmado ·")} ${state.project.base}</h2><button onclick="downloadPlan()">${t("Descargar CSV")}</button></div><div class="tablewrap"><table><thead><tr><th>${t("Sede")}</th><th>${t("VLAN / enlace")}</th><th>${t("Nombre")}</th><th>${t("Solicitados")}</th><th>${t("Disponibles terminales")}</th><th>${t("Red")}</th><th>${t("Prefijo")}</th><th>${t("Máscara")}</th><th>${t("Gateway")}</th><th>${t("Primera IP")}</th><th>${t("Última IP")}</th><th>${t("Broadcast")}</th><th>${t("Verificar")}</th></tr></thead><tbody>${state.plan.map((r, i) => `<tr><td>${esc(siteName(r.site))}</td><td>${r.kind === "vlan" ? r.id : r.kind.toUpperCase()}${r.kind === "vlan" ? `<br><small>${t(r.ipv4Cidr ? "Manual" : "Automática")}</small>` : ""}</td><td>${esc(r.name)}</td><td>${r.hostsRequested}</td><td>${r.available}</td><td class="mono">${r.network}</td><td>/${r.prefix}</td><td class="mono">${r.mask}</td><td>${r.gateway ? `<button class="small mono" onclick="editGateway('${r.key}')">${r.gateway}</button>` : "—"}</td><td class="mono">${r.first}</td><td class="mono">${r.last}</td><td class="mono">${r.broadcast}</td><td><button class="small" onclick="inspectSubnet(${i})">${t("Validar")}</button></td></tr>`).join("")}</tbody></table></div><small>${t("Disponible = capacidad utilizable menos las direcciones de gateway/cores. El rango utilizable muestra también las IP reservadas; DHCP las excluye.")}</small></div>`;
@@ -2556,6 +2648,11 @@
         state.calc = state.plan[i].network + "/" + state.plan[i].prefix;
         go(4);
       } // Verificación integrada de una fila del plan.
+      /**
+       * Entradas: Último cálculo y plan IPv4/IPv6.
+       * Proceso / salida: Devuelve resultados completos sin el desplegable retirado; las funciones matemáticas permanecen separadas.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function subnetView() {
         const val = state.calc || "192.168.10.50/26";
         let result = "";
@@ -2846,15 +2943,89 @@
           ? availableIPs(r, 2)[cores.indexOf(n)]
           : r.gateway;
       } // Los dos cores jamás comparten la IP física, a diferencia del ejemplo del prompt.
+      /* Selección explícita por sede/función. Vacío obliga a elegir antes de generar.
+         Las claves opcionales mantienen importables proyectos v2/v3/v4 antiguos. */
+      const vendorRoles = {router:["Cisco","Huawei","MikroTik"], core:["Cisco","Huawei"],
+        distribution:["Cisco","Huawei"], access:["Cisco","Huawei"],
+        firewall:["Fortinet"], backupRouter:["Cisco","Huawei","MikroTik"]};
+      /**
+       * Entradas: Sede, con o sin perfil heredado.
+       * Proceso / salida: Devuelve las seis funciones con cadenas explícitas; vacío significa que debe elegir, no Cisco implícito.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function vendorProfile(site) {
+        return Object.fromEntries(Object.keys(vendorRoles).map(k => [k,site.vendorProfile?.[k] || ""]));
+      }
+      /**
+       * Entradas: Objeto opcional recibido del formulario o JSON.
+       * Proceso / salida: Rechaza claves y combinaciones ajenas a la lista permitida; devuelve una copia conocida.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function validateVendorProfile(value) {
+        if (value === undefined) return undefined;
+        if (!value || typeof value !== "object" || Array.isArray(value) || Object.keys(value).some(k => !Object.hasOwn(vendorRoles,k))) fail(t("Perfil de fabricantes inválido."));
+        const out={};
+        for (const [role, allowed] of Object.entries(vendorRoles)) out[role]=enumVal(value[role] ?? "", ["",...allowed], "Fabricante");
+        return out;
+      }
+      /**
+       * Entradas: Perfiles de todas las sedes.
+       * Proceso / salida: Devuelve selectores por función, incluyendo opcionales; no convierte firewalls en switches.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function vendorProfilesView() {
+        return `<div class="card"><h2>${t("Fabricantes por sede y función")}</h2><p>${t("Elija cada función activa. Firewall y router secundario son opcionales y requieren recalcular tránsitos. No se inventan enlaces a Internet.")}</p>${state.sites.map((site,i) => `<h3>${esc(site.name)}</h3><div class="grid">${Object.entries(vendorRoles).map(([role,allowed]) => `<div class="field"><label for="vp${i}_${role}">${t(role)}</label><select id="vp${i}_${role}">${optsHTML(["",...allowed],vendorProfile(site)[role])}</select></div>`).join("")}</div>`).join("")}<button onclick="saveVendorProfiles()">${t("Confirmar fabricantes")}</button></div>`;
+      }
+      // Validación de todas las fichas antes de guardar; cancela sin mutar.
+      /**
+       * Entradas: Todos los selectores de fabricantes.
+       * Proceso / salida: Valida en conjunto, pide confirmación ante equipos existentes y exige recalcular si cambian tránsitos.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function saveVendorProfiles() {
+        safe(() => {
+          const candidates=state.sites.map((site,i) => validateVendorProfile(Object.fromEntries(Object.keys(vendorRoles).map(role => [role,$(`vp${i}_${role}`).value]))));
+          const changed=state.sites.filter((site,i) => JSON.stringify(vendorProfile(site))!==JSON.stringify(candidates[i]));
+          if (changed.some(site => state.nodes.some(n => n.site===site.id)) && !confirm(t("Cambiar fabricantes invalida configuraciones afectadas. ¿Continuar?"))) return;
+          state.sites.forEach((site,i) => {
+            const old=vendorProfile(site), next=candidates[i];
+            if (old.firewall!==next.firewall || old.backupRouter!==next.backupRouter) state.approved=false;
+            site.vendorProfile=next;
+          });
+          // Las asignaciones de equipos existentes se cambian en su editor, no silenciosamente.
+          render(); toast(t("Fabricantes confirmados. Recalcule VLAN si cambió el tránsito y regenere los equipos automáticos."));
+        });
+      }
+      /**
+       * Entradas: Tipo y fabricante de un equipo candidato.
+       * Proceso / salida: Bloquea roles no implementados: Fortinet solo firewall, MikroTik solo router y Genérico solo terminal.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function validateNodeVendor(n) {
+        if (n.vendor === "Genérico" && ["Router","Switch","Switch capa 3","Firewall"].includes(n.type)) fail(t("Elija un fabricante compatible para este rol."));
+        if (n.vendor === "Fortinet" && n.type !== "Firewall") fail(t("Fortinet requiere tipo Firewall."));
+        if (n.vendor === "MikroTik" && n.type !== "Router") fail(t("MikroTik requiere tipo Router."));
+        if (["Cisco","Huawei"].includes(n.vendor) && n.type === "Firewall") fail(t("El adaptador IOS/VRP no implementa firewall."));
+      }
+      /**
+       * Entradas: Plan confirmado, inventario, perfiles y entidades existentes.
+       * Proceso / salida: Valida perfiles/capacidad; genera por clave, conserva IDs y manuales, prueba el candidato completo y solo después lo adopta.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function buildTopology() {
         safe(() => {
-          if (!state.approved || !state.plan.length)
-            fail(t("Confirme primero VLAN y VLSM."));
+          requireConfirmedPlan();
           if (
             state.nodes.length &&
-            !confirm(t("¿Reemplazar toda la topología y las ediciones manuales?"))
+            !confirm(t("¿Regenerar equipos automáticos conservando los manuales?"))
           )
             return;
+          // Un perfil incompleto se bloquea antes de sustituir ningún nodo.
+          for (const site of state.sites) {
+            const profile=vendorProfile(site), proposed=proposal(site);
+            for (const role of ["router","core","access",...(proposed.distribution ? ["distribution"] : [])])
+              if (!profile[role]) fail(t("Sede {0}: elija fabricante para {1}.",[site.name,t(role)]));
+          }
           const estimatedNodes = state.sites.reduce((total, s) => {
             const p = proposal(s),
               c = counts(s);
@@ -2866,7 +3037,7 @@
               p.access +
               c.ap +
               c.servers +
-              Math.min(c.pc, 3)
+              Math.min(c.pc, 3) + Math.min(c.cameras,3) + Math.min(c.printers,3) + (vendorProfile(s).firewall?1:0) + (vendorProfile(s).backupRouter?1:0)
             );
           }, 0);
           if (estimatedNodes > 500)
@@ -2875,14 +3046,25 @@
             );
           const nodes = [],
             links = [];
-          let nid = 1,
-            lid = 1;
+          const oldNodes=state.nodes, oldLinks=state.links;
+          let nid = Math.max(0,...oldNodes.map(n => {const value=Number(n.id.match(/^n(\d+)$/)?.[1]);return value<60000?value:0;}))+1,
+            lid = Math.max(0,...oldLinks.map(l => Number(l.id.match(/^l(\d+)$/)?.[1])||0))+1;
+          const ordinals=new Map();
           const add = (name, type, site, x, y, extra = {}) => {
+            const siteData=state.sites.find(s => s.id===site), profile=vendorProfile(siteData);
+            const role=type==="Router" ? (name.startsWith("BACKUP")?"backupRouter":"router") : type==="Switch capa 3" ? "core" : type==="Firewall" ? "firewall" : type==="Switch" ? (name.startsWith("DIST")?"distribution":"access") : "endpoint";
+            const counterKey=site+":"+role+":"+type, ordinal=(ordinals.get(counterKey)||0)+1;
+            ordinals.set(counterKey,ordinal);
+            const autoKey=counterKey+":"+ordinal, previous=oldNodes.find(n => n.autoKey===autoKey);
+            const prefix=type==="Router" ? "RTR" : type==="Switch capa 3" ? "SW-CORE" : type==="Switch" ? (role==="distribution"?"SW-DIST":"SW-ACC") : type==="Firewall"?"FW":type==="Access Point"?"AP":type==="Servidor"?"SRV":type==="Cámara"?"CAM":type==="Impresora"?"PRN":"PC";
             const n = {
-              id: "n" + nid++,
-              name: hostname(name),
+              id: previous?.id || "n" + nid++,
+              autoKey,
+              name: previous?.nameOverride ? previous.name : hostname(prefix+"-"+siteCode(siteData)+"-"+String(ordinal+(role==="backupRouter"?1:0)).padStart(2,"0")),
+              ...(previous?.nameOverride ? {nameOverride:true}:{}),
+              ...(previous?.vendorOverride ? {vendorOverride:true}:{}),
               type,
-              vendor: "Cisco",
+              vendor: previous?.vendorOverride ? previous.vendor : role==="endpoint" ? "Genérico" : profile[role],
               site,
               ip: "",
               network: "",
@@ -2898,7 +3080,7 @@
                 links.filter((l) => l.a === a.id || l.b === a.id).length + 1,
               ib = links.filter((l) => l.a === b.id || l.b === b.id).length + 1;
             links.push({
-              id: "l" + lid++,
+              id: oldLinks.find(l=>l.a===a.id && l.b===b.id && l.type===type && l.network===key)?.id || "l" + lid++,
               a: a.id,
               b: b.id,
               type,
@@ -2909,6 +3091,8 @@
               bc: "GigabitEthernet0/" + ib,
               ah: "GigabitEthernet0/0/" + ia,
               bh: "GigabitEthernet0/0/" + ib,
+              af: a.vendor==="Fortinet" ? "port"+ia : "", bf: b.vendor==="Fortinet" ? "port"+ib : "",
+              am: a.vendor==="MikroTik" ? "ether"+ia : "", bm: b.vendor==="MikroTik" ? "ether"+ib : "",
             });
           };
           const routers = [];
@@ -2933,6 +3117,19 @@
               connect(router, core, "routed", "t-" + s.id + "-" + k);
             }
             if (cores.length === 2) connect(cores[0], cores[1], "trunk");
+            const profile=vendorProfile(s);
+            if (profile.firewall) {
+              if (!row("f-"+s.id)) fail(t("Recalcule VLAN para crear los tránsitos opcionales."));
+              const firewall=add("FW", "Firewall",s.id,x+220,20);
+              connect(firewall,router,"routed","f-"+s.id);
+            }
+            if (profile.backupRouter) {
+              const backup=add("BACKUP", "Router",s.id,x+420,85);
+              cores.forEach((core,k) => {
+                if (!row("b-"+s.id+"-"+k)) fail(t("Recalcule VLAN para crear los tránsitos opcionales."));
+                connect(backup,core,"routed","b-"+s.id+"-"+k);
+              });
+            }
             const dist = [];
             for (let k = 0; k < p.distribution; k++) {
               const d = add(
@@ -2990,6 +3187,8 @@
             };
             endpoint("AP", "Access Point", "Gestión", c.ap);
             endpoint("SRV", "Servidor", "Servidores", c.servers);
+            endpoint("CAM", "Cámara", "CCTV", Math.min(c.cameras,3));
+            endpoint("PRN", "Impresora", "Impresoras", Math.min(c.printers,3));
             endpoint(
               "PC",
               "PC",
@@ -3031,25 +3230,40 @@
               .forEach((r, i) =>
                 connect(routers[0], r, "routed", "w-" + state.sites[i + 1].id),
               );
-          state.nodes = nodes;
-          state.links = links;
-          state.configs = {};
+          // Las entidades manuales no se eliminan al reorganizar/regenerar.
+          const manual=oldNodes.filter(n => !n.autoKey);
+          if (manual.some(n => nodes.some(g => g.name===n.name))) fail(t("Nombre automático en conflicto con un equipo manual."));
+          const allNodes=[...nodes,...manual];
+          if (allNodes.length>500) fail(t("Más de 500 equipos: reduzca inventario para representar esta topología en pantalla."));
+          const candidate={...state,nodes:allNodes,links:[...links,...oldLinks.filter(l => manual.some(n => n.id===l.a || n.id===l.b) && allNodes.some(n => n.id===l.a) && allNodes.some(n => n.id===l.b))],configs:{}};
+          const previous=state;
+          // Validación transaccional del conjunto, incluyendo equipos manuales.
+          try {
+            state=candidate; arrangeTopology(false);
+            const blocking=topologyIssues().find(x=>x.block);
+            if (blocking) fail(t(blocking.msg));
+          } catch(error) { state=previous; throw error; }
           state.revision++;
           selectedNode = "";
           render();
           toast(t("Topología construida con las VLAN y subredes confirmadas."));
         });
       } // Cada enlace routed consume exactamente una red /30 del plan.
+      /**
+       * Entradas: Estado gráfico, imagen y perfiles.
+       * Proceso / salida: Devuelve lienzo desplazable, zoom, editores y tablas de detalles técnicos sin sustituir datos.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function topologyView() {
         return (
           title(
             t("Topología de red"),
             "El gráfico muestra sedes, equipos, VLAN y redes del plan. Arrastre un equipo para moverlo; haga clic para editarlo. Los enlaces WAN representan un laboratorio enrutado.",
           ) +
-          `<div class="card"><div class="actions"><button class="primary" onclick="buildTopology()">${t("Generar desde el plan")}</button><button onclick="editNode()">${t("Agregar equipo")}</button><button onclick="editLink()">${t("Crear enlace")}</button><button onclick="downloadSVG()">${t("Descargar topología SVG")}</button><button ${!imageMode ? "disabled" : ""} onclick="imageMode=false;render()">${t("Vista automática")}</button><label class="filebtn" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.querySelector('input').click()}">${t("Cargar imagen")}<input type="file" class="hidden" accept="image/png,image/jpeg,image/webp" onchange="loadImage(this)"></label>${imageData ? `<button onclick="imageMode=!imageMode;render()">${t("Ver / ocultar imagen")}</button>` : ""}</div><div class="notice warn">${t("Diseño preliminar: se recomiendan")} ${state.sites.length} ${t("firewalls; el gráfico base se centra en switching y enrutamiento de laboratorio. La conexión WAN privada no crea VPN, cifrado ni un servicio del ISP. PC son representativos; el inventario completo está en Estimación. Los AP empresariales reciben trunks de gestión/WiFi/invitados; su configuración SSID y mapeo VLAN se completa en el controlador del fabricante.")}</div>${imageData && imageMode ? `<div class="notice">${t("Interpretación asistida manual: marque equipos y enlaces con los editores usando esta imagen como referencia. El HTML local no incluye un modelo de visión ni OCR y no afirma haber reconocido dispositivos automáticamente. La imagen no se transmite a ningún servidor.")}</div><div class="imageframe"><img src="${imageData}" alt="${t("Topología importada como referencia")}"></div>` : ""}<div class="diagram">${state.nodes.length ? svgTopology() : `<div class="empty">${t("Confirme el VLSM y pulse «Generar desde el plan», o agregue equipos manualmente.")}</div>`}</div></div><div class="two"><div class="card"><h2>${t("Equipos ·")} ${state.nodes.length}</h2><div class="tablewrap"><table><thead><tr><th>${t("Nombre / sede")}</th><th>${t("Tipo")}</th><th>${t("Fabricante / IP")}</th><th>${t("Acción")}</th></tr></thead><tbody>${state.nodes
+          vendorProfilesView() + `<div class="card"><div class="actions"><button onclick="arrangeTopology()">${t("Reorganizar diagrama")}</button><button onclick="zoomTopology(1.2)">${t("Acercar")}</button><button onclick="zoomTopology(0.833333)">${t("Alejar")}</button><button class="primary" onclick="buildTopology()">${t("Generar desde el plan")}</button><button onclick="editNode()">${t("Agregar equipo")}</button><button onclick="editLink()">${t("Crear enlace")}</button><button onclick="downloadSVG()">${t("Descargar topología SVG")}</button><button ${!imageMode ? "disabled" : ""} onclick="imageMode=false;render()">${t("Vista automática")}</button><label class="filebtn" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.querySelector('input').click()}">${t("Cargar imagen")}<input type="file" class="hidden" accept="image/png,image/jpeg,image/webp" onchange="loadImage(this)"></label>${imageData ? `<button onclick="imageMode=!imageMode;render()">${t("Ver / ocultar imagen")}</button>` : ""}</div><div class="notice warn">${t("Diseño preliminar: se recomiendan")} ${state.sites.length} ${t("firewalls recomendados. El perfil permite añadirlos con enlaces de tránsito explícitos; no crea Internet, NAT ni VPN. Los terminales son representativos. La configuración de AP se completa en su controlador.")}</div>${imageData && imageMode ? `<div class="notice">${t("Interpretación asistida manual: marque equipos y enlaces con los editores usando esta imagen como referencia. El HTML local no incluye un modelo de visión ni OCR y no afirma haber reconocido dispositivos automáticamente. La imagen no se transmite a ningún servidor.")}</div><div class="imageframe"><img src="${imageData}" alt="${t("Topología importada como referencia")}"></div>` : ""}<p class="hint">${t("WAN: violeta · ROUTED: turquesa · TRUNK: naranja · ACCESS: verde discontinuo. Pase el cursor sobre un enlace para consultar su red; los detalles completos están en las tablas.")}</p><div class="diagram">${state.nodes.length ? svgTopology() : `<div class="empty">${t("Confirme el VLSM y pulse «Generar desde el plan», o agregue equipos manualmente.")}</div>`}</div></div><div class="two"><div class="card"><h2>${t("Equipos ·")} ${state.nodes.length}</h2><div class="tablewrap"><table><thead><tr><th>${t("Nombre / sede")}</th><th>${t("Tipo")}</th><th>${t("Fabricante / IP")}</th><th>${t("Acción")}</th></tr></thead><tbody>${state.nodes
             .map(
               (n) =>
-                `<tr><td>${esc(n.name)}<br><small>${esc(siteName(n.site))}</small></td><td>${t(n.type)}</td><td>${n.vendor}<br><span class="mono">${esc(
+                `<tr><td>${esc(n.name)}<br><small>${esc(siteName(n.site))}</small></td><td>${t(n.type)}</td><td>${esc(t(n.vendor))}<br><span class="mono">${esc(
                   n.ip ||
                     connected(n)
                       .filter((l) => l.type === "routed")
@@ -3063,41 +3277,94 @@
             )}</tbody></table></div></div><div class="card"><h2>${t("Enlaces ·")} ${state.links.length}</h2><div class="tablewrap"><table><thead><tr><th>${t("Extremos")}</th><th>${t("Tipo / red")}</th><th>${t("Acción")}</th></tr></thead><tbody>${state.links.map((l) => `<tr><td>${esc(node(l.a)?.name)} ↔ ${esc(node(l.b)?.name)}</td><td>${l.type}${l.bundle ? " · LACP " + l.bundle : ""}<br><small>${l.network ? row(l.network)?.network + "/" + row(l.network)?.prefix : l.type === "access" ? "VLAN " + l.vlan : t("VLAN permitidas de sede")}</small></td><td><button class="small" onclick="editLink('${l.id}')">${t("Editar")}</button> <button class="small danger" aria-label="${t("Eliminar enlace")}" title="${t("Eliminar enlace")}" onclick="deleteLink('${l.id}')">${t("×")}</button></td></tr>`).join("")}</tbody></table></div></div></div>`
         );
       }
+      // Código de sede derivado del nombre; el ID solo desambigua colisiones.
+      /**
+       * Entradas: Nombre real de sede e ID estable.
+       * Proceso / salida: Normaliza caracteres, deriva iniciales/números y agrega ID solo cuando hay colisión entre sedes.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function siteCode(site) {
+        const make = name => {
+          const parts=name.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().match(/[A-Z0-9]+/g)||["SITE"];
+          const useful=parts.filter(x => !["SEDE","SITE","DE","LA","EL"].includes(x));
+          return (useful.length ? useful : parts).map(x => /^\d+$/.test(x)?x:x[0]).join("").slice(0,12);
+        };
+        const code=make(site.name);
+        return state.sites.filter(s => make(s.name)===code).length>1 ? code+"-"+site.id.replace(/[^A-Za-z0-9]/g,"").slice(-8) : code;
+      }
+      let topologyZoom=1;
+      // Solo posiciones: no modifica identidades, redes, enlaces ni CLI.
+      /**
+       * Entradas: Equipos existentes y opción de renderizar.
+       * Proceso / salida: Ordena por sede, jerarquía e ID; cambia únicamente coordenadas y nunca borra entidades.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function arrangeTopology(refresh=true) {
+        const level=n => n.type==="Firewall"?0:n.type==="Router"?1:n.type==="Switch capa 3"?2:n.type==="Switch"?(n.autoKey?.includes(":distribution:")?3:4):5;
+        for (let i=0;i<state.sites.length;i++) {
+          let y=100;
+          for (let tier=0;tier<=5;tier++) {
+            const nodes=state.nodes.filter(n => n.site===state.sites[i].id && level(n)===tier).sort((a,b)=>a.id.localeCompare(b.id,undefined,{numeric:true}));
+            nodes.forEach((n,j)=>{ n.x=i*1040+45+(j%4)*245; n.y=y+Math.floor(j/4)*155; });
+            if (nodes.length) y+=Math.ceil(nodes.length/4)*155+70;
+          }
+        }
+        if (refresh) render();
+      }
+      /**
+       * Entradas: Factor solicitado por botones.
+       * Proceso / salida: Limita escala entre 0,25 y 3; modifica solo ancho visual del SVG, sin cambiar coordenadas del modelo.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function zoomTopology(factor) { topologyZoom=Math.max(.25,Math.min(3,topologyZoom*factor)); const svg=$("toposvg"); if(svg) svg.style.width=(Number(svg.dataset.width)*topologyZoom)+"px"; }
+      // Iconos vectoriales originales, sin fuentes ni imágenes de terceros.
+      /**
+       * Entradas: Tipo de equipo de la lista permitida.
+       * Proceso / salida: Devuelve trazados SVG originales embebidos; no utiliza fuentes, Internet ni recursos protegidos.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function deviceIcon(type) {
+        const paths={
+          Router:'<ellipse cx="19" cy="18" rx="17" ry="12"/><path d="M7 18h24m-8-5 8 5-8 5m-8-10-8 5 8 5"/>',
+          Switch:'<rect x="2" y="9" width="34" height="20" rx="3"/><path d="M7 15h4m4 0h4m4 0h4m4 0h3M7 23h4m4 0h4m4 0h4"/>',
+          "Switch capa 3":'<rect x="2" y="9" width="34" height="20" rx="3"/><path d="M7 15h24M12 21h14m-10-4-4 4 4 4m6-8 4 4-4 4"/>',
+          Firewall:'<path d="M3 5h32v29H3zM3 15h32M3 25h32M13 5v10m12 0v10M13 25v9"/>',
+          Servidor:'<rect x="7" y="2" width="24" height="34" rx="3"/><path d="M11 10h16M11 18h16M11 27h10"/>',
+          PC:'<path d="M3 5h32v23H3zM19 28v7M10 35h18"/>',
+          "Cámara":'<path d="M3 10h24v18H3zM27 15l9-5v18l-9-5M12 28v7"/>',
+          Impresora:'<path d="M9 12V3h20v9M3 12h32v18H3zM9 22h20v14H9z"/>',
+          "Access Point":'<path d="M4 27h30v8H4zM19 26V15M10 17q9-9 18 0M4 10q15-15 30 0"/>'
+        };
+        return `<g stroke="currentColor" stroke-width="1.8" fill="none">${paths[type]||paths.PC}</g>`;
+      }
+      /**
+       * Entradas: Nodos, enlaces, posiciones y plan actual.
+       * Proceso / salida: Devuelve SVG autónomo con iconos, carriles, títulos y detalles escapados; sirve para pantalla y descarga.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function svgTopology() {
-        const w = Math.max(
-            650,
-            state.sites.length * 600 + 40,
-            ...state.nodes.map((n) => n.x + 180),
-          ),
-          h = Math.max(500, ...state.nodes.map((n) => n.y + 160));
-        let out = `<svg id="toposvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#d7e3ed"/></pattern></defs><rect width="100%" height="100%" fill="url(#dots)"/>`;
-        state.sites.forEach((s, i) => {
-          out += `<rect x="${i * 600 + 10}" y="10" width="590" height="${h - 20}" rx="12" fill="#edf4fa" fill-opacity=".6" stroke="#d2dfeb"/><text x="${i * 600 + 30}" y="40" font-size="16" fill="#263e59" font-weight="700">${esc(s.name)}</text>`;
+        const w=Math.max(1040,state.sites.length*1040,...state.nodes.map(n=>n.x+230)),
+          h=Math.max(550,...state.nodes.map(n=>n.y+145));
+        let out=`<svg id="toposvg" data-width="${w}" style="width:${w*topologyZoom}px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="${t("Topología de red")}"><rect width="100%" height="100%" fill="#f4f8fc"/>`;
+        state.sites.forEach((site,i)=>{out+=`<rect x="${i*1040+8}" y="55" width="1024" height="${h-65}" rx="16" fill="#e9f1f7" stroke="#b5cad8"/><text x="${i*1040+28}" y="83" font-size="18" fill="#16354f">${esc(site.name)}</text>`;});
+        state.links.forEach((l,i)=>{
+          const a=node(l.a),b=node(l.b);if(!a||!b)return;
+          const wan=a.site!==b.site, color=wan?"#8748b6":l.type==="routed"?"#168592":l.type==="trunk"?"#d68513":"#547a54";
+          const x1=a.x+195,x2=b.x+195,y1=a.y+43,y2=b.y+43,
+            gutter1=x1+10+(i%4)*6,gutter2=x2+10+(i%4)*6;
+          // Los carriles quedan fuera de las cajas, incluso al saltar niveles.
+          const lane=wan?18:Math.max(a.y,b.y)+104+(i%7)*6;
+          const label=wan?"WAN ":l.type.toUpperCase()+" ", detail=l.type==="routed"?(row(l.network)?.network||"?")+"/30":l.type==="access"?"V"+l.vlan:"802.1Q";
+          const path=x1===x2 ? `M${x1} ${y1} H${gutter1} V${y2} H${x2}` : `M${x1} ${y1} H${gutter1} V${lane} H${gutter2} V${y2} H${x2}`;
+          out+=`<g><title>${esc(a.name+" ↔ "+b.name+" · "+label+detail)}</title><path d="${path}" fill="none" stroke="${color}" stroke-width="${wan?3:2}" ${l.type==="access"?'stroke-dasharray="4 3"':""}/>${state.links.length<=12 || wan ? `<text x="${(gutter1+gutter2)/2}" y="${lane-5}" text-anchor="middle" font-size="10" fill="${color}" stroke="#f4f8fc" stroke-width="3" paint-order="stroke">${esc(label+detail)}</text>` : ""}</g>`;
         });
-        for (const l of state.links) {
-          const a = node(l.a),
-            b = node(l.b);
-          if (!a || !b) continue;
-          const x1 = a.x + 75,
-            y1 = a.y + 28,
-            x2 = b.x + 75,
-            y2 = b.y + 28,
-            label =
-              l.type === "routed"
-                ? row(l.network)?.network + "/" + row(l.network)?.prefix
-                : l.type === "access"
-                  ? "VLAN " + l.vlan
-                  : "TRUNK" + (l.bundle ? " · LACP " + l.bundle : "");
-          out += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${l.type === "routed" ? "#338fa0" : "#a8bacd"}" stroke-width="${l.type === "routed" ? 3 : 2}" ${l.type === "routed" ? 'stroke-dasharray="7 4"' : ""}/><rect x="${(x1 + x2) / 2 - 65}" y="${(y1 + y2) / 2 - 10}" width="130" height="18" rx="3" fill="#f8fbff"/><text x="${(x1 + x2) / 2}" y="${(y1 + y2) / 2 + 3}" text-anchor="middle" font-size="9" fill="#376080">${esc(label)}</text>`;
+        for(const n of state.nodes) {
+          const ip=n.ip||connected(n).filter(l=>l.type==="routed").map(l=>endpoint(l,n,n.vendor).ip).filter(Boolean).join(" · ");
+          // El título accesible conserva detalles completos cuando la etiqueta abrevia.
+          out+=`<g class="node" data-id="${n.id}" tabindex="0" role="button" aria-label="${esc(n.name)}" onkeydown="if(event.key==='Enter'){event.preventDefault();editNode('${n.id}')}" transform="translate(${n.x},${n.y})"><title>${esc(n.name+" · "+n.vendor+" · "+ip)}</title><rect width="195" height="92" rx="10" fill="white" stroke="#7198b0"/><g transform="translate(8,12)" color="#176980">${deviceIcon(n.type)}</g><text x="52" y="23" font-size="11" font-weight="bold" fill="#16354f">${esc(n.name.length>21?n.name.slice(0,19)+"…":n.name)}</text><text x="52" y="42" font-size="10" fill="#45637a">${t(n.type)}</text><text x="10" y="63" font-size="10" fill="#45637a">${esc(t(n.vendor))}</text><text x="10" y="81" font-size="9" fill="#16354f">${esc(ip.length>30?ip.slice(0,28)+"…":ip||t("Ver interfaces"))}</text></g>`;
         }
-        for (const n of state.nodes) {
-          const vl = state.plan.filter(
-            (r) => r.site === n.site && r.kind === "vlan",
-          );
-          out += `<g class="node" data-id="${n.id}" transform="translate(${n.x},${n.y})"><rect width="150" height="62" rx="7" fill="${routed(n) ? "#16354f" : "white"}" stroke="#94b4c9"/><text x="75" y="22" text-anchor="middle" font-size="12" font-weight="700" fill="${routed(n) ? "#fff" : "#19324e"}">${esc(n.name)}</text><text x="75" y="39" text-anchor="middle" font-size="10" fill="${routed(n) ? "#9ed8d7" : "#637e95"}">${t(n.type)} · ${n.vendor}</text><text x="75" y="54" text-anchor="middle" font-size="9" fill="${routed(n) ? "#9ed8d7" : "#637e95"}">${esc(n.ip || t("Ver interfaces"))}</text>${n.type === "Switch capa 3" ? `<text x="75" y="76" text-anchor="middle" font-size="9" fill="#376080">${esc(vl.map((r) => "V" + r.id + " " + r.gateway + "/" + r.prefix).join(" · "))}</text>` : ""}</g>`;
-        }
-        return out + "</svg>";
-      } // El SVG es exportable; etiquetas provienen del plan real.
+        return out+"</svg>";
+      } // Exportación autónoma: todos los recursos se incluyen en el SVG.
       function bindDrag() {
         const svg = $("toposvg");
         if (!svg) return;
@@ -3144,13 +3411,18 @@
       function closeModal() {
         $("modal").close();
       } // Cierre accesible mediante botón o Escape nativo.
+      /**
+       * Entradas: ID existente o cadena vacía para alta manual.
+       * Proceso / salida: Abre un editor; altas requieren elegir fabricante y no asignan Cisco de forma implícita.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function editNode(id = "") {
         const n = id
           ? node(id)
           : {
               name: "Equipo-" + (state.nodes.length + 1),
               type: "Switch",
-              vendor: "Cisco",
+              vendor: "",
               site: state.sites[0].id,
               ip: "",
               network: "",
@@ -3158,7 +3430,7 @@
               y: 100,
             };
         modal(
-          `<h2>${t(id ? "Editar" : "Agregar")} ${t("equipo")}</h2><div class="grid">${field(t("Hostname *"), "nname", n.name)}<div class="field"><label>${t("Tipo")}</label><select id="ntype">${optsHTML(kinds, n.type)}</select></div><div class="field"><label>${t("Fabricante")}</label><select id="nvendor">${optsHTML(["Cisco", "Huawei", "Fortinet", "MikroTik"], n.vendor)}</select></div><div class="field"><label>${t("Sede")}</label><select id="nsite">${state.sites.map((s) => `<option value="${s.id}" ${s.id === n.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></div>${field(t("IP de gestión / endpoint (opcional)"), "nip", n.ip)}<div class="field"><label>${t("VLAN de gestión / endpoint")}</label><select id="nnetwork"><option value="">${t("Sin asignar")}</option>${state.plan
+          `<h2>${t(id ? "Editar" : "Agregar")} ${t("equipo")}</h2><div class="grid">${field(t("Hostname *"), "nname", n.name)}<div class="field"><label>${t("Tipo")}</label><select id="ntype">${optsHTML(kinds, n.type)}</select></div><div class="field"><label>${t("Fabricante")}</label><select id="nvendor">${optsHTML(["", "Cisco", "Huawei", "Fortinet", "MikroTik", "Genérico"], n.vendor)}</select></div><div class="field"><label>${t("Sede")}</label><select id="nsite">${state.sites.map((s) => `<option value="${s.id}" ${s.id === n.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></div>${field(t("IP de gestión / endpoint (opcional)"), "nip", n.ip)}<div class="field"><label>${t("VLAN de gestión / endpoint")}</label><select id="nnetwork"><option value="">${t("Sin asignar")}</option>${state.plan
             .filter((r) => r.kind === "vlan")
             .map(
               (r) =>
@@ -3169,17 +3441,40 @@
             )}</select></div></div><p>${t("Las IP de interfaces enrutadas y SVI se toman del plan. Para los equipos manuales, asigne una VLAN e IP si requieren administración. Los nombres no pueden contener comandos.")}</p><div class="actions"><button class="primary" onclick="saveNode('${id}')">${t("Confirmar equipo")}</button><button onclick="closeModal()">${t("Cancelar")}</button></div>`,
         );
       } // Editor permite los siete atributos solicitados.
+      /**
+       * Entradas: Campos del editor y enlaces del equipo.
+       * Proceso / salida: Valida rol, IP y puertos antes de guardar; conserva overrides explícitos y solicita aprobación al cambiar fabricante.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function saveNode(id) {
         safe(() => {
           const n = {
             ...(id ? node(id) : { id: "n" + Date.now(), x: 50, y: 100 }),
             name: hostname($("nname").value),
             type: $("ntype").value,
-            vendor: enumVal($("nvendor").value, ["Cisco", "Huawei", "Fortinet", "MikroTik"], "Fabricante"),
+            vendor: enumVal($("nvendor").value, ["Cisco", "Huawei", "Fortinet", "MikroTik", "Genérico"], "Fabricante"),
             site: $("nsite").value,
             ip: $("nip").value.trim(),
             network: $("nnetwork").value,
           };
+          if (id && n.autoKey) {
+            if (node(id).type!==n.type) delete n.autoKey;
+            else {
+              if (node(id).vendor!==n.vendor) n.vendorOverride=true;
+              if (node(id).name!==n.name) n.nameOverride=true;
+            }
+          }
+          validateNodeVendor(n);
+          if (id && node(id).vendor !== n.vendor && connected(node(id)).length) {
+            // Los nombres de puerto de la marca destino deben estar completos antes del cambio.
+            for (const link of connected(node(id))) {
+              const iface=endpoint(link,n,n.vendor).iface;
+              if (n.vendor==="Fortinet") fortinetInterfaceName(iface);
+              else if (n.vendor==="MikroTik") mikrotikInterfaceName(iface);
+              else interfaceName(iface);
+            }
+            if (!confirm(t("Cambiar fabricantes invalida configuraciones afectadas. ¿Continuar?"))) return;
+          }
           if (n.vendor === "MikroTik" && !mikrotikNode(n)) fail(t("MikroTik requiere tipo Router."));
           if (n.vendor === "Fortinet" && n.type !== "Firewall")
             fail(t("Fortinet requiere tipo Firewall."));
@@ -3493,6 +3788,11 @@
           peer: node(l.a === n.id ? l.b : l.a),
         };
       } // Los extremos routed reciben first/last de la misma /30.
+      /**
+       * Entradas: ID del equipo y orden legado.
+       * Proceso / salida: Conserva router-ID de IDs automáticos nN al editar otras sedes; IDs personalizados mantienen regla histórica.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function routerId(n) {
         // Los ID automáticos nN conservan su router-ID aunque se quite otra sede.
         // Los proyectos antiguos con ID personalizados mantienen su cálculo legado.
@@ -3502,16 +3802,22 @@
       } // Router-ID único, no se copia 8.8.8.8 como loopback propia.
       // Huawei: ofrece equivalencias si la topología automática solo contiene Cisco.
       // No modifica fabricantes, nodos, enlaces, direccionamiento ni el generador Cisco.
+      // Selección real: jamás ofrece un Cisco como si fuera Huawei.
+      /**
+       * Entradas: Nombre oficial del fabricante.
+       * Proceso / salida: Filtra exclusivamente nodos asignados y soportados; las equivalencias viven solo en Comparación.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function configNodes(vendor) {
         if (vendor === "MikroTik") return state.nodes.filter(mikrotikNode);
         if (vendor === "Fortinet") return state.nodes.filter(fortinetNode);
-        const nodes = state.nodes.filter(
-          (n) => configurable(n) && n.vendor === vendor,
-        );
-        return vendor === "Huawei" && !nodes.length
-          ? state.nodes.filter(configurable)
-          : nodes;
+        return state.nodes.filter(n => configurable(n) && n.vendor === vendor);
       }
+      /**
+       * Entradas: Fabricante Cisco o Huawei.
+       * Proceso / salida: Muestra nodos reales, opciones y CLI guardadas; no ofrece un Cisco como equipo Huawei.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function configView(vendor) {
         const nodes = configNodes(vendor);
         return (
@@ -3519,7 +3825,7 @@
             t("Configuración") + " " + vendor,
             vendor === "Cisco"
               ? t("Propuestas para IOS / IOS XE con VLAN, SVI, OSPF y SSH. Elija equipo o genere toda la marca.")
-              : t("Propuestas para VRP con Vlanif, OSPF, AAA y STelnet. La equivalencia utiliza exactamente el mismo plan. Si no hay equipos marcados como Huawei, se ofrecen los equipos configurables de la topología como equivalentes VRP, sin cambiar su fabricante."),
+              : t("Propuestas VRP para los equipos Huawei seleccionados. Use Comparación para equivalencias explícitas con Cisco."),
           ) +
           configControls() +
           `<div class="card"><div class="actions"><select id="confNode" aria-label="${t("Equipo a configurar")}">${nodes.map((n) => `<option value="${n.id}">${esc(n.name)} · ${esc(siteName(n.site))}</option>`).join("")}</select><button class="primary" onclick="generateSelected('${vendor}')">${t("Generar equipo")}</button><button onclick="generateAll('${vendor}')">${t("Generar todos los")} ${vendor}</button><button onclick="downloadAll('${vendor}')">${t("Descargar todos")}</button></div><div class="notice warn">${t("Configuración preliminar; ajuste interfaces y sintaxis al modelo/versión del equipo. &lt;CAMBIAR_EN_PRODUCCION&gt; exige reemplazo externo antes de aplicar. Los prompts interactivos de claves y guardado se atienden en el equipo. No se genera configuración genérica para firewall, AP, ISP, PC o servidor.")}</div>${nodes.length ? nodes.map((n) => configBlock(n, vendor)).join("") : `<div class="empty">${t("Genere una topología y asigne equipos a esta marca. Para evaluar el mismo equipo con ambas sintaxis use Comparación.")}</div>`}</div>`
@@ -3577,6 +3883,11 @@
           return true;
         });
       } // Las opciones modificadas invalidan los textos generados.
+      /**
+       * Entradas: Nodo IOS/VRP, opciones y topología.
+       * Proceso / salida: Exige plan confirmado sin borradores y dependencias técnicas válidas antes de producir CLI.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function assertReady(n) {
         requireConfirmedPlan();
         hostname(n.name);
@@ -3990,6 +4301,11 @@
           (x.type === "Switch capa 3" || (fortinetNode(x) && connected(x).some((l) =>
             l.type === "trunk" || (l.type === "access" && l.vlan === r.id)))));
       }
+      /**
+       * Entradas: Firewall Fortinet con interfaces explícitas del plan.
+       * Proceso / salida: Exige aprobación efectiva y controles existentes; conserva gramática FortiOS, políticas seguras y límites de laboratorio.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function generateFortinet(n) {
         if (!fortinetNode(n)) fail(t("FortiOS solo admite nodos Firewall de fabricante Fortinet."));
         requireConfirmedPlan();
@@ -4222,6 +4538,11 @@
         if (!ranges.length) fail(t("MikroTik: no quedan IP para DHCP en VLAN {0}", [r.id]));
         return ranges.join(",");
       }
+      /**
+       * Entradas: Router MikroTik con interfaces explícitas del plan.
+       * Proceso / salida: Exige aprobación efectiva y validaciones existentes; conserva gramática RouterOS y endurecimiento sin ejecutar comandos.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function generateMikroTik(n) {
         if (!mikrotikNode(n)) fail(t("RouterOS solo admite nodos Router de fabricante MikroTik."));
         requireConfirmedPlan();
@@ -4743,8 +5064,6 @@
             .join("")}</div></div>`
         );
       } // Resume hechos calculados, no pruebas de producción.
-       // Rúbrica: documento y GitHub siempre quedan pendientes de verificación externa.
-      /* =================== Persistencia local y archivos =================== */
       function download(name, content, mime) {
         const blob = new Blob([content], { type: mime + ";charset=utf-8" }),
           url = URL.createObjectURL(blob),
@@ -4822,6 +5141,13 @@
           fail(t("{0}: el bloque debe estar completamente dentro de RFC1918.", [label]));
         return block;
       } // Parser común y contención numérica; no normaliza redes desalineadas.
+      // Validación pura de tres dominios: fallback, sedes independientes y tránsito.
+      // Devuelve normalmente o lanza un error contextual; nunca normaliza redes.
+      /**
+       * Entradas: Proyecto y candidatas de todas las sedes.
+       * Proceso / salida: Valida privacidad y alineación de cada dominio; rechaza solapamientos sede/sede y sede/tránsito sin exigir contención global.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function validateSiteBlocks(project, sites) {
         privateIPv4Block(project.base,"Bloque global");
         const transit=project.transitBase ? privateIPv4Block(project.transitBase,"Bloque de tránsito") : null;
@@ -4835,7 +5161,7 @@
           if (transit && block.net<=transit.end && transit.net<=block.end) fail(t("{0}el bloque se solapa con el bloque de tránsito.",[site.name+": "]));
           blocks.push({...block,name:site.name});
         }
-      } // Valida intenciones de sede sin contrastarlas con el plan efectivo.
+      }
       function migrateV2(src) {
         return {
           ...src,
@@ -4859,6 +5185,11 @@
         if (typeof value !== "string") fail(t("{0}: se requiere una cadena.", [label]));
         return value;
       } // En esta etapa las intenciones se conservan, pero no alimentan VLSM.
+      /**
+       * Entradas: Objeto JSON v2, v3 o v4 no confiable.
+       * Proceso / salida: Reconstruye contrato, perfiles y overrides opcionales; valida pools/plan, relaciones y CLI sin asignar nuevas redes y restaura estado temporal.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function validateImport(data) {
         if (
           !data ||
@@ -4915,6 +5246,8 @@
             bandwidth: num(s.bandwidth, 0, 100000, "Banda"),
             counts: null,
           };
+          const profile=validateVendorProfile(s.vendorProfile);
+          if (profile) o.vendorProfile=profile;
           o.busy.split(",").forEach((n) => num(n.trim(), 1, o.floors, "Piso"));
           for (const k of [
             "wifi",
@@ -5044,7 +5377,6 @@
             const transit = subnet(out.project.transitBase);
             if (o.net <= transit.end && transit.net <= o.end) fail(t("LAN invade tránsito."));
           }
-
           return o;
         });
         unique(
@@ -5084,15 +5416,19 @@
           const r = out.plan.find((r) => r.key === n.network),
             o = {
               id: idVal(n.id),
+              ...(n.autoKey === undefined ? {} : {autoKey: text(n.autoKey,"Clave automática",160)}),
+              ...(n.vendorOverride === undefined ? {} : {vendorOverride: bool(n.vendorOverride)}),
+              ...(n.nameOverride === undefined ? {} : {nameOverride: bool(n.nameOverride)}),
               name: hostname(n.name),
               type: enumVal(n.type, kinds, "Tipo de equipo"),
-              vendor: enumVal(n.vendor, ["Cisco", "Huawei", "Fortinet", "MikroTik"], "Fabricante"),
+              vendor: enumVal(n.vendor, ["Cisco", "Huawei", "Fortinet", "MikroTik", "Genérico"], "Fabricante"),
               site: n.site,
               ip: n.ip ? ipStr(ipNum(n.ip)) : "",
               network: n.network ? idVal(n.network) : "",
               x: num(n.x, 0, 100000, "X", false),
               y: num(n.y, 0, 100000, "Y", false),
             };
+          validateNodeVendor(o);
           if (o.vendor === "MikroTik" && !mikrotikNode(o)) fail(t("MikroTik requiere tipo Router."));
           if (o.vendor === "Fortinet" && !fortinetNode(o)) fail(t("Fortinet requiere tipo Firewall."));
           if (o.network && (!r || r.site !== o.site || r.kind !== "vlan"))
@@ -5110,6 +5446,7 @@
           "Hostname",
         );
         unique(out.nodes.map((n) => n.ip).filter(Boolean), "IP de equipo");
+        unique(out.nodes.map(n => n.autoKey).filter(Boolean), "Clave automática");
         out.links = src.links.map((l) => {
           if (
             !out.nodes.some((n) => n.id === l.a) ||
@@ -5163,9 +5500,9 @@
         if (out.calc) addressCalculation(out.calc);
         out.subnetOK = src.subnetOK === true;
         out.revision = num(src.revision, 0, 100000000, "Revisión");
-        const previous = state;
+        const previous = state, previousEditing=vlanEditing;
         try {
-          state = out;
+          state = out; vlanEditing=false;
           for (const l of out.links)
             validateLink(
               l,
@@ -5190,7 +5527,7 @@
                 out.configs[key] = { text: generated, revision: out.revision };
             }
         } finally {
-          state = previous;
+          state = previous; vlanEditing=previousEditing;
         }
         let img = data.imageData || "";
         if (
@@ -5220,6 +5557,11 @@
       function unique(values, label) {
         if (new Set(values).size !== values.length) fail(t("{0} duplicado.", [label]));
       } // Integridad referencial.
+      /**
+       * Entradas: Resultado ya validado por validateImport.
+       * Proceso / salida: Reemplaza proyecto de forma atómica y limpia borradores/banderas anteriores; no llama al asignador.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function applyImport(data) {
         state = data.state;
         inventoryEditing.clear(); formDrafts.clear(); vlanEditing=false;
@@ -5230,6 +5572,11 @@
         page = 0;
         render();
       } // El reemplazo ocurre solo después de validación completa.
+      /**
+       * Entradas: Confirmación de crear un proyecto nuevo.
+       * Proceso / salida: Reinicia estado y borradores solo si acepta; conserva claves de almacenamiento y preferencia de idioma.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function newProject() {
         if (
           confirm(
@@ -5244,6 +5591,11 @@
           render();
         }
       } // No elimina la copia local ya guardada.
+      /**
+       * Entradas: confirmación de reemplazo por datos ficticios.
+       * Salida: laboratorio limpio; elimina borradores de presentación anteriores.
+       * No sobrescribe localStorage ni preferencias de idioma.
+       */
       function demo() {
         if (
           !confirm(
