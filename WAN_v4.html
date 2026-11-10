@@ -2192,8 +2192,8 @@
         const transit = project.transitBase
           ? privateIPv4Block(project.transitBase, "Bloque de tránsito")
           : null;
-        if (transit && (transit.net < b.net || transit.end > b.end))
-          fail(t("El bloque de tránsito queda fuera del bloque global {0}.", [base]));
+        // El tránsito también puede ser independiente, pero nunca invadir LAN.
+        if (transit && transit.prefix > 30) fail(t("Tránsito requiere /30 o mayor."));
         return { global: b, sites, transit };
       } // Reservas de pools; nunca modifica el estado confirmado.
       function findIPv4Space(pool, size, blocked) {
@@ -2253,13 +2253,32 @@
         }
         return manual;
       } // Valida y reserva intenciones; no asigna ni sustituye el plan efectivo.
-      function allocate(vlans, base, growth, transits) {
-        const pools = allocationPools(base),
-          manual = manualVlanNetworks({ ...state.project, base, growth }, state.sites, vlans, state.nodes, pools),
+      function allocate(vlans, base, growth, transits, project = state.project) {
+        const pools = allocationPools(base, project),
+          manual = manualVlanNetworks({ ...project, base, growth }, state.sites, vlans, state.nodes, pools),
           b = pools.global,
-          scoped = pools.sites.size > 0 || pools.transit !== null || manual.size > 0,
+          scoped = pools.sites.size > 0 || pools.transit !== null || manual.size > 0 || state.plan.length > 0,
           reserved = [...pools.sites.values(), ...(pools.transit ? [pools.transit] : [])],
           assigned = [...manual.values()];
+        const fixed=new Map(manual);
+        for (const v of vlans) {
+          if (fixed.has(v.key)) continue;
+          const old=state.plan.find(r => r.key===v.key && r.kind==="vlan"),
+            previous=state.vlans.find(r => r.key===v.key), site=state.sites.find(s=>s.id===v.site),
+            pool=pools.sites.get(v.site)||b;
+          if (!old || !previous || previous.site!==v.site || previous.hosts!==v.hosts || previous.id!==v.id || old.required!==Math.ceil(v.hosts*(1+growth/100))+(site.redundant?3:1)) continue;
+          if (old.net<pool.net || old.end>pool.end) continue;
+          const blocked=[...assigned,...(pool===b?reserved:[])];
+          if (blocked.some(r=>old.net<=r.end && r.net<=old.end)) continue;
+          fixed.set(v.key,subnet(old.network+"/"+old.prefix)); assigned.push(old);
+        }
+        // Mantener /30 ya válidas evita renumerar enlaces de sedes no editadas.
+        for (const transit of transits) {
+          const old=state.plan.find(r=>r.key===transit.key && r.kind!=="vlan"), pool=pools.transit||b;
+          if (!old || old.net<pool.net || old.end>pool.end || old.prefix!==30) continue;
+          if ([...assigned,...(pool===b?reserved:[])].some(r=>old.net<=r.end && r.net<=old.end)) continue;
+          fixed.set(transit.key,subnet(old.network+"/30")); assigned.push(old);
+        }
         const req = vlans
           .map((v) => {
             const s = state.sites.find((s) => s.id === v.site),
@@ -2271,8 +2290,8 @@
               kind: "vlan",
               reserve,
               required: need,
-              prefix: manual.get(v.key)?.prefix ?? 32 - bits,
-              size: manual.get(v.key)?.total ?? 2 ** bits,
+              prefix: fixed.get(v.key)?.prefix ?? 32 - bits,
+              size: fixed.get(v.key)?.total ?? 2 ** bits,
             };
           })
           .concat(
@@ -2291,8 +2310,8 @@
           const pool = r.kind === "vlan"
             ? pools.sites.get(r.site) || b
             : pools.transit || b;
-          cursor = manual.has(r.key)
-            ? manual.get(r.key).net
+          cursor = fixed.has(r.key)
+            ? fixed.get(r.key).net
             : scoped
             ? findIPv4Space(pool, r.size, [
                 ...assigned,
@@ -2322,7 +2341,7 @@
               t("Gateway de {0} fuera de su nueva subred. Bórrelo antes de recalcular.", [r.name]),
             );
           result.push(row);
-          if (!manual.has(r.key)) assigned.push({ net: info.net, end: info.end });
+          if (!fixed.has(r.key)) assigned.push({ net: info.net, end: info.end });
           cursor += r.size;
         }
         return result;
@@ -4754,34 +4773,17 @@
         return block;
       } // Parser común y contención numérica; no normaliza redes desalineadas.
       function validateSiteBlocks(project, sites) {
-        const blocks = [];
+        privateIPv4Block(project.base,"Bloque global");
+        const transit=project.transitBase ? privateIPv4Block(project.transitBase,"Bloque de tránsito") : null;
+        if (transit && transit.prefix>30) fail(t("Tránsito requiere /30 o mayor."));
+        const blocks=[];
         for (const site of sites) {
           if (!site.ipv4Base) continue;
-          const label = t("Sede «{0}»: ", [site.name]);
-          const block = privateIPv4Block(site.ipv4Base, label.slice(0, -2));
-          let global, transit;
-          try {
-            global = subnet(project.base);
-          } catch (e) {
-            fail(t("{0}no se puede verificar la contención: bloque global inválido.", [label]));
-          }
-          if (block.net < global.net || block.end > global.end)
-            fail(t("{0}el bloque queda fuera del bloque global {1}.", [label, project.base]));
-          const other = blocks.find(
-            (r) => block.net <= r.end && r.net <= block.end,
-          );
-          if (other)
-            fail(t("{0}el bloque se solapa con la sede «{1}».", [label, other.name]));
-          if (project.transitBase) {
-            try {
-              transit = subnet(project.transitBase);
-            } catch (e) {
-              fail(t("{0}no se puede comprobar el solapamiento: bloque de tránsito inválido.", [label]));
-            }
-            if (block.net <= transit.end && transit.net <= block.end)
-              fail(t("{0}el bloque se solapa con el bloque de tránsito.", [label]));
-          }
-          blocks.push({ net: block.net, end: block.end, name: site.name });
+          const block=privateIPv4Block(site.ipv4Base,t("Sede «{0}»: ",[site.name]));
+          const other=blocks.find(r => block.net<=r.end && r.net<=block.end);
+          if (other) fail(t("{0}el bloque se solapa con la sede «{1}».",[site.name+": ",other.name]));
+          if (transit && block.net<=transit.end && transit.net<=block.end) fail(t("{0}el bloque se solapa con el bloque de tránsito.",[site.name+": "]));
+          blocks.push({...block,name:site.name});
         }
       } // Valida intenciones de sede sin contrastarlas con el plan efectivo.
       function migrateV2(src) {
@@ -4976,9 +4978,23 @@
             fail(t("Gateway importado fuera de subred."));
           if (v && v.gateway && v.gateway !== o.gateway)
             fail(t("Gateway de VLAN y plan incoherentes."));
-          const base = subnet(out.project.base);
+          // Revalidar el pool efectivo evita aceptar planes fuera de la sede.
+          const site = out.sites.find((s) => s.id === o.site),
+            base = subnet(kind === "vlan" ? site.ipv4Base || out.project.base
+              : out.project.transitBase || out.project.base);
           if (o.net < base.net || o.end > base.end)
             fail(t("Red fuera del bloque base."));
+          // Los pools globales no pueden invadir reservas de ninguna otra sede.
+          for (const other of out.sites) {
+            if (!other.ipv4Base || (kind === "vlan" && other.id === o.site)) continue;
+            const block = subnet(other.ipv4Base);
+            if (o.net <= block.end && block.net <= o.end) fail(t("Red invade otra sede."));
+          }
+          if (kind === "vlan" && out.project.transitBase) {
+            const transit = subnet(out.project.transitBase);
+            if (o.net <= transit.end && transit.net <= o.end) fail(t("LAN invade tránsito."));
+          }
+
           return o;
         });
         unique(
