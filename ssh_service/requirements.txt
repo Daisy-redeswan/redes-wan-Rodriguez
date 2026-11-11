@@ -1,0 +1,3 @@
+# Opcionales: solo para SSH real. Los módulos HTML y la simulación no los usan.
+aiohttp==3.14.5
+asyncssh==2.24.1

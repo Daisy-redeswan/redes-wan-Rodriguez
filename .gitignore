@@ -8,3 +8,9 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+
+# Estado privado del servicio SSH opcional; jamás entregar confianza local/credenciales.
+ssh_service/config.json
+ssh_service/state/
+
+.venv-ssh/

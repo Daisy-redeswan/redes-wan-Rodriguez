@@ -1,0 +1,7 @@
+{
+  "http_port": 8765,
+  "max_sessions": 4,
+  "idle_seconds": 900,
+  "connect_seconds": 12,
+  "targets": []
+}
