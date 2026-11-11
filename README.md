@@ -19,6 +19,7 @@ WAN Architect permite diseñar una WAN por sedes, calcular y planificar IPv4/IPv
 - **Cuatro fabricantes:** Cisco, Huawei, Fortinet y MikroTik consumen el mismo modelo validado. FortiOS 7.4 y RouterOS 7.x son supuestos genéricos de laboratorio; ninguna marca está certificada físicamente.
 - **Ciberdefensa y uso de IA:** validación de entradas, importación atómica, contenido escapado, administración restringida y marcadores de secretos; [políticas](docs/politicas-ia.md) y [límites](docs/seguridad.md). `.env` y sus variantes quedan excluidos por [.gitignore](.gitignore).
 - **Español/English:** español inicial, selector de idioma y preferencia independiente. Traduce la interfaz; conserva nombres introducidos, claves internas, JSON y CLI.
+- **Consola SSH:** simulación educativa autónoma y [conexión real opcional](ssh_service/README.md) por servicio Python local, sin aplicar configuraciones automáticamente. [Manual SSH](docs/manual-ssh.md).
 - **Persistencia:** JSON v4, migración v2→v3→v4 sin reasignar y localStorage v4 con fallback no destructivo v3/v2.
 
 ## Cómo ejecutarla
@@ -32,7 +33,7 @@ El [manual](docs/manual.md) explica controles, idiomas, escenarios y limitacione
 
 ## Pruebas y % de confianza (Corte 3)
 
-**Pruebas superadas: 50 de 50 = 100% del conjunto ejecutado.** Fallidas: 0; bloqueadas: 0; no ejecutadas: 0. Incluye C01–C31 previos y N01–N19 de direccionamiento independiente, confirmaciones, topología y fabricantes mixtos. Los hashes históricos de cuatro CLI no se sustituyen.
+**Pruebas actuales: 58/58 UI y regresión + 26/26 SSH local = 84/84 ejecutadas (100%).** En las matrices automatizadas: 0 fallidas/bloqueadas/no ejecutadas. Conserva C01–C31/N01–N19 y añade P01–P08 de confirmaciones/consola y 26 casos SSH reales en loopback. Una comprobación exploratoria file:// fue bloqueada por política; Windows y hardware no ejecutados. Los hashes históricos de cuatro CLI no se sustituyen.
 
 ```bash
 python -m pip install -r tests/requirements.txt
@@ -40,7 +41,7 @@ python -m playwright install chromium
 python tests/test_corte3.py
 ```
 
-El runner inicia/cierra HTTP local, crea contextos limpios y devuelve un código no cero ante fallos. El reporte normal es temporal y su ruta se imprime; [casos, resultados, hashes y entorno](docs/pruebas.md), [reporte actual](tests/reporte-revision-integral.html). El porcentaje no certifica toda la aplicación ni hardware, conectividad o seguridad integral.
+El runner inicia/cierra HTTP local, crea contextos limpios y devuelve un código no cero ante fallos. El reporte normal es temporal y su ruta se imprime; [casos, resultados, hashes y entorno](docs/pruebas.md), [reporte UI actual](tests/reporte-ssh-ui.html) y [pruebas SSH](docs/pruebas-ssh.md). El porcentaje no certifica toda la aplicación ni hardware, conectividad o seguridad integral.
 
 ## Documentos
 
@@ -83,7 +84,7 @@ La 05 procede de [Commits en GitHub](https://github.com/Daisy-redeswan/redes-wan
 | Config Cisco y Huawei | Sí | Capturas 03/04; C12/C13/C26: generación y texto exacto |
 | Config Fortinet y MikroTik (C3) | Sí | Capturas 06/07; C14/C15/C26; validación textual |
 | Ciberdefensa (`politicas-ia.md`) | Sí | Captura 08; C08/C10/C17; `.gitignore` y políticas documentadas |
-| Pruebas con % de confianza (C3) | Sí | Captura 09 histórica (31/31); suite/reporte actual y `docs/pruebas.md`: 50/50 |
+| Pruebas con % de confianza (C3) | Sí | Captura 09 histórica (31/31); suite/reporte actual y `docs/pruebas-ssh.md`: 84/84 ejecutadas |
 | Documento y manual finales | Sí | Informe PDF revisado, capturas insertadas y manual de controles/idioma |
 | Repositorio y versiones | Sí | Repositorio público, ramas e historial; capturas 05 y 10 |
 | Sustentación en vivo realizada | No | Debe demostrarse ante evaluación; esta entrega no la simula |

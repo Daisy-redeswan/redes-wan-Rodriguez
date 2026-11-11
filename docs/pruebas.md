@@ -1,6 +1,16 @@
 # Pruebas reproducibles de WAN Architect — Corte 3 y revisión integral
 
-## Resultado vigente: revisión integral de las nueve correcciones
+## Actualización: confirmaciones y consola SSH
+
+Código sobre el HEAD de referencia PR #10 `194a43e`; véanse [manual SSH](manual-ssh.md), [servicio opcional](../ssh_service/README.md) y [pruebas actuales](pruebas-ssh.md). **58/58 UI + 26/26 SSH local = 84/84 ejecutadas**; una comprobación exploratoria file:// bloqueada por política se declara aparte. Windows y fabricantes físicos no ejecutados.
+
+Sedes: confirmed opcional v4 validado, resumen verde/Editar y protección contra cambios accidentales; ausencia en proyectos antiguos no se interpreta como confirmación. Se conserva invalidación selectiva. VLAN: previsualización pendiente/efectiva por sede, mensajes de capacidad y aprobación efectiva; errores preservan estado y formulario.
+
+Consola SSH: módulo 14 con simulación autónoma de comandos cerrados y conexión real opcional HTTP/WS→AsyncSSH con PTY/xterm local. La conexión manual es independiente de VLSM. Origen/Host, autorización local, allowlist, claves de host, timeouts, cuotas, buffers/ACK y limpieza de sesiones verificados. Credenciales/historial real nunca entran en JSON o localStorage. No se envían configuraciones automáticamente.
+
+**El contenido restante conserva el registro de la revisión anterior de 50 casos; no es el resultado actual ni se suma dos veces.**
+
+## Registro anterior: revisión integral de las nueve correcciones
 
 - Base main: `1956d1872363c88399f5e8240abb1d7a13bca340`; rama `fix/revision-integral-wan-architect`.
 - Código ejecutado: `8a27f672e03b6e777b077a8910915d13adeb7127`; suite identificada por hash antes de su commit separado.

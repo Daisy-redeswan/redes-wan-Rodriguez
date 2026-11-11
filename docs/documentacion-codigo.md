@@ -2,7 +2,7 @@
 
 ## Cómo estudiar esta aplicación
 
-La aplicación sigue siendo un solo archivo autónomo, `WAN_v4.html`. HTML define la estructura; CSS la presentación; JavaScript valida datos, calcula redes, renderiza vistas y genera propuestas de comandos. No hay backend, ejecución remota ni conexión obligatoria. El botón Generar produce texto para revisión humana: nunca configura equipos.
+La aplicación sigue siendo un solo archivo autónomo, `WAN_v4.html`. HTML define la estructura; CSS la presentación; JavaScript valida datos, calcula redes, renderiza vistas y genera propuestas de comandos. No hay backend obligatorio. El servicio SSH opcional permite únicamente la administración manual explícita; simulación y módulos tradicionales permanecen autónomos. El botón Generar produce texto para revisión humana: nunca configura equipos.
 
 Base de esta revisión: `1956d1872363c88399f5e8240abb1d7a13bca340`. Lea primero las reglas de [AGENTS.md](../AGENTS.md), el [estado](estado-proyecto.md) y las [pruebas](pruebas.md). Las líneas cambian al documentar: busque el nombre de función, no un número de línea histórico.
 
@@ -101,7 +101,7 @@ Los cuatro adaptadores conservan sus familias de comandos, validadores y políti
 
 ## D. Interfaz retirada sin eliminar cálculos ni entregables
 
-Se retiraron exclusivamente el desplegable explicativo VLSM/CIDR/gateway, el desplegable Interpretación de Subnetting y el módulo Evidencias Corte 2. Hay 13 módulos, índices 0–12; Fortinet 10, MikroTik 11 e IPv6 12. La barra de progreso y navegación usan el mismo arreglo `steps`. Calculadora, resultados, algoritmos, comparación y todos los documentos/capturas académicos permanecen.
+Se retiraron exclusivamente el desplegable explicativo VLSM/CIDR/gateway, el desplegable Interpretación de Subnetting y el módulo Evidencias Corte 2. El diseño anterior tenía 13 módulos; la consola añade el módulo 14, índice 13, sin reintroducir Evidencias Corte 2; Fortinet 10, MikroTik 11 e IPv6 12. La barra de progreso y navegación usan el mismo arreglo `steps`. Calculadora, resultados, algoritmos, comparación y todos los documentos/capturas académicos permanecen.
 
 ## E. Contratos de funciones nuevas o modificadas
 
@@ -193,3 +193,55 @@ La lista sirve para localizar código y distinguir el mapa general de los contra
 Ejecute `python tests/test_corte3.py`. Conserva C01–C31 y añade N01–N19; consulte [resultados actuales](pruebas.md). Las expectativas de navegación/fabricantes se actualizan porque son cambios autorizados. **No se cambiaron hashes de referencia**: C26 usa un proyecto previo real preservado en `tests/fixtures/pre-revision-v4.json` y las referencias anteriores para ocho comparaciones CLI ES/EN. Una nueva topología sí cambia nombres, posiciones, categorías representativas y fabricante elegido; no se oculta esa diferencia como igualdad bit a bit.
 
 El runner abre/cierra HTTP y contextos limpios, informa esperado/obtenido/estado y falla con código no cero. Los resultados no prueban infraestructura real ni todas las combinaciones de tamaños, navegadores, accesibilidad o topologías. Los diagramas de revisión están fuera del repositorio; las capturas académicas y el PDF anteriores se conservan como evidencia histórica del commit al que corresponden, no como capturas de esta nueva interfaz.
+
+## H. Confirmaciones y consola SSH opcional
+
+Esta ampliación conserva el modelo v4 y los pools independientes anteriores. `sites[].confirmed` es un booleano opcional validado; solo guardar una ficha válida lo publica como true. `siteEditing`, `sitePending` y `siteSnapshots` son presentación temporal: distinguen editar de cambios reales sin borrar el último estado confirmado. Los importadores no infieren confirmación de archivos antiguos y excluyen banderas temporales durante su validación interna, restaurándolas si rechazan el archivo.
+
+`updateVlanStatus()` actualiza estado y placeholders sin renderizar; vacío significa intención automática, no un ejemplo numérico fijo. Tras confirmar se muestra la red efectiva del pool real. `confirmVlans()` conserva transacción e invalidación diferencial y marca pendiente/foco tras error; `allocate()` expone demanda completa y solo estima un prefijo mínimo cuando es matemáticamente justificable. `requireConfirmedPlan()` incluye borradores de sede y VLAN; no bloquea calculadora ni SSH manual.
+
+### Funciones JavaScript de presentación y sesión
+
+| Función / variables | Entrada, salida y efectos |
+| --- | --- |
+| `editSite`, `siteFormSnapshot` | Recuperan formulario sin borrar valores, capturan referencia para comparar cambios; no invalidan por entrar a editar. |
+| `saveSite`, `projectView` | Candidata validada, confirmed opcional, resumen/bloqueo y acción Editar; guardar idéntico preserva redes/CLI. |
+| `sshConsoleView`, `sshTab`, `sshChooseDevice`, `sshSelected` | HTML escapado y selección por ID; pestañas independientes, sin cambiar fabricante/plan. Cambiar vista cierra una sesión real. |
+| `sshManagementAddress` | Solo toma IP explícita de Gestión; no infiere desde gateway, SVI o WAN. |
+| `sshCommands`, `sshRunSimulation` | Lista cerrada por marca; consultas al modelo/CLI vigente. Nunca red, eval ni emulación de NOS completo. |
+| `sshHistory`, `sshClearSimulation`, `sshResetSimulation` | Buffer educativo limitado a 40.000 caracteres, sin persistencia. Nuevo proyecto/importación limpia selección e historial. |
+| `sshAuthMethod` | Muestra método y vacía credenciales que dejan de usarse. |
+| `sshLoadTerminal` | Carga solo recursos locales de xterm/fit al conectar realmente; la simulación no los requiere. |
+| `sshSetStatus` | Estado visual y bloqueo de campos durante conexión. connected solo procede del backend autenticado con PTY abierto. |
+| `sshConnect` | Valida autorización y formulario, obtiene cookie/token local, envía credenciales una vez por WS y las borra del DOM. No envía state ni configuraciones. |
+| `sshSocket`, `sshTerminal`, `sshObserver` | Sesión efímera fuera del proyecto; Uint8Array conserva bytes/ANSI; onData envía teclas, ResizeObserver envía dimensiones. |
+| `sshGeneration`, `sshConnecting` | Evitan doble conexión y la continuación de una operación asíncrona cancelada. |
+| `sshDispose`, `sshDisconnect` | Cierre idempotente de WS, observador, terminal y secretos al salir/cancelar; nunca deja sesiones ocultas intencionalmente. |
+| `sshClearReal` | Solo limpia pantalla local; no envía comandos al equipo. |
+| `setLanguage`, `render`, `applyImport`, `newProject`, `demo` | No restauran contraseñas/claves al traducir; cierran sesiones al reconstruir y limpian borradores al sustituir proyectos. |
+
+### Servicio Python: funciones y dependencias
+
+`ssh_service/server.py` es opcional y no se importa desde la aplicación. AsyncSSH 2.24.1 aporta transporte/host keys/PTY, aiohttp 3.14.5 HTTP/WS. El mismo proceso atiende un puerto loopback configurable; no abre un listener SSH ni sirve un directorio arbitrario.
+
+| Función | Contrato y seguridad |
+| --- | --- |
+| `integer`, `load_config` | Tipos/límites estrictos, lista permitida de claves y destinos exactos; targets vacío prohíbe toda conexión. |
+| `destination` | Resuelve solo un host/puerto autorizado y exige que todas las IP estén fijadas; devuelve IP literal a conectar. |
+| `create_app` | Factory sin iniciar servidor; crea confianza local, cuotas y autorizaciones efímeras. Facilita pruebas reales aisladas. |
+| `boundary` | Host/origen exactos, no caché/CORS; bloquea rebinding y páginas ajenas. |
+| `index`, `asset`, `manual`, `favicon` | Solo HTML conocido, tres recursos concretos y manual; no endpoints para archivos/OS arbitrarios. |
+| `bootstrap` | Cookie HttpOnly/SameSite Strict y CSRF en RAM para el mismo origen; no usa URL/localStorage ni tokens impresos. |
+| `websocket` | Primer mensaje autorizado en 5 s, allowlist, host key estricta, autenticación, shell/PTY y bucle input/resize/ack. finally recoge recursos y secretos. |
+| `connect_for_socket` | Carrera controlada entre negociación y cierre de WS; cancela ambas tareas y no abre PTY después de cancelar. |
+| `output` | Lee ≤4096 bytes y espera ACK del navegador tras representar; limita memoria y cierra por EOF/error/timeout. stderr se combina con stdout. |
+| `public_error` | Códigos estables sin datos sensibles; tolera que el transporte ya haya cerrado. |
+| `shutdown` | Cierra WS/SSH al apagar y elimina autorizaciones efímeras. |
+| `trust_host` | Solo destinos aprobados, prueba de huella pública y registro tras coincidencia externa; rechaza cambios de clave existentes. |
+| `main` | CLI Windows/Linux, binding 127.0.0.1, puerto configurable y sin access logs; no subprocess/exec del OS. |
+
+El protocolo WS usa connect (credenciales solo en memoria), status/error, output (bytes base64), input, resize, ack y disconnect. No hay mensaje exec ni aplicación del generador. Usuario y dispositivo determinan los comandos manuales; la biblioteca no simula haber conectado. Un servidor sin shell/PTY se rechaza con un error explícito en lugar de fingir interacción.
+
+Detalles, tamaños, modelo de confianza, instalación Windows, rotación de claves y solución de problemas están en [manual SSH](manual-ssh.md) y [README del servicio](../ssh_service/README.md). Código de terceros en static se conserva sin reescribir, con licencias y hashes; los comentarios nuevos propios están en español. No se insertan comentarios dentro de cadenas CLI/atributos donde romperían el programa.
+
+Pruebas actuales: [pruebas-ssh.md](pruebas-ssh.md). El mecanismo SSH se probó realmente en loopback, no físicamente en marcas. Windows no ejecutado y file:// bloqueado por política son límites declarados, no éxitos inferidos.
