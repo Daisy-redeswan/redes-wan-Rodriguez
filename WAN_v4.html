@@ -1478,6 +1478,8 @@
               "'": "&#39;",
             })[c],
         ); // Evita inyectar HTML desde nombres y JSON importados.
+      Object.assign(I18N.en, {"Confirmar interfaces físicas": "Confirm physical interfaces", "Declaradas por el usuario; sin validación física": "Declared by the user; not physically validated", "Interfaces físicas sin confirmar": "Physical interfaces not confirmed", "Perfil físico inválido.": "Invalid physical profile.", "Nombre de interfaz física inválido.": "Invalid physical interface name.", "Nomenclatura física no soportada por este adaptador.": "Physical naming is not supported by this adapter.", "Indique documentación oficial del modelo y versión.": "Provide official documentation for the model and version.", "Referencia física de enlace inválida.": "Invalid physical link reference.", "Interfaz física duplicada.": "Duplicate physical interface.", "Función o enlace cambió; reconfirme interfaces físicas.": "Role or link changed; confirm physical interfaces again.", "Confirme una interfaz física por enlace.": "Confirm one physical interface per link.", "AP excluido de CLI genérica: requiere modelo, firmware y administración específicos.": "AP excluded from generic CLI: specific model, firmware and management are required.", "Equipo {0}: confirme modelo, versión e interfaces físicas.": "Device {0}: confirm model, version and physical interfaces.", "Introduzca modelo, versión y nombres del inventario real. La declaración no certifica compatibilidad física. Comparación necesita perfiles separados por fabricante.": "Enter model, version and names from the actual inventory. This declaration does not certify physical compatibility. Comparison requires separate vendor profiles.", "Documentación oficial de interfaces": "Official interface documentation", "Modelo": "Model", "Versión": "Version", "URL oficial del modelo y versión": "Official URL for the model and version", "Nombre real de interfaz": "Actual interface name", "Función": "Role", "Confirmo los puertos contra el inventario del modelo y versión indicados": "I confirm the ports against the inventory of the stated model and version", "Guardar perfil físico": "Save physical profile", "Confirme los puertos del inventario antes de guardar.": "Confirm the inventory ports before saving.", "gestión": "management", "tránsito": "transit"});
+      Object.assign(I18N.en, {"Gestión AP":"AP management","Seleccione función":"Select role","Los puertos de este enlace son propuestas heredadas. Configure y confirme los puertos reales en el perfil físico de cada equipo antes de generar CLI.":"These link ports are legacy proposals. Configure and confirm actual ports in each device physical profile before generating CLI."});
       const steps = [
         "Resumen",
         "Datos del proyecto",
@@ -1745,6 +1747,7 @@
         if (dropVlans) state.ipv6Plan = state.ipv6Plan.filter(r => r.site !== siteId);
         state.nodes = state.nodes.filter(n => !ids.has(n.id));
         state.links = state.links.filter(l => !ids.has(l.a) && !ids.has(l.b));
+        refreshPhysicalProfiles();
         state.configs = Object.fromEntries(Object.entries(state.configs).filter(([key]) => ![...peers].some(id => key.startsWith(id+"-"))));
         state.approved = false;
         state.revision++;
@@ -1794,7 +1797,7 @@
        * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
        */
       function vlanFormChanged() {
-        if (page!==3 || !$("base")) return false;
+        if (!$("base")) return false;
         if (["base","dns","transitBase"].some(k=>$(k).value.trim()!==state.project[k]) || Number($("growth").value)!==state.project.growth) return true;
         return state.vlans.some((v,i)=>$("vs"+i).value!==v.site || Number($("vi"+i).value)!==v.id || $("vn"+i).value.trim()!==v.name || $("vc"+i).value.trim()!==(v.ipv4Cidr||"") || $("vr"+i).value!==v.role || Number($("vh"+i).value)!==v.hosts || $("vd"+i).checked!==v.dhcp);
       }
@@ -1813,11 +1816,48 @@
       function siteFormSnapshot() {
         return JSON.stringify([...$("siteFields").querySelectorAll("input")].map(el=>[el.id,el.value,el.checked]));
       }
-      function requireConfirmedPlan() {
-        if (!state.approved || !state.plan.length || vlanEditing || sitePending.size)
-          fail(t("Confirme primero VLAN y VLSM."));
+      // Durante la comprobación canónica de un archivo antiguo no se consultan borradores
+      // de la pantalla actual ni se certifican sus puertos propuestos como físicos.
+      let checkingArchive = false;
+      /** Comprueba datos efectivos, no una bandera histórica de edición. No asigna redes. */
+      function confirmedPlan() {
+        if (state.approved!==true || !state.plan.length || !state.vlans.length) return false;
+        if (!checkingArchive && (pendingVlans() || sitePending.size)) return false;
+        try {
+          const pools=allocationPools(state.project.base), rows=new Map(state.plan.map(r=>[r.key,r]));
+          if (rows.size!==state.plan.length) return false;
+          for (const r of state.plan) {
+            const actual=subnet(r.network+"/"+r.prefix);
+            if (actual.network!==r.network || actual.net!==r.net || actual.end!==r.end || actual.mask!==r.mask) return false;
+          }
+          if (initialTransits().some(req=>!rows.has(req.key))) return false;
+          for (const v of state.vlans) {
+            const r=rows.get(v.key), pool=pools.sites.get(v.site)||pools.global;
+            if (!r || r.kind!=="vlan" || r.site!==v.site || r.id!==v.id ||
+                r.net<pool.net || r.end>pool.end || !isHost(r.gateway,r) || r.hostsRequested!==v.hosts || r.name!==v.name || r.role!==v.role || r.dhcp!==v.dhcp ||
+                r.hosts < Math.ceil(v.hosts*(1+state.project.growth/100))+(state.sites.find(s=>s.id===v.site).redundant?3:1) ||
+                (v.ipv4Cidr && v.ipv4Cidr!==r.network+"/"+r.prefix)) return false;
+          }
+          return true;
+        } catch (_) { return false; }
       }
+      /** Lee el DOM o el borrador conservado; revertir valores recupera una aprobación válida. */
+      function pendingVlans() {
+        if ($("base")) return vlanFormChanged();
+        const draft=formDrafts.get("vlans");
+        if (!draft) return false;
+        const values=new Map(draft.map(([id,value,checked])=>[id,{value,checked}]));
+        const expected={base:state.project.base,dns:state.project.dns,transitBase:state.project.transitBase,growth:state.project.growth};
+        state.vlans.forEach((v,i)=>Object.assign(expected,{["vs"+i]:v.site,["vi"+i]:v.id,["vn"+i]:v.name,["vc"+i]:v.ipv4Cidr||"",["vr"+i]:v.role,["vh"+i]:v.hosts}));
+        return Object.entries(expected).some(([id,value])=>values.has(id)&&String(values.get(id).value).trim()!==String(value)) || state.vlans.some((v,i)=>values.has("vd"+i)&&values.get("vd"+i).checked!==v.dhcp);
+      }
+      /** Punto único para navegación, topología y los cuatro adaptadores. */
+      function requireConfirmedPlan() {
+        if (!confirmedPlan()) fail(t("Confirme primero VLAN y VLSM."));
+      }
+      function dependentPage(index) { return [5,6,7,8,10,11].includes(index); }
       function invalidate(level = "project") {
+        refreshPhysicalProfiles();
         if (level === "project" || level === "plan") state.ipv6Plan = [];
         state.revision++;
         state.configs = {};
@@ -1856,8 +1896,11 @@
        * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
        */
       function go(i) {
+        const target=Math.max(0,Math.min(steps.length-1,Number(i)||0));
+        // Rechazar antes de capturar/renderizar mantiene intacto el formulario pendiente.
+        if (dependentPage(target) && safe(requireConfirmedPlan)===false) return false;
         captureDraft();
-        page = Math.max(0, Math.min(steps.length-1, i));
+        page = target;
         render();
         window.scrollTo({ top: 0, behavior: "smooth" });
       } // Navegación conservando el estado confirmado.
@@ -1870,6 +1913,11 @@
        * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
        */
       function render() {
+        // También protege asignaciones programáticas de page; no basta con ocultar botones.
+        if (dependentPage(page) && !confirmedPlan()) {
+          page=3;toast(t("Confirme primero VLAN y VLSM."),true);
+          if ($("vlanStatus")) return false; // Conserva el mismo DOM si se intentó saltar directamente desde VLAN.
+        }
         // Una vista reconstruida no conserva una sesión real oculta/huérfana.
         sshDispose();
         document.documentElement.lang = uiLanguage;
@@ -1911,6 +1959,7 @@
           $("view").insertAdjacentHTML("afterbegin", `<div class="notice">${t("Estas propuestas de fabricante son exclusivamente IPv4. IPv6 solo se calcula y planifica; su configuración requiere aclaración docente.")}</div>`);
         if (page === 5) bindDrag();
         restoreDraft();
+        if (page===3) { vlanEditing=pendingVlans(); updateVlanStatus(); }
         $("view").oninput = null;
         if (page===1) $("view").oninput=(event)=>{
           if (!$("siteFields").contains(event.target)) return;
@@ -2319,12 +2368,13 @@
        * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
        */
       function vlanView() {
+        const approved=confirmedPlan();
         return (
           title(
             t("VLAN y plan de direccionamiento"),
             "Confirme los segmentos; el VLSM los ordena por tamaño y asigna redes sin solaparse. Incluye tránsito router–core y WAN entre sedes.",
           ) +
-          `<div class="card"><div class="grid">${field(t("Bloque predeterminado del proyecto"), "base", state.project.base)}${field(t("Bloque de tránsito (opcional)"), "transitBase", state.project.transitBase)}${field(t("Reserva de crecimiento (%)"), "growth", state.project.growth, "number", 'min="0" max="100"')}${field(t("DNS para DHCP"), "dns", state.project.dns)}</div><div class="notice">${t("Hosts solicitados son terminales; el cálculo añade crecimiento y una IP de gateway, o tres IP si hay dos cores. El gateway no cuenta como host disponible para terminales. Las redes de tránsito son /30 y no usan VLAN.")}</div><div class="actions"><button onclick="proposeVlans(true)">${t("Volver a proponer")}</button><button onclick="addVlan()">${t("Agregar VLAN")}</button><span id="vlanStatus" class="badge ${state.approved && !vlanEditing && !sitePending.size ? "" : "warn"}">${t(state.approved && !vlanEditing && !sitePending.size ? "VLAN confirmadas" : "Pendiente de confirmación")}</span><button class="primary" onclick="confirmVlans()">${t(state.approved ? "Recalcular VLAN" : "Confirmar VLAN y calcular VLSM")}</button></div></div><div class="card"><h2>${t("Segmentos editables por sede")}</h2><p id="vlanCidrHelp" class="hint">${t("Subred IPv4 / CIDR (opcional): deje vacío para asignación automática. Define la red completa de la VLAN; no es el gateway ni un rango DHCP.")}</p>${state.vlans.length ? `<div class="tablewrap"><table><thead><tr><th>${t("Sede")}</th><th>${t("VLAN")}</th><th>${t("Nombre")}</th><th>${t("Subred IPv4 / CIDR (opcional)")}</th><th>${t("Servicio")}</th><th>${t("Hosts terminales")}</th><th>${t("DHCP local")}</th><th>${t("Acción")}</th></tr></thead><tbody>${state.vlans.map((v, i) => `<tr><td><select id="vs${i}" aria-label="${t("Sede de VLAN")}">${state.sites.map((s) => `<option value="${s.id}" ${s.id === v.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></td><td><input class="num" aria-label="${t("VLAN")}" id="vi${i}" value="${v.id}" type="number" min="2" max="4094"></td><td><input aria-label="${t("Nombre VLAN")}" id="vn${i}" value="${esc(v.name)}"></td><td><input aria-label="${t("Subred IPv4 / CIDR (opcional)")}" id="vc${i}" value="${esc(v.ipv4Cidr || "")}" placeholder="${esc(state.approved && !vlanEditing && !sitePending.size ? (state.plan.find(r=>r.key===v.key)?.network ? state.plan.find(r=>r.key===v.key).network+'/'+state.plan.find(r=>r.key===v.key).prefix : t("Asignación automática pendiente")) : t("Asignación automática pendiente"))}" aria-describedby="vlanCidrHelp"></td><td><select aria-label="${t("Servicio")}" id="vr${i}">${optsHTML(roles, v.role)}</select></td><td><input class="num" aria-label="${t("Hosts")}" id="vh${i}" type="number" value="${v.hosts}"></td><td><input aria-label="${t("DHCP local")}" id="vd${i}" type="checkbox" ${v.dhcp ? "checked" : ""}></td><td><button class="small danger" onclick="deleteVlan(${i})">${t("Eliminar")}</button></td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">${t("Confirme los datos y genere una propuesta desde Estimación, o agregue sus segmentos manualmente.")}</div>`}</div>${state.approved && !vlanEditing && !sitePending.size ? `<button class="primary" onclick="go(5)">${t("Continuar a Topología")}</button>` : ""}${planTable()}`
+          `<div class="card"><div class="grid">${field(t("Bloque predeterminado del proyecto"), "base", state.project.base)}${field(t("Bloque de tránsito (opcional)"), "transitBase", state.project.transitBase)}${field(t("Reserva de crecimiento (%)"), "growth", state.project.growth, "number", 'min="0" max="100"')}${field(t("DNS para DHCP"), "dns", state.project.dns)}</div><div class="notice">${t("Hosts solicitados son terminales; el cálculo añade crecimiento y una IP de gateway, o tres IP si hay dos cores. El gateway no cuenta como host disponible para terminales. Las redes de tránsito son /30 y no usan VLAN.")}</div><div class="actions"><button onclick="proposeVlans(true)">${t("Volver a proponer")}</button><button onclick="addVlan()">${t("Agregar VLAN")}</button><span id="vlanStatus" class="badge ${approved ? "" : "warn"}">${t(approved ? "VLAN confirmadas" : "Pendiente de confirmación")}</span><button class="primary" onclick="confirmVlans()">${t(state.approved ? "Recalcular VLAN" : "Confirmar VLAN y calcular VLSM")}</button></div></div><div class="card"><h2>${t("Segmentos editables por sede")}</h2><p id="vlanCidrHelp" class="hint">${t("Subred IPv4 / CIDR (opcional): deje vacío para asignación automática. Define la red completa de la VLAN; no es el gateway ni un rango DHCP.")}</p>${state.vlans.length ? `<div class="tablewrap"><table><thead><tr><th>${t("Sede")}</th><th>${t("VLAN")}</th><th>${t("Nombre")}</th><th>${t("Subred IPv4 / CIDR (opcional)")}</th><th>${t("Servicio")}</th><th>${t("Hosts terminales")}</th><th>${t("DHCP local")}</th><th>${t("Acción")}</th></tr></thead><tbody>${state.vlans.map((v, i) => `<tr><td><select id="vs${i}" aria-label="${t("Sede de VLAN")}">${state.sites.map((s) => `<option value="${s.id}" ${s.id === v.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></td><td><input class="num" aria-label="${t("VLAN")}" id="vi${i}" value="${v.id}" type="number" min="2" max="4094"></td><td><input aria-label="${t("Nombre VLAN")}" id="vn${i}" value="${esc(v.name)}"></td><td><input aria-label="${t("Subred IPv4 / CIDR (opcional)")}" id="vc${i}" value="${esc(v.ipv4Cidr || "")}" placeholder="${esc(approved ? (state.plan.find(r=>r.key===v.key)?.network ? state.plan.find(r=>r.key===v.key).network+'/'+state.plan.find(r=>r.key===v.key).prefix : t("Asignación automática pendiente")) : t("Asignación automática pendiente"))}" aria-describedby="vlanCidrHelp"></td><td><select aria-label="${t("Servicio")}" id="vr${i}">${optsHTML(roles, v.role)}</select></td><td><input class="num" aria-label="${t("Hosts")}" id="vh${i}" type="number" value="${v.hosts}"></td><td><input aria-label="${t("DHCP local")}" id="vd${i}" type="checkbox" ${v.dhcp ? "checked" : ""}></td><td><button class="small danger" onclick="deleteVlan(${i})">${t("Eliminar")}</button></td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">${t("Confirme los datos y genere una propuesta desde Estimación, o agregue sus segmentos manualmente.")}</div>`}</div><button id="vlanNext" class="primary" ${approved?"":"disabled"} onclick="go(5)">${t("Continuar a Topología")}</button>${planTable()}`
         );
       }
       /**
@@ -2633,8 +2683,10 @@
        */
       /** Actualiza aprobación/previsualizaciones sin reconstruir ni perder el formulario. */
       function updateVlanStatus() {
-        if($("vlanStatus"))$("vlanStatus").textContent=t(state.approved&&!vlanEditing&&!sitePending.size?"VLAN confirmadas":"Pendiente de confirmación");
-        state.vlans.forEach((v,i)=>{const el=$("vc"+i),r=state.plan.find(r=>r.key===v.key);if(el)el.placeholder=state.approved&&!vlanEditing&&!sitePending.size&&r?r.network+"/"+r.prefix:t("Asignación automática pendiente");});
+        const approved=confirmedPlan();
+        if($("vlanNext")) $("vlanNext").disabled=!approved;
+        if($("vlanStatus")) { $("vlanStatus").textContent=t(approved?"VLAN confirmadas":"Pendiente de confirmación"); $("vlanStatus").className="badge"+(approved?"":" warn"); }
+        state.vlans.forEach((v,i)=>{const el=$("vc"+i),r=state.plan.find(r=>r.key===v.key);if(el)el.placeholder=approved&&r?r.network+"/"+r.prefix:t("Asignación automática pendiente");});
       }
       function confirmVlans() {
         lastVlanFocus="base";
@@ -2666,6 +2718,7 @@
           state.plan = plan;
           state.nodes = state.nodes.filter(n=>!removed.has(n.id));
           state.links = state.links.filter(l=>!removed.has(l.a)&&!removed.has(l.b));
+          refreshPhysicalProfiles();
           state.configs = Object.fromEntries(Object.entries(state.configs).filter(([key])=>![...affected].some(id=>key.startsWith(id+"-"))));
           state.approved = true;
           state.revision++;
@@ -2990,8 +3043,10 @@
       function switching(n) {
         return n && ["Switch", "Switch capa 3"].includes(n.type);
       } // Roles con VLAN y puertos de switching.
+      /** Los AP conservan administración/enlaces; requieren un adaptador específico de modelo/controlador. */
+      function accessPoint(n) { return n?.type === "Access Point"; }
       function configurable(n) {
-        return !fortinetNode(n) && !mikrotikNode(n) && (routed(n) || switching(n));
+        return !accessPoint(n) && !fortinetNode(n) && !mikrotikNode(n) && (routed(n) || switching(n));
       } // Firewalls y endpoints necesitan software específico, no IOS/VRP genérico.
       function availableIPs(r, n, excluded = []) {
         const skip = new Set([r.gateway, ...excluded].filter(Boolean));
@@ -3131,6 +3186,7 @@
               id: previous?.id || "n" + nid++,
               autoKey,
               name: previous?.nameOverride ? previous.name : hostname(prefix+"-"+siteCode(siteData)+"-"+String(ordinal+(role==="backupRouter"?1:0)).padStart(2,"0")),
+              ...(previous?.interfaceProfiles ? {interfaceProfiles:structuredClone(previous.interfaceProfiles)}:{}),
               ...(previous?.nameOverride ? {nameOverride:true}:{}),
               ...(previous?.vendorOverride ? {vendorOverride:true}:{}),
               type,
@@ -3313,6 +3369,7 @@
             const blocking=topologyIssues().find(x=>x.block);
             if (blocking) fail(t(blocking.msg));
           } catch(error) { state=previous; throw error; }
+          refreshPhysicalProfiles();
           state.revision++;
           selectedNode = "";
           render();
@@ -3508,7 +3565,7 @@
             )
             .join(
               "",
-            )}</select></div></div><p>${t("Las IP de interfaces enrutadas y SVI se toman del plan. Para los equipos manuales, asigne una VLAN e IP si requieren administración. Los nombres no pueden contener comandos.")}</p><div class="actions"><button class="primary" onclick="saveNode('${id}')">${t("Confirmar equipo")}</button><button onclick="closeModal()">${t("Cancelar")}</button></div>`,
+            )}</select></div></div>${accessPoint(n)&&row(n.network)?`<p class="notice">${t("Gestión AP")}: ${esc(n.ip)} · ${t("Máscara")}: ${esc(row(n.network).mask)} · Gateway: ${esc(row(n.network).gateway)}. ${t("AP excluido de CLI genérica: requiere modelo, firmware y administración específicos.")}</p>`:""}<p>${t("Las IP de interfaces enrutadas y SVI se toman del plan. Para los equipos manuales, asigne una VLAN e IP si requieren administración. Los nombres no pueden contener comandos.")}</p><div class="actions"><button class="primary" onclick="saveNode('${id}')">${t("Confirmar equipo")}</button><button onclick="closeModal()">${t("Cancelar")}</button>${id && !accessPoint(n) && ["Cisco","Huawei","Fortinet","MikroTik"].includes(n.vendor)?`<button onclick="editPhysicalProfile('${id}','${n.vendor}')">${t("Confirmar interfaces físicas")}</button>`:""}</div>`,
         );
       } // Editor permite los siete atributos solicitados.
       /**
@@ -3535,6 +3592,7 @@
             }
           }
           validateNodeVendor(n);
+          if (id && (node(id).vendor!==n.vendor || node(id).type!==n.type)) delete n.interfaceProfiles;
           if (id && node(id).vendor !== n.vendor && connected(node(id)).length) {
             // Los nombres de puerto de la marca destino deben estar completos antes del cambio.
             for (const link of connected(node(id))) {
@@ -3634,7 +3692,7 @@
             )
             .join("");
         modal(
-          `<h2>${t(id ? "Editar" : "Crear")} ${t("enlace")}</h2><div class="grid"><div class="field"><label>${t("Equipo A")}</label><select id="la">${ns(l.a)}</select></div><div class="field"><label>${t("Equipo B")}</label><select id="lb">${ns(l.b)}</select></div><div class="field"><label>${t("Tipo")}</label><select id="ltype">${optsHTML(["trunk", "access", "routed"], l.type)}</select></div><div class="field"><label>${t("Red de tránsito (routed)")}</label><select id="lnet"><option value="">${t("Asignar nueva /30 desde VLSM")}</option>${state.plan
+          `<h2>${t(id ? "Editar" : "Crear")} ${t("enlace")}</h2><p class="notice warn">${t("Los puertos de este enlace son propuestas heredadas. Configure y confirme los puertos reales en el perfil físico de cada equipo antes de generar CLI.")}</p><div class="grid"><div class="field"><label>${t("Equipo A")}</label><select id="la">${ns(l.a)}</select></div><div class="field"><label>${t("Equipo B")}</label><select id="lb">${ns(l.b)}</select></div><div class="field"><label>${t("Tipo")}</label><select id="ltype">${optsHTML(["trunk", "access", "routed"], l.type)}</select></div><div class="field"><label>${t("Red de tránsito (routed)")}</label><select id="lnet"><option value="">${t("Asignar nueva /30 desde VLSM")}</option>${state.plan
             .filter((r) => r.kind !== "vlan")
             .map(
               (r) =>
@@ -3848,11 +3906,101 @@
       function connected(n) {
         return state.links.filter((l) => l.a === n.id || l.b === n.id);
       } // Configuración limitada a interfaces realmente presentes.
+      // Contrato opcional v4: no migra ni certifica puertos de proyectos antiguos.
+      const physicalVendors=["Cisco","Huawei","Fortinet","MikroTik"];
+      const physicalRoles=["WAN","LAN","uplink","trunk","access","gestión","tránsito"];
+      const physicalSources={
+        Cisco:"https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/interface/configuration/xe-16-10/ir-xe-16-10-book.pdf",
+        Huawei:"https://info.support.huawei.com/network/ptmngsys/Web/tsrev_ar/en/content/ar/29_edesk_user_cannot_ping_gateway/edesk_user_cannot_ping_gateway_edesk001.html",
+        Fortinet:"https://docs.fortinet.com/document/fortigate/7.4.8/administration-guide/620045/physical-interface",
+        MikroTik:"https://manual.mikrotik.com/docs/cli-reference/interface/"
+      };
+      /** Vincula la declaración al extremo, tipo y función actuales; cambios exigen reconfirmar. */
+      function physicalBinding(l,n) {
+        return JSON.stringify([n.vendor,n.type,l.a,l.b,l.type,l.network,l.vlan,l.bundle,l.ac,l.bc,l.ah,l.bh,l.af||"",l.bf||"",l.am||"",l.bm||""]);
+      }
+      /** Solo seguridad léxica. La existencia del puerto se confirma contra modelo, versión e inventario real. */
+      function physicalName(value,vendor) {
+        if (typeof value!=="string" || value.length>63 || !/^[A-Za-z0-9][A-Za-z0-9_/-]*$/.test(value)) fail(t("Nombre de interfaz física inválido."));
+        if (vendor==="Cisco" && !/^(GigabitEthernet|TenGigabitEthernet|FastEthernet|Ethernet|TwentyFiveGigE|FortyGigabitEthernet|HundredGigE)\d+(\/\d+){0,3}$/.test(value)) fail(t("Nomenclatura física no soportada por este adaptador."));
+        if (vendor==="Huawei" && !/^(GigabitEthernet|Ethernet|XGigabitEthernet|10GE|25GE|40GE|100GE|GE)\d+(\/\d+){0,3}$/.test(value)) fail(t("Nomenclatura física no soportada por este adaptador."));
+        if (vendor==="Fortinet") fortinetInterfaceName(value);
+        if (vendor==="MikroTik") mikrotikInterfaceName(value);
+        return value;
+      }
+      /** Reconstrucción cerrada; rechaza campos, referencias, puertos repetidos y funciones inconsistentes. */
+      function validatePhysicalProfile(n,vendor,p) {
+        enumVal(vendor,physicalVendors,"Fabricante");
+        if (!p || typeof p!=="object" || Array.isArray(p) || Object.keys(p).some(k=>!["model","version","source","confirmed","ports"].includes(k))) fail(t("Perfil físico inválido."));
+        if (["model","version","source"].some(k=>typeof p[k]!=="string")) fail(t("Perfil físico inválido."));
+        text(p.model,"Modelo",100);text(p.version,"Versión",100);text(p.source,"URL oficial del modelo y versión",1000);bool(p.confirmed);
+        let url;try { url=new URL(p.source); } catch (_) { fail(t("Indique documentación oficial del modelo y versión.")); }
+        const hosts={Cisco:["cisco.com"],Huawei:["huawei.com"],Fortinet:["fortinet.com"],MikroTik:["mikrotik.com"]}[vendor];
+        if (url.protocol!=="https:" || url.username || url.password || !hosts.some(h=>url.hostname===h || url.hostname.endsWith("."+h)) || p.source.length>1000) fail(t("Indique documentación oficial del modelo y versión."));
+        if (!Array.isArray(p.ports) || p.ports.length>1000) fail(t("Perfil físico inválido."));
+        const links=connected(n), names=new Set(),ids=new Set();
+        for (const port of p.ports) {
+          if (!port || Object.keys(port).some(k=>!["linkId","name","role","binding"].includes(k))) fail(t("Perfil físico inválido."));
+          const l=links.find(l=>l.id===port.linkId);
+          if (!l || ids.has(port.linkId)) fail(t("Referencia física de enlace inválida."));
+          ids.add(port.linkId);physicalName(port.name,vendor);
+          const key=port.name.toLowerCase();if(names.has(key)) fail(t("Interfaz física duplicada."));names.add(key);
+          enumVal(port.role,physicalRoles,"Función");
+          if (typeof port.binding!=="string" || port.binding.length>1000) fail(t("Perfil físico inválido."));
+          if (p.confirmed && (port.binding!==physicalBinding(l,n) ||
+              (l.type==="trunk" && !["trunk","uplink"].includes(port.role)) ||
+              (l.type==="access" && !["access","LAN","gestión"].includes(port.role)) ||
+              (l.type==="routed" && !["WAN","LAN","uplink","gestión","tránsito"].includes(port.role)))) fail(t("Función o enlace cambió; reconfirme interfaces físicas."));
+        }
+        if (p.confirmed && (!links.length || ids.size!==links.length)) fail(t("Confirme una interfaz física por enlace."));
+        return p;
+      }
+      /** Una declaración obsoleta sigue editable, pero no habilita CLI ni conserva textos obsoletos. */
+      function refreshPhysicalProfiles() {
+        for (const n of state.nodes) for (const [vendor,p] of Object.entries(n.interfaceProfiles||{})) {
+          const links=connected(n), previousCount=p.ports.length;
+          p.ports=p.ports.filter(port=>links.some(l=>l.id===port.linkId));
+          if (p.ports.length!==previousCount || p.ports.length!==links.length || p.ports.some(port=>port.binding!==physicalBinding(links.find(l=>l.id===port.linkId),n))) {
+            p.confirmed=false;delete state.configs[n.id+"-"+vendor];
+          }
+        }
+      }
+      /** Defensa compartida por los cuatro adaptadores; AP nunca recibe plantilla genérica. */
+      function requirePhysicalProfile(n,vendor) {
+        if (accessPoint(n)) fail(t("AP excluido de CLI genérica: requiere modelo, firmware y administración específicos."));
+        if (checkingArchive) return; // Reconstrucción canónica interna de CLI archivada; no es una acción de generación del usuario.
+        const profile=n?.interfaceProfiles?.[vendor];
+        if (!profile?.confirmed) fail(t("Equipo {0}: confirme modelo, versión e interfaces físicas.",[n?.name||""]));
+        validatePhysicalProfile(n,vendor,profile);
+      }
+      /** Editor por dispositivo y fabricante. Los campos nuevos no afirman puertos existentes por defecto. */
+      function editPhysicalProfile(id,vendor) {
+        const n=node(id);if (!n || accessPoint(n)) return toast(t("AP excluido de CLI genérica: requiere modelo, firmware y administración específicos."),true);
+        enumVal(vendor,physicalVendors,"Fabricante");
+        const p=n.interfaceProfiles?.[vendor],links=connected(n);
+        modal(`<h2>${t("Confirmar interfaces físicas")} · ${esc(n.name)} · ${vendor}</h2><p>${t("Introduzca modelo, versión y nombres del inventario real. La declaración no certifica compatibilidad física. Comparación necesita perfiles separados por fabricante.")}</p><p><a href="${physicalSources[vendor]}" target="_blank" rel="noopener">${t("Documentación oficial de interfaces")}</a></p><div class="grid">${field("Modelo","physicalModel",p?.model||"")}${field("Versión","physicalVersion",p?.version||"")}${field("URL oficial del modelo y versión","physicalSource",p?.source||"")}</div>${links.map((l,i)=>{const old=p?.ports.find(p=>p.linkId===l.id);return `<div class="card"><strong>${esc(node(l.a===id?l.b:l.a)?.name)} · ${esc(l.type)} · ${esc(l.id)}</strong><div class="grid">${field("Nombre real de interfaz","physicalName"+i,old?.name||"")}<div class="field"><label for="physicalRole${i}">${t("Función")}</label><select id="physicalRole${i}"><option value="">${t("Seleccione función")}</option>${optsHTML(physicalRoles,old?.role||"")}</select></div></div></div>`}).join("")}<label class="check"><input id="physicalConfirm" type="checkbox">${t("Confirmo los puertos contra el inventario del modelo y versión indicados")}</label><div class="actions"><button class="primary" onclick="savePhysicalProfile('${id}','${vendor}')">${t("Guardar perfil físico")}</button><button onclick="closeModal()">${t("Cancelar")}</button></div>`);
+        // Evita que el foco automático en un enlace desplace el encabezado en pantallas pequeñas.
+        $("physicalModel").focus({preventScroll:true});$("modal").scrollTop=0;
+      }
+      /** Valida el conjunto antes de mutar; un error conserva formulario, estado y CLI anteriores. */
+      function savePhysicalProfile(id,vendor) {
+        return safe(()=>{
+          const n=node(id),p={model:$("physicalModel").value.trim(),version:$("physicalVersion").value.trim(),source:$("physicalSource").value.trim(),confirmed:$("physicalConfirm").checked,
+            ports:connected(n).map((l,i)=>({linkId:l.id,name:$("physicalName"+i).value.trim(),role:$("physicalRole"+i).value,binding:physicalBinding(l,n)}))};
+          if (!p.confirmed) fail(t("Confirme los puertos del inventario antes de guardar."));
+          validatePhysicalProfile(n,vendor,p);
+          n.interfaceProfiles={...n.interfaceProfiles,[vendor]:p};
+          // Solo cambia el adaptador de este equipo; las restantes CLI siguen siendo válidas.
+          delete state.configs[id+"-"+vendor];state.revision++;
+          Object.values(state.configs).forEach(item=>item.revision=state.revision);
+          closeModal();render();return true;
+        });
+      }
       function endpoint(l, n, vendor) {
         const side = l.a === n.id ? "a" : "b",
           r = row(l.network);
         return {
-          iface: l[side + (vendor === "MikroTik" ? "m" : vendor === "Fortinet" ? "f" : vendor === "Cisco" ? "c" : "h")],
+          iface: n.interfaceProfiles?.[vendor]?.ports.find(p=>p.linkId===l.id)?.name || l[side + (vendor === "MikroTik" ? "m" : vendor === "Fortinet" ? "f" : vendor === "Cisco" ? "c" : "h")],
           ip: r ? (side === "a" ? r.first : r.last) : "",
           r,
           peer: node(l.a === n.id ? l.b : l.a),
@@ -3994,6 +4142,7 @@
           fail(t("Interfaces de switching requieren crear VLAN."));
       } // Bloqueos técnicos concretos, sin afirmar funcionalidad incompleta.
       function generate(n, vendor) {
+        requirePhysicalProfile(n,vendor);
         if (vendor === "MikroTik") return generateMikroTik(n);
         if (vendor === "Fortinet") return generateFortinet(n);
         if (!["Cisco", "Huawei"].includes(vendor) || fortinetNode(n) || mikrotikNode(n))
@@ -4377,6 +4526,7 @@
        * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
        */
       function generateFortinet(n) {
+        requirePhysicalProfile(n,"Fortinet");
         if (!fortinetNode(n)) fail(t("FortiOS solo admite nodos Firewall de fabricante Fortinet."));
         requireConfirmedPlan();
         hostname(n.name);
@@ -4614,6 +4764,7 @@
        * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
        */
       function generateMikroTik(n) {
+        requirePhysicalProfile(n,"MikroTik");
         if (!mikrotikNode(n)) fail(t("RouterOS solo admite nodos Router de fabricante MikroTik."));
         requireConfirmedPlan();
         hostname(n.name);
@@ -4817,8 +4968,10 @@
       } // Génération atomique de la marque entière.
       function configBlock(n, v) {
         const item = state.configs[n.id + "-" + v];
-        if (!item) return "";
-        return `<div style="margin-top:24px"><div class="headingrow"><h3>${esc(n.name)} · ${v}</h3><div class="actions"><button class="small" onclick="copyConfig('${n.id}','${v}')">${t("Copier configuration")}</button><button class="small" onclick="downloadConfig('${n.id}','${v}')">${t("Télécharger")}</button></div></div><pre class="console">${esc(item.text)}</pre></div>`;
+        const profile=n.interfaceProfiles?.[v];
+        const controls=`<div class="actions"><strong>${esc(n.name)} · ${v}</strong><button onclick="editPhysicalProfile('${n.id}','${v}')">${t("Confirmar interfaces físicas")}</button><span class="badge ${profile?.confirmed?'':'warn'}">${t(profile?.confirmed?"Declaradas por el usuario; sin validación física":"Interfaces físicas sin confirmar")}</span></div>`;
+        if (!item) return controls;
+        return controls+`<div style="margin-top:24px"><div class="headingrow"><h3>${esc(n.name)} · ${v}</h3><div class="actions"><button class="small" onclick="copyConfig('${n.id}','${v}')">${t("Copier configuration")}</button><button class="small" onclick="downloadConfig('${n.id}','${v}')">${t("Télécharger")}</button></div></div><pre class="console">${esc(item.text)}</pre></div>`;
       } // Les sorties CLI sont affichées comme texte, jamais interprétées en HTML.
       function compareView() {
         const ns = state.nodes.filter(configurable);
@@ -5491,6 +5644,7 @@
               ...(n.autoKey === undefined ? {} : {autoKey: text(n.autoKey,"Clave automática",160)}),
               ...(n.vendorOverride === undefined ? {} : {vendorOverride: bool(n.vendorOverride)}),
               ...(n.nameOverride === undefined ? {} : {nameOverride: bool(n.nameOverride)}),
+              ...(n.interfaceProfiles===undefined?{}:{interfaceProfiles:structuredClone(n.interfaceProfiles)}),
               name: hostname(n.name),
               type: enumVal(n.type, kinds, "Tipo de equipo"),
               vendor: enumVal(n.vendor, ["Cisco", "Huawei", "Fortinet", "MikroTik", "Genérico"], "Fabricante"),
@@ -5575,6 +5729,11 @@
         const previous = state, previousEditing=vlanEditing, previousPending=[...sitePending];
         try {
           state = out; vlanEditing=false; sitePending.clear();
+          for (const n of out.nodes) if (n.interfaceProfiles!==undefined) {
+            if (!n.interfaceProfiles || typeof n.interfaceProfiles!=="object" || Array.isArray(n.interfaceProfiles)) fail(t("Perfil físico inválido."));
+            for (const [vendor,profile] of Object.entries(n.interfaceProfiles)) validatePhysicalProfile(n,vendor,profile);
+          }
+          checkingArchive=true;
           for (const l of out.links)
             validateLink(
               l,
@@ -5599,6 +5758,7 @@
                 out.configs[key] = { text: generated, revision: out.revision };
             }
         } finally {
+          checkingArchive=false;
           state = previous; vlanEditing=previousEditing; previousPending.forEach(id=>sitePending.add(id));
         }
         let img = data.imageData || "";
@@ -5805,7 +5965,7 @@
         return title(t("Consola SSH"),t("Simulación educativa y conexión real son independientes. Nunca se aplican configuraciones automáticamente."))+`<p><a href="docs/manual-ssh.md" target="_blank" rel="noopener">${t("Manual de consola SSH")}</a></p>`+
           `<div class="card"><div class="actions" role="tablist" aria-label="${t("Modalidad SSH")}"><button role="tab" aria-selected="${!real}" onclick="sshTab('simulation')">${t("Simulación")}</button><button role="tab" aria-selected="${real}" onclick="sshTab('real')">${t("Conexión real")}</button></div><div class="field"><label for="sshDevice">${t("Dispositivo de la topología")}</label>${select}</div>${n?`<p>${esc(n.name)} · ${esc(n.vendor)} · ${t(n.type)}</p><p class="mono">${esc(connected(n).map(l=>endpoint(l,n,n.vendor).iface||"—").join(" · "))}</p>`:""}
           ${real ? `<div class="notice">${t("La conexión manual no requiere VLSM. Use únicamente equipos autorizados. Cambiar idioma, pestaña o módulo cierra la sesión; no se guarda el historial real.")}</div><div id="sshService" class="notice ${service?"":"warn"}">${t(service?"Servicio local disponible":"Servicio no disponible: inicie Python y abra http://127.0.0.1:8765 (o el puerto configurado).")}</div><div class="grid">${field(t("IP o hostname autorizado"),"sshHost",sshManagementAddress(n))}${field(t("Puerto SSH"),"sshPort",22,"number",'min="1" max="65535"')}${field(t("Usuario SSH"),"sshUser","")}<div class="field"><label for="sshMethod">${t("Autenticación")}</label><select id="sshMethod" onchange="sshAuthMethod()"><option value="password">${t("Contraseña")}</option><option value="key">${t("Clave privada")}</option></select></div><div id="sshPasswordBox" class="field"><label for="sshPassword">${t("Contraseña")}</label><input id="sshPassword" type="password" maxlength="1024" autocomplete="off"></div><div id="sshKeyBox" class="field hidden"><label for="sshPrivateKey">${t("Clave privada (solo memoria)")}</label><textarea id="sshPrivateKey" maxlength="32768" autocomplete="off" spellcheck="false"></textarea><label for="sshPassphrase">${t("Frase de clave (opcional)")}</label><input id="sshPassphrase" type="password" maxlength="1024" autocomplete="off"></div></div><label class="check"><input type="checkbox" id="sshAuthorization">${t("Autorizo esta conexión al destino configurado en mi servicio local")}</label><p>${t("Si falta IP de gestión explícita, introdúzcala manualmente. No use una IP WAN o gateway como administración sin verificarla.")}</p><div class="actions"><button class="primary" id="sshConnect" ${service?"":"disabled"} onclick="sshConnect()">${t("Conectar")}</button><button id="sshDisconnect" disabled onclick="sshDisconnect()">${t("Desconectar")}</button><button id="sshRealClear" disabled onclick="sshClearReal()">${t("Limpiar consola")}</button></div><p id="sshConnectionStatus" role="status">${t(sshLabels[sshStatusCode]||sshLabels.disconnected)}</p><div id="sshTerminal" class="ssh-terminal" aria-label="${t("Terminal SSH real")}"></div>`
-          : `<div class="notice warn">${t("SIMULACIÓN: no existe conexión SSH ni acceso a equipos. Respuestas derivadas del proyecto, no del sistema operativo del dispositivo.")}</div>${!state.approved||vlanEditing||sitePending.size?`<p class="notice warn">${t("Plan no confirmado: confirme VLAN/VLSM para consultar datos simulados.")}</p>`:""}<p>${t("Comandos soportados")}: ${esc(sshCommands(n).join(" · "))}</p><pre id="sshSimulation" class="ssh-terminal" role="log" aria-label="${t("Terminal simulada")}">${esc(sshHistory)}</pre><label for="sshCommand">${t("Comando simulado")}</label><div class="actions"><input id="sshCommand" class="mono" maxlength="500" onkeydown="if(event.key==='Enter'){event.preventDefault();sshRunSimulation()}"><button onclick="sshRunSimulation()">${t("Enviar comando")}</button><button id="sshSimClear" ${sshHistory?"":"disabled"} onclick="sshClearSimulation()">${t("Limpiar consola")}</button><button onclick="sshResetSimulation()">${t("Reiniciar simulación")}</button></div>`}</div>`;
+          : `<div class="notice warn">${t("SIMULACIÓN: no existe conexión SSH ni acceso a equipos. Respuestas derivadas del proyecto, no del sistema operativo del dispositivo.")}</div>${!confirmedPlan()?`<p class="notice warn">${t("Plan no confirmado: confirme VLAN/VLSM para consultar datos simulados.")}</p>`:""}<p>${t("Comandos soportados")}: ${esc(sshCommands(n).join(" · "))}</p><pre id="sshSimulation" class="ssh-terminal" role="log" aria-label="${t("Terminal simulada")}">${esc(sshHistory)}</pre><label for="sshCommand">${t("Comando simulado")}</label><div class="actions"><input id="sshCommand" class="mono" maxlength="500" onkeydown="if(event.key==='Enter'){event.preventDefault();sshRunSimulation()}"><button onclick="sshRunSimulation()">${t("Enviar comando")}</button><button id="sshSimClear" ${sshHistory?"":"disabled"} onclick="sshClearSimulation()">${t("Limpiar consola")}</button><button onclick="sshResetSimulation()">${t("Reiniciar simulación")}</button></div>`}</div>`;
       }
       /** Selección no sensible; n.ip solo se considera administración si pertenece a Gestión. */
       function sshChooseDevice(id) { sshDevice=state.nodes.some(n=>n.id===id)?id:"";sshHistory="";render(); }
@@ -5823,7 +5983,7 @@
         if (command==="help"||command==="?") output=sshCommands(n).join("\n");
         else if (!n) output=t("Seleccione un dispositivo para simular.");
         else if (!sshCommands(n).includes(command)) output=t("Comando no disponible en el simulador");
-        else if (!state.approved||vlanEditing||sitePending.size) output=t("Plan no confirmado: confirme VLAN/VLSM para consultar datos simulados.");
+        else if (!confirmedPlan()) output=t("Plan no confirmado: confirme VLAN/VLSM para consultar datos simulados.");
         else if (["show running-config","display current-configuration","show","/export"].includes(command)) {
           const item=state.configs[n.id+"-"+n.vendor];
           output=item?.revision===state.revision?item.text:t("Genere primero la configuración de este equipo en su módulo.");
