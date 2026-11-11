@@ -158,19 +158,40 @@ class Lab:
             self.page.locator("#vc0").fill("10.20.20.0/24")
             index = self.evaluate("state.vlans.findIndex(v=>v.site==='s2')")
             self.page.locator(f"#vc{index}").fill("10.20.35.0/24")
-        self.button("Confirmar VLAN y calcular VLSM").click()
+        self.page.locator('button[onclick="confirmVlans()"]').click()
         self.valid()
         return self.snapshot()["state"]
 
     def topology(self):
         self.go(5)
+        # Selección explícita para este laboratorio de regresión monofabricante.
+        self.evaluate("state.sites.forEach(s=>s.vendorProfile={router:'Cisco',core:'Cisco',distribution:'Cisco',access:'Cisco',firewall:'',backupRouter:''});render()")
         self.button("Generar desde el plan").click()
         self.valid()
         check(self.page.locator("#toposvg").count() == 1, "Falta el SVG de topología")
         check(not self.evaluate("topologyIssues().filter(x=>x.block)"), "Topología bloqueada")
 
+    def archived_profiles(self, vendors=None):
+        """Construye metadatos v4 antiguos de laboratorio para probar carga sin pérdida."""
+        self.evaluate("""vendors=>{
+            for(const n of state.nodes) for(const vendor of vendors||[n.vendor]) {
+                if(!physicalVendors.includes(vendor)||accessPoint(n)||!connected(n).length || (vendor==='Fortinet'?!fortinetNode(n):vendor==='MikroTik'?!mikrotikNode(n):!configurable(n)))continue;
+                const suffix={Cisco:'c',Huawei:'h',Fortinet:'f',MikroTik:'m'}[vendor];
+                const p={model:'LAB-FICTICIO',version:'LAB-no-fisica',source:{Cisco:'https://www.cisco.com/',Huawei:'https://info.support.huawei.com/',Fortinet:'https://docs.fortinet.com/',MikroTik:'https://help.mikrotik.com/'}[vendor],confirmed:true,
+                    ports:connected(n).map(l=>({linkId:l.id,name:l[(l.a===n.id?'a':'b')+suffix],
+                    role:l.type==='trunk'?'trunk':l.type==='access'?'access':'tránsito',binding:physicalBinding(l,n)}))};
+                validatePhysicalProfile(n,vendor,p);n.interfaceProfiles={...n.interfaceProfiles,[vendor]:p};
+            }
+        }""", vendors)
+
     def configs(self, vendor):
-        self.go({"Cisco": 6, "Huawei": 7, "Fortinet": 11, "MikroTik": 12}[vendor])
+        if vendor == "Huawei" and not self.evaluate("configNodes('Huawei').length"):
+            # Equivalencias únicamente mediante la acción explícita Comparación.
+            self.go(10)
+            self.evaluate("state.nodes.filter(configurable).forEach(n=>generateCompare(n.id))")
+            self.valid()
+            return {k:v['text'] for k,v in self.snapshot()['state']['configs'].items() if k.endswith('-Huawei')}
+        self.go({"Cisco": 6, "Huawei": 7, "Fortinet": 8, "MikroTik": 9}[vendor])
         self.button(f"Generar todos los {vendor}").click()
         self.valid()
         return {key: value["text"] for key, value in self.snapshot()["state"]["configs"].items()
@@ -179,7 +200,7 @@ class Lab:
     def edge(self, vendor):
         self.go(1)
         self.evaluate("demo();state.sites.forEach(s=>s.redundant=false);proposeVlans()")
-        self.button("Confirmar VLAN y calcular VLSM").click()
+        self.page.locator('button[onclick="confirmVlans()"]').click()
         self.valid()
         self.evaluate("""vendor=>{
             const n=(id,name,type,brand,site)=>({id,name,type,vendor:brand,site,ip:'',network:'',x:100,y:100});
@@ -203,7 +224,7 @@ class Lab:
         return self.configs(vendor)["edge-" + vendor]
 
     def ipv6(self, base="fd12:3456:789a::/48", site_blocks=None):
-        self.go(13)
+        self.go(12)
         self.page.locator("#ipv6Enabled").check()
         self.page.locator("#ipv6Base").fill(base)  # Fijo para pruebas deterministas.
         if site_blocks:
@@ -367,7 +388,7 @@ def ipv4_atomic(lab):
     lab.go(3)
     lab.page.locator("#vn0").fill("Edición pendiente conservada")
     lab.page.locator("#vc0").fill("10.99.0.0/24")
-    lab.atomic_error(lambda: lab.button("Confirmar VLAN y calcular VLSM").click(), "#vc0")
+    lab.atomic_error(lambda: lab.page.locator('button[onclick="confirmVlans()"]').click(), "#vc0")
     return "CIDR fuera del bloque rechazado: estado/CLI/DOM/localStorage intactos."
 
 
@@ -385,7 +406,7 @@ def ipv6_plan(lab):
         offsets = [2, 3] if row["site"] == "s1" else [1]
         check(list(map(ipaddress.ip_address, row["physical"])) == [net.network_address + x for x in offsets], "Reservas físicas incorrectas")
     check(next(row for row in plan if row["site"] == "s1")["siteCidr"] == "fd12:3456:789a:100::/56", "No reservó primero la sede manual")
-    lab.evaluate("state.sites.reverse();state.vlans.reverse();go(13)")
+    lab.evaluate("state.sites.reverse();state.vlans.reverse();go(12)")
     lab.button("Confirmar planificación IPv6").click()
     check(lab.snapshot()["state"]["ipv6Plan"] == plan, "El orden de filas alteró el plan")
     payload = lab.export()
@@ -429,6 +450,8 @@ def topology(lab):
 def legacy_cli(lab, vendor):
     lab.lab(scoped=True)
     lab.topology()
+    if vendor == "Huawei":
+        lab.evaluate("state.nodes.filter(configurable).forEach(n=>n.vendor='Huawei');render()")
     outputs = lab.configs(vendor)
     check(len(outputs) == 14, f"Se esperaban 14 propuestas {vendor}")
     joined = "\n".join(outputs.values())
@@ -611,14 +634,14 @@ def responsive(lab):
     lab.ipv6()
     for width in (1440, 390):
         lab.page.set_viewport_size({"width": width, "height": 900})
-        for page in (4, 13, 6, 7, 11, 12):
+        for page in (4, 13, 6, 7, 9, 12):
             lab.go(page)
             if page == 4:
                 lab.page.locator("#calc").fill("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff/0")
                 lab.button("Calcular").click()
             dimensions = lab.evaluate("({width:innerWidth,scroll:document.documentElement.scrollWidth})")
             check(dimensions["scroll"] <= width, f"Desbordamiento en etapa {page}: {dimensions}")
-            if page in (6, 7, 11, 12):
+            if page in (6, 7, 9, 12):
                 check("exclusivamente IPv4" in lab.page.locator("#view").inner_text(), "Falta aviso del límite IPv4")
     return "12 combinaciones etapa/viewport sin desbordamiento de página; avisos IPv4 visibles."
 
@@ -679,7 +702,7 @@ def language_default(lab):
 @case("C22", "Vistas ES/EN", "Las 14 vistas y editores muestran títulos, etiquetas y controles traducidos.")
 def translated_views(lab):
     lab.lab(scoped=True); lab.topology(); lab.configs('Cisco'); lab.configs('Huawei'); lab.ipv6()
-    expected = ['Overview','Project details','Estimation and infrastructure','VLANs and VLSM','IPv4 / IPv6 subnetting','Topology','Cisco configuration','Huawei configuration','Comparison','Cyberdefense and AI use','Corte 2 evidence','Fortinet configuration','MikroTik configuration','IPv6 planning']
+    expected = ['Overview','Project details','Estimation and infrastructure','VLANs and VLSM','IPv4 / IPv6 subnetting','Topology','Cisco configuration','Huawei configuration','Fortinet configuration','MikroTik configuration','Comparison','Cyberdefense and AI use','IPv6 planning','SSH console']
     for language in ['en','es']:
         lab.page.locator('#languageSelect').select_option(language)
         for i in range(14):
@@ -722,7 +745,7 @@ def translated_messages(lab):
         previous=lab.snapshot()
         # Inconsistent laboratory data exercises the defensive warning view, never a device.
         lab.evaluate("""state.nodes=['USER-A','USER-B'].map((name,i)=>({id:'warning-'+i,name,type:'PC',vendor:'Cisco',site:'s1',ip:'10.0.0.1',network:'',x:0,y:0}));
-            state.opts.static=true;state.staticReason='';go(9)""")
+            state.opts.static=true;state.staticReason='';go(11)""")
         warnings=lab.page.locator('#view').inner_text()
         check(('IP duplicada: 10.0.0.1' if language=='es' else 'Duplicate IP: 10.0.0.1') in warnings,'Advertencia dinámica sin traducción')
         check(('sin justificación' if language=='es' else 'no justification') in warnings,'Advertencia de ruta sin traducción')
@@ -770,10 +793,8 @@ def manufacturer_baseline(lab):
         lab.evaluate("lang=>{uiLanguage=lang;state=fresh();render()}",language)
         # Helpers exercise Spanish button names; generate language-neutral inputs first.
         lab.evaluate("uiLanguage='es';render()")
-        lab.lab(scoped=True);lab.topology()
-        if language=='en':
-            lab.evaluate("setLanguage('en')");lab.go(3);lab.button('Confirm VLANs and calculate VLSM').click();lab.valid()
-            lab.go(5);lab.button('Generate from plan').click();lab.valid()
+        historical=json.loads((ROOT/'tests/fixtures/pre-revision-v4.json').read_text())
+        lab.evaluate("data=>applyImport(validateImport(data))",historical)
         current=lab.snapshot()['state']
         digest=lambda value:hashlib.sha256(json.dumps(value,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
         check(digest(current['plan'])==expected['plan_ipv4'],'Plan IPv4 cambió')
@@ -782,11 +803,8 @@ def manufacturer_baseline(lab):
         check(digest(lab.snapshot()['state']['ipv6Plan'])==expected['plan_ipv6'],'Plan IPv6 cambió')
         if language=='en':lab.evaluate("setLanguage('en')")
         for vendor in ['Cisco','Huawei']:
-            if language=='es':actual=lab.configs(vendor)
-            else:
-                lab.evaluate("setLanguage('en')");lab.go(6 if vendor=='Cisco' else 7)
-                lab.button(f'Generate all {vendor}').click();lab.valid()
-                actual={k:v['text'] for k,v in lab.snapshot()['state']['configs'].items() if k.endswith('-'+vendor)}
+            # Comparación explícita sobre las identidades históricas, no selección real.
+            actual=lab.evaluate("vendor=>Object.fromEntries(state.nodes.filter(configurable).map(n=>[n.id+'-'+vendor,generate(n,vendor)]))",vendor)
             check(hashlib.sha256(json.dumps(actual,sort_keys=True,ensure_ascii=False).encode()).hexdigest()==expected[vendor],f'CLI {vendor}/{language} cambió')
         for vendor in ['Fortinet','MikroTik']:
             lab.evaluate("uiLanguage='es';state=fresh();render()")
@@ -807,7 +825,9 @@ def button_inventory(lab):
     check(lab.page.locator('label.filebtn[role=button][tabindex="0"][onkeydown]').count()==1,'Importador sin teclado')
     check(lab.button('← Anterior').is_disabled(),'Anterior activo al inicio')
     lab.go(13);check(lab.button('Siguiente →').is_disabled(),'Siguiente activo al final')
-    lab.go(5)
+    for target in [5,6,7,8,9,10]:
+        lab.go(target);check(lab.evaluate('page')==13 and lab.page.locator('#toast.error').count()==1,'Navegación dependiente sin validación')
+    lab.lab();lab.go(5)
     check(lab.button('Vista automática').is_disabled(),'Vista automática activa sin imagen')
     lab.button('Descargar topología SVG').click();check(lab.page.locator('#toast.error').count()==1,'Descarga vacía sin validación')
     lab.go(6);lab.button('Generar equipo').click();check(lab.page.locator('#toast.error').count()==1,'Generación vacía sin validación')
@@ -838,17 +858,17 @@ def button_actions(lab):
             # Attribute comparison avoids quoting imported names in a selector.
             handles=lab.page.locator('button:visible').element_handles();target=next((h for h in handles if h.get_attribute('onclick')==action),None)
             check(target is not None,'Botón desaparecido: '+action)
-            before=lab.evaluate("JSON.stringify({state,render:__renders,modal:$('modal').open,toast:$('toast').textContent,printed:__printed,imageMode})")
+            before=lab.evaluate("JSON.stringify({state,render:__renders,modal:$('modal').open,toast:$('toast').textContent,printed:__printed,imageMode,sshHistory,zoom:document.querySelector('#toposvg')?.getAttribute('style')})")
             previous_downloads=len(downloads)
             target.focus();lab.page.keyboard.press('Enter')
             lab.page.wait_for_timeout(40)
-            after=lab.evaluate("JSON.stringify({state,render:__renders,modal:$('modal').open,toast:$('toast').textContent,printed:__printed,imageMode})")
+            after=lab.evaluate("JSON.stringify({state,render:__renders,modal:$('modal').open,toast:$('toast').textContent,printed:__printed,imageMode,sshHistory,zoom:document.querySelector('#toposvg')?.getAttribute('style')})")
             check(before!=after or len(downloads)>previous_downloads,'Sin efecto observable: '+action)
             found.add(family);visited.append(action)
     required={'saveLocal','loadLocal','exportJSON','newProject','saveProject','resizeSites','demo','removeSite','saveSite','saveCounts','resetCounts','proposeVlans','addVlan','deleteVlan','confirmVlans','downloadPlan','editGateway','inspectSubnet','calculate','confirmIPv6','buildTopology','editNode','editLink','downloadSVG','deleteNode','deleteLink','saveNode','saveLink','closeModal','generateSelected','generateAll','downloadAll','generateCompare','copyConfig','downloadConfig','downloadReport','window.print','go'}
     actual={a.split('(')[0] for a in visited}
     check(required<=actual,'Handlers no ejercitados: '+repr(required-actual))
-    return f"{len(found)} familias/objetivos activados con Enter; 38 handlers, descargas, impresión invocada y validaciones observables."
+    return f"{len(found)} familias/objetivos activados con Enter; {len(actual)} handlers, descargas, impresión invocada y validaciones observables."
 
 
 @case("C29", "Portapapeles e importadores con teclado", "Copia real, descarga intacta y file chooser accesible; fallback selecciona CLI.")
@@ -924,6 +944,491 @@ def translation_catalog(lab):
     check(lab.page.locator('#vc0').get_attribute('placeholder').startswith('Automatic'),'Placeholder sin traducir')
     check(lab.page.locator('#vn0').get_attribute('aria-label')=='VLAN name','Nombre accesible sin traducir')
     return f"{len(set(keys))} claves literales cubiertas; placeholder, aria-label y valores de opciones comprobados."
+
+
+
+@case("N01", "Pools RFC1918 independientes", "Dos sedes en rangos privados distintos y tránsito independiente, LAN contenidas y redes disjuntas.")
+def independent_pools(lab):
+    lab.lab()
+    lab.evaluate("""state.project.base='172.16.0.0/16';state.project.transitBase='192.168.200.0/24';
+      state.sites[0].ipv4Base='192.168.64.0/22';state.sites[1].ipv4Base='10.20.0.0/22';render()""")
+    lab.button('Recalcular VLAN').click();lab.valid();state=lab.snapshot()['state'];disjoint(state['plan'])
+    for row in state['plan']:
+        pool=next(s['ipv4Base'] for s in state['sites'] if s['id']==row['site']) if row['kind']=='vlan' else state['project']['transitBase']
+        check(network(row).subnet_of(ipaddress.ip_network(pool)),'Red fuera de pool independiente')
+    payload=lab.export();lab.upload(payload);lab.valid();check(lab.snapshot()['state']['plan']==state['plan'],'Importación movió redes')
+    return '15 VLAN en 192.168.64.0/22 y 10.20.0.0/22; /30 en 192.168.200.0/24; JSON conserva el plan.'
+
+@case("N02", "Errores de bloque atómicos", "Rechazar solapamiento, red desalineada, pública y capacidad insuficiente sin mutaciones.")
+def independent_negative(lab):
+    lab.lab();before=lab.snapshot()
+    for block in ['10.20.0.1/22','8.8.8.0/24','10.20.0.0/33']:
+        error=lab.evaluate("b=>{try {validateSiteBlocks(state.project,[{...state.sites[0],ipv4Base:b}]);return ''}catch(e){return e.message}}",block)
+        check(bool(error),'Bloque inválido aceptado '+block)
+    check(lab.evaluate("()=>{try {validateSiteBlocks(state.project,state.sites.map(s=>({...s,ipv4Base:'192.168.64.0/22'})));return false}catch(e){return true}}"),'Solapamiento aceptado')
+    lab.evaluate("state.sites[0].ipv4Base='192.168.66.0/24';render()")
+    # Sitio existente confirmado; el intento de asignación debe ser transaccional.
+    prior=lab.snapshot();lab.button('Recalcular VLAN').click()
+    check(lab.page.locator('#toast.error').count()==1 and lab.snapshot()==prior,'Capacidad no fue atómica')
+    return 'CIDR desalineado/público/prefijo inválido y solapamiento rechazados; insuficiencia /24 conserva estado.'
+
+@case("N03", "VLAN manual independiente y fallback", "Manual dentro de sede, fallback global sin invasión; error manual conserva texto y plan.")
+def independent_manual(lab):
+    lab.lab();lab.evaluate("state.sites[0].ipv4Base='192.168.64.0/22';render()")
+    lab.page.locator('#vc0').fill('192.168.64.0/24');lab.button('Recalcular VLAN').click();lab.valid()
+    state=lab.snapshot()['state'];check(state['plan'][0] if state['plan'] else False,'Sin plan');disjoint(state['plan'])
+    key=state['vlans'][0]['key'];check(next(r for r in state['plan'] if r['key']==key)['network']=='192.168.64.0','Manual movida')
+    before=lab.snapshot();lab.page.locator('#vc0').fill('192.168.80.0/24');lab.button('Recalcular VLAN').click()
+    check(lab.snapshot()==before and lab.page.locator('#vc0').input_value()=='192.168.80.0/24','Error perdió estado/texto')
+    return 'Manual en sede independiente, automáticas en pools correctos; manual exterior rechazada sin perder texto/plan.'
+
+@case("N04", "Inventario confirmado sin invalidación superflua", "Formulario inicial, resumen, editar y confirmar cantidades idénticas conservando plan/topología/CLI.")
+def inventory_confirmation(lab):
+    lab.lab();lab.topology();lab.configs('Cisco');before=lab.snapshot()['state'];lab.go(2)
+    check(lab.page.locator('#c0_pc').count()==1,'Falta formulario inicial')
+    lab.evaluate('saveCounts(0)');lab.valid();lab.go(2)
+    check(lab.page.locator('#c0_pc').count()==0 and lab.button('Editar inventario').count()==1,'Sin resumen confirmado')
+    lab.button('Editar inventario').click();lab.evaluate('saveCounts(0)');lab.valid()
+    now=lab.snapshot()['state'];check(now['plan']==before['plan'] and now['nodes']==before['nodes'] and now['configs']==before['configs'] and now['approved'],'Confirmación idéntica invalidó')
+    return 'Formulario→resumen→editar; mismas cantidades conservan plan, nodos y CLI.'
+
+@case("N05", "Inventario editado y borradores", "Conservar borrador al navegar; cambio real invalida únicamente sede afectada.")
+def inventory_draft(lab):
+    lab.lab();lab.topology();before=lab.snapshot()['state'];lab.go(2)
+    value=int(lab.page.locator('#c0_pc').input_value())+5;lab.page.locator('#c0_pc').fill(str(value));lab.go(4);lab.go(2)
+    check(lab.page.locator('#c0_pc').input_value()==str(value),'Navegar perdió inventario')
+    lab.evaluate('saveCounts(0)');lab.valid();after=lab.snapshot()['state']
+    check(after['sites'][0]['counts']['pc']==value and not after['approved'],'No guardó/invalidate')
+    for key in ['vlans','plan','nodes']:
+        check([x for x in after[key] if x['site']=='s2']==[x for x in before[key] if x['site']=='s2'],'Perdió datos de otra sede '+key)
+    return 'Borrador conservado al navegar; cambio s1 conserva VLAN, LAN y equipos de s2.'
+
+@case("N06", "Restauración de inventario confirmada", "Cancelar restauración conserva cantidades; aceptar restaura estimación y su disponibilidad.")
+def inventory_reset(lab):
+    lab.lab();lab.go(2);lab.page.locator('#c0_pc').fill('130');lab.evaluate('saveCounts(0)');before=lab.snapshot();lab.accept_dialog=False
+    lab.button('Restaurar estimación').first.click();check(lab.snapshot()==before,'Cancelar modificó inventario')
+    lab.accept_dialog=True;lab.button('Restaurar estimación').first.click();check(lab.snapshot()['state']['sites'][0]['counts'] is None,'No restauró')
+    check(lab.page.locator('#c0_pc').input_value()=='100','Fórmula alterada')
+    return 'Cancelación intacta; restauración explícita vuelve a 100 PCs estimados.'
+
+@case("N07", "Confirmación VLAN y dependencias", "Sin cambios conserva derivados; borrador bloquea generación, conserva valores al navegar y permite confirmar.")
+def vlan_confirmation(lab):
+    lab.lab();lab.topology();lab.configs('Cisco');lab.go(3);before=lab.snapshot()
+    lab.button('Recalcular VLAN').click();lab.valid();check(lab.snapshot()==before,'Reconfirmar idéntico cambió estado')
+    lab.page.locator('#vn0').fill('EDITADO');lab.go(5);check(lab.evaluate('page')==3,'Entró a Topología pendiente')
+    check(lab.page.locator('#toast.error').count()==1 and lab.snapshot()==before,'Borrador permitió topología o mutó')
+    lab.go(3);check(lab.page.locator('#vn0').input_value()=='EDITADO','Navegación perdió VLAN')
+    lab.button('Recalcular VLAN').click();lab.valid();check(lab.snapshot()['state']['approved'],'No confirmó')
+    return 'Confirmación idéntica conserva todo; edición pendiente bloquea dependencias y conserva formulario.'
+
+@case("N08", "Componentes retirados y navegación", "13 módulos, sin Evidencias Corte 2 ni explicaciones retiradas; calculadoras intactas.")
+def removed_components(lab):
+    check(lab.page.locator('#nav button').count()==14,'Numeración incorrecta')
+    check('Evidencias Corte 2' not in lab.page.locator('#nav').inner_text(),'Módulo persiste')
+    for i,removed in [(3,'¿Qué significan VLSM'),(4,'Interpretación')]:
+        lab.go(i);check(removed not in lab.page.locator('#view').inner_text(),'Componente persiste')
+    lab.go(13);check(lab.button('Siguiente →').is_disabled(),'Último módulo incorrecto');lab.go(4)
+    lab.page.locator('#calc').fill('192.168.10.50/26');lab.button('Calcular').click();lab.valid()
+    check('192.168.10.63' in lab.page.locator('#calcResult').inner_text(),'Perdió resultado')
+    return '14 módulos navegables, explicaciones ausentes; red/broadcast /26 correctos.'
+
+@case("N09", "Topología mixta real", "Cisco router, Huawei core/switch, Fortinet firewall y MikroTik router secundario con puertos reales.")
+def mixed_topology(lab):
+    lab.lab();lab.go(5)
+    profile={'router':'Cisco','core':'Huawei','distribution':'Huawei','access':'Huawei','firewall':'Fortinet','backupRouter':'MikroTik'}
+    for i in range(2):
+        for role,vendor in profile.items():lab.page.locator(f'#vp{i}_{role}').select_option(vendor)
+    lab.button('Confirmar fabricantes').click();lab.valid();lab.go(3);lab.page.locator('button[onclick="confirmVlans()"]').click();lab.valid();lab.go(5);lab.button('Generar desde el plan').click();lab.valid()
+    check(not lab.evaluate('topologyIssues().filter(x=>x.block)'),'Topología mixta bloqueada')
+    for vendor in ['Cisco','Huawei','Fortinet','MikroTik']:
+        ids=lab.evaluate('v=>configNodes(v).map(n=>n.id)',vendor);check(ids,'Sin equipos '+vendor)
+        check(lab.evaluate('v=>configNodes(v).every(n=>n.vendor===v)',vendor),'Selección cruzada '+vendor)
+        lab.configs(vendor)
+    state=lab.snapshot()['state'];disjoint(state['plan']);payload=lab.export();lab.upload(payload);lab.valid()
+    check(lab.snapshot()['state']['sites']==state['sites'] and lab.snapshot()['state']['nodes']==state['nodes'],'JSON perdió perfiles/identidad')
+    return 'Cuatro fabricantes reales generados; perfiles, autoKey, puertos y equipos conservados en JSON.'
+
+@case("N10", "Perfiles y roles inválidos", "Sin elección no genera; roles incompatibles/importación arbitraria se rechazan atómicamente.")
+def vendor_rejections(lab):
+    lab.lab();lab.go(5);before=lab.snapshot();lab.button('Generar desde el plan').click()
+    check(lab.snapshot()==before and lab.page.locator('#toast.error').count()==1,'Asignó Cisco sin elección')
+    for profile in [{'router':'Fortinet'},{'core':'MikroTik'},{'arbitrary':'Cisco'}]:
+        check(lab.evaluate('p=>{try{validateVendorProfile(p);return false}catch(e){return true}}',profile),'Perfil inválido aceptado')
+    check(lab.evaluate("()=>{try{validateNodeVendor({type:'Switch',vendor:'Fortinet'});return false}catch(e){return true}}"),'Rol inválido aceptado')
+    return 'Sin perfil explícito no genera; firewall/switch, core/RouterOS y campos arbitrarios rechazados.'
+
+@case("N11", "Regeneración estable y equipos manuales", "Reorganizar/regenerar no elimina manuales ni cambia IDs de nodos/enlaces automáticos.")
+def stable_topology(lab):
+    lab.lab();lab.topology();before=lab.snapshot()['state'];lab.evaluate("state.nodes.push({id:'manual',name:'PC-MANUAL',type:'PC',vendor:'Genérico',site:'s1',ip:'',network:'',x:50,y:50});render()")
+    lab.button('Generar desde el plan').click();lab.valid();after=lab.snapshot()['state']
+    check(any(n['id']=='manual' for n in after['nodes']),'Borró manual')
+    check({n['autoKey']:n['id'] for n in before['nodes']}=={n['autoKey']:n['id'] for n in after['nodes'] if n.get('autoKey')},'Cambió IDs')
+    check([l['id'] for l in before['links']]==[l['id'] for l in after['links']],'Cambió enlaces')
+    lab.button('Reorganizar diagrama').click();check(len(lab.snapshot()['state']['nodes'])==len(after['nodes']),'Reorganizar eliminó')
+    return 'Manual conservado; IDs automáticos y enlaces estables tras regenerar y reorganizar.'
+
+@case("N12", "Lienzo, zoom, arrastre y SVG", "Iconos autónomos, cajas separadas, zoom/arrastre y exportación SVG funcionales.")
+def topology_visual(lab):
+    lab.lab();lab.topology();nodes=lab.snapshot()['state']['nodes']
+    for i,a in enumerate(nodes):
+        for b in nodes[i+1:]:check(not (a['x']<b['x']+195 and b['x']<a['x']+195 and a['y']<b['y']+92 and b['y']<a['y']+92),'Cajas superpuestas')
+    svg=lab.page.locator('#toposvg');before=svg.get_attribute('style');lab.button('Acercar').click();check(svg.get_attribute('style')!=before,'Zoom sin efecto')
+    lab.button('Alejar').click();target=lab.page.locator('#toposvg .node').first;target.scroll_into_view_if_needed();box=target.bounding_box();nid=target.get_attribute('data-id');old=lab.evaluate('id=>node(id).x',nid)
+    lab.page.mouse.move(box['x']+60,box['y']+30);lab.page.mouse.down();lab.page.mouse.move(box['x']+100,box['y']+60,steps=5);lab.page.mouse.up()
+    check(lab.evaluate('id=>node(id).x',nid)!=old,'Arrastre no funciona')
+    with lab.page.expect_download() as download:lab.button('Descargar topología SVG').click()
+    text=Path(download.value.path()).read_text();check('<path' in text and '<title>' in text and 'https://' not in text,'SVG no autónomo')
+    for width in [1440,390]:lab.page.set_viewport_size({'width':width,'height':900});check(lab.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),'Desborde de página')
+    return 'Sin cajas superpuestas; zoom y arrastre reales; SVG con iconos inline; 1440/390 sin desborde de página.'
+
+@case("N13", "Bilingüismo de nuevos controles", "Nuevos perfiles, inventario, aprobación y diagrama traducidos sin cambiar datos.")
+def new_bilingual(lab):
+    lab.lab();before=lab.snapshot();lab.evaluate("setLanguage('en')");lab.go(5)
+    check(lab.button('Confirm manufacturers').count()==1 and lab.button('Rearrange diagram').count()==1,'Controles sin traducir')
+    check('Manufacturers by site and role' in lab.page.locator('#view').inner_text(),'Título sin traducir')
+    lab.go(3);check('VLAN confirmed' in lab.page.locator('#vlanStatus').inner_text(),'Confirmación sin traducir')
+    check(lab.snapshot()==before,'Idioma cambió proyecto')
+    return 'Perfiles, zoom/reorganización y confirmación en inglés; proyecto intacto.'
+
+@case("N14", "Sede sin cambios y dependencias locales", "Confirmar ficha idéntica no borra nada; cambiar bloque conserva datos de otra sede.")
+def site_invalidation(lab):
+    lab.lab();lab.topology();before=lab.snapshot();lab.go(1);lab.button('Confirmar esta sede').click();lab.valid()
+    expected=copy.deepcopy(before);expected['state']['sites'][0]['confirmed']=True
+    check(lab.snapshot()==expected,'Ficha idéntica destruyó diseño')
+    lab.button('Editar sede').click()
+    lab.page.locator('#sipv4Base').fill('192.168.64.0/22');lab.button('Confirmar esta sede').click();lab.valid();after=lab.snapshot()['state']
+    for key in ['vlans','nodes']:
+        check([n for n in after[key] if n['site']=='s2']==[n for n in before['state'][key] if n['site']=='s2'],'Perdió otra sede')
+    return 'Guardar sin cambios conserva todo; nuevo pool solo invalida dependencias de la sede.'
+
+
+
+@case("N15", "Recalcular sin renumerar otra sede", "Cambiar hosts s1 conserva redes, tránsito, nodos y CLI válidas s2, incluso tras JSON.")
+def unaffected_site(lab):
+    lab.lab(scoped=True);lab.topology();lab.configs('Cisco');before=lab.snapshot()['state'];lab.go(3)
+    lab.page.locator('#vh0').fill(str(before['vlans'][0]['hosts']+1));lab.page.locator('button[onclick="confirmVlans()"]').click();lab.valid();after=lab.snapshot()['state']
+    check([r for r in before['plan'] if r['site']=='s2']==[r for r in after['plan'] if r['site']=='s2'],'Renumeró otra sede')
+    affected_peers={l['b'] if next(n for n in before['nodes'] if n['id']==l['a'])['site']=='s1' else l['a'] for l in before['links'] if next(n for n in before['nodes'] if n['id']==l['a'])['site']!=next(n for n in before['nodes'] if n['id']==l['b'])['site']}
+    ids=[n['id'] for n in before['nodes'] if n['site']=='s2' and n['id'] not in affected_peers]
+    check([{k:v for k,v in n.items() if k!='interfaceProfiles'} for n in before['nodes'] if n['site']=='s2']==[{k:v for k,v in n.items() if k!='interfaceProfiles'} for n in after['nodes'] if n['site']=='s2'],'Borró/modificó equipos s2')
+    check([n for n in before['nodes'] if n['id'] in ids]==[n for n in after['nodes'] if n['id'] in ids],'Alteró perfiles físicos sin dependencias afectadas')
+    check(all(not p['confirmed'] for n in after['nodes'] if n['id'] in affected_peers for p in n.get('interfaceProfiles',{}).values()),'Vecino WAN conservó confirmación física obsoleta')
+    old={k:v['text'] for k,v in before['configs'].items() if any(k.startswith(i+'-') for i in ids)}
+    new={k:v['text'] for k,v in after['configs'].items() if any(k.startswith(i+'-') for i in ids)}
+    check(old==new,'Perdió CLI válida de otra sede')
+    lab.upload(lab.export());lab.valid();restored=lab.snapshot()['state']['configs']
+    check(all(k in restored and restored[k]['text']==v for k,v in old.items()),'JSON descartó CLI no afectada')
+    return 'Redes/tránsito, IDs y CLI no afectadas de s2 idénticas; vecino WAN se invalida por enlace afectado, JSON conserva las restantes.'
+
+@case("N16", "Nombres únicos y gran diagrama", "Códigos de sedes sin colisiones, 100 equipos sin cajas superpuestas, reorganización determinista.")
+def large_diagram(lab):
+    lab.lab();lab.evaluate("state.sites[0].name='Sede Alfa Beta';state.sites[1].name='Sede Arco Blanco';void 0")
+    codes=lab.evaluate('state.sites.map(siteCode)');check(len(set(codes))==2,'Códigos colisionan')
+    lab.topology();lab.evaluate("for(let i=0;i<100;i++)state.nodes.push({id:'user'+i,name:'PC-LAB-'+i,type:'PC',vendor:'Genérico',site:i%2?'s1':'s2',ip:'',network:'',x:0,y:0});arrangeTopology()")
+    nodes=lab.snapshot()['state']['nodes']
+    for i,a in enumerate(nodes):
+        for b in nodes[i+1:]:check(not(a['x']<b['x']+195 and b['x']<a['x']+195 and a['y']<b['y']+92 and b['y']<a['y']+92),'Solapamiento masivo')
+    lab.evaluate('arrangeTopology()');check(lab.snapshot()['state']['nodes']==nodes,'Layout no determinista')
+    return f'{len(nodes)} equipos sin superposición de cajas; códigos desambiguados y posiciones deterministas.'
+
+
+@case("N17", "Borradores aislados entre proyectos", "Cargar laboratorio o proyecto nuevo elimina borradores anteriores sin cambiar idioma.")
+def draft_reset(lab):
+    lab.go(1);lab.page.locator('#sname').fill('BORRADOR PREVIO');lab.go(2);lab.go(1)
+    check(lab.page.locator('#sname').input_value()=='BORRADOR PREVIO','No conservó borrador inicial')
+    lab.button('Cargar ejemplo de laboratorio').click();lab.valid()
+    check(lab.page.locator('#sname').input_value()=='Sede asistencial','Demo heredó borrador')
+    lab.page.locator('#sname').fill('OTRO BORRADOR');lab.go(2);lab.go(1);lab.button('Nuevo').click()
+    check(lab.page.locator('#sname').input_value()=='Sede 1','Proyecto nuevo heredó borrador')
+    check(lab.page.locator('#languageSelect').input_value()=='es','Cambió idioma')
+    return 'Borradores preservados en navegación y eliminados solo al reemplazar proyecto; idioma conservado.'
+
+
+@case("N18", "Editar sede conserva intención manual válida", "Cambio de bloque incompatible con CIDR manual se rechaza sin sustituir estado ni formulario.")
+def manual_site_edit(lab):
+    lab.lab(scoped=True);before=lab.snapshot();lab.go(1);lab.page.locator('#sipv4Base').fill('192.168.64.0/22');lab.button('Confirmar esta sede').click()
+    check(lab.snapshot()==before and lab.page.locator('#toast.error').count()==1,'Guardó intención manual incompatible')
+    check(lab.page.locator('#sipv4Base').input_value()=='192.168.64.0/22','Perdió texto visible')
+    return 'Cambio de pool incompatible con manual rechazado; estado, plan y texto conservados.'
+
+@case("N19", "Repropuesta parcial conserva otras sedes", "Cambiar inventario y completar VLAN faltantes conserva CIDR, claves y plan de otra sede.")
+def partial_proposal(lab):
+    lab.lab(scoped=True);before=lab.snapshot()['state'];lab.go(2);lab.page.locator('#c0_pc').fill('130');lab.evaluate('saveCounts(0)');lab.evaluate('proposeVlans()');lab.valid()
+    after=lab.snapshot()['state']
+    for key in ['vlans','plan']:
+        check([r for r in after[key] if r['site']=='s2']==[r for r in before[key] if r['site']=='s2'],'Repropuesta destruyó otra sede '+key)
+    check(len({v['key'] for v in after['vlans']})==len(after['vlans']),'Claves duplicadas')
+    lab.page.locator('button[onclick="confirmVlans()"]').click();lab.valid();disjoint(lab.snapshot()['state']['plan'])
+    return 'Solo se completaron VLAN de s1; claves/CIDR manual/plan de s2 intactos y VLSM válido.'
+
+
+
+@case("P01", "Sede confirmada, edición y persistencia", "Resumen verde/Editar sede, campos bloqueados, edición sin pérdida y JSON/localStorage conservan confirmación.")
+def site_confirmation_ui(lab):
+    lab.lab();lab.topology();before=lab.snapshot()['state'];lab.go(1);lab.button('Confirmar esta sede').click();lab.valid()
+    check(lab.page.locator('#siteStatus').inner_text()=='Sede confirmada','Indicador incorrecto')
+    check(lab.page.locator('#sname').is_disabled() and lab.button('Editar sede').count()==1,'Ficha no bloqueada')
+    current=lab.snapshot()['state'];check(current['plan']==before['plan'] and current['nodes']==before['nodes'],'Confirmación sin cambios destruyó diseño')
+    lab.button('Editar sede').click();check(lab.page.locator('#sname').input_value()==before['sites'][0]['name'],'Perdió nombre')
+    lab.button('Confirmar esta sede').click();lab.valid();lab.button('Guardar proyecto').click();lab.evaluate('state=fresh();render();loadLocal()');lab.valid()
+    check(lab.snapshot()['state']['sites'][0]['confirmed'],'LocalStorage perdió confirmación')
+    lab.upload(lab.export());lab.valid();lab.go(1);check(lab.page.locator('#sname').is_disabled(),'JSON no restauró bloqueo')
+    lab.evaluate('selectSite(1)');check(lab.button('Confirmar esta sede').count()==1,'Sede nueva asumida confirmada')
+    lab.evaluate('selectSite(0)');check(lab.button('Editar sede').count()==1,'Cambio de sede perdió confirmación')
+    return 'Confirmada/resumen/bloqueo, Editar, navegación, JSON y localStorage; plan/nodos conservados.'
+
+@case("P02", "Previsualización y pools de dos sedes", "Automática pendiente antes de cálculo; redes reales en bloques independientes tras VLSM.")
+def per_site_preview(lab):
+    lab.lab();lab.go(1)
+    for i,block in enumerate(['192.168.32.0/22','172.16.0.0/22']):
+        lab.evaluate('i=>selectSite(i)',i);lab.page.locator('#sipv4Base').fill(block);lab.button('Confirmar esta sede').click();lab.valid()
+    lab.go(3);check(lab.page.locator('#vc0').get_attribute('placeholder')=='Asignación automática pendiente','Placeholder falso')
+    lab.page.locator('#transitBase').fill('10.20.250.0/24');lab.page.locator('button[onclick="confirmVlans()"]').click();lab.valid();state=lab.snapshot()['state'];disjoint(state['plan'])
+    for row in state['plan']:
+        pool=next(s['ipv4Base'] for s in state['sites'] if s['id']==row['site']) if row['kind']=='vlan' else state['project']['transitBase']
+        check(network(row).subnet_of(ipaddress.ip_network(pool)),'Fuera del pool de sede')
+    first=next(r for r in state['plan'] if r['key']==state['vlans'][0]['key']);check(lab.page.locator('#vc0').get_attribute('placeholder')==first['network']+'/'+str(first['prefix']),'No muestra subred efectiva')
+    return 'LAN en 192.168.32.0/22 y 172.16.0.0/22; tránsito separado; placeholder pendiente/efectivo correctos.'
+
+@case("P03", "Capacidad detallada y bloqueo de dependencias", "Error identifica sede/VLAN/pool/hosts/reservas; estado pendiente y foco corregible sin perder plan/texto.")
+def capacity_feedback(lab):
+    lab.lab();lab.evaluate("state.sites[0].ipv4Base='192.168.32.0/24';render()")
+    before=lab.snapshot();lab.page.locator('button[onclick="confirmVlans()"]').click()
+    message=lab.page.locator('#toast').inner_text()
+    check(all(x in message for x in ['VLAN','192.168.32.0/24','hosts','crecimiento','reserva','requiere']),'Detalle insuficiente '+message)
+    check(lab.page.locator('#vlanStatus').inner_text()=='Pendiente de confirmación' and lab.snapshot()==before,'Fallo confirmó o mutó estado')
+    check(lab.page.locator('#vc0').get_attribute('placeholder')=='Asignación automática pendiente','Placeholder obsoleto tras error')
+    check(lab.evaluate("document.activeElement.id.startsWith('vh')"),'No enfoca campo corregible')
+    lab.go(5);check(lab.evaluate('page')==3 and lab.snapshot()==before,'Entró/generó dependencia sin aprobación efectiva')
+    lab.go(13);lab.page.get_by_role('tab',name='Conexión real',exact=True).click();check(lab.page.locator('#sshHost').is_enabled(),'SSH manual bloqueado por VLSM')
+    return 'Error contextual completo, estado pendiente/foco hosts, plan intacto; topología bloqueada y SSH manual accesible.'
+
+@case("P04", "Simulación basada en proyecto", "CLI/interfaces/VLAN reales del proyecto, comandos cerrados, limpiar/reiniciar y sin conexiones.")
+def ssh_simulation(lab):
+    lab.lab();lab.topology();configs=lab.configs('Cisco');before=lab.snapshot();lab.go(13)
+    first=lab.evaluate("configNodes('Cisco')[0].id");lab.page.locator('#sshDevice').select_option(first)
+    lab.page.locator('#sshCommand').fill('show running-config');lab.page.locator('#sshCommand').press('Enter')
+    check(configs[first+'-Cisco'] in lab.page.locator('#sshSimulation').inner_text(),'CLI simulada no corresponde')
+    lab.page.locator('#sshCommand').fill('configure terminal');lab.button('Enviar comando').click()
+    check('Comando no disponible en el simulador' in lab.page.locator('#sshSimulation').inner_text(),'Inventó comando')
+    lab.page.locator('#sshSimClear').click();check(lab.page.locator('#sshSimulation').inner_text()=='','No limpió')
+    lab.page.locator('#sshCommand').fill('show ip interface brief');lab.button('Enviar comando').click();check('GigabitEthernet' in lab.page.locator('#sshSimulation').inner_text(),'Sin interfaces del proyecto')
+    lab.button('Reiniciar simulación').click();check(lab.page.locator('#sshSimulation').inner_text()=='' and lab.snapshot()==before,'Reinicio alteró datos')
+    check(lab.evaluate('sshSocket===null'),'Simulación conectó red')
+    return 'Configuración exacta, interfaces del proyecto, comando no soportado rechazado, reinicio/limpieza sin mutar ni conectar.'
+
+@case("P05", "Consola sin Python y bilingüe", "Simulación local sin servicio; conexión real indica indisponibilidad, sin alterar datos al traducir.")
+def console_without_service(lab):
+    before=lab.snapshot();lab.go(13);lab.page.locator('#sshCommand').fill('help');lab.button('Enviar comando').click()
+    check('help' in lab.page.locator('#sshSimulation').inner_text(),'No funciona autónoma')
+    lab.page.get_by_role('tab',name='Conexión real',exact=True).click();check(lab.page.locator('#sshConnect').is_disabled(),'Habilitó servicio inexistente')
+    check('Servicio no disponible' in lab.page.locator('#sshService').inner_text(),'No informa indisponibilidad')
+    lab.evaluate("setLanguage('en')");check(lab.button('Connect').count()==1 and 'Service unavailable' in lab.page.locator('#sshService').inner_text(),'SSH no bilingüe')
+    check(lab.snapshot()==before and lab.evaluate('sshSocket===null'),'Consola alteró proyecto')
+    return 'Help/simulación sin servicio; conexión real deshabilitada e informativa ES/EN, proyecto intacto.'
+
+@case("P06", "Gestión explícita y credenciales efímeras", "No inferir gestión desde gateway/WAN/endpoint; no serializar secretos y borrarlos al abandonar la vista.")
+def ssh_ephemeral_ui(lab):
+    lab.lab();lab.topology();lab.go(13);lab.page.get_by_role('tab',name='Conexión real',exact=True).click()
+    lab.evaluate("state.nodes[0].ip='192.0.2.77';state.nodes[0].network='';sshChooseDevice(state.nodes[0].id)")
+    check(lab.page.locator('#sshHost').input_value()=='','Asumió IP de administración')
+    marker='FICTICIO-NO-CREDENCIAL';lab.page.locator('#sshPassword').fill(marker);before=lab.snapshot()
+    check(marker not in json.dumps(before) and marker not in lab.evaluate('JSON.stringify(localStorage)'),'Persistió secreto')
+    lab.evaluate("setLanguage('en')");check(lab.page.locator('#sshPassword').input_value()=='','Idioma restauró secreto')
+    lab.go(4);lab.go(13);check(lab.evaluate('sshSocket===null'),'Sesión huérfana')
+    return 'No infiere gestión; campo secreto fuera de JSON/localStorage y eliminado al cambiar idioma/vista.'
+
+@case("P07", "Importación antigua y confirmación estricta", "Archivo sin flag permanece editable; tipo inválido de confirmación se rechaza atómicamente.")
+def imported_site_confirmation(lab):
+    payload=lab.fixture();lab.upload(payload);lab.valid();lab.go(1)
+    check(lab.button('Confirmar esta sede').count()==1 and lab.page.locator('#sname').is_enabled(),'Asumió confirmación legada')
+    invalid=lab.snapshot();invalid['state']['sites'][0]['confirmed']='true';before=lab.snapshot();lab.upload(invalid)
+    check(lab.snapshot()==before and lab.page.locator('#toast.error').count()==1,'Importó flag de tipo inválido')
+    return 'v2 sin flag no se confirma por inferencia; cadena true rechazada sin sustituir estado.'
+
+@case("P08", "Edición sin cambios y bloqueo selectivo", "Editar sin cambios conserva aprobación; cambios pendientes bloquean derivados sin impedir navegación independiente.")
+def pending_site_guard(lab):
+    lab.lab();lab.topology();lab.go(1);lab.button('Confirmar esta sede').click();before=lab.snapshot();lab.button('Editar sede').click()
+    old=lab.page.locator('#susers').input_value();lab.page.locator('#susers').fill(str(int(old)+1));lab.go(5);check(lab.evaluate('page')==1,'Entró con sede pendiente')
+    check(lab.snapshot()==before and lab.page.locator('#toast.error').count()==1,'Generó con sede pendiente')
+    lab.go(1);lab.page.locator('#susers').fill(old);lab.button('Confirmar esta sede').click();lab.valid();check(lab.snapshot()==before,'Valores idénticos invalidaron diseño')
+    lab.go(4);lab.page.locator('#calc').fill('192.168.1.10/24');lab.button('Calcular').click();lab.valid()
+    return 'Sede pendiente bloquea topología; revertir/confirmar conserva diseño y calculadora permanece independiente.'
+
+
+@case("Q01", "Navegación dependiente protegida", "Menú, siguiente, go y render bloquean dependencias; calculadora, seguridad, IPv6 y SSH siguen accesibles.")
+def guarded_navigation(lab):
+    before=lab.snapshot()
+    for target in [5,6,7,8,9,10]:
+        lab.page.locator(f'#nav button[onclick="go({target})"]').click()
+        check(lab.evaluate('page')==0 and lab.snapshot()==before,'Menú abrió dependencia')
+        lab.go(target);check(lab.evaluate('page')==0,'go abrió dependencia')
+    lab.go(4);lab.button('Siguiente →').click();check(lab.evaluate('page')==4,'Siguiente abrió Topología')
+    for target in [4,11,12,13]:
+        lab.go(target);check(lab.evaluate('page')==target,'Bloqueó función independiente')
+    lab.evaluate('page=5;render()');check(lab.evaluate('page')==3,'render programático omitió protección')
+    check(lab.snapshot()==before,'Navegar mutó el proyecto')
+    return 'Seis destinos protegidos por menú/go; siguiente y render protegidos; cuatro módulos independientes disponibles.'
+
+@case("Q02", "Confirmación reconocida y borradores", "Confirmación válida permite topología; edición pendiente bloquea sin render; revertir reconoce el plan anterior.")
+def recognized_confirmation(lab):
+    lab.lab();lab.topology();lab.go(3);before=lab.snapshot();name=lab.page.locator('#vn0').input_value()
+    # Una antigua bandera de edición no representa una diferencia de datos.
+    lab.evaluate('vlanEditing=true');lab.go(5);check(lab.evaluate('page')==5,'Bandera antigua ocultó confirmación válida')
+    lab.go(3);lab.page.locator('#vn0').fill('BORRADOR');element=lab.page.locator('#vn0').element_handle();renders=lab.evaluate('__renders')
+    lab.go(5);check(lab.evaluate('page')==3 and lab.evaluate('__renders')==renders and element.evaluate('e=>e.isConnected'),'Renderizó/perdió borrador bloqueado')
+    lab.evaluate('page=5;render()');check(lab.evaluate('page')==3 and element.evaluate('e=>e.isConnected'),'render directo omitió borrador o perdió DOM')
+    lab.go(4);lab.go(5);check(lab.evaluate('page')==4,'Borrador conservado permitió dependencia')
+    lab.go(3);check(lab.page.locator('#vn0').input_value()=='BORRADOR','Perdió borrador')
+    lab.page.locator('#vn0').fill(name);lab.go(5);check(lab.evaluate('page')==5 and lab.snapshot()==before,'Revertir no recuperó confirmación')
+    lab.evaluate('saveLocal();loadLocal()');lab.go(5);check(lab.evaluate('page')==5,'Carga perdió confirmación válida')
+    return 'Aprobación reconocida tras bandera histórica, reversión y carga; borrador bloqueado sin cambiar DOM/estado.'
+
+@case("Q03", "AP conservados y excluidos de CLI", "Ningún adaptador produce CLI para AP; siguen nodo, enlaces, VLAN, gestión, máscara y gateway.")
+def ap_exclusion(lab):
+    lab.lab();lab.topology();before=lab.snapshot();aps=[n for n in before['state']['nodes'] if n['type']=='Access Point'];check(aps,'Falta AP de laboratorio')
+    for vendor in ['Cisco','Huawei','Fortinet','MikroTik']:
+        result=lab.evaluate("""v=>{const n=state.nodes.find(accessPoint);return {listed:configNodes(v).some(x=>x.id===n.id),blocked:(()=>{try{generate(n,v);return false}catch(e){return e.message.includes('AP')}})()}}""",vendor)
+        check(not result['listed'] and result['blocked'],'AP incluido en '+vendor)
+    check(lab.evaluate("(()=>{const n=state.nodes.find(accessPoint);try{generateFortinet(n);return false}catch(e){}try{generateMikroTik(n);return false}catch(e){}return true})()"),'Adaptador directo generó AP')
+    for ap in aps:
+        row=next(r for r in before['state']['plan'] if r['key']==ap['network'])
+        check(ap['ip'] and row['mask'] and row['gateway'] and any(ap['id'] in [l['a'],l['b']] for l in before['state']['links']),'AP perdió administración/enlace')
+    check(lab.snapshot()==before,'Excluir AP mutó topología')
+    lab.upload(lab.export());lab.valid();before['state'].setdefault('subnetOK',False);check(lab.snapshot()==before,'JSON perdió AP')
+    return f'{len(aps)} AP conservados con IP, máscara, gateway y enlaces; cuatro adaptadores y llamadas directas bloqueados.'
+
+@case("Q04", "Generación sin confirmación física", "Cisco genera por botón y llamada directa sin perfil; no existe formulario ni requisito adicional.")
+def automatic_generation(lab):
+    lab.lab();lab.topology();lab.go(6)
+    check(lab.evaluate('state.nodes.every(n=>!n.interfaceProfiles)'),'Introdujo perfiles implícitos')
+    lab.button('Generar todos los Cisco').click();lab.valid()
+    check(lab.evaluate("configNodes('Cisco').every(n=>state.configs[n.id+'-Cisco']?.text===generate(n,'Cisco'))"),'No generó automáticamente')
+    check(lab.page.get_by_role('button',name='Confirmar interfaces físicas',exact=True).count()==0,'Botón eliminado persiste')
+    check(lab.evaluate("typeof editPhysicalProfile==='undefined'&&typeof savePhysicalProfile==='undefined'&&typeof requirePhysicalProfile==='undefined'"),'Quedó formulario/guardián eliminado')
+    lab.upload(lab.fixture());lab.valid();check(lab.evaluate("Object.keys(state.configs).length===4&&state.nodes.every(n=>!n.interfaceProfiles)"),'Perdió archivo v2')
+    return 'Cisco por botón y API sin perfil; formulario/guardián ausentes; archivo v2 y sus cuatro CLI preservados.'
+
+
+def automatic_ports(lab,vendor):
+    if vendor in ['Cisco','Huawei']:
+        lab.lab();lab.topology()
+        if vendor=='Huawei':lab.evaluate("state.nodes.filter(configurable).forEach(n=>n.vendor='Huawei');render()")
+        outputs=lab.configs(vendor)
+        identifier=lab.evaluate('v=>configNodes(v)[0].id',vendor);cli=outputs[identifier+'-'+vendor]
+    else:
+        cli=lab.edge(vendor);identifier='edge'
+    names=lab.evaluate('a=>connected(node(a[0])).map(l=>({actual:endpoint(l,node(a[0]),a[1]).iface,expected:l[(l.a===a[0]?"a":"b")+{Cisco:"c",Huawei:"h",Fortinet:"f",MikroTik:"m"}[a[1]]]}))',[identifier,vendor])
+    check(all(p['actual']==p['expected'] and p['actual'] in cli for p in names),'CLI no usa puertos del enlace')
+    check(lab.evaluate('state.nodes.every(n=>!n.interfaceProfiles)'),'Exigió o inventó perfil')
+    check('physicalModel' not in lab.page.locator('#view').inner_html(),'Persisten campos de hardware obligatorios')
+    return f'{vendor}: {len(names)} interfaces derivadas de enlaces y presentes en CLI; ningún perfil ni confirmación adicional.'
+
+@case("Q05", "Cisco automático", "CLI IOS usa automáticamente los puertos Cisco de los enlaces.")
+def automatic_cisco(lab):return automatic_ports(lab,'Cisco')
+
+@case("Q06", "Huawei automático", "CLI VRP usa automáticamente los puertos Huawei de los enlaces.")
+def automatic_huawei(lab):return automatic_ports(lab,'Huawei')
+
+@case("Q07", "Fortinet automático", "CLI FortiOS usa automáticamente los puertos Fortinet de los enlaces.")
+def automatic_fortinet(lab):return automatic_ports(lab,'Fortinet')
+
+@case("Q08", "MikroTik automático", "CLI RouterOS usa automáticamente los puertos MikroTik de los enlaces.")
+def automatic_mikrotik(lab):return automatic_ports(lab,'MikroTik')
+
+@case("Q09", "Interfaces inseguras siguen rechazadas", "Eliminar la confirmación física no permite inyección en nombres de interfaz del editor de enlaces.")
+def automatic_interface_safety(lab):
+    lab.lab();lab.topology();lab.configs('Cisco');lab.go(5);identifier=lab.evaluate('state.links[0].id')
+    for field,value in [('lac','GigabitEthernet0/1\nshutdown'),('lah','GigabitEthernet0/0/1;quit'),('laf','port1\nend'),('lam','ether1;reboot')]:
+        lab.evaluate('id=>editLink(id)',identifier);lab.page.locator('#'+field).fill(value)
+        lab.atomic_error(lambda:lab.button('Confirmar enlace').click(),'#'+field);lab.button('Cancelar').click()
+    return 'Cuatro nombres maliciosos rechazados sin mutar DOM, proyecto, CLI ni localStorage; sin formulario de confirmación física.'
+
+@case("Q10", "JSON anterior con perfiles archivados", "v4 conserva perfiles y CLI históricos, regeneración automática e ida/vuelta; v2/v3 sin reasignación.")
+def archived_interface_compatibility(lab):
+    lab.lab();lab.topology();lab.archived_profiles(['Cisco'])
+    # Simula una exportación válida del HEAD 9675ce7 con puertos declarados diferentes de los automáticos.
+    lab.evaluate("""()=>{const n=configNodes('Cisco')[0];n.interfaceProfiles.Cisco.ports.forEach((p,i)=>p.name='TenGigabitEthernet1/0/'+(i+21));
+        archivedPhysicalNames=true;try{for(const n of configNodes('Cisco'))state.configs[n.id+'-Cisco']={text:generate(n,'Cisco'),revision:state.revision}}finally{archivedPhysicalNames=false}}
+    """)
+    before=lab.snapshot();before['state'].setdefault('subnetOK',False);payload=lab.export();lab.upload(payload);lab.valid();check(lab.snapshot()==before,'Perdió perfiles o CLI históricos')
+    check(lab.evaluate('!archivedPhysicalNames&&!checkingArchive'),'Contexto de archivo escapó a generación normal')
+    # Regenerar usa los enlaces automáticos, aunque quede metadata histórica sin editar.
+    lab.configs('Cisco');after=lab.snapshot();check(lab.evaluate("state.configs[configNodes('Cisco')[0].id+'-Cisco'].text.includes('GigabitEthernet0/')"),'Sigue usando perfil histórico')
+    lab.upload(lab.export());lab.valid();check(lab.snapshot()==after,'JSON descartó CLI automática al conservar metadatos')
+    lab.evaluate('saveLocal();state=fresh();loadLocal()');lab.valid();check(lab.snapshot()==after,'localStorage perdió datos')
+    for version in [2,3]:
+        calls=lab.evaluate('[__calls4,__calls6]');lab.upload(lab.fixture(version));lab.valid()
+        check(lab.evaluate('[__calls4,__calls6]')==calls,'Migración reasignó redes')
+    return 'v4 conserva metadatos/CLI archivados y CLI automática nueva; localStorage exacto; v2/v3 sin asignar ni crear perfiles.'
+
+@case("Q11", "Editar enlaces sin reconfirmación física", "Cambiar puertos o eliminar un enlace actualiza referencias y permite regenerar directamente.")
+def automatic_link_changes(lab):
+    lab.lab();lab.topology();lab.configs('Cisco');lab.go(5);identifier=lab.evaluate("configNodes('Cisco')[0].id")
+    link=lab.evaluate('id=>connected(node(id))[0]',identifier)
+    lab.evaluate('id=>editLink(id)',link['id']);lab.page.locator('#lac').fill('GigabitEthernet0/97');lab.button('Confirmar enlace').click();lab.valid()
+    check('GigabitEthernet0/97' in lab.evaluate('id=>generate(node(id),"Cisco")',identifier),'No usa puerto editado directamente')
+    lab.upload(lab.export());lab.valid();lab.evaluate('id=>deleteLink(id)',link['id']);lab.upload(lab.export());lab.valid()
+    check(lab.evaluate('id=>generate(node(id),"Cisco").length>0',identifier),'Pidió confirmación tras eliminar enlace')
+    return 'Edición usa el puerto del enlace y eliminación mantiene JSON coherente; generación inmediata sin confirmaciones adicionales.'
+
+@case("Q12", "Comparación automática sin perfiles", "IOS/VRP se generan con nombres por marca sin pedir perfiles ni cambiar el fabricante real.")
+def automatic_comparison(lab):
+    lab.lab();lab.topology();lab.go(10);identifier=lab.evaluate("configNodes('Cisco')[0].id")
+    lab.evaluate('id=>generateCompare(id)',identifier);lab.valid()
+    check(lab.evaluate('id=>node(id).vendor==="Cisco"&&state.configs[id+"-Cisco"].text.includes("GigabitEthernet0/")&&state.configs[id+"-Huawei"].text.includes("GigabitEthernet0/0/")&&state.nodes.every(n=>!n.interfaceProfiles)',identifier),'Comparación mezcló marcas o exigió perfiles')
+    return 'Comparación IOS/VRP automática y separada; fabricante real intacto; cero perfiles requeridos.'
+
+@case("Q13", "Advertencia visual bilingüe y responsive", "Cuatro vistas de fabricante a 1440/390 ES/EN sin formulario manual; avisos no bloquean generación.")
+def automatic_responsive(lab):
+    lab.lab();lab.topology();before=lab.snapshot()
+    for width in [1440,390]:
+        lab.page.set_viewport_size({'width':width,'height':900})
+        for language in ['es','en']:
+            lab.evaluate('lang=>setLanguage(lang)',language)
+            for index in [6,7,8,9]:
+                lab.go(index)
+                check(lab.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),'Desbordamiento nuevo')
+                check(not lab.page.locator('[onclick*="PhysicalProfile"],#physicalModel,#physicalVersion,#physicalSource').count(),'Formulario eliminado persiste')
+                check(('IPv4' in lab.page.locator('#view').inner_text()),'Falta aviso de alcance')
+            lab.go(5);lab.evaluate('id=>editLink(id)',before['state']['links'][0]['id'])
+            expected='Verifique puertos, modelo y versión' if language=='es' else 'Verify ports, model and version'
+            check(expected in lab.page.locator('#modalbody').inner_text(),'Advertencia física no traducida')
+            lab.button('Cancelar' if language=='es' else 'Cancel').focus();lab.page.keyboard.press('Enter')
+    check(lab.snapshot()==before,'Idioma/navegación modificó proyecto')
+    return '16 combinaciones vista/idioma/ancho sin formulario ni desborde; advertencia física ES/EN informativa, Cancelar con teclado.'
+
+
+@case("Q14", "Aprobación incoherente rechazada", "Una bandera true no basta con redes ausentes, hosts cambiados o pool incompatible.")
+def inconsistent_plan(lab):
+    lab.lab();lab.topology();baseline=lab.snapshot()
+    for change in ["state.plan=state.plan.filter(r=>r.key!==state.vlans[0].key)","state.vlans[0].hosts++","state.plan.find(r=>r.kind==='vlan').net++","state.sites[0].ipv4Base='192.168.200.0/24'"]:
+        lab.evaluate('data=>{state=structuredClone(data.state);page=0;render()}',baseline);lab.evaluate(change);before=lab.snapshot();lab.go(5)
+        check(lab.evaluate('page')==0 and lab.snapshot()==before,'Aprobación incoherente abrió dependencia')
+    return 'Red ausente, intención de hosts desactualizada, números de red incoherentes y pool cambiado bloquean Topología sin mutar datos.'
+
+
+
+@case("Q15", "Orden y navegación de fabricantes", "Cisco/Huawei/Fortinet/MikroTik consecutivos, luego Comparación/Ciberdefensa; ES/EN, flechas y progreso coherentes.")
+def consecutive_vendors(lab):
+    # Seguridad sigue independiente, incluso antes de confirmar el primer plan.
+    lab.go(11);check(lab.evaluate('page')==11,'Ciberdefensa quedó bloqueada')
+    lab.lab();lab.topology();before=lab.snapshot()
+    labels={'es':['Configuración Cisco','Configuración Huawei','Configuración Fortinet','Configuración MikroTik','Comparación','Ciberdefensa y uso de IA'],
+            'en':['Cisco configuration','Huawei configuration','Fortinet configuration','MikroTik configuration','Comparison','Cyberdefense and AI use']}
+    for language,expected in labels.items():
+        lab.evaluate('lang=>setLanguage(lang)',language)
+        for index,label in enumerate(expected,6):
+            button=lab.page.locator(f'#nav button[onclick="go({index})"]');button.focus();lab.page.keyboard.press('Enter')
+            check(lab.evaluate('page')==index and label in button.inner_text(),'Orden/teclado incorrecto')
+            check(button.locator('span').inner_text()==f'{index:02}','Numeración incorrecta')
+            check(lab.page.locator('#progress .done').count()==index+1,'Progreso incorrecto')
+            if index<10:check(lab.page.locator(f"button[onclick=\"generateSelected('{['Cisco','Huawei','Fortinet','MikroTik'][index-6]}')\"]").count()==1,'Render no corresponde al fabricante')
+            lab.button('Next →' if language=='en' else 'Siguiente →').click();check(lab.evaluate('page')==index+1,'Siguiente equivocado')
+            lab.button('← Previous' if language=='en' else '← Anterior').click();check(lab.evaluate('page')==index,'Anterior equivocado')
+        check(lab.page.locator('#nav button').count()==14 and lab.page.locator('#progress > div').count()==14,'Perdió módulos')
+    check(lab.snapshot()==before,'Reorganización cambió datos del proyecto')
+    return 'Seis módulos en orden ES/EN, Enter, anterior/siguiente y 14 indicadores coherentes; seguridad independiente y proyecto intacto.'
 
 
 def main():

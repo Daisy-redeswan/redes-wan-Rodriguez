@@ -565,6 +565,20 @@
       .sitehead .actions, .sitecount { max-width:100%; }
       .language-control { display:flex; align-items:center; gap:6px; font-size:13px; }
       .language-control select { width:auto; min-width:100px; }
+      /* Lienzo grande autónomo: desplazamiento y zoom sin comprimir etiquetas. */
+      .diagram { overflow: auto; max-height: 75vh; overscroll-behavior: contain; }
+      .diagram svg { max-width: none; display: block; height: auto; }
+      .node { cursor: grab; outline: none; }
+      .node:focus rect { stroke: #d17700; stroke-width: 3; }
+      /* La ficha confirmada usa deshabilitación nativa accesible sin perder sus valores. */
+      #siteFields { border: 0; padding: 0; margin: 14px 0; min-width: 0; }
+      #siteFields:disabled { opacity: .85; }
+      /* Consolas acotadas: texto seguro, contraste y desplazamiento propio. */
+      .ssh-terminal { background:#101c2d; color:#d4e5ec; min-height:280px; height:360px; max-width:100%; overflow:auto; padding:12px; white-space:pre-wrap; overflow-wrap:anywhere; }
+      #sshTerminal { padding:8px; white-space:normal; }
+      #sshKeyBox textarea { min-height:120px; font-family:monospace; }
+      /* La pestaña activa se identifica por estado accesible, no por texto fijo. */
+      [role="tab"][aria-selected="true"] { background:#008579; color:white; border-color:#008579; }
     </style>
   </head>
   <body>
@@ -637,7 +651,6 @@
     "/ Flujo de diseño": "/ Design workflow",
     "1 core": "1 core",
     "2 cores": "2 cores",
-    "Abrir": "Open",
     "Acceso:": "Access:",
     "Access Points": "Access Points",
     "Access no admite LACP.": "Access does not support LACP.",
@@ -653,7 +666,6 @@
     "Al habilitar se propone un /48 con identificador pseudoaleatorio (RFC 4193); confirme para guardarlo. Vacío en una sede asigna un /56 del proyecto; cada /56 admite 256 VLAN /64. Desactivar y confirmar elimina solo la intención y el plan IPv6. Se utilizan las VLAN del estado confirmado; confirme primero las ediciones pendientes en VLAN/VLSM.": "Enabling IPv6 proposes a /48 with a pseudorandom identifier (RFC 4193); confirm to save it. An empty site block receives a project /56; each /56 supports 256 VLAN /64 networks. Disabling and confirming clears only the IPv6 intent and plan. Confirm pending VLAN/VLSM edits first; planning uses confirmed VLANs.",
     "Ancho de banda Mbps (0 = sugerir)": "Bandwidth Mbps (0 = suggest)",
     "Aplicar número de sedes": "Apply number of sites",
-    "Archivo": "File",
     "Asignar nueva /30 desde VLSM": "Allocate a new /30 using VLSM",
     "Automática · 10.10.20.0/24": "Automatic · 10.10.20.0/24",
     "Añada VLAN antes de calcular.": "Add VLANs before calculating.",
@@ -672,13 +684,8 @@
     "Calcular": "Calculate",
     "Cancelar": "Cancel",
     "Capacidad requerida incoherente.": "Inconsistent required capacity.",
-    "Captura directamente en GitHub con al menos cinco commits claros. No se crean ni verifican commits aquí.": "Capture the real GitHub page showing at least five clear commits. This application does not create or verify commits.",
-    "Capturas para la entrega": "Delivery screenshots",
-    "Capture los resultados reales de su proyecto. El documento y los commits se verifican fuera de esta aplicación.": "Capture real project results. Documents and commits must be verified outside this application.",
-    "Carga de topología — 15%": "Working subnetting — 20%",
     "Cargar ejemplo de laboratorio": "Load laboratory example",
     "Cargar imagen": "Load image",
-    "Ciberdefensa aplicada — 10%": "Applied cyberdefense — 10%",
     "Ciberdefensa y uso de IA": "Cyberdefense and AI use",
     "Cisco IOS XE: DHCP server": "Cisco IOS XE: DHCP server",
     "Cisco IOS | Huawei VRP": "Cisco IOS | Huawei VRP",
@@ -690,7 +697,6 @@
     "Compruebe IPv4/CIDR o IPv6/prefijo. IPv4: /31 punto a punto y /32 dirección única. IPv6: rango completo, sin broadcast ni descuento de dos direcciones.": "Check IPv4/CIDR or IPv6/prefix. IPv4: /31 point-to-point and /32 single address. IPv6: full range, without broadcast or subtracting two addresses.",
     "Configuraciones generadas": "Generated configurations",
     "Configuración": "Configuration",
-    "Configuración Cisco + Huawei — 25%": "Cisco + Huawei configuration — 25%",
     "Configuración Fortinet FortiOS": "Fortinet FortiOS configuration",
     "Configuración MikroTik RouterOS": "MikroTik RouterOS configuration",
     "Configuración preliminar; ajuste interfaces y sintaxis al modelo/versión del equipo. &lt;CAMBIAR_EN_PRODUCCION&gt; exige reemplazo externo antes de aplicar. Los prompts interactivos de claves y guardado se atienden en el equipo. No se genera configuración genérica para firewall, AP, ISP, PC o servidor.": "Preliminary configuration; check interfaces and syntax against the device model/version. &lt;CAMBIAR_EN_PRODUCCION&gt; must be replaced externally before applying. Respond to key and save prompts on the device. No generic configuration is generated for firewalls, APs, ISPs, PCs or servers.",
@@ -717,7 +723,6 @@
     "Crecimiento": "Growth",
     "Criterio de segmentación": "Segmentation criterion",
     "Criterios: 1 PC por usuario; móviles = usuarios × (dispositivos personales − 1); telefonía IP = usuarios si se solicita; impresoras = 1/20 usuarios; AP = máximo entre pisos y clientes/25; cámaras = 4/piso; servidores = 2 si se solicitan. Todos pueden corregirse según el levantamiento.": "Assumptions: 1 PC per user; mobiles = users × (personal devices − 1); IP phones = users when requested; printers = 1/20 users; APs = maximum of floors and clients/25; cameras = 4/floor; servers = 2 when requested. Adjust all values after a site survey.",
-    "Cumplimiento Corte 2": "Corte 2 compliance",
     "Cámaras IP": "IP cameras",
     "DHCP local": "Local DHCP",
     "DHCP requiere las interfaces gateway.": "DHCP requires gateway interfaces.",
@@ -742,10 +747,8 @@
     "Dispositivos por usuario": "Devices per user",
     "Documentación oficial Fortinet consultada": "Official Fortinet documentation consulted",
     "Documentación oficial MikroTik consultada": "Official MikroTik documentation consulted",
-    "Documento — 10%": "Document — 10%",
     "Dos cores con HSRP / VRRP": "Two cores with HSRP / VRRP",
     "Editar": "Edit",
-    "Ejecute un cálculo válido.": "Run a valid calculation.",
     "Ejemplo cargado; datos ficticios, editables.": "Example loaded; fictional, editable data.",
     "Ejemplo obligatorio /26": "Required /26 example",
     "El bloque base debe ser /30 o mayor.": "The base block must be /30 or larger.",
@@ -766,14 +769,11 @@
     "Equipo B": "Device B",
     "Equipo a configurar": "Device to configure",
     "Equipos ·": "Devices ·",
-    "Equipos, nombres, enlaces, sedes, VLAN y redes del plan.": "Devices, names, links, sites, VLANs and planned networks.",
     "Esta /30 ya está en uso por otro enlace.": "This /30 is already used by another link.",
     "Estado del diseño": "Design status",
     "Estas propuestas de fabricante son exclusivamente IPv4. IPv6 solo se calcula y planifica; su configuración requiere aclaración docente.": "These manufacturer proposals are IPv4 only. IPv6 is calculated and planned; its configuration requires instructor clarification.",
     "Este diseño admite máximo dos cores por sede.": "This design supports at most two cores per site.",
     "Estimación e infraestructura": "Estimation and infrastructure",
-    "Estos indicadores no certifican la calificación. Capturas, PDF, pruebas con simulador/equipos y repositorio deben existir realmente para sustentarlos.": "These indicators do not certify a grade. Screenshots, PDFs, simulator/device tests and the repository must actually exist to support them.",
-    "Evidencias Corte 2": "Corte 2 evidence",
     "Extremo inexistente.": "Endpoint does not exist.",
     "Extremos": "Endpoints",
     "Extremos de enlace inválidos.": "Invalid link endpoints.",
@@ -813,11 +813,8 @@
     "Generar todos los": "Generate all",
     "Generar todos los Fortinet": "Generate all Fortinet",
     "Generar todos los MikroTik": "Generate all MikroTik",
-    "Genere ambas sintaxis con VLAN e IP.": "Generate both syntaxes with VLAN and IP.",
-    "Genere o transcriba su topología.": "Generate or transcribe your topology.",
     "Genere una topología y asigne equipos a esta marca. Para evaluar el mismo equipo con ambas sintaxis use Comparación.": "Generate a topology and assign devices to this manufacturer. To evaluate the same device in both syntaxes, use Comparison.",
     "Global / hostname / criptografía": "Global / hostname / cryptography",
-    "Glosario para sustentar": "Presentation glossary",
     "Grupo LACP (0 = sin agrupación)": "LACP group (0 = no aggregation)",
     "Générer les deux syntaxes": "Generate both syntaxes",
     "Générez les configurations avant de télécharger.": "Generate configurations before downloading.",
@@ -827,7 +824,6 @@
     "Hostname": "Hostname",
     "Hostname *": "Hostname *",
     "Hostname duplicado.": "Duplicate hostname.",
-    "Hostname, VLAN y dirección IP. Seleccione un core para incluir SVI.": "Hostname, VLAN and IP address. Select a core to include SVIs.",
     "Hostname: iniciar con letra y usar letras, números o guiones.": "Hostname: start with a letter and use letters, numbers or hyphens.",
     "Hosts": "Hosts",
     "Hosts solicitados son terminales; el cálculo añade crecimiento y una IP de gateway, o tres IP si hay dos cores. El gateway no cuenta como host disponible para terminales. Las redes de tránsito son /30 y no usan VLAN.": "Requested hosts are clients; calculation adds growth and one gateway IP, or three IPs for two cores. The gateway does not count as available client capacity. Transit networks are /30 and do not use VLANs.",
@@ -840,7 +836,6 @@
     "IP de gestión / endpoint (opcional)": "Management / endpoint IP (optional)",
     "IP duplicada.": "Duplicate IP.",
     "IP reservada para un core.": "IP reserved for a core.",
-    "IP, prefijo, red, broadcast y hosts del ejemplo o una subred del proyecto.": "IP, prefix, network, broadcast and hosts for the example or a project subnet.",
     "IPv4 y rutas": "IPv4 and routes",
     "IPv6 desactivado o pendiente de confirmar. IPv4 conserva su propio plan.": "IPv6 disabled or awaiting confirmation. IPv4 retains its own plan.",
     "IPv6 inválida: use una dirección sin zona, comandos ni espacios.": "Invalid IPv6: use an address without a zone, commands or spaces.",
@@ -873,7 +868,6 @@
     "Interfaz B · MikroTik (solo Router)": "Interface B · MikroTik (Router only)",
     "Interfaz Fortinet inválida: use un nombre físico de 1–15 caracteres, por ejemplo port1.": "Invalid Fortinet interface: use a physical name of 1–15 characters, e.g. port1.",
     "Interfaz MikroTik inválida: indique un puerto físico real, por ejemplo ether1, sin comandos ni prefijo wan-.": "Invalid MikroTik interface: enter a real physical port, e.g. ether1, without commands or the wan- prefix.",
-    "Interpretación": "Interpretation",
     "Interpretación asistida manual: marque equipos y enlaces con los editores usando esta imagen como referencia. El HTML local no incluye un modelo de visión ni OCR y no afirma haber reconocido dispositivos automáticamente. La imagen no se transmite a ningún servidor.": "Manual assisted interpretation: mark devices and links with the editors using this image as reference. Local HTML has no vision/OCR model and does not claim automatic device recognition. The image is not sent to any server.",
     "Inventario confirmado.": "Inventory confirmed.",
     "JSON demasiado grande (máximo 10 MB).": "JSON too large (maximum 10 MB).",
@@ -885,7 +879,6 @@
     "La IP debe pertenecer a la VLAN seleccionada y no ser el gateway.": "The IP must belong to the selected VLAN and must not be its gateway.",
     "La VLAN access no existe en esta sede.": "The access VLAN does not exist at this site.",
     "La VLAN del terminal debe coincidir con el enlace access.": "The client VLAN must match the access link.",
-    "La dirección de red identifica la subred. Broadcast alcanza todos sus hosts en redes convencionales. La máscara separa bits de red y de host. /0 tiene 4.294.967.296 direcciones; no debe confundirse con una política que permita todo tráfico.": "The network address identifies the subnet. Broadcast reaches all hosts in conventional networks. The mask separates network and host bits. /0 contains 4,294,967,296 addresses; it must not be confused with a policy allowing all traffic.",
     "La dirección ya está asignada a un equipo.": "The address is already assigned to a device.",
     "La redundancia reserva un gateway virtual y dos IP físicas por VLAN. Los pisos concurridos se usan para identificar prioridad de cobertura; la cantidad de AP requiere luego un estudio RF.": "Redundancy reserves a virtual gateway and two physical IPs per VLAN. Busy floors indicate coverage priority; the AP count still requires an RF survey.",
     "Las IP de interfaces enrutadas y SVI se toman del plan. Para los equipos manuales, asigne una VLAN e IP si requieren administración. Los nombres no pueden contener comandos.": "Routed interface and SVI IPs come from the plan. Assign a VLAN and IP to manual devices when they need management. Names must not contain commands.",
@@ -960,7 +953,7 @@
     "Propuesta FortiOS generada para revisión manual.": "FortiOS proposal generated for manual review.",
     "Propuesta RouterOS generada para revisión manual.": "RouterOS proposal generated for manual review.",
     "Propuestas para IOS / IOS XE con VLAN, SVI, OSPF y SSH. Elija equipo o genere toda la marca.": "IOS / IOS XE proposals with VLANs, SVIs, OSPF and SSH. Select a device or generate all devices of this manufacturer.",
-    "Propuestas para VRP con Vlanif, OSPF, AAA y STelnet. La equivalencia utiliza exactamente el mismo plan. Si no hay equipos marcados como Huawei, se ofrecen los equipos configurables de la topología como equivalentes VRP, sin cambiar su fabricante.": "VRP proposals with Vlanif, OSPF, AAA and STelnet. Equivalence uses exactly the same plan. If no Huawei nodes exist, configurable topology devices are offered as VRP equivalents without changing their manufacturer.",
+    "Propuestas VRP para los equipos Huawei seleccionados. Use Comparación para equivalencias explícitas con Cisco.": "VRP proposals with Vlanif, OSPF, AAA and STelnet. Equivalence uses exactly the same plan. If no Huawei nodes exist, configurable topology devices are offered as VRP equivalents without changing their manufacturer.",
     "Proyecto": "Project",
     "Proyecto cargado.": "Project loaded.",
     "Proyecto exportado. Guarde este JSON junto al HTML para transportar sus datos.": "Project exported. Keep this JSON with the HTML to transport your data.",
@@ -969,7 +962,6 @@
     "Proyecto o sedes inválidos.": "Invalid project or sites.",
     "Proyecto sin guardar": "Unsaved project",
     "Quite los enlaces enrutados antes de cambiar este tipo.": "Remove routed links before changing this type.",
-    "Qué debe verse": "What must be visible",
     "RFC 3021: redes /31 punto a punto": "RFC 3021: point-to-point /31 networks",
     "RFC 4193: ULA": "RFC 4193: ULA",
     "RFC 4291: arquitectura IPv6": "RFC 4291: IPv6 architecture",
@@ -984,7 +976,6 @@
     "Red routed inválida.": "Invalid routed network.",
     "Referencias técnicas oficiales": "Official technical references",
     "Registre cada sede por separado. Confirme los cambios para que estimación, VLAN, direccionamiento y topología utilicen la misma información.": "Register each site separately. Confirm changes so estimation, VLANs, addressing and topology use the same information.",
-    "Repositorio GitHub — 20%": "GitHub repository — 20%",
     "Reserva": "Reservation",
     "Reserva de crecimiento (%)": "Growth reserve (%)",
     "Restaurar estimación": "Restore estimate",
@@ -1033,14 +1024,12 @@
     "Sin espacio para una /30 adicional.": "No space for an additional /30.",
     "Solicitados": "Requested",
     "Subnetting IPv4 / IPv6": "IPv4 / IPv6 subnetting",
-    "Subnetting funcional — 20%": "Working subnetting — 20%",
     "Subred IPv4 / CIDR (opcional)": "IPv4 subnet / CIDR (optional)",
     "Subred IPv4 / CIDR (opcional): deje vacío para asignación automática. Define la red completa de la VLAN; no es el gateway ni un rango DHCP.": "IPv4 subnet / CIDR (optional): leave empty for automatic allocation. This defines the entire VLAN network, not its gateway or DHCP range.",
     "Subred VLAN": "VLAN subnet",
     "Subred insuficiente para los hosts.": "Insufficient subnet capacity for hosts.",
     "Subredes importadas solapadas.": "Overlapping imported subnets.",
     "Switches sugeridos": "Suggested switches",
-    "Sysname, VLAN y dirección IP. Use Comparación si no tiene un core Huawei.": "Sysname, VLAN and IP address. Use Comparison if you have no Huawei core.",
     "Sélectionner tout": "Select all",
     "Sélectionnez un équipement.": "Select a device.",
     "Tamaño de subred incoherente.": "Inconsistent subnet size.",
@@ -1082,7 +1071,6 @@
     "VLAN y equipo deben pertenecer a la misma sede.": "VLAN and device must belong to the same site.",
     "VLAN y objetos de direcciones": "VLANs and address objects",
     "VLAN y plan de direccionamiento": "VLANs and addressing plan",
-    "VLSM asigna tamaños diferentes a las subredes. CIDR /n indica cuántos bits identifican la red. El gateway es la dirección del equipo que lleva el tráfico fuera de la VLAN. Una VLAN separa dominios de broadcast; necesita políticas de acceso para aportar aislamiento de seguridad.": "VLSM assigns different subnet sizes. CIDR /n indicates the number of network bits. The gateway carries traffic outside the VLAN. A VLAN separates broadcast domains; access policies are needed for security isolation.",
     "VLSM para LAN, core y WAN.": "VLSM for LAN, core and WAN.",
     "VLSM validado y confirmado. Continúe con la topología.": "VLSM validated and confirmed. Continue with Topology.",
     "Validaciones actuales": "Current validations",
@@ -1091,11 +1079,7 @@
     "Valor booleano inválido.": "Invalid boolean value.",
     "Ver / ocultar imagen": "Show / hide image",
     "Ver interfaces": "View interfaces",
-    "Ver sección": "View section",
-    "Verificación externa: no se ha comprobado ningún PDF.": "External verification: no PDF has been checked.",
-    "Verificación externa: no se ha comprobado ningún repositorio ni commits.": "External verification: no repository or commits have been checked.",
     "Verificar": "Verify",
-    "Verificar en GitHub": "Verify on GitHub",
     "Virtual": "Virtual",
     "Vista automática": "Automatic view",
     "Volver a proponer": "Propose again",
@@ -1106,7 +1090,7 @@
     "dns": "dns",
     "enlace": "link",
     "equipo": "device",
-    "firewalls; el gráfico base se centra en switching y enrutamiento de laboratorio. La conexión WAN privada no crea VPN, cifrado ni un servicio del ISP. PC son representativos; el inventario completo está en Estimación. Los AP empresariales reciben trunks de gestión/WiFi/invitados; su configuración SSID y mapeo VLAN se completa en el controlador del fabricante.": "firewalls; the base diagram focuses on laboratory switching and routing. A private WAN link does not create a VPN, encryption or ISP service. PCs are representative; complete inventory is in Estimation. Enterprise APs receive management/WiFi/guest trunks; SSID and VLAN mapping must be completed in the manufacturer's controller.",
+    "firewalls recomendados. El perfil permite añadirlos con enlaces de tránsito explícitos; no crea Internet, NAT ni VPN. Los terminales son representativos. La configuración de AP se completa en su controlador.": "firewalls; the base diagram focuses on laboratory switching and routing. A private WAN link does not create a VPN, encryption or ISP service. PCs are representative; complete inventory is in Estimation. Enterprise APs receive management/WiFi/guest trunks; SSID and VLAN mapping must be completed in the manufacturer's controller.",
     "la empresa": "the company",
     "pisos ·": "floors ·",
     "pisos · prioridad de cobertura: pisos": "floors · coverage priority: floors",
@@ -1118,12 +1102,11 @@
     "¿Eliminar esta VLAN y reiniciar las etapas dependientes?": "Delete this VLAN and reset dependent stages?",
     "¿Eliminar esta sede y los datos de diseño dependientes?": "Delete this site and dependent design data?",
     "¿Eliminar este enlace? La subred quedará reservada en el plan.": "Delete this link? Its subnet will remain reserved in the plan.",
-    "¿Qué significan VLSM, CIDR y gateway?": "What do VLSM, CIDR and gateway mean?",
     "¿Reemplazar VLAN y diseño actual por una nueva propuesta?": "Replace VLANs and the current design with a new proposal?",
     "¿Reemplazar el proyecto actual por el guardado?": "Replace the current project with the saved project?",
     "¿Reemplazar el proyecto actual por este JSON?": "Replace the current project with this JSON?",
     "¿Reemplazar el proyecto por un ejemplo ficticio de laboratorio de dos sedes?": "Replace the project with a fictional two-site laboratory example?",
-    "¿Reemplazar toda la topología y las ediciones manuales?": "Replace the entire topology and manual edits?",
+    "¿Regenerar equipos automáticos conservando los manuales?": "Replace the entire topology and manual edits?",
     "¿Restaurar estimaciones de esta sede y reiniciar el diseño dependiente?": "Restore this site's estimates and reset the dependent design?",
     "Áreas": "Areas",
     "Áreas / departamentos (separados por coma)": "Areas / departments (comma-separated)",
@@ -1393,16 +1376,27 @@
         }
         return source;
       }
+      /**
+       * Entradas: código es/en y presentación actualmente visible.
+       * Salida: idioma, preferencia independiente y controles restaurados.
+       * No modifica el proyecto; traduce avisos simples ya visibles y conserva datos/CLI.
+       */
       function setLanguage(language) {
         if (!["es", "en"].includes(language) || language === uiLanguage) return;
         const controls = [...document.querySelectorAll("input[id],select[id],textarea[id]")]
-          .filter(el => el.id !== "languageSelect" && el.type !== "file")
+          .filter(el => el.id !== "languageSelect" && el.type !== "file" && el.type !== "password" && el.id !== "sshPrivateKey")
           .map(el => ({id:el.id, value:el.value, checked:el.checked, start:el.selectionStart, end:el.selectionEnd}));
         const focused = document.activeElement?.id, scroll = [scrollX, scrollY];
         const previous = uiLanguage;
         uiLanguage = language;
         try { localStorage.setItem(UI_LANGUAGE_KEY, language); } catch (_) { toast(t("No se pudo guardar la preferencia de idioma."), true); }
         render();
+        // Los avisos simples ya visibles pertenecen a la interfaz, no al proyecto.
+        const visibleToast=$("toast");
+        if (visibleToast && !visibleToast.classList.contains("hidden")) {
+          const key=Object.entries(I18N.en).find(([,value])=>value===visibleToast.textContent)?.[0] || visibleToast.textContent;
+          visibleToast.textContent=t(key);
+        }
         // Modal labels are local UI; input values and CLI textareas are excluded.
         if ($("modal").open) {
           const reverse = new Map(Object.entries(I18N[previous]).map(([key,value]) => [value,key]));
@@ -1419,6 +1413,57 @@
         });
         $(focused)?.focus({preventScroll:true}); window.scrollTo(...scroll);
       }
+      // Catálogo adicional de esta revisión; valores internos y CLI permanecen iguales.
+      Object.assign(I18N.en, {
+        "Inventario confirmado": "Inventory confirmed",
+        "Editar inventario": "Edit inventory",
+        "Cambios sin guardar": "Unsaved changes",
+        "Pendiente de confirmación": "Pending confirmation",
+        "VLAN confirmadas": "VLAN confirmed",
+        "Recalcular VLAN": "Recalculate VLANs",
+        "Fabricantes por sede y función": "Manufacturers by site and role",
+        "Elija cada función activa. Firewall y router secundario son opcionales y requieren recalcular tránsitos. No se inventan enlaces a Internet.": "Select each active role. Optional firewall and secondary router require recalculating transit. No Internet links are assumed.",
+        "Confirmar fabricantes": "Confirm manufacturers",
+        "Cambiar fabricantes invalida configuraciones afectadas. ¿Continuar?": "Changing manufacturers invalidates affected configurations. Continue?",
+        "Fabricantes confirmados. Recalcule VLAN si cambió el tránsito y regenere los equipos automáticos.": "Manufacturers confirmed. Recalculate VLANs if transit changed and regenerate automatic devices.",
+        "router": "Primary router",
+        "backupRouter": "Secondary router (optional)",
+        "core": "Layer 3 core",
+        "distribution": "Distribution switches",
+        "access": "Access switches",
+        "firewall": "Firewall (optional)",
+        "Genérico": "Generic",
+        "Perfil de fabricantes inválido.": "Invalid manufacturer profile.",
+        "Elija un fabricante compatible para este rol.": "Select a compatible manufacturer for this role.",
+        "El adaptador IOS/VRP no implementa firewall.": "The IOS/VRP adapter does not implement firewalls.",
+        "Sede {0}: elija fabricante para {1}.": "Site {0}: select a manufacturer for {1}.",
+        "Recalcule VLAN para crear los tránsitos opcionales.": "Recalculate VLANs to create optional transit networks.",
+        "Nombre automático en conflicto con un equipo manual.": "Automatic name conflicts with a manual device.",
+        "Reorganizar diagrama": "Rearrange diagram",
+        "Acercar": "Zoom in",
+        "Alejar": "Zoom out",
+        "Propuestas VRP para los equipos Huawei seleccionados. Use Comparación para equivalencias explícitas con Cisco.": "VRP proposals for selected Huawei devices. Use Comparison for explicit Cisco equivalents.",
+        "¿Regenerar equipos automáticos conservando los manuales?": "Regenerate automatic devices while preserving manual ones?",
+        "firewalls recomendados. El perfil permite añadirlos con enlaces de tránsito explícitos; no crea Internet, NAT ni VPN. Los terminales son representativos. La configuración de AP se completa en su controlador.": "recommended firewalls. Profiles can add them with explicit transit links; no Internet, NAT or VPN is created. Endpoints are representative; configure APs in their controller.",
+        "Red invade otra sede.": "Network overlaps another site.",
+        "LAN invade tránsito.": "LAN overlaps transit.",
+        "Sede «{0}»: ": "Site '{0}': ",
+        "Bloque de tránsito": "Transit block",
+        "Cámara": "Camera",
+        "Impresora": "Printer",
+        "WAN: violeta · ROUTED: turquesa · TRUNK: naranja · ACCESS: verde discontinuo. Pase el cursor sobre un enlace para consultar su red; los detalles completos están en las tablas.": "WAN: purple · ROUTED: teal · TRUNK: orange · ACCESS: dashed green. Hover over a link for its network; tables contain full details.",
+        "Bloque predeterminado del proyecto": "Default project block",
+        "Bloque de tránsito (opcional)": "Transit block (optional)",
+        "Tránsito requiere /30 o mayor.": "Transit requires /30 or larger.",
+        "Manual": "Manual",
+        "Automática": "Automatic",
+        "Bloque privado propio; puede ser independiente del predeterminado. No debe solaparse con otra sede ni con tránsito.": "Independent private site block; it must not overlap another site or transit."
+      });
+      Object.assign(I18N.en, {"Sede confirmada": "Site confirmed", "Sede pendiente o en edición": "Site pending or being edited", "Editar sede": "Edit site", "Sede confirmada.": "Site confirmed.", "Asignación automática pendiente": "Automatic allocation pending", "Continuar a Topología": "Continue to Topology", "Mínimo por capacidad del conjunto: /{0}.": "Minimum aggregate capacity: /{0}.", "{0}: bloque {1}/{2}; hosts {3}, crecimiento {4}%, reserva {5}, requiere {6} IP útiles y /{7} ({8} direcciones). No existe hueco contiguo suficiente. {9}": "{0}: block {1}/{2}; hosts {3}, growth {4}%, reserve {5}, requires {6} usable IPs and /{7} ({8} addresses). No contiguous space is large enough. {9}"});
+      Object.assign(I18N.en, {"Consola SSH": "SSH console", "Simulación": "Simulation", "Conexión real": "Real connection", "Modalidad SSH": "SSH mode", "Dispositivo de la topología": "Topology device", "Conexión manual / seleccione equipo": "Manual connection / select device", "Simulación educativa y conexión real son independientes. Nunca se aplican configuraciones automáticamente.": "Educational simulation and real connections are independent. Configurations are never applied automatically.", "La conexión manual no requiere VLSM. Use únicamente equipos autorizados. Cambiar idioma, pestaña o módulo cierra la sesión; no se guarda el historial real.": "Manual connection does not require VLSM. Use authorized devices only. Changing language, tab or module closes the session; real history is not saved.", "Servicio local disponible": "Local service available", "Servicio no disponible: inicie Python y abra http://127.0.0.1:8765 (o el puerto configurado).": "Service unavailable: start Python and open http://127.0.0.1:8765 (or the configured port).", "IP o hostname autorizado": "Authorized IP or hostname", "Puerto SSH": "SSH port", "Usuario SSH": "SSH username", "Autenticación": "Authentication", "Contraseña": "Password", "Clave privada": "Private key", "Clave privada (solo memoria)": "Private key (memory only)", "Frase de clave (opcional)": "Key passphrase (optional)", "Autorizo esta conexión al destino configurado en mi servicio local": "I authorize this connection to the target configured in my local service", "Si falta IP de gestión explícita, introdúzcala manualmente. No use una IP WAN o gateway como administración sin verificarla.": "Enter a missing explicit management IP manually. Do not assume a WAN or gateway IP is an administration address.", "Conectar": "Connect", "Desconectar": "Disconnect", "Limpiar consola": "Clear console", "Terminal SSH real": "Real SSH terminal", "SIMULACIÓN: no existe conexión SSH ni acceso a equipos. Respuestas derivadas del proyecto, no del sistema operativo del dispositivo.": "SIMULATION: no SSH connection or device access. Responses come from the project, not a device operating system.", "Plan no confirmado: confirme VLAN/VLSM para consultar datos simulados.": "Unconfirmed plan: confirm VLAN/VLSM to query simulated data.", "Comandos soportados": "Supported commands", "Terminal simulada": "Simulated terminal", "Comando simulado": "Simulated command", "Enviar comando": "Send command", "Reiniciar simulación": "Reset simulation", "Seleccione un dispositivo para simular.": "Select a device to simulate.", "Comando no disponible en el simulador": "Command unavailable in the simulator", "Genere primero la configuración de este equipo en su módulo.": "Generate this device configuration in its module first.", "Inventario del plan; no es una tabla de rutas aprendidas.": "Plan inventory; this is not a learned routing table.", "SIMULACIÓN": "SIMULATION", "Simulación reiniciada.": "Simulation reset.", "Recursos locales de terminal no disponibles.": "Local terminal resources unavailable.", "Servicio SSH local no disponible.": "Local SSH service unavailable.", "Confirme que autoriza la conexión.": "Confirm authorization for this connection.", "Indique host, puerto y usuario válidos.": "Enter a valid host, port and username.", "Desconectado": "Disconnected", "Conectando": "Connecting", "Conectado": "Connected", "Sesión finalizada": "Session ended", "Error de autenticación": "Authentication error", "Error de red": "Network error", "Clave de host desconocida o modificada: verifique la huella con el servicio local.": "Unknown or changed host key: verify its fingerprint with the local service.", "Sesión local no autorizada": "Unauthorized local session", "Destino no autorizado por el servicio local": "Target not authorized by the local service", "Solicitud SSH no válida": "Invalid SSH request"});
+      Object.assign(I18N.en, {"Manual de consola SSH":"SSH console manual"});
+      Object.assign(I18N.en, {"El equipo no permite shell/PTY interactivo.":"The device does not allow an interactive shell/PTY."});
+      // Nuevas etiquetas del flujo; CLI y datos nunca se traducen.
       /* =================== Estado, validadores y aritmética IPv4 =================== */
       const $ = (id) => document.getElementById(id); // Acceso centralizado a elementos por ID.
       const esc = (s) =>
@@ -1433,6 +1478,8 @@
               "'": "&#39;",
             })[c],
         ); // Evita inyectar HTML desde nombres y JSON importados.
+      Object.assign(I18N.en, {"Perfil físico inválido.": "Invalid physical profile.", "Nombre de interfaz física inválido.": "Invalid physical interface name.", "Nomenclatura física no soportada por este adaptador.": "Physical naming is not supported by this adapter.", "Indique documentación oficial del modelo y versión.": "Provide official documentation for the model and version.", "Referencia física de enlace inválida.": "Invalid physical link reference.", "Interfaz física duplicada.": "Duplicate physical interface.", "Perfil archivado no coincide con los enlaces.": "Archived profile does not match the links.", "Perfil archivado incompleto.": "Incomplete archived profile.", "AP excluido de CLI genérica: requiere modelo, firmware y administración específicos.": "AP excluded from generic CLI: specific model, firmware and management are required.", "Modelo": "Model", "Versión": "Version", "URL oficial del modelo y versión": "Official URL for the model and version"});
+      Object.assign(I18N.en, {"Gestión AP":"AP management","Los nombres de interfaces son propuestas automáticas. Verifique puertos, modelo y versión antes de aplicar configuraciones a equipos físicos.":"Interface names are automatic proposals. Verify ports, model and version before applying configurations to physical devices."});
       const steps = [
         "Resumen",
         "Datos del proyecto",
@@ -1442,12 +1489,12 @@
         "Topología",
         "Configuración Cisco",
         "Configuración Huawei",
-        "Comparación",
-        "Ciberdefensa y uso de IA",
-        "Evidencias Corte 2",
         "Configuración Fortinet",
         "Configuración MikroTik",
+        "Comparación",
+        "Ciberdefensa y uso de IA",
         "Planificación IPv6",
+        "Consola SSH",
       ]; // Etapas visibles del flujo.
       const kinds = [
         "Router",
@@ -1458,6 +1505,8 @@
         "Servidor",
         "PC",
         "ISP",
+        "Cámara",
+        "Impresora",
       ]; // Tipos de nodos admitidos.
       const roles = [
         "Datos",
@@ -1683,7 +1732,132 @@
           6000,
         );
       } // Aviso accesible de guardado, validación o error.
+      // Invalida una sede manteniendo VLAN, redes y equipos de otras sedes.
+      // Los vecinos WAN pierden su CLI porque sus enlaces sí dependen de ella.
+      /**
+       * Entradas: ID estable de sede y decisión de conservar sus VLAN.
+       * Proceso / salida: Filtra dependencias locales y CLI de vecinos WAN; conserva otras sedes y actualiza revisión.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function invalidateSite(siteId, dropVlans = false) {
+        const ids = new Set(state.nodes.filter(n => n.site === siteId).map(n => n.id));
+        const peers = new Set(state.links.filter(l => ids.has(l.a) || ids.has(l.b)).flatMap(l => [l.a,l.b]));
+        if (dropVlans) state.vlans = state.vlans.filter(v => v.site !== siteId);
+        state.plan = state.plan.filter(r => r.site !== siteId && !(r.kind === "wan" && (r.site === "WAN")));
+        if (dropVlans) state.ipv6Plan = state.ipv6Plan.filter(r => r.site !== siteId);
+        state.nodes = state.nodes.filter(n => !ids.has(n.id));
+        state.links = state.links.filter(l => !ids.has(l.a) && !ids.has(l.b));
+        refreshPhysicalProfiles();
+        state.configs = Object.fromEntries(Object.entries(state.configs).filter(([key]) => ![...peers].some(id => key.startsWith(id+"-"))));
+        state.approved = false;
+        state.revision++;
+        Object.values(state.configs).forEach(item => item.revision=state.revision);
+      }
+      // Borradores de presentación: nunca se serializan como datos confirmados.
+      const inventoryEditing = new Set(), formDrafts = new Map(), siteEditing = new Set(), siteSnapshots = new Map(), sitePending = new Set();
+      let vlanEditing = false, lastVlanFocus="base";
+      /**
+       * Entradas: Página y controles visibles de sede, inventario o VLAN.
+       * Proceso / salida: Copia valores/checks en memoria de presentación; no guarda datos sin confirmar en JSON.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function captureDraft() {
+        if (![1,2,3].includes(page)) return;
+        const key = page === 1 ? "site:"+state.sites[selectedSite]?.id : page===2 ? "inventory" : "vlans";
+        formDrafts.set(key, [...$("view").querySelectorAll("input[id],select[id]")].map(el => [el.id,el.value,el.checked]));
+      }
+      /**
+       * Entradas: Página activa y borradores asociados a su sede.
+       * Proceso / salida: Restaura solo controles existentes; no cambia el estado confirmado ni dispara eventos.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function restoreDraft() {
+        const key = page === 1 ? "site:"+state.sites[selectedSite]?.id : page === 2 ? "inventory" : page===3 ? "vlans" : "";
+        for (const [id,value,checked] of formDrafts.get(key)||[]) {
+          const el=$(id); if (el) {el.value=value;el.checked=checked;}
+        }
+      }
+      /**
+       * Entradas: Índice elegido en el selector.
+       * Proceso / salida: Captura primero el formulario anterior, cambia la ficha y vuelve a renderizar.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function selectSite(index) { captureDraft(); selectedSite=index; render(); }
+      /**
+       * Entradas: Índice de sede con cantidades confirmadas.
+       * Proceso / salida: Abre el formulario; no invalida hasta confirmar cantidades realmente diferentes.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function editCounts(i) { inventoryEditing.add(state.sites[i].id); render(); }
+      // La aprobación efectiva requiere además que no haya ediciones pendientes.
+      // Comparación de intención visible; no ejecuta validadores ni confirma entradas.
+      /**
+       * Entradas: Valores visibles y última intención confirmada.
+       * Proceso / salida: Devuelve un booleano comparando campos; no parsea, asigna ni guarda entradas.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function vlanFormChanged() {
+        if (!$("base")) return false;
+        if (["base","dns","transitBase"].some(k=>$(k).value.trim()!==state.project[k]) || Number($("growth").value)!==state.project.growth) return true;
+        return state.vlans.some((v,i)=>$("vs"+i).value!==v.site || Number($("vi"+i).value)!==v.id || $("vn"+i).value.trim()!==v.name || $("vc"+i).value.trim()!==(v.ipv4Cidr||"") || $("vr"+i).value!==v.role || Number($("vh"+i).value)!==v.hosts || $("vd"+i).checked!==v.dhcp);
+      }
+      /**
+       * Entradas: Aprobación, plan efectivo y bandera de borrador.
+       * Proceso / salida: Lanza un error si falta cálculo confirmado; las vistas independientes siguen navegables.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      /** Activa una ficha sin borrar valores; captura referencia para detectar cambios reales. */
+      function editSite() {
+        siteEditing.add(state.sites[selectedSite].id);
+        render();
+        siteSnapshots.set(state.sites[selectedSite].id, siteFormSnapshot());
+      }
+      /** Serializa exclusivamente controles no sensibles de la ficha visible. */
+      function siteFormSnapshot() {
+        return JSON.stringify([...$("siteFields").querySelectorAll("input")].map(el=>[el.id,el.value,el.checked]));
+      }
+      // Durante la comprobación canónica de un archivo antiguo no se consultan borradores
+      // de la pantalla actual ni se certifican sus puertos propuestos como físicos.
+      let checkingArchive = false, archivedPhysicalNames = false;
+      /** Comprueba datos efectivos, no una bandera histórica de edición. No asigna redes. */
+      function confirmedPlan() {
+        if (state.approved!==true || !state.plan.length || !state.vlans.length) return false;
+        if (!checkingArchive && (pendingVlans() || sitePending.size)) return false;
+        try {
+          const pools=allocationPools(state.project.base), rows=new Map(state.plan.map(r=>[r.key,r]));
+          if (rows.size!==state.plan.length) return false;
+          for (const r of state.plan) {
+            const actual=subnet(r.network+"/"+r.prefix);
+            if (actual.network!==r.network || actual.net!==r.net || actual.end!==r.end || actual.mask!==r.mask) return false;
+          }
+          if (initialTransits().some(req=>!rows.has(req.key))) return false;
+          for (const v of state.vlans) {
+            const r=rows.get(v.key), pool=pools.sites.get(v.site)||pools.global;
+            if (!r || r.kind!=="vlan" || r.site!==v.site || r.id!==v.id ||
+                r.net<pool.net || r.end>pool.end || !isHost(r.gateway,r) || r.hostsRequested!==v.hosts || r.name!==v.name || r.role!==v.role || r.dhcp!==v.dhcp ||
+                r.hosts < Math.ceil(v.hosts*(1+state.project.growth/100))+(state.sites.find(s=>s.id===v.site).redundant?3:1) ||
+                (v.ipv4Cidr && v.ipv4Cidr!==r.network+"/"+r.prefix)) return false;
+          }
+          return true;
+        } catch (_) { return false; }
+      }
+      /** Lee el DOM o el borrador conservado; revertir valores recupera una aprobación válida. */
+      function pendingVlans() {
+        if ($("base")) return vlanFormChanged();
+        const draft=formDrafts.get("vlans");
+        if (!draft) return false;
+        const values=new Map(draft.map(([id,value,checked])=>[id,{value,checked}]));
+        const expected={base:state.project.base,dns:state.project.dns,transitBase:state.project.transitBase,growth:state.project.growth};
+        state.vlans.forEach((v,i)=>Object.assign(expected,{["vs"+i]:v.site,["vi"+i]:v.id,["vn"+i]:v.name,["vc"+i]:v.ipv4Cidr||"",["vr"+i]:v.role,["vh"+i]:v.hosts}));
+        return Object.entries(expected).some(([id,value])=>values.has(id)&&String(values.get(id).value).trim()!==String(value)) || state.vlans.some((v,i)=>values.has("vd"+i)&&values.get("vd"+i).checked!==v.dhcp);
+      }
+      /** Punto único para navegación, topología y los cuatro adaptadores. */
+      function requireConfirmedPlan() {
+        if (!confirmedPlan()) fail(t("Confirme primero VLAN y VLSM."));
+      }
+      function dependentPage(index) { return [5,6,7,8,9,10].includes(index); }
       function invalidate(level = "project") {
+        refreshPhysicalProfiles();
         if (level === "project" || level === "plan") state.ipv6Plan = [];
         state.revision++;
         state.configs = {};
@@ -1716,15 +1890,36 @@
       function badge(ok, yes = "Cumplido", no = "Pendiente") {
         return `<span class="badge ${ok ? "" : "warn"}">${t(ok ? yes : no)}</span>`;
       } // Estado comprobable, sin inventar evidencias externas.
+      /**
+       * Entradas: Índice de módulo solicitado.
+       * Proceso / salida: Conserva borradores, limita el índice al menú vigente y desplaza al encabezado.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function go(i) {
-        page = i;
+        const target=Math.max(0,Math.min(steps.length-1,Number(i)||0));
+        // Rechazar antes de capturar/renderizar mantiene intacto el formulario pendiente.
+        if (dependentPage(target) && safe(requireConfirmedPlan)===false) return false;
+        captureDraft();
+        page = target;
         render();
         window.scrollTo({ top: 0, behavior: "smooth" });
       } // Navegación conservando el estado confirmado.
       function title(n, desc) {
         return `<div class="eyebrow">${String(page).padStart(2, "0")} ${t("/ Flujo de diseño")}</div><h1>${n}</h1><p>${t(desc)}</p>`;
       } // Encabezado contextual de cada fase.
+      /**
+       * Entradas: Estado confirmado, idioma, página y preferencias visuales.
+       * Proceso / salida: Reconstruye únicamente la vista; restaura borradores y enlaza eventos de esa página.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function render() {
+        // También protege asignaciones programáticas de page; no basta con ocultar botones.
+        if (dependentPage(page) && !confirmedPlan()) {
+          page=3;toast(t("Confirme primero VLAN y VLSM."),true);
+          if ($("vlanStatus")) return false; // Conserva el mismo DOM si se intentó saltar directamente desde VLAN.
+        }
+        // Una vista reconstruida no conserva una sesión real oculta/huérfana.
+        sshDispose();
         document.documentElement.lang = uiLanguage;
         document.title = t("WAN Architect · Diseño empresarial");
         document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent=t(el.dataset.i18n); });
@@ -1751,18 +1946,39 @@
           topologyView,
           () => configView("Cisco"),
           () => configView("Huawei"),
-          compareView,
-          securityView,
-          evidenceView,
           fortinetView,
           mikrotikView,
+          compareView,
+          securityView,
           ipv6View,
+          sshConsoleView,
         ][page]();
         $("stepfoot").innerHTML =
           `<button ${page === 0 ? "disabled" : ""} onclick="go(${page - 1})">${t("← Anterior")}</button><button class="primary" ${page === steps.length - 1 ? "disabled" : ""} onclick="go(${page + 1})">${t("Siguiente →")}</button>`;
-        if ([6, 7, 11, 12].includes(page))
+        if ([6, 7, 8, 9].includes(page))
           $("view").insertAdjacentHTML("afterbegin", `<div class="notice">${t("Estas propuestas de fabricante son exclusivamente IPv4. IPv6 solo se calcula y planifica; su configuración requiere aclaración docente.")}</div>`);
         if (page === 5) bindDrag();
+        restoreDraft();
+        if (page===3) { vlanEditing=pendingVlans(); updateVlanStatus(); }
+        $("view").oninput = null;
+        if (page===1) $("view").oninput=(event)=>{
+          if (!$("siteFields").contains(event.target)) return;
+          const id=state.sites[selectedSite].id, initial=siteSnapshots.get(id);
+          if (initial && initial===siteFormSnapshot()) sitePending.delete(id); else sitePending.add(id);
+          $("siteStatus").textContent=t(sitePending.has(id)?"Cambios sin guardar":"Sede pendiente o en edición");
+          captureDraft();
+        };
+        if (page === 2) $("view").oninput = (event) => {
+          const match=event.target.id.match(/^c(\d+)_/);
+          if (match && $("inventoryStatus"+match[1])) $("inventoryStatus"+match[1]).textContent=t("Cambios sin guardar");
+          captureDraft();
+        };
+        if (page === 3) $("view").oninput = () => {
+          // Un borrador bloquea dependencias, pero no destruye el último plan.
+          vlanEditing = vlanFormChanged();
+          captureDraft();
+          updateVlanStatus();
+        };
       } // Solo se reconstruye la etapa visible.
       /* =================== Datos por sede y estimación explicable =================== */
       function estimated(s) {
@@ -1815,7 +2031,13 @@
         text(state.project.activity, "Actividad");
         if (!state.sites.length) fail(t("Añada al menos una sede."));
       } // Evita generar propuestas sin datos obligatorios.
+      /**
+       * Entradas: Proyecto y sede seleccionada.
+       * Proceso / salida: Devuelve HTML escapado para datos y bloque propio; no escribe estado.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function projectView() {
+        // confirmed es opcional en v4: ausente nunca implica una ficha confirmada.
         const s = state.sites[selectedSite] || state.sites[0];
         selectedSite = state.sites.indexOf(s);
         return (
@@ -1823,7 +2045,7 @@
             t("Datos del proyecto"),
             t("Registre cada sede por separado. Confirme los cambios para que estimación, VLAN, direccionamiento y topología utilicen la misma información."),
           ) +
-          `<div class="notice">${t("Flujo: datos → estimación → confirmar VLAN → VLSM → topología → configuraciones. Cambiar datos confirmados invalida las etapas dependientes.")}</div><div class="card"><h2>${t("Identificación y alcance")}</h2><div class="grid">${field(t("Nombre del proyecto *"), "pname", state.project.name)}${field(t("Empresa *"), "pcompany", state.project.company)}${field(t("Actividad * (ej. clínica, educación, comercio)"), "pactivity", state.project.activity)}<div class="field"><label for="ptype">${t("Infraestructura")}</label><select id="ptype">${optsHTML(["Casa", "Oficina", "Edificio", "Campus", "Varias sedes"], state.project.type)}</select></div><div class="field"><label for="psegment">${t("Criterio de segmentación")}</label><select id="psegment">${optsHTML(["Servicios", "Departamentos"], state.project.segmentation)}</select></div>${field(t("Número de sedes (1–12)"), "sitecount", state.sites.length, "number", 'min="1" max="12"')}</div><label class="check"><input id="pinter" type="checkbox" ${state.project.interconnect ? "checked" : ""}>${t("Interconectar las sedes mediante enlaces WAN enrutados")}</label><div class="actions"><button class="primary" onclick="saveProject()">${t("Confirmar datos del proyecto")}</button><button onclick="resizeSites()">${t("Aplicar número de sedes")}</button><button onclick="demo()">${t("Cargar ejemplo de laboratorio")}</button></div></div><div class="card"><div class="sitehead"><h2>${t("Ficha individual de la sede")}</h2><div class="actions"><select class="sitecount" aria-label="${t("Sede activa")}" onchange="selectedSite=+this.value;render()">${state.sites.map((x, i) => `<option value="${i}" ${i === selectedSite ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select><button class="danger" onclick="removeSite()">${t("Eliminar sede")}</button></div></div><div class="grid">${field(t("Nombre de sede *"), "sname", s.name)}${field(t("Bloque IPv4 de la sede (opcional)"), "sipv4Base", s.ipv4Base, "text", 'placeholder="10.10.0.0/16" aria-describedby="siteIpv4Help"')}${field(t("Número de pisos"), "sfloors", s.floors, "number", 'min="1" max="50"')}${field("Usuarios", "susers", s.users, "number", 'min="1" max="100000"')}${field(t("Dispositivos personales por usuario"), "sratio", s.ratio, "number", 'min="1" max="10" step="0.1"')}${field(t("Pisos más concurridos (separados por coma)"), "sbusy", s.busy)}${field(t("Áreas / departamentos (separados por coma)"), "sareas", s.areas)}${field(t("Ancho de banda Mbps (0 = sugerir)"), "sbw", s.bandwidth, "number", 'min="0" max="100000"')}</div><div class="grid" style="margin-top:16px">${[
+          `<div class="notice">${t("Flujo: datos → estimación → confirmar VLAN → VLSM → topología → configuraciones. Cambiar datos confirmados invalida las etapas dependientes.")}</div><div class="card"><h2>${t("Identificación y alcance")}</h2><div class="grid">${field(t("Nombre del proyecto *"), "pname", state.project.name)}${field(t("Empresa *"), "pcompany", state.project.company)}${field(t("Actividad * (ej. clínica, educación, comercio)"), "pactivity", state.project.activity)}<div class="field"><label for="ptype">${t("Infraestructura")}</label><select id="ptype">${optsHTML(["Casa", "Oficina", "Edificio", "Campus", "Varias sedes"], state.project.type)}</select></div><div class="field"><label for="psegment">${t("Criterio de segmentación")}</label><select id="psegment">${optsHTML(["Servicios", "Departamentos"], state.project.segmentation)}</select></div>${field(t("Número de sedes (1–12)"), "sitecount", state.sites.length, "number", 'min="1" max="12"')}</div><label class="check"><input id="pinter" type="checkbox" ${state.project.interconnect ? "checked" : ""}>${t("Interconectar las sedes mediante enlaces WAN enrutados")}</label><div class="actions"><button class="primary" onclick="saveProject()">${t("Confirmar datos del proyecto")}</button><button onclick="resizeSites()">${t("Aplicar número de sedes")}</button><button onclick="demo()">${t("Cargar ejemplo de laboratorio")}</button></div></div><div class="card"><div class="sitehead"><h2>${t("Ficha individual de la sede")}</h2><div class="actions"><select class="sitecount" aria-label="${t("Sede activa")}" onchange="selectSite(+this.value)">${state.sites.map((x, i) => `<option value="${i}" ${i === selectedSite ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select><button class="danger" onclick="removeSite()">${t("Eliminar sede")}</button></div></div><div id="siteStatus" class="badge ${s.confirmed && !siteEditing.has(s.id) ? "" : "warn"}">${t(s.confirmed && !siteEditing.has(s.id) ? "Sede confirmada" : "Sede pendiente o en edición")}</div>${s.confirmed && !siteEditing.has(s.id) ? `<p>${esc(s.name)} · ${s.users} ${t("Usuarios")} · ${s.floors} ${t("Pisos")} · ${esc(s.ipv4Base || state.project.base)}</p>` : ""}<fieldset id="siteFields" ${s.confirmed && !siteEditing.has(s.id) ? "disabled" : ""}><div class="grid">${field(t("Nombre de sede *"), "sname", s.name)}${field(t("Bloque IPv4 de la sede (opcional)"), "sipv4Base", s.ipv4Base, "text", 'placeholder="10.10.0.0/16" aria-describedby="siteIpv4Help"')}${field(t("Número de pisos"), "sfloors", s.floors, "number", 'min="1" max="50"')}${field("Usuarios", "susers", s.users, "number", 'min="1" max="100000"')}${field(t("Dispositivos personales por usuario"), "sratio", s.ratio, "number", 'min="1" max="10" step="0.1"')}${field(t("Pisos más concurridos (separados por coma)"), "sbusy", s.busy)}${field(t("Áreas / departamentos (separados por coma)"), "sareas", s.areas)}${field(t("Ancho de banda Mbps (0 = sugerir)"), "sbw", s.bandwidth, "number", 'min="0" max="100000"')}</div><div class="grid" style="margin-top:16px">${[
             ["wifi", "WiFi"],
             ["voip", t("Telefonía IP")],
             ["cctv", t("Cámaras IP")],
@@ -1837,7 +2059,7 @@
             )
             .join(
               "",
-            )}</div><div id="siteIpv4Help" class="hint">${t("Opcional: deje vacío para conservar el comportamiento heredado. Este bloque se valida y delimita la asignación VLSM automática de sus VLAN.")}</div><div class="hint">${t("La redundancia reserva un gateway virtual y dos IP físicas por VLAN. Los pisos concurridos se usan para identificar prioridad de cobertura; la cantidad de AP requiere luego un estudio RF.")}</div><div class="actions" style="margin-top:16px"><button class="primary" onclick="saveSite()">${t("Confirmar esta sede")}</button></div></div>`
+            )}</div><div id="siteIpv4Help" class="hint">${t("Opcional: deje vacío para conservar el comportamiento heredado. Este bloque se valida y delimita la asignación VLSM automática de sus VLAN.")}</div><div class="hint">${t("La redundancia reserva un gateway virtual y dos IP físicas por VLAN. Los pisos concurridos se usan para identificar prioridad de cobertura; la cantidad de AP requiere luego un estudio RF.")}</div></fieldset><div class="actions" style="margin-top:16px">${s.confirmed && !siteEditing.has(s.id) ? `<button class="primary" onclick="editSite()">${t("Editar sede")}</button>` : `<button class="primary" onclick="saveSite()">${t("Confirmar esta sede")}</button>`}</div></div>`
         );
       }
       function saveProject() {
@@ -1890,11 +2112,18 @@
           render();
         }
       } // Nunca elimina datos sin confirmar.
+      /**
+       * Entradas: Ficha visible con nombre, bloque, usuarios y opciones.
+       * Proceso / salida: Valida una candidata completa; igualdad conserva diseño y cambio real invalida solo dependencias locales.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function saveSite() {
+        // Solo el éxito publica confirmed=true; un error conserva ficha y borrador.
         safe(() => {
           const old = state.sites[selectedSite],
             s = {
               ...old,
+              confirmed: true,
               name: text($("sname").value, "Sede"),
               ipv4Base: $("sipv4Base").value.trim(),
               floors: num($("sfloors").value, 1, 50, "Pisos"),
@@ -1909,7 +2138,7 @@
               busy: text($("sbusy").value, "Pisos concurridos"),
               areas: text($("sareas").value, "Áreas", 500),
               bandwidth: num($("sbw").value, 0, 100000, "Mbps"),
-              counts: null,
+              counts: old.counts,
             };
           const floors = s.busy
             .split(",")
@@ -1930,12 +2159,31 @@
             state.project,
             state.sites.map((x) => (x.id === s.id ? s : x)),
           );
-          state.sites[selectedSite] = s;
-          invalidate();
+          // No guardar una intención manual que quedaría fuera del nuevo pool.
+          manualVlanNetworks(state.project,state.sites.map(x=>x.id===s.id?s:x),state.vlans,state.nodes);
+          // Confirmar sin cambios no destruye un diseño válido.
+          if (JSON.stringify({...old,confirmed:true}) !== JSON.stringify(s)) {
+            const addressOnly = Object.keys(old).filter(k => !["name","ipv4Base","bandwidth","confirmed"].includes(k)).every(k => JSON.stringify(old[k])===JSON.stringify(s[k]));
+            state.sites[selectedSite] = s;
+            if (!addressOnly || old.ipv4Base!==s.ipv4Base) invalidateSite(s.id, !addressOnly);
+            // Un nombre o ancho de banda no altera redes ni interfaces.
+            else if (old.name!==s.name) {
+              const ids=state.nodes.filter(n=>n.site===s.id).map(n=>n.id);
+              state.configs=Object.fromEntries(Object.entries(state.configs).filter(([key])=>!ids.some(id=>key.startsWith(id+"-"))));
+            }
+          }
+          state.sites[selectedSite].confirmed=true;
+          siteEditing.delete(s.id); sitePending.delete(s.id); siteSnapshots.delete(s.id);
+          formDrafts.delete("site:"+s.id);
           render();
-          toast(t("Sede confirmada; estimaciones recalculadas."));
+          toast(t("Sede confirmada."));
         });
       } // Valida pisos, usuarios y nombres antes de reemplazar una ficha.
+      /**
+       * Entradas: Cantidades reales o fórmulas estimadas por sede.
+       * Proceso / salida: Devuelve formulario o resumen confirmado junto con infraestructura y ancho de banda, sin cambiar fórmulas.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function estimateView() {
         return (
           title(
@@ -1946,7 +2194,7 @@
             .map((s, i) => {
               const c = counts(s),
                 p = proposal(s);
-              return `<div class="card"><h2>${esc(s.name)}</h2><p>${s.users} ${t("usuarios ·")} ${s.floors} ${t("pisos · prioridad de cobertura: pisos")} ${esc(s.busy)}</p><div class="grid">${countKeys.map((k) => field(countLabels[k], `c${i}_${k}`, c[k], "number", 'min="0" max="1000000"')).join("")}</div><div class="actions" style="margin-top:16px"><button class="primary" onclick="saveCounts(${i})">${t("Confirmar inventario de esta sede")}</button><button onclick="resetCounts(${i})">${t("Restaurar estimación")}</button></div><div class="notice">${t("Criterios: 1 PC por usuario; móviles = usuarios × (dispositivos personales − 1); telefonía IP = usuarios si se solicita; impresoras = 1/20 usuarios; AP = máximo entre pisos y clientes/25; cámaras = 4/piso; servidores = 2 si se solicitan. Todos pueden corregirse según el levantamiento.")}</div><div class="chips">${Object.entries(
+              return `<div class="card"><h2>${esc(s.name)}</h2><p>${s.users} ${t("usuarios ·")} ${s.floors} ${t("pisos · prioridad de cobertura: pisos")} ${esc(s.busy)}</p><div class="grid">${s.counts && !inventoryEditing.has(s.id) ? countKeys.map(k => `<div class="chip"><strong>${c[k]}</strong> ${t(countLabels[k])}</div>`).join("") : countKeys.map((k) => field(countLabels[k], `c${i}_${k}`, c[k], "number", 'min="0" max="1000000"')).join("")}</div><div class="actions" style="margin-top:16px">${s.counts && !inventoryEditing.has(s.id) ? `<span class="badge">${t("Inventario confirmado")}</span><button class="primary" onclick="editCounts(${i})">${t("Editar inventario")}</button>` : `<span id="inventoryStatus${i}" class="badge warn">${t("Editar inventario")}</span><button class="primary" onclick="saveCounts(${i})">${t("Confirmar inventario de esta sede")}</button>`}<button onclick="resetCounts(${i})">${t("Restaurar estimación")}</button></div><div class="notice">${t("Criterios: 1 PC por usuario; móviles = usuarios × (dispositivos personales − 1); telefonía IP = usuarios si se solicita; impresoras = 1/20 usuarios; AP = máximo entre pisos y clientes/25; cámaras = 4/piso; servidores = 2 si se solicitan. Todos pueden corregirse según el levantamiento.")}</div><div class="chips">${Object.entries(
                 {
                   Routers: p.routers,
                   "Switches de acceso": p.access,
@@ -1970,6 +2218,11 @@
           `<button class="primary" onclick="proposeVlans()">${t("Proponer segmentación y continuar →")}</button>`
         );
       }
+      /**
+       * Entradas: Cantidades visibles, dentro de límites numéricos.
+       * Proceso / salida: Valida todo antes de confirmar; diferencias reales invalidan su sede, cantidades iguales no destruyen diseño.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function saveCounts(i) {
         safe(() => {
           const c = {};
@@ -1977,42 +2230,66 @@
             c[k] = num($(`c${i}_${k}`).value, 0, 1000000, countLabels[k]);
           if (!state.sites[i].wifi && (c.ap || c.mobile))
             fail(t("Habilite WiFi en la ficha antes de asignar AP o móviles."));
-          state.sites[i].counts = c;
-          invalidate();
+          const site=state.sites[i];
+          // Igualdad semántica: confirmar las mismas cantidades no invalida.
+          if (countKeys.some(k => counts(site)[k] !== c[k])) invalidateSite(site.id, true);
+          site.counts = c;
+          inventoryEditing.delete(site.id);
+          formDrafts.delete("inventory");
           render();
           toast(t("Inventario confirmado."));
         });
       } // Un inventario editado alimenta la propuesta y sus VLAN.
+      /**
+       * Entradas: Índice de sede y confirmación nativa del usuario.
+       * Proceso / salida: Cancelar conserva todo; aceptar retira la personalización y aplica estimación vigente.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function resetCounts(i) {
         if (
           confirm(
             t("¿Restaurar estimaciones de esta sede y reiniciar el diseño dependiente?"),
           )
         ) {
-          state.sites[i].counts = null;
-          invalidate();
+          const site=state.sites[i];
+          if (site.counts && countKeys.some(k => site.counts[k] !== estimated(site)[k])) invalidateSite(site.id, true);
+          site.counts = null;
+          inventoryEditing.delete(site.id);
+          formDrafts.delete("inventory");
           render();
         }
       } // Restauración explícita, sin sobrescribir correcciones silenciosamente.
-      function proposeVlans() {
+      /**
+       * Entradas: inventario confirmado y opción explícita de reemplazar todo.
+       * Salida: propuesta parcial para sedes sin VLAN o reemplazo completo confirmado.
+       * Conserva claves, CIDR manuales y dependencias de otras sedes al completar faltantes.
+       */
+      function proposeVlans(replaceAll = false) {
         safe(() => {
           projectValid();
+          const missing=new Set(state.sites.filter(site=>!state.vlans.some(v=>v.site===site.id)).map(site=>site.id));
+          const partial=!replaceAll && state.vlans.length>0 && missing.size>0;
           if (
-            state.vlans.length &&
+            !partial && state.vlans.length &&
             !confirm(
               t("¿Reemplazar VLAN y diseño actual por una nueva propuesta?"),
             )
           )
             return;
-          const out = [];
+          const out = [], used=new Set(partial?state.vlans.map(v=>v.key):[]);
+          let nextKey=state.vlans.length;
           for (const s of state.sites) {
+            if (partial && !missing.has(s.id)) continue;
             const c = counts(s),
               p = proposal(s);
             let id = 10;
             const add = (name, role, hosts) => {
               if (hosts > 0) {
+                let key="v"+out.length;
+                while(used.has(key)) key="v"+(nextKey++);
+                used.add(key);
                 out.push({
-                  key: "v" + out.length,
+                  key,
                   site: s.id,
                   id,
                   name,
@@ -2071,8 +2348,12 @@
             )
               add("WiFi invitados", "Invitados", Math.ceil(s.users * 0.25));
           }
-          state.vlans = out;
-          invalidate("plan");
+          if (partial) {
+            state.vlans=[...state.vlans,...out];
+            state.approved=false; state.revision++;
+            Object.values(state.configs).forEach(item=>item.revision=state.revision);
+          } else { state.vlans = out; invalidate("plan"); }
+          formDrafts.delete("vlans"); vlanEditing=false;
           go(3);
           toast(t("Revise la propuesta y confirme las VLAN."));
         });
@@ -2081,16 +2362,31 @@
       function siteName(id) {
         return state.sites.find((s) => s.id === id)?.name || "WAN";
       } // Traduce referencias estables a nombres visibles.
+      /**
+       * Entradas: Intenciones, aprobación y último plan efectivo.
+       * Proceso / salida: Muestra fallback, tránsito, CIDR manual, estado pendiente/confirmado y redes calculadas; no asigna.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function vlanView() {
+        const approved=confirmedPlan();
         return (
           title(
             t("VLAN y plan de direccionamiento"),
             "Confirme los segmentos; el VLSM los ordena por tamaño y asigna redes sin solaparse. Incluye tránsito router–core y WAN entre sedes.",
           ) +
-          `<div class="card"><div class="grid">${field(t("Bloque IPv4 base"), "base", state.project.base)}${field(t("Reserva de crecimiento (%)"), "growth", state.project.growth, "number", 'min="0" max="100"')}${field(t("DNS para DHCP"), "dns", state.project.dns)}</div><div class="notice">${t("Hosts solicitados son terminales; el cálculo añade crecimiento y una IP de gateway, o tres IP si hay dos cores. El gateway no cuenta como host disponible para terminales. Las redes de tránsito son /30 y no usan VLAN.")}</div><div class="actions"><button onclick="proposeVlans()">${t("Volver a proponer")}</button><button onclick="addVlan()">${t("Agregar VLAN")}</button><button class="primary" onclick="confirmVlans()">${t("Confirmar VLAN y calcular VLSM")}</button></div></div><div class="card"><h2>${t("Segmentos editables por sede")}</h2><p id="vlanCidrHelp" class="hint">${t("Subred IPv4 / CIDR (opcional): deje vacío para asignación automática. Define la red completa de la VLAN; no es el gateway ni un rango DHCP.")}</p>${state.vlans.length ? `<div class="tablewrap"><table><thead><tr><th>${t("Sede")}</th><th>${t("VLAN")}</th><th>${t("Nombre")}</th><th>${t("Subred IPv4 / CIDR (opcional)")}</th><th>${t("Servicio")}</th><th>${t("Hosts terminales")}</th><th>${t("DHCP local")}</th><th>${t("Acción")}</th></tr></thead><tbody>${state.vlans.map((v, i) => `<tr><td><select id="vs${i}" aria-label="${t("Sede de VLAN")}">${state.sites.map((s) => `<option value="${s.id}" ${s.id === v.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></td><td><input class="num" aria-label="${t("VLAN")}" id="vi${i}" value="${v.id}" type="number" min="2" max="4094"></td><td><input aria-label="${t("Nombre VLAN")}" id="vn${i}" value="${esc(v.name)}"></td><td><input aria-label="${t("Subred IPv4 / CIDR (opcional)")}" id="vc${i}" value="${esc(v.ipv4Cidr || "")}" placeholder="${t("Automática · 10.10.20.0/24")}" aria-describedby="vlanCidrHelp"></td><td><select aria-label="${t("Servicio")}" id="vr${i}">${optsHTML(roles, v.role)}</select></td><td><input class="num" aria-label="${t("Hosts")}" id="vh${i}" type="number" value="${v.hosts}"></td><td><input aria-label="${t("DHCP local")}" id="vd${i}" type="checkbox" ${v.dhcp ? "checked" : ""}></td><td><button class="small danger" onclick="deleteVlan(${i})">${t("Eliminar")}</button></td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">${t("Confirme los datos y genere una propuesta desde Estimación, o agregue sus segmentos manualmente.")}</div>`}</div>${planTable()}<details class="card"><summary>${t("¿Qué significan VLSM, CIDR y gateway?")}</summary><p>${t("VLSM asigna tamaños diferentes a las subredes. CIDR /n indica cuántos bits identifican la red. El gateway es la dirección del equipo que lleva el tráfico fuera de la VLAN. Una VLAN separa dominios de broadcast; necesita políticas de acceso para aportar aislamiento de seguridad.")}</p></details>`
+          `<div class="card"><div class="grid">${field(t("Bloque predeterminado del proyecto"), "base", state.project.base)}${field(t("Bloque de tránsito (opcional)"), "transitBase", state.project.transitBase)}${field(t("Reserva de crecimiento (%)"), "growth", state.project.growth, "number", 'min="0" max="100"')}${field(t("DNS para DHCP"), "dns", state.project.dns)}</div><div class="notice">${t("Hosts solicitados son terminales; el cálculo añade crecimiento y una IP de gateway, o tres IP si hay dos cores. El gateway no cuenta como host disponible para terminales. Las redes de tránsito son /30 y no usan VLAN.")}</div><div class="actions"><button onclick="proposeVlans(true)">${t("Volver a proponer")}</button><button onclick="addVlan()">${t("Agregar VLAN")}</button><span id="vlanStatus" class="badge ${approved ? "" : "warn"}">${t(approved ? "VLAN confirmadas" : "Pendiente de confirmación")}</span><button class="primary" onclick="confirmVlans()">${t(state.approved ? "Recalcular VLAN" : "Confirmar VLAN y calcular VLSM")}</button></div></div><div class="card"><h2>${t("Segmentos editables por sede")}</h2><p id="vlanCidrHelp" class="hint">${t("Subred IPv4 / CIDR (opcional): deje vacío para asignación automática. Define la red completa de la VLAN; no es el gateway ni un rango DHCP.")}</p>${state.vlans.length ? `<div class="tablewrap"><table><thead><tr><th>${t("Sede")}</th><th>${t("VLAN")}</th><th>${t("Nombre")}</th><th>${t("Subred IPv4 / CIDR (opcional)")}</th><th>${t("Servicio")}</th><th>${t("Hosts terminales")}</th><th>${t("DHCP local")}</th><th>${t("Acción")}</th></tr></thead><tbody>${state.vlans.map((v, i) => `<tr><td><select id="vs${i}" aria-label="${t("Sede de VLAN")}">${state.sites.map((s) => `<option value="${s.id}" ${s.id === v.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></td><td><input class="num" aria-label="${t("VLAN")}" id="vi${i}" value="${v.id}" type="number" min="2" max="4094"></td><td><input aria-label="${t("Nombre VLAN")}" id="vn${i}" value="${esc(v.name)}"></td><td><input aria-label="${t("Subred IPv4 / CIDR (opcional)")}" id="vc${i}" value="${esc(v.ipv4Cidr || "")}" placeholder="${esc(approved ? (state.plan.find(r=>r.key===v.key)?.network ? state.plan.find(r=>r.key===v.key).network+'/'+state.plan.find(r=>r.key===v.key).prefix : t("Asignación automática pendiente")) : t("Asignación automática pendiente"))}" aria-describedby="vlanCidrHelp"></td><td><select aria-label="${t("Servicio")}" id="vr${i}">${optsHTML(roles, v.role)}</select></td><td><input class="num" aria-label="${t("Hosts")}" id="vh${i}" type="number" value="${v.hosts}"></td><td><input aria-label="${t("DHCP local")}" id="vd${i}" type="checkbox" ${v.dhcp ? "checked" : ""}></td><td><button class="small danger" onclick="deleteVlan(${i})">${t("Eliminar")}</button></td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">${t("Confirme los datos y genere una propuesta desde Estimación, o agregue sus segmentos manualmente.")}</div>`}</div><button id="vlanNext" class="primary" ${approved?"":"disabled"} onclick="go(5)">${t("Continuar a Topología")}</button>${planTable()}`
         );
       }
+      /**
+       * Entradas: Filas actuales del formulario.
+       * Proceso / salida: Incorpora primero ediciones válidas y añade una clave nueva; falla sin renderizar si otra fila es inválida.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function addVlan() {
+        if (state.vlans.length) {
+          const pending=safe(readVlans); if (!pending) return; state.vlans=pending;
+        }
+        formDrafts.delete("vlans"); vlanEditing=false;
         const i = state.vlans.length;
         state.vlans.push({
           key: "v" + Date.now(),
@@ -2107,6 +2403,11 @@
         render();
         toast(t("VLAN añadida a {0}.", [siteName(state.vlans.at(-1).site)]));
       } // Los segmentos nuevos pertenecen a la sede activa.
+      /**
+       * Entradas: Índice elegido y confirmación del usuario.
+       * Proceso / salida: Lee todas las filas antes de eliminar una; conserva texto ante validación fallida e invalida el plan dependiente.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function deleteVlan(i) {
         if (
           confirm(t("¿Eliminar esta VLAN y reiniciar las etapas dependientes?"))
@@ -2115,11 +2416,17 @@
             const vlans = readVlans();
             vlans.splice(i, 1);
             state.vlans = vlans;
+            formDrafts.delete("vlans"); vlanEditing=false;
             invalidate("plan");
             render();
           });
         }
       } // Elimina también el plan que dependía del segmento.
+      /**
+       * Entradas: Controles de cada VLAN y opciones de direccionamiento visibles.
+       * Proceso / salida: Devuelve candidatas validadas; comprueba IDs, gestión e intenciones manuales sin sustituir estado.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function readVlans() {
         const vlans = state.vlans.map((v, i) => ({
           ...v,
@@ -2146,6 +2453,7 @@
               ...state.project,
               base: $("base").value.trim(),
               growth: num($("growth").value, 0, 100, "Reserva"),
+              transitBase: $("transitBase").value.trim(),
             },
             state.sites,
             vlans,
@@ -2153,6 +2461,11 @@
           );
         return vlans;
       } // Permite repetir VLAN entre sedes, pero no dentro de una.
+      /**
+       * Entradas: Sedes, redundancia, interconexión y perfiles opcionales.
+       * Proceso / salida: Devuelve solicitudes /30 por clave estable, incluidos firewall y router secundario; no inventa Internet.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function initialTransits() {
         const req = [];
         for (const s of state.sites) {
@@ -2164,6 +2477,11 @@
               kind: "transit",
               hosts: 2,
             });
+        }
+        for (const site of state.sites) {
+          const profile=vendorProfile(site);
+          if (profile.firewall) req.push({key:"f-"+site.id,site:site.id,name:"Firewall ↔ Router",kind:"transit",hosts:2});
+          if (profile.backupRouter) for (let k=0;k<(site.redundant?2:1);k++) req.push({key:"b-"+site.id+"-"+k,site:site.id,name:"Router secundario ↔ Core",kind:"transit",hosts:2});
         }
         if (state.project.interconnect)
           state.sites
@@ -2179,6 +2497,11 @@
             );
         return req;
       } // WAN en estrella; sedes desconectadas no reciben enlaces entre sí.
+      /**
+       * Entradas: Fallback candidato, proyecto y lista de sedes.
+       * Proceso / salida: Devuelve pools numéricos independientes y reservas; valida RFC1918, alineación y separación.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function allocationPools(base, project = state.project, siteList = state.sites) {
         const b = privateIPv4Block(base, "Bloque global");
         if (b.prefix > 30) fail(t("El bloque base debe ser /30 o mayor."));
@@ -2192,8 +2515,8 @@
         const transit = project.transitBase
           ? privateIPv4Block(project.transitBase, "Bloque de tránsito")
           : null;
-        if (transit && (transit.net < b.net || transit.end > b.end))
-          fail(t("El bloque de tránsito queda fuera del bloque global {0}.", [base]));
+        // El tránsito también puede ser independiente, pero nunca invadir LAN.
+        if (transit && transit.prefix > 30) fail(t("Tránsito requiere /30 o mayor."));
         return { global: b, sites, transit };
       } // Reservas de pools; nunca modifica el estado confirmado.
       function findIPv4Space(pool, size, blocked) {
@@ -2253,13 +2576,37 @@
         }
         return manual;
       } // Valida y reserva intenciones; no asigna ni sustituye el plan efectivo.
-      function allocate(vlans, base, growth, transits) {
-        const pools = allocationPools(base),
-          manual = manualVlanNetworks({ ...state.project, base, growth }, state.sites, vlans, state.nodes, pools),
+      /**
+       * Entradas: VLAN candidatas, fallback, crecimiento, solicitudes de tránsito y proyecto candidato.
+       * Proceso / salida: Reserva manuales y redes no afectadas válidas; busca huecos CIDR en cada pool y devuelve un plan completo o lanza error.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function allocate(vlans, base, growth, transits, project = state.project) {
+        const pools = allocationPools(base, project),
+          manual = manualVlanNetworks({ ...project, base, growth }, state.sites, vlans, state.nodes, pools),
           b = pools.global,
-          scoped = pools.sites.size > 0 || pools.transit !== null || manual.size > 0,
+          scoped = pools.sites.size > 0 || pools.transit !== null || manual.size > 0 || state.plan.length > 0,
           reserved = [...pools.sites.values(), ...(pools.transit ? [pools.transit] : [])],
           assigned = [...manual.values()];
+        const fixed=new Map(manual);
+        for (const v of vlans) {
+          if (fixed.has(v.key)) continue;
+          const old=state.plan.find(r => r.key===v.key && r.kind==="vlan"),
+            previous=state.vlans.find(r => r.key===v.key), site=state.sites.find(s=>s.id===v.site),
+            pool=pools.sites.get(v.site)||b;
+          if (!old || !previous || previous.site!==v.site || previous.hosts!==v.hosts || previous.id!==v.id || old.required!==Math.ceil(v.hosts*(1+growth/100))+(site.redundant?3:1)) continue;
+          if (old.net<pool.net || old.end>pool.end) continue;
+          const blocked=[...assigned,...(pool===b?reserved:[])];
+          if (blocked.some(r=>old.net<=r.end && r.net<=old.end)) continue;
+          fixed.set(v.key,subnet(old.network+"/"+old.prefix)); assigned.push(old);
+        }
+        // Mantener /30 ya válidas evita renumerar enlaces de sedes no editadas.
+        for (const transit of transits) {
+          const old=state.plan.find(r=>r.key===transit.key && r.kind!=="vlan"), pool=pools.transit||b;
+          if (!old || old.net<pool.net || old.end>pool.end || old.prefix!==30) continue;
+          if ([...assigned,...(pool===b?reserved:[])].some(r=>old.net<=r.end && r.net<=old.end)) continue;
+          fixed.set(transit.key,subnet(old.network+"/30")); assigned.push(old);
+        }
         const req = vlans
           .map((v) => {
             const s = state.sites.find((s) => s.id === v.site),
@@ -2271,8 +2618,8 @@
               kind: "vlan",
               reserve,
               required: need,
-              prefix: manual.get(v.key)?.prefix ?? 32 - bits,
-              size: manual.get(v.key)?.total ?? 2 ** bits,
+              prefix: fixed.get(v.key)?.prefix ?? 32 - bits,
+              size: fixed.get(v.key)?.total ?? 2 ** bits,
             };
           })
           .concat(
@@ -2291,20 +2638,22 @@
           const pool = r.kind === "vlan"
             ? pools.sites.get(r.site) || b
             : pools.transit || b;
-          cursor = manual.has(r.key)
-            ? manual.get(r.key).net
+          cursor = fixed.has(r.key)
+            ? fixed.get(r.key).net
             : scoped
             ? findIPv4Space(pool, r.size, [
                 ...assigned,
                 ...(pool === b ? reserved : []),
               ])
             : Math.ceil(cursor / r.size) * r.size;
-          if (cursor === null || cursor + r.size - 1 > pool.end)
-            fail(
-              t("{0}: no hay hueco CIDR contiguo /{1} ({2} direcciones, {3} IP útiles requeridas) en {4}/{5}. Amplíe el bloque o reduzca hosts.", [r.kind === "vlan"
-                ? t("Sede «{0}», VLAN {1} «{2}»", [siteName(r.site), r.id, r.name])
-                : "Tránsito «" + r.name + "», " + siteName(r.site), r.prefix, r.size, r.required, pool.network, pool.prefix]),
-            );
+          if (cursor === null || cursor + r.size - 1 > pool.end) {
+            const site=state.sites.find(s=>s.id===r.site),
+              total=req.filter(x=>x.site===r.site && x.kind==="vlan").reduce((n,x)=>n+2**Math.max(2,Math.ceil(Math.log2(x.required+2))),0),
+              minimum=site?.ipv4Base && r.kind==="vlan" && !vlans.some(v=>v.site===r.site && v.ipv4Cidr) && total>pool.total
+                ? t("Mínimo por capacidad del conjunto: /{0}.",[32-Math.ceil(Math.log2(total))]) : "";
+            lastVlanFocus=r.kind==="vlan" ? "vh"+vlans.findIndex(v=>v.key===r.key) : "transitBase";
+            fail(t("{0}: bloque {1}/{2}; hosts {3}, crecimiento {4}%, reserva {5}, requiere {6} IP útiles y /{7} ({8} direcciones). No existe hueco contiguo suficiente. {9}",[r.kind==="vlan"?siteName(r.site)+" · VLAN "+r.id+" «"+r.name+"»":r.name,pool.network,pool.prefix,r.hosts,growth,r.reserve,r.required,r.prefix,r.size,minimum]));
+          }
           const info = subnet(ipStr(cursor) + "/" + r.prefix);
           const row = {
             ...r,
@@ -2322,37 +2671,75 @@
               t("Gateway de {0} fuera de su nueva subred. Bórrelo antes de recalcular.", [r.name]),
             );
           result.push(row);
-          if (!manual.has(r.key)) assigned.push({ net: info.net, end: info.end });
+          if (!fixed.has(r.key)) assigned.push({ net: info.net, end: info.end });
           cursor += r.size;
         }
         return result;
       } // Alineación matemática al tamaño del bloque, con límite de capacidad.
+      /**
+       * Entradas: Formulario visible y último diseño confirmado.
+       * Proceso / salida: Calcula antes de guardar; error conserva todo, igualdad mantiene aprobación y cambios invalidan dependencias diferenciales.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      /** Actualiza aprobación/previsualizaciones sin reconstruir ni perder el formulario. */
+      function updateVlanStatus() {
+        const approved=confirmedPlan();
+        if($("vlanNext")) $("vlanNext").disabled=!approved;
+        if($("vlanStatus")) { $("vlanStatus").textContent=t(approved?"VLAN confirmadas":"Pendiente de confirmación"); $("vlanStatus").className="badge"+(approved?"":" warn"); }
+        state.vlans.forEach((v,i)=>{const el=$("vc"+i),r=state.plan.find(r=>r.key===v.key);if(el)el.placeholder=approved&&r?r.network+"/"+r.prefix:t("Asignación automática pendiente");});
+      }
       function confirmVlans() {
-        safe(() => {
+        lastVlanFocus="base";
+        const result=safe(() => {
           projectValid();
           if (!state.vlans.length) fail(t("Añada VLAN antes de calcular."));
           const vlans = readVlans(),
             base = $("base").value.trim(),
             growth = num($("growth").value, 0, 100, "Reserva"),
             dns = ipStr(ipNum($("dns").value.trim()));
-          const plan = allocate(vlans, base, growth, initialTransits());
+          const transitBase = $("transitBase").value.trim();
+          // El asignador recibe una intención candidata; no muta el proyecto.
+          const plan = allocate(vlans, base, growth, initialTransits(), { ...state.project, transitBase });
           if (state.ipv6Plan.length && (state.ipv6Plan.length !== vlans.length ||
               state.ipv6Plan.some((r) => !vlans.some((v) => v.key === r.key && v.site === r.site)))) state.ipv6Plan = [];
-          state.project = { ...state.project, base, growth, dns };
+          const unchanged = state.approved && base===state.project.base && growth===state.project.growth && dns===state.project.dns && transitBase===state.project.transitBase && JSON.stringify(plan)===JSON.stringify(state.plan);
+          vlanEditing = false;
+          formDrafts.delete("vlans");
+          if (unchanged) { render(); toast(t("VLAN confirmadas")); return; }
+          // Dependencias diferenciales: conservar equipos y CLI de sedes no afectadas.
+          const changedSites=new Set(state.sites.filter(site => JSON.stringify(state.plan.filter(r=>r.kind==="vlan" && r.site===site.id))!==JSON.stringify(plan.filter(r=>r.kind==="vlan" && r.site===site.id))).map(site=>site.id));
+          const changedTransits=new Set([...state.plan,...plan].filter(r=>r.kind!=="vlan" && !plan.some(n=>n.key===r.key && n.network===r.network && n.prefix===r.prefix) || r.kind!=="vlan" && !state.plan.some(n=>n.key===r.key && n.network===r.network && n.prefix===r.prefix)).map(r=>r.key));
+          const affected=new Set(state.nodes.filter(n=>changedSites.has(n.site)).map(n=>n.id));
+          state.links.filter(l=>changedTransits.has(l.network)).forEach(l=>{affected.add(l.a);affected.add(l.b);});
+          const removed=new Set(state.nodes.filter(n=>n.autoKey && changedSites.has(n.site)).map(n=>n.id));
+          state.links.filter(l=>removed.has(l.a)||removed.has(l.b)).forEach(l=>{affected.add(l.a);affected.add(l.b);});
+          state.project = { ...state.project, base, growth, dns, transitBase };
           state.vlans = vlans;
           state.plan = plan;
-          state.nodes = [];
-          state.links = [];
-          state.configs = {};
+          state.nodes = state.nodes.filter(n=>!removed.has(n.id));
+          state.links = state.links.filter(l=>!removed.has(l.a)&&!removed.has(l.b));
+          refreshPhysicalProfiles();
+          state.configs = Object.fromEntries(Object.entries(state.configs).filter(([key])=>![...affected].some(id=>key.startsWith(id+"-"))));
           state.approved = true;
           state.revision++;
+          Object.values(state.configs).forEach(item=>item.revision=state.revision);
           render();
           toast(t("VLSM validado y confirmado. Continúe con la topología."));
         });
+        if (result===false) {
+          vlanEditing=true;
+          updateVlanStatus();
+          ($(lastVlanFocus)||$("base"))?.focus();
+        }
       } // Nada se guarda si una VLAN o el bloque resultan inválidos.
+      /**
+       * Entradas: Filas efectivas del plan.
+       * Proceso / salida: Devuelve tabla de redes/gateways/capacidad y origen manual o automático; no confunde intención con resultado.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function planTable() {
         if (!state.plan.length) return "";
-        return `<div class="card"><div class="headingrow"><h2>${t("Plan confirmado ·")} ${state.project.base}</h2><button onclick="downloadPlan()">${t("Descargar CSV")}</button></div><div class="tablewrap"><table><thead><tr><th>${t("Sede")}</th><th>${t("VLAN / enlace")}</th><th>${t("Nombre")}</th><th>${t("Solicitados")}</th><th>${t("Disponibles terminales")}</th><th>${t("Red")}</th><th>${t("Prefijo")}</th><th>${t("Máscara")}</th><th>${t("Gateway")}</th><th>${t("Primera IP")}</th><th>${t("Última IP")}</th><th>${t("Broadcast")}</th><th>${t("Verificar")}</th></tr></thead><tbody>${state.plan.map((r, i) => `<tr><td>${esc(siteName(r.site))}</td><td>${r.kind === "vlan" ? r.id : r.kind.toUpperCase()}</td><td>${esc(r.name)}</td><td>${r.hostsRequested}</td><td>${r.available}</td><td class="mono">${r.network}</td><td>/${r.prefix}</td><td class="mono">${r.mask}</td><td>${r.gateway ? `<button class="small mono" onclick="editGateway('${r.key}')">${r.gateway}</button>` : "—"}</td><td class="mono">${r.first}</td><td class="mono">${r.last}</td><td class="mono">${r.broadcast}</td><td><button class="small" onclick="inspectSubnet(${i})">${t("Validar")}</button></td></tr>`).join("")}</tbody></table></div><small>${t("Disponible = capacidad utilizable menos las direcciones de gateway/cores. El rango utilizable muestra también las IP reservadas; DHCP las excluye.")}</small></div>`;
+        return `<div class="card"><div class="headingrow"><h2>${t("Plan confirmado ·")} ${state.project.base}</h2><button onclick="downloadPlan()">${t("Descargar CSV")}</button></div><div class="tablewrap"><table><thead><tr><th>${t("Sede")}</th><th>${t("VLAN / enlace")}</th><th>${t("Nombre")}</th><th>${t("Solicitados")}</th><th>${t("Disponibles terminales")}</th><th>${t("Red")}</th><th>${t("Prefijo")}</th><th>${t("Máscara")}</th><th>${t("Gateway")}</th><th>${t("Primera IP")}</th><th>${t("Última IP")}</th><th>${t("Broadcast")}</th><th>${t("Verificar")}</th></tr></thead><tbody>${state.plan.map((r, i) => `<tr><td>${esc(siteName(r.site))}</td><td>${r.kind === "vlan" ? r.id : r.kind.toUpperCase()}${r.kind === "vlan" ? `<br><small>${t(r.ipv4Cidr ? "Manual" : "Automática")}</small>` : ""}</td><td>${esc(r.name)}</td><td>${r.hostsRequested}</td><td>${r.available}</td><td class="mono">${r.network}</td><td>/${r.prefix}</td><td class="mono">${r.mask}</td><td>${r.gateway ? `<button class="small mono" onclick="editGateway('${r.key}')">${r.gateway}</button>` : "—"}</td><td class="mono">${r.first}</td><td class="mono">${r.last}</td><td class="mono">${r.broadcast}</td><td><button class="small" onclick="inspectSubnet(${i})">${t("Validar")}</button></td></tr>`).join("")}</tbody></table></div><small>${t("Disponible = capacidad utilizable menos las direcciones de gateway/cores. El rango utilizable muestra también las IP reservadas; DHCP las excluye.")}</small></div>`;
       } // Las mismas filas alimentan subnetting, topología y CLI.
       function editGateway(key) {
         safe(() => {
@@ -2384,6 +2771,11 @@
         state.calc = state.plan[i].network + "/" + state.plan[i].prefix;
         go(4);
       } // Verificación integrada de una fila del plan.
+      /**
+       * Entradas: Último cálculo y plan IPv4/IPv6.
+       * Proceso / salida: Devuelve resultados completos sin el desplegable retirado; las funciones matemáticas permanecen separadas.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function subnetView() {
         const val = state.calc || "192.168.10.50/26";
         let result = "";
@@ -2398,7 +2790,7 @@
             t("Subnetting IPv4 / IPv6"),
             t("Compruebe IPv4/CIDR o IPv6/prefijo. IPv4: /31 punto a punto y /32 dirección única. IPv6: rango completo, sin broadcast ni descuento de dos direcciones."),
           ) +
-          `<div class="card"><div class="grid">${field(t("Dirección IPv4 o IPv6 / prefijo CIDR"), "calc", val)}<div class="field"><label>${t("Acciones")}</label><div class="actions"><button class="primary" onclick="calculate()">${t("Calcular")}</button><button onclick="state.calc='192.168.10.50/26';render()">${t("Ejemplo obligatorio /26")}</button></div></div></div></div><div id="calcResult">${result}</div>${state.plan.length ? `<div class="card"><h3>${t("Validar una red del proyecto")}</h3><div class="chips">${state.plan.map((r, i) => `<button style="white-space:normal;overflow-wrap:anywhere;max-width:100%" onclick="inspectSubnet(${i})">${esc(siteName(r.site))} · ${esc(r.name)} · ${r.network}/${r.prefix}</button>`).join("")}</div></div>` : ""}<details class="card"><summary>${t("Interpretación")}</summary><p>${t("La dirección de red identifica la subred. Broadcast alcanza todos sus hosts en redes convencionales. La máscara separa bits de red y de host. /0 tiene 4.294.967.296 direcciones; no debe confundirse con una política que permita todo tráfico.")}</p></details>`
+          `<div class="card"><div class="grid">${field(t("Dirección IPv4 o IPv6 / prefijo CIDR"), "calc", val)}<div class="field"><label>${t("Acciones")}</label><div class="actions"><button class="primary" onclick="calculate()">${t("Calcular")}</button><button onclick="state.calc='192.168.10.50/26';render()">${t("Ejemplo obligatorio /26")}</button></div></div></div></div><div id="calcResult">${result}</div>${state.plan.length ? `<div class="card"><h3>${t("Validar una red del proyecto")}</h3><div class="chips">${state.plan.map((r, i) => `<button style="white-space:normal;overflow-wrap:anywhere;max-width:100%" onclick="inspectSubnet(${i})">${esc(siteName(r.site))} · ${esc(r.name)} · ${r.network}/${r.prefix}</button>`).join("")}</div></div>` : ""}`
         );
       }
       function subnetResult(r) {
@@ -2651,8 +3043,10 @@
       function switching(n) {
         return n && ["Switch", "Switch capa 3"].includes(n.type);
       } // Roles con VLAN y puertos de switching.
+      /** Los AP conservan administración/enlaces; requieren un adaptador específico de modelo/controlador. */
+      function accessPoint(n) { return n?.type === "Access Point"; }
       function configurable(n) {
-        return !fortinetNode(n) && !mikrotikNode(n) && (routed(n) || switching(n));
+        return !accessPoint(n) && !fortinetNode(n) && !mikrotikNode(n) && (routed(n) || switching(n));
       } // Firewalls y endpoints necesitan software específico, no IOS/VRP genérico.
       function availableIPs(r, n, excluded = []) {
         const skip = new Set([r.gateway, ...excluded].filter(Boolean));
@@ -2674,15 +3068,89 @@
           ? availableIPs(r, 2)[cores.indexOf(n)]
           : r.gateway;
       } // Los dos cores jamás comparten la IP física, a diferencia del ejemplo del prompt.
+      /* Selección explícita por sede/función. Vacío obliga a elegir antes de generar.
+         Las claves opcionales mantienen importables proyectos v2/v3/v4 antiguos. */
+      const vendorRoles = {router:["Cisco","Huawei","MikroTik"], core:["Cisco","Huawei"],
+        distribution:["Cisco","Huawei"], access:["Cisco","Huawei"],
+        firewall:["Fortinet"], backupRouter:["Cisco","Huawei","MikroTik"]};
+      /**
+       * Entradas: Sede, con o sin perfil heredado.
+       * Proceso / salida: Devuelve las seis funciones con cadenas explícitas; vacío significa que debe elegir, no Cisco implícito.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function vendorProfile(site) {
+        return Object.fromEntries(Object.keys(vendorRoles).map(k => [k,site.vendorProfile?.[k] || ""]));
+      }
+      /**
+       * Entradas: Objeto opcional recibido del formulario o JSON.
+       * Proceso / salida: Rechaza claves y combinaciones ajenas a la lista permitida; devuelve una copia conocida.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function validateVendorProfile(value) {
+        if (value === undefined) return undefined;
+        if (!value || typeof value !== "object" || Array.isArray(value) || Object.keys(value).some(k => !Object.hasOwn(vendorRoles,k))) fail(t("Perfil de fabricantes inválido."));
+        const out={};
+        for (const [role, allowed] of Object.entries(vendorRoles)) out[role]=enumVal(value[role] ?? "", ["",...allowed], "Fabricante");
+        return out;
+      }
+      /**
+       * Entradas: Perfiles de todas las sedes.
+       * Proceso / salida: Devuelve selectores por función, incluyendo opcionales; no convierte firewalls en switches.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function vendorProfilesView() {
+        return `<div class="card"><h2>${t("Fabricantes por sede y función")}</h2><p>${t("Elija cada función activa. Firewall y router secundario son opcionales y requieren recalcular tránsitos. No se inventan enlaces a Internet.")}</p>${state.sites.map((site,i) => `<h3>${esc(site.name)}</h3><div class="grid">${Object.entries(vendorRoles).map(([role,allowed]) => `<div class="field"><label for="vp${i}_${role}">${t(role)}</label><select id="vp${i}_${role}">${optsHTML(["",...allowed],vendorProfile(site)[role])}</select></div>`).join("")}</div>`).join("")}<button onclick="saveVendorProfiles()">${t("Confirmar fabricantes")}</button></div>`;
+      }
+      // Validación de todas las fichas antes de guardar; cancela sin mutar.
+      /**
+       * Entradas: Todos los selectores de fabricantes.
+       * Proceso / salida: Valida en conjunto, pide confirmación ante equipos existentes y exige recalcular si cambian tránsitos.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function saveVendorProfiles() {
+        safe(() => {
+          const candidates=state.sites.map((site,i) => validateVendorProfile(Object.fromEntries(Object.keys(vendorRoles).map(role => [role,$(`vp${i}_${role}`).value]))));
+          const changed=state.sites.filter((site,i) => JSON.stringify(vendorProfile(site))!==JSON.stringify(candidates[i]));
+          if (changed.some(site => state.nodes.some(n => n.site===site.id)) && !confirm(t("Cambiar fabricantes invalida configuraciones afectadas. ¿Continuar?"))) return;
+          state.sites.forEach((site,i) => {
+            const old=vendorProfile(site), next=candidates[i];
+            if (old.firewall!==next.firewall || old.backupRouter!==next.backupRouter) state.approved=false;
+            site.vendorProfile=next;
+          });
+          // Las asignaciones de equipos existentes se cambian en su editor, no silenciosamente.
+          render(); toast(t("Fabricantes confirmados. Recalcule VLAN si cambió el tránsito y regenere los equipos automáticos."));
+        });
+      }
+      /**
+       * Entradas: Tipo y fabricante de un equipo candidato.
+       * Proceso / salida: Bloquea roles no implementados: Fortinet solo firewall, MikroTik solo router y Genérico solo terminal.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function validateNodeVendor(n) {
+        if (n.vendor === "Genérico" && ["Router","Switch","Switch capa 3","Firewall"].includes(n.type)) fail(t("Elija un fabricante compatible para este rol."));
+        if (n.vendor === "Fortinet" && n.type !== "Firewall") fail(t("Fortinet requiere tipo Firewall."));
+        if (n.vendor === "MikroTik" && n.type !== "Router") fail(t("MikroTik requiere tipo Router."));
+        if (["Cisco","Huawei"].includes(n.vendor) && n.type === "Firewall") fail(t("El adaptador IOS/VRP no implementa firewall."));
+      }
+      /**
+       * Entradas: Plan confirmado, inventario, perfiles y entidades existentes.
+       * Proceso / salida: Valida perfiles/capacidad; genera por clave, conserva IDs y manuales, prueba el candidato completo y solo después lo adopta.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function buildTopology() {
         safe(() => {
-          if (!state.approved || !state.plan.length)
-            fail(t("Confirme primero VLAN y VLSM."));
+          requireConfirmedPlan();
           if (
             state.nodes.length &&
-            !confirm(t("¿Reemplazar toda la topología y las ediciones manuales?"))
+            !confirm(t("¿Regenerar equipos automáticos conservando los manuales?"))
           )
             return;
+          // Un perfil incompleto se bloquea antes de sustituir ningún nodo.
+          for (const site of state.sites) {
+            const profile=vendorProfile(site), proposed=proposal(site);
+            for (const role of ["router","core","access",...(proposed.distribution ? ["distribution"] : [])])
+              if (!profile[role]) fail(t("Sede {0}: elija fabricante para {1}.",[site.name,t(role)]));
+          }
           const estimatedNodes = state.sites.reduce((total, s) => {
             const p = proposal(s),
               c = counts(s);
@@ -2694,7 +3162,7 @@
               p.access +
               c.ap +
               c.servers +
-              Math.min(c.pc, 3)
+              Math.min(c.pc, 3) + Math.min(c.cameras,3) + Math.min(c.printers,3) + (vendorProfile(s).firewall?1:0) + (vendorProfile(s).backupRouter?1:0)
             );
           }, 0);
           if (estimatedNodes > 500)
@@ -2703,14 +3171,26 @@
             );
           const nodes = [],
             links = [];
-          let nid = 1,
-            lid = 1;
+          const oldNodes=state.nodes, oldLinks=state.links;
+          let nid = Math.max(0,...oldNodes.map(n => {const value=Number(n.id.match(/^n(\d+)$/)?.[1]);return value<60000?value:0;}))+1,
+            lid = Math.max(0,...oldLinks.map(l => Number(l.id.match(/^l(\d+)$/)?.[1])||0))+1;
+          const ordinals=new Map();
           const add = (name, type, site, x, y, extra = {}) => {
+            const siteData=state.sites.find(s => s.id===site), profile=vendorProfile(siteData);
+            const role=type==="Router" ? (name.startsWith("BACKUP")?"backupRouter":"router") : type==="Switch capa 3" ? "core" : type==="Firewall" ? "firewall" : type==="Switch" ? (name.startsWith("DIST")?"distribution":"access") : "endpoint";
+            const counterKey=site+":"+role+":"+type, ordinal=(ordinals.get(counterKey)||0)+1;
+            ordinals.set(counterKey,ordinal);
+            const autoKey=counterKey+":"+ordinal, previous=oldNodes.find(n => n.autoKey===autoKey);
+            const prefix=type==="Router" ? "RTR" : type==="Switch capa 3" ? "SW-CORE" : type==="Switch" ? (role==="distribution"?"SW-DIST":"SW-ACC") : type==="Firewall"?"FW":type==="Access Point"?"AP":type==="Servidor"?"SRV":type==="Cámara"?"CAM":type==="Impresora"?"PRN":"PC";
             const n = {
-              id: "n" + nid++,
-              name: hostname(name),
+              id: previous?.id || "n" + nid++,
+              autoKey,
+              name: previous?.nameOverride ? previous.name : hostname(prefix+"-"+siteCode(siteData)+"-"+String(ordinal+(role==="backupRouter"?1:0)).padStart(2,"0")),
+              ...(previous?.interfaceProfiles ? {interfaceProfiles:structuredClone(previous.interfaceProfiles)}:{}),
+              ...(previous?.nameOverride ? {nameOverride:true}:{}),
+              ...(previous?.vendorOverride ? {vendorOverride:true}:{}),
               type,
-              vendor: "Cisco",
+              vendor: previous?.vendorOverride ? previous.vendor : role==="endpoint" ? "Genérico" : profile[role],
               site,
               ip: "",
               network: "",
@@ -2726,7 +3206,7 @@
                 links.filter((l) => l.a === a.id || l.b === a.id).length + 1,
               ib = links.filter((l) => l.a === b.id || l.b === b.id).length + 1;
             links.push({
-              id: "l" + lid++,
+              id: oldLinks.find(l=>l.a===a.id && l.b===b.id && l.type===type && l.network===key)?.id || "l" + lid++,
               a: a.id,
               b: b.id,
               type,
@@ -2737,6 +3217,8 @@
               bc: "GigabitEthernet0/" + ib,
               ah: "GigabitEthernet0/0/" + ia,
               bh: "GigabitEthernet0/0/" + ib,
+              af: a.vendor==="Fortinet" ? "port"+ia : "", bf: b.vendor==="Fortinet" ? "port"+ib : "",
+              am: a.vendor==="MikroTik" ? "ether"+ia : "", bm: b.vendor==="MikroTik" ? "ether"+ib : "",
             });
           };
           const routers = [];
@@ -2761,6 +3243,19 @@
               connect(router, core, "routed", "t-" + s.id + "-" + k);
             }
             if (cores.length === 2) connect(cores[0], cores[1], "trunk");
+            const profile=vendorProfile(s);
+            if (profile.firewall) {
+              if (!row("f-"+s.id)) fail(t("Recalcule VLAN para crear los tránsitos opcionales."));
+              const firewall=add("FW", "Firewall",s.id,x+220,20);
+              connect(firewall,router,"routed","f-"+s.id);
+            }
+            if (profile.backupRouter) {
+              const backup=add("BACKUP", "Router",s.id,x+420,85);
+              cores.forEach((core,k) => {
+                if (!row("b-"+s.id+"-"+k)) fail(t("Recalcule VLAN para crear los tránsitos opcionales."));
+                connect(backup,core,"routed","b-"+s.id+"-"+k);
+              });
+            }
             const dist = [];
             for (let k = 0; k < p.distribution; k++) {
               const d = add(
@@ -2818,6 +3313,8 @@
             };
             endpoint("AP", "Access Point", "Gestión", c.ap);
             endpoint("SRV", "Servidor", "Servidores", c.servers);
+            endpoint("CAM", "Cámara", "CCTV", Math.min(c.cameras,3));
+            endpoint("PRN", "Impresora", "Impresoras", Math.min(c.printers,3));
             endpoint(
               "PC",
               "PC",
@@ -2859,25 +3356,41 @@
               .forEach((r, i) =>
                 connect(routers[0], r, "routed", "w-" + state.sites[i + 1].id),
               );
-          state.nodes = nodes;
-          state.links = links;
-          state.configs = {};
+          // Las entidades manuales no se eliminan al reorganizar/regenerar.
+          const manual=oldNodes.filter(n => !n.autoKey);
+          if (manual.some(n => nodes.some(g => g.name===n.name))) fail(t("Nombre automático en conflicto con un equipo manual."));
+          const allNodes=[...nodes,...manual];
+          if (allNodes.length>500) fail(t("Más de 500 equipos: reduzca inventario para representar esta topología en pantalla."));
+          const candidate={...state,nodes:allNodes,links:[...links,...oldLinks.filter(l => manual.some(n => n.id===l.a || n.id===l.b) && allNodes.some(n => n.id===l.a) && allNodes.some(n => n.id===l.b))],configs:{}};
+          const previous=state;
+          // Validación transaccional del conjunto, incluyendo equipos manuales.
+          try {
+            state=candidate; arrangeTopology(false);
+            const blocking=topologyIssues().find(x=>x.block);
+            if (blocking) fail(t(blocking.msg));
+          } catch(error) { state=previous; throw error; }
+          refreshPhysicalProfiles();
           state.revision++;
           selectedNode = "";
           render();
           toast(t("Topología construida con las VLAN y subredes confirmadas."));
         });
       } // Cada enlace routed consume exactamente una red /30 del plan.
+      /**
+       * Entradas: Estado gráfico, imagen y perfiles.
+       * Proceso / salida: Devuelve lienzo desplazable, zoom, editores y tablas de detalles técnicos sin sustituir datos.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function topologyView() {
         return (
           title(
             t("Topología de red"),
             "El gráfico muestra sedes, equipos, VLAN y redes del plan. Arrastre un equipo para moverlo; haga clic para editarlo. Los enlaces WAN representan un laboratorio enrutado.",
           ) +
-          `<div class="card"><div class="actions"><button class="primary" onclick="buildTopology()">${t("Generar desde el plan")}</button><button onclick="editNode()">${t("Agregar equipo")}</button><button onclick="editLink()">${t("Crear enlace")}</button><button onclick="downloadSVG()">${t("Descargar topología SVG")}</button><button ${!imageMode ? "disabled" : ""} onclick="imageMode=false;render()">${t("Vista automática")}</button><label class="filebtn" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.querySelector('input').click()}">${t("Cargar imagen")}<input type="file" class="hidden" accept="image/png,image/jpeg,image/webp" onchange="loadImage(this)"></label>${imageData ? `<button onclick="imageMode=!imageMode;render()">${t("Ver / ocultar imagen")}</button>` : ""}</div><div class="notice warn">${t("Diseño preliminar: se recomiendan")} ${state.sites.length} ${t("firewalls; el gráfico base se centra en switching y enrutamiento de laboratorio. La conexión WAN privada no crea VPN, cifrado ni un servicio del ISP. PC son representativos; el inventario completo está en Estimación. Los AP empresariales reciben trunks de gestión/WiFi/invitados; su configuración SSID y mapeo VLAN se completa en el controlador del fabricante.")}</div>${imageData && imageMode ? `<div class="notice">${t("Interpretación asistida manual: marque equipos y enlaces con los editores usando esta imagen como referencia. El HTML local no incluye un modelo de visión ni OCR y no afirma haber reconocido dispositivos automáticamente. La imagen no se transmite a ningún servidor.")}</div><div class="imageframe"><img src="${imageData}" alt="${t("Topología importada como referencia")}"></div>` : ""}<div class="diagram">${state.nodes.length ? svgTopology() : `<div class="empty">${t("Confirme el VLSM y pulse «Generar desde el plan», o agregue equipos manualmente.")}</div>`}</div></div><div class="two"><div class="card"><h2>${t("Equipos ·")} ${state.nodes.length}</h2><div class="tablewrap"><table><thead><tr><th>${t("Nombre / sede")}</th><th>${t("Tipo")}</th><th>${t("Fabricante / IP")}</th><th>${t("Acción")}</th></tr></thead><tbody>${state.nodes
+          vendorProfilesView() + `<div class="card"><div class="actions"><button onclick="arrangeTopology()">${t("Reorganizar diagrama")}</button><button onclick="zoomTopology(1.2)">${t("Acercar")}</button><button onclick="zoomTopology(0.833333)">${t("Alejar")}</button><button class="primary" onclick="buildTopology()">${t("Generar desde el plan")}</button><button onclick="editNode()">${t("Agregar equipo")}</button><button onclick="editLink()">${t("Crear enlace")}</button><button onclick="downloadSVG()">${t("Descargar topología SVG")}</button><button ${!imageMode ? "disabled" : ""} onclick="imageMode=false;render()">${t("Vista automática")}</button><label class="filebtn" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.querySelector('input').click()}">${t("Cargar imagen")}<input type="file" class="hidden" accept="image/png,image/jpeg,image/webp" onchange="loadImage(this)"></label>${imageData ? `<button onclick="imageMode=!imageMode;render()">${t("Ver / ocultar imagen")}</button>` : ""}</div><div class="notice warn">${t("Diseño preliminar: se recomiendan")} ${state.sites.length} ${t("firewalls recomendados. El perfil permite añadirlos con enlaces de tránsito explícitos; no crea Internet, NAT ni VPN. Los terminales son representativos. La configuración de AP se completa en su controlador.")}</div>${imageData && imageMode ? `<div class="notice">${t("Interpretación asistida manual: marque equipos y enlaces con los editores usando esta imagen como referencia. El HTML local no incluye un modelo de visión ni OCR y no afirma haber reconocido dispositivos automáticamente. La imagen no se transmite a ningún servidor.")}</div><div class="imageframe"><img src="${imageData}" alt="${t("Topología importada como referencia")}"></div>` : ""}<p class="hint">${t("WAN: violeta · ROUTED: turquesa · TRUNK: naranja · ACCESS: verde discontinuo. Pase el cursor sobre un enlace para consultar su red; los detalles completos están en las tablas.")}</p><div class="diagram">${state.nodes.length ? svgTopology() : `<div class="empty">${t("Confirme el VLSM y pulse «Generar desde el plan», o agregue equipos manualmente.")}</div>`}</div></div><div class="two"><div class="card"><h2>${t("Equipos ·")} ${state.nodes.length}</h2><div class="tablewrap"><table><thead><tr><th>${t("Nombre / sede")}</th><th>${t("Tipo")}</th><th>${t("Fabricante / IP")}</th><th>${t("Acción")}</th></tr></thead><tbody>${state.nodes
             .map(
               (n) =>
-                `<tr><td>${esc(n.name)}<br><small>${esc(siteName(n.site))}</small></td><td>${t(n.type)}</td><td>${n.vendor}<br><span class="mono">${esc(
+                `<tr><td>${esc(n.name)}<br><small>${esc(siteName(n.site))}</small></td><td>${t(n.type)}</td><td>${esc(t(n.vendor))}<br><span class="mono">${esc(
                   n.ip ||
                     connected(n)
                       .filter((l) => l.type === "routed")
@@ -2891,41 +3404,94 @@
             )}</tbody></table></div></div><div class="card"><h2>${t("Enlaces ·")} ${state.links.length}</h2><div class="tablewrap"><table><thead><tr><th>${t("Extremos")}</th><th>${t("Tipo / red")}</th><th>${t("Acción")}</th></tr></thead><tbody>${state.links.map((l) => `<tr><td>${esc(node(l.a)?.name)} ↔ ${esc(node(l.b)?.name)}</td><td>${l.type}${l.bundle ? " · LACP " + l.bundle : ""}<br><small>${l.network ? row(l.network)?.network + "/" + row(l.network)?.prefix : l.type === "access" ? "VLAN " + l.vlan : t("VLAN permitidas de sede")}</small></td><td><button class="small" onclick="editLink('${l.id}')">${t("Editar")}</button> <button class="small danger" aria-label="${t("Eliminar enlace")}" title="${t("Eliminar enlace")}" onclick="deleteLink('${l.id}')">${t("×")}</button></td></tr>`).join("")}</tbody></table></div></div></div>`
         );
       }
+      // Código de sede derivado del nombre; el ID solo desambigua colisiones.
+      /**
+       * Entradas: Nombre real de sede e ID estable.
+       * Proceso / salida: Normaliza caracteres, deriva iniciales/números y agrega ID solo cuando hay colisión entre sedes.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function siteCode(site) {
+        const make = name => {
+          const parts=name.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().match(/[A-Z0-9]+/g)||["SITE"];
+          const useful=parts.filter(x => !["SEDE","SITE","DE","LA","EL"].includes(x));
+          return (useful.length ? useful : parts).map(x => /^\d+$/.test(x)?x:x[0]).join("").slice(0,12);
+        };
+        const code=make(site.name);
+        return state.sites.filter(s => make(s.name)===code).length>1 ? code+"-"+site.id.replace(/[^A-Za-z0-9]/g,"").slice(-8) : code;
+      }
+      let topologyZoom=1;
+      // Solo posiciones: no modifica identidades, redes, enlaces ni CLI.
+      /**
+       * Entradas: Equipos existentes y opción de renderizar.
+       * Proceso / salida: Ordena por sede, jerarquía e ID; cambia únicamente coordenadas y nunca borra entidades.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function arrangeTopology(refresh=true) {
+        const level=n => n.type==="Firewall"?0:n.type==="Router"?1:n.type==="Switch capa 3"?2:n.type==="Switch"?(n.autoKey?.includes(":distribution:")?3:4):5;
+        for (let i=0;i<state.sites.length;i++) {
+          let y=100;
+          for (let tier=0;tier<=5;tier++) {
+            const nodes=state.nodes.filter(n => n.site===state.sites[i].id && level(n)===tier).sort((a,b)=>a.id.localeCompare(b.id,undefined,{numeric:true}));
+            nodes.forEach((n,j)=>{ n.x=i*1040+45+(j%4)*245; n.y=y+Math.floor(j/4)*155; });
+            if (nodes.length) y+=Math.ceil(nodes.length/4)*155+70;
+          }
+        }
+        if (refresh) render();
+      }
+      /**
+       * Entradas: Factor solicitado por botones.
+       * Proceso / salida: Limita escala entre 0,25 y 3; modifica solo ancho visual del SVG, sin cambiar coordenadas del modelo.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function zoomTopology(factor) { topologyZoom=Math.max(.25,Math.min(3,topologyZoom*factor)); const svg=$("toposvg"); if(svg) svg.style.width=(Number(svg.dataset.width)*topologyZoom)+"px"; }
+      // Iconos vectoriales originales, sin fuentes ni imágenes de terceros.
+      /**
+       * Entradas: Tipo de equipo de la lista permitida.
+       * Proceso / salida: Devuelve trazados SVG originales embebidos; no utiliza fuentes, Internet ni recursos protegidos.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
+      function deviceIcon(type) {
+        const paths={
+          Router:'<ellipse cx="19" cy="18" rx="17" ry="12"/><path d="M7 18h24m-8-5 8 5-8 5m-8-10-8 5 8 5"/>',
+          Switch:'<rect x="2" y="9" width="34" height="20" rx="3"/><path d="M7 15h4m4 0h4m4 0h4m4 0h3M7 23h4m4 0h4m4 0h4"/>',
+          "Switch capa 3":'<rect x="2" y="9" width="34" height="20" rx="3"/><path d="M7 15h24M12 21h14m-10-4-4 4 4 4m6-8 4 4-4 4"/>',
+          Firewall:'<path d="M3 5h32v29H3zM3 15h32M3 25h32M13 5v10m12 0v10M13 25v9"/>',
+          Servidor:'<rect x="7" y="2" width="24" height="34" rx="3"/><path d="M11 10h16M11 18h16M11 27h10"/>',
+          PC:'<path d="M3 5h32v23H3zM19 28v7M10 35h18"/>',
+          "Cámara":'<path d="M3 10h24v18H3zM27 15l9-5v18l-9-5M12 28v7"/>',
+          Impresora:'<path d="M9 12V3h20v9M3 12h32v18H3zM9 22h20v14H9z"/>',
+          "Access Point":'<path d="M4 27h30v8H4zM19 26V15M10 17q9-9 18 0M4 10q15-15 30 0"/>'
+        };
+        return `<g stroke="currentColor" stroke-width="1.8" fill="none">${paths[type]||paths.PC}</g>`;
+      }
+      /**
+       * Entradas: Nodos, enlaces, posiciones y plan actual.
+       * Proceso / salida: Devuelve SVG autónomo con iconos, carriles, títulos y detalles escapados; sirve para pantalla y descarga.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function svgTopology() {
-        const w = Math.max(
-            650,
-            state.sites.length * 600 + 40,
-            ...state.nodes.map((n) => n.x + 180),
-          ),
-          h = Math.max(500, ...state.nodes.map((n) => n.y + 160));
-        let out = `<svg id="toposvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#d7e3ed"/></pattern></defs><rect width="100%" height="100%" fill="url(#dots)"/>`;
-        state.sites.forEach((s, i) => {
-          out += `<rect x="${i * 600 + 10}" y="10" width="590" height="${h - 20}" rx="12" fill="#edf4fa" fill-opacity=".6" stroke="#d2dfeb"/><text x="${i * 600 + 30}" y="40" font-size="16" fill="#263e59" font-weight="700">${esc(s.name)}</text>`;
+        const w=Math.max(1040,state.sites.length*1040,...state.nodes.map(n=>n.x+230)),
+          h=Math.max(550,...state.nodes.map(n=>n.y+145));
+        let out=`<svg id="toposvg" data-width="${w}" style="width:${w*topologyZoom}px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="${t("Topología de red")}"><rect width="100%" height="100%" fill="#f4f8fc"/>`;
+        state.sites.forEach((site,i)=>{out+=`<rect x="${i*1040+8}" y="55" width="1024" height="${h-65}" rx="16" fill="#e9f1f7" stroke="#b5cad8"/><text x="${i*1040+28}" y="83" font-size="18" fill="#16354f">${esc(site.name)}</text>`;});
+        state.links.forEach((l,i)=>{
+          const a=node(l.a),b=node(l.b);if(!a||!b)return;
+          const wan=a.site!==b.site, color=wan?"#8748b6":l.type==="routed"?"#168592":l.type==="trunk"?"#d68513":"#547a54";
+          const x1=a.x+195,x2=b.x+195,y1=a.y+43,y2=b.y+43,
+            gutter1=x1+10+(i%4)*6,gutter2=x2+10+(i%4)*6;
+          // Los carriles quedan fuera de las cajas, incluso al saltar niveles.
+          const lane=wan?18:Math.max(a.y,b.y)+104+(i%7)*6;
+          const label=wan?"WAN ":l.type.toUpperCase()+" ", detail=l.type==="routed"?(row(l.network)?.network||"?")+"/30":l.type==="access"?"V"+l.vlan:"802.1Q";
+          const path=x1===x2 ? `M${x1} ${y1} H${gutter1} V${y2} H${x2}` : `M${x1} ${y1} H${gutter1} V${lane} H${gutter2} V${y2} H${x2}`;
+          out+=`<g><title>${esc(a.name+" ↔ "+b.name+" · "+label+detail)}</title><path d="${path}" fill="none" stroke="${color}" stroke-width="${wan?3:2}" ${l.type==="access"?'stroke-dasharray="4 3"':""}/>${state.links.length<=12 || wan ? `<text x="${(gutter1+gutter2)/2}" y="${lane-5}" text-anchor="middle" font-size="10" fill="${color}" stroke="#f4f8fc" stroke-width="3" paint-order="stroke">${esc(label+detail)}</text>` : ""}</g>`;
         });
-        for (const l of state.links) {
-          const a = node(l.a),
-            b = node(l.b);
-          if (!a || !b) continue;
-          const x1 = a.x + 75,
-            y1 = a.y + 28,
-            x2 = b.x + 75,
-            y2 = b.y + 28,
-            label =
-              l.type === "routed"
-                ? row(l.network)?.network + "/" + row(l.network)?.prefix
-                : l.type === "access"
-                  ? "VLAN " + l.vlan
-                  : "TRUNK" + (l.bundle ? " · LACP " + l.bundle : "");
-          out += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${l.type === "routed" ? "#338fa0" : "#a8bacd"}" stroke-width="${l.type === "routed" ? 3 : 2}" ${l.type === "routed" ? 'stroke-dasharray="7 4"' : ""}/><rect x="${(x1 + x2) / 2 - 65}" y="${(y1 + y2) / 2 - 10}" width="130" height="18" rx="3" fill="#f8fbff"/><text x="${(x1 + x2) / 2}" y="${(y1 + y2) / 2 + 3}" text-anchor="middle" font-size="9" fill="#376080">${esc(label)}</text>`;
+        for(const n of state.nodes) {
+          const ip=n.ip||connected(n).filter(l=>l.type==="routed").map(l=>endpoint(l,n,n.vendor).ip).filter(Boolean).join(" · ");
+          // El título accesible conserva detalles completos cuando la etiqueta abrevia.
+          out+=`<g class="node" data-id="${n.id}" tabindex="0" role="button" aria-label="${esc(n.name)}" onkeydown="if(event.key==='Enter'){event.preventDefault();editNode('${n.id}')}" transform="translate(${n.x},${n.y})"><title>${esc(n.name+" · "+n.vendor+" · "+ip)}</title><rect width="195" height="92" rx="10" fill="white" stroke="#7198b0"/><g transform="translate(8,12)" color="#176980">${deviceIcon(n.type)}</g><text x="52" y="23" font-size="11" font-weight="bold" fill="#16354f">${esc(n.name.length>21?n.name.slice(0,19)+"…":n.name)}</text><text x="52" y="42" font-size="10" fill="#45637a">${t(n.type)}</text><text x="10" y="63" font-size="10" fill="#45637a">${esc(t(n.vendor))}</text><text x="10" y="81" font-size="9" fill="#16354f">${esc(ip.length>30?ip.slice(0,28)+"…":ip||t("Ver interfaces"))}</text></g>`;
         }
-        for (const n of state.nodes) {
-          const vl = state.plan.filter(
-            (r) => r.site === n.site && r.kind === "vlan",
-          );
-          out += `<g class="node" data-id="${n.id}" transform="translate(${n.x},${n.y})"><rect width="150" height="62" rx="7" fill="${routed(n) ? "#16354f" : "white"}" stroke="#94b4c9"/><text x="75" y="22" text-anchor="middle" font-size="12" font-weight="700" fill="${routed(n) ? "#fff" : "#19324e"}">${esc(n.name)}</text><text x="75" y="39" text-anchor="middle" font-size="10" fill="${routed(n) ? "#9ed8d7" : "#637e95"}">${t(n.type)} · ${n.vendor}</text><text x="75" y="54" text-anchor="middle" font-size="9" fill="${routed(n) ? "#9ed8d7" : "#637e95"}">${esc(n.ip || t("Ver interfaces"))}</text>${n.type === "Switch capa 3" ? `<text x="75" y="76" text-anchor="middle" font-size="9" fill="#376080">${esc(vl.map((r) => "V" + r.id + " " + r.gateway + "/" + r.prefix).join(" · "))}</text>` : ""}</g>`;
-        }
-        return out + "</svg>";
-      } // El SVG es exportable; etiquetas provienen del plan real.
+        return out+"</svg>";
+      } // Exportación autónoma: todos los recursos se incluyen en el SVG.
       function bindDrag() {
         const svg = $("toposvg");
         if (!svg) return;
@@ -2972,13 +3538,18 @@
       function closeModal() {
         $("modal").close();
       } // Cierre accesible mediante botón o Escape nativo.
+      /**
+       * Entradas: ID existente o cadena vacía para alta manual.
+       * Proceso / salida: Abre un editor; altas requieren elegir fabricante y no asignan Cisco de forma implícita.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function editNode(id = "") {
         const n = id
           ? node(id)
           : {
               name: "Equipo-" + (state.nodes.length + 1),
               type: "Switch",
-              vendor: "Cisco",
+              vendor: "",
               site: state.sites[0].id,
               ip: "",
               network: "",
@@ -2986,7 +3557,7 @@
               y: 100,
             };
         modal(
-          `<h2>${t(id ? "Editar" : "Agregar")} ${t("equipo")}</h2><div class="grid">${field(t("Hostname *"), "nname", n.name)}<div class="field"><label>${t("Tipo")}</label><select id="ntype">${optsHTML(kinds, n.type)}</select></div><div class="field"><label>${t("Fabricante")}</label><select id="nvendor">${optsHTML(["Cisco", "Huawei", "Fortinet", "MikroTik"], n.vendor)}</select></div><div class="field"><label>${t("Sede")}</label><select id="nsite">${state.sites.map((s) => `<option value="${s.id}" ${s.id === n.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></div>${field(t("IP de gestión / endpoint (opcional)"), "nip", n.ip)}<div class="field"><label>${t("VLAN de gestión / endpoint")}</label><select id="nnetwork"><option value="">${t("Sin asignar")}</option>${state.plan
+          `<h2>${t(id ? "Editar" : "Agregar")} ${t("equipo")}</h2><div class="grid">${field(t("Hostname *"), "nname", n.name)}<div class="field"><label>${t("Tipo")}</label><select id="ntype">${optsHTML(kinds, n.type)}</select></div><div class="field"><label>${t("Fabricante")}</label><select id="nvendor">${optsHTML(["", "Cisco", "Huawei", "Fortinet", "MikroTik", "Genérico"], n.vendor)}</select></div><div class="field"><label>${t("Sede")}</label><select id="nsite">${state.sites.map((s) => `<option value="${s.id}" ${s.id === n.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></div>${field(t("IP de gestión / endpoint (opcional)"), "nip", n.ip)}<div class="field"><label>${t("VLAN de gestión / endpoint")}</label><select id="nnetwork"><option value="">${t("Sin asignar")}</option>${state.plan
             .filter((r) => r.kind === "vlan")
             .map(
               (r) =>
@@ -2994,20 +3565,44 @@
             )
             .join(
               "",
-            )}</select></div></div><p>${t("Las IP de interfaces enrutadas y SVI se toman del plan. Para los equipos manuales, asigne una VLAN e IP si requieren administración. Los nombres no pueden contener comandos.")}</p><div class="actions"><button class="primary" onclick="saveNode('${id}')">${t("Confirmar equipo")}</button><button onclick="closeModal()">${t("Cancelar")}</button></div>`,
+            )}</select></div></div>${accessPoint(n)&&row(n.network)?`<p class="notice">${t("Gestión AP")}: ${esc(n.ip)} · ${t("Máscara")}: ${esc(row(n.network).mask)} · Gateway: ${esc(row(n.network).gateway)}. ${t("AP excluido de CLI genérica: requiere modelo, firmware y administración específicos.")}</p>`:""}<p>${t("Las IP de interfaces enrutadas y SVI se toman del plan. Para los equipos manuales, asigne una VLAN e IP si requieren administración. Los nombres no pueden contener comandos.")}</p><div class="actions"><button class="primary" onclick="saveNode('${id}')">${t("Confirmar equipo")}</button><button onclick="closeModal()">${t("Cancelar")}</button></div>`,
         );
       } // Editor permite los siete atributos solicitados.
+      /**
+       * Entradas: Campos del editor y enlaces del equipo.
+       * Proceso / salida: Valida rol, IP y puertos antes de guardar; conserva overrides explícitos y solicita aprobación al cambiar fabricante.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function saveNode(id) {
         safe(() => {
           const n = {
             ...(id ? node(id) : { id: "n" + Date.now(), x: 50, y: 100 }),
             name: hostname($("nname").value),
             type: $("ntype").value,
-            vendor: enumVal($("nvendor").value, ["Cisco", "Huawei", "Fortinet", "MikroTik"], "Fabricante"),
+            vendor: enumVal($("nvendor").value, ["Cisco", "Huawei", "Fortinet", "MikroTik", "Genérico"], "Fabricante"),
             site: $("nsite").value,
             ip: $("nip").value.trim(),
             network: $("nnetwork").value,
           };
+          if (id && n.autoKey) {
+            if (node(id).type!==n.type) delete n.autoKey;
+            else {
+              if (node(id).vendor!==n.vendor) n.vendorOverride=true;
+              if (node(id).name!==n.name) n.nameOverride=true;
+            }
+          }
+          validateNodeVendor(n);
+          if (id && (node(id).vendor!==n.vendor || node(id).type!==n.type)) delete n.interfaceProfiles;
+          if (id && node(id).vendor !== n.vendor && connected(node(id)).length) {
+            // Los nombres de puerto de la marca destino deben estar completos antes del cambio.
+            for (const link of connected(node(id))) {
+              const iface=endpoint(link,n,n.vendor).iface;
+              if (n.vendor==="Fortinet") fortinetInterfaceName(iface);
+              else if (n.vendor==="MikroTik") mikrotikInterfaceName(iface);
+              else interfaceName(iface);
+            }
+            if (!confirm(t("Cambiar fabricantes invalida configuraciones afectadas. ¿Continuar?"))) return;
+          }
           if (n.vendor === "MikroTik" && !mikrotikNode(n)) fail(t("MikroTik requiere tipo Router."));
           if (n.vendor === "Fortinet" && n.type !== "Firewall")
             fail(t("Fortinet requiere tipo Firewall."));
@@ -3097,7 +3692,7 @@
             )
             .join("");
         modal(
-          `<h2>${t(id ? "Editar" : "Crear")} ${t("enlace")}</h2><div class="grid"><div class="field"><label>${t("Equipo A")}</label><select id="la">${ns(l.a)}</select></div><div class="field"><label>${t("Equipo B")}</label><select id="lb">${ns(l.b)}</select></div><div class="field"><label>${t("Tipo")}</label><select id="ltype">${optsHTML(["trunk", "access", "routed"], l.type)}</select></div><div class="field"><label>${t("Red de tránsito (routed)")}</label><select id="lnet"><option value="">${t("Asignar nueva /30 desde VLSM")}</option>${state.plan
+          `<h2>${t(id ? "Editar" : "Crear")} ${t("enlace")}</h2><p class="notice warn">${t("Los nombres de interfaces son propuestas automáticas. Verifique puertos, modelo y versión antes de aplicar configuraciones a equipos físicos.")}</p><div class="grid"><div class="field"><label>${t("Equipo A")}</label><select id="la">${ns(l.a)}</select></div><div class="field"><label>${t("Equipo B")}</label><select id="lb">${ns(l.b)}</select></div><div class="field"><label>${t("Tipo")}</label><select id="ltype">${optsHTML(["trunk", "access", "routed"], l.type)}</select></div><div class="field"><label>${t("Red de tránsito (routed)")}</label><select id="lnet"><option value="">${t("Asignar nueva /30 desde VLSM")}</option>${state.plan
             .filter((r) => r.kind !== "vlan")
             .map(
               (r) =>
@@ -3311,32 +3906,106 @@
       function connected(n) {
         return state.links.filter((l) => l.a === n.id || l.b === n.id);
       } // Configuración limitada a interfaces realmente presentes.
+      // Compatibilidad pasiva v4: perfiles de archivos anteriores, sin formulario ni requisito para generar CLI.
+      const physicalVendors=["Cisco","Huawei","Fortinet","MikroTik"];
+      const physicalRoles=["WAN","LAN","uplink","trunk","access","gestión","tránsito"];
+      /** Conserva la relación histórica de metadatos para validar y guardar proyectos anteriores. */
+      function physicalBinding(l,n) {
+        return JSON.stringify([n.vendor,n.type,l.a,l.b,l.type,l.network,l.vlan,l.bundle,l.ac,l.bc,l.ah,l.bh,l.af||"",l.bf||"",l.am||"",l.bm||""]);
+      }
+      /** Solo seguridad léxica. La existencia del puerto se confirma contra modelo, versión e inventario real. */
+      function physicalName(value,vendor) {
+        if (typeof value!=="string" || value.length>63 || !/^[A-Za-z0-9][A-Za-z0-9_/-]*$/.test(value)) fail(t("Nombre de interfaz física inválido."));
+        if (vendor==="Cisco" && !/^(GigabitEthernet|TenGigabitEthernet|FastEthernet|Ethernet|TwentyFiveGigE|FortyGigabitEthernet|HundredGigE)\d+(\/\d+){0,3}$/.test(value)) fail(t("Nomenclatura física no soportada por este adaptador."));
+        if (vendor==="Huawei" && !/^(GigabitEthernet|Ethernet|XGigabitEthernet|10GE|25GE|40GE|100GE|GE)\d+(\/\d+){0,3}$/.test(value)) fail(t("Nomenclatura física no soportada por este adaptador."));
+        if (vendor==="Fortinet") fortinetInterfaceName(value);
+        if (vendor==="MikroTik") mikrotikInterfaceName(value);
+        return value;
+      }
+      /** Reconstrucción cerrada; rechaza campos, referencias, puertos repetidos y funciones inconsistentes. */
+      function validatePhysicalProfile(n,vendor,p) {
+        enumVal(vendor,physicalVendors,"Fabricante");
+        if (!p || typeof p!=="object" || Array.isArray(p) || Object.keys(p).some(k=>!["model","version","source","confirmed","ports"].includes(k))) fail(t("Perfil físico inválido."));
+        if (["model","version","source"].some(k=>typeof p[k]!=="string")) fail(t("Perfil físico inválido."));
+        text(p.model,"Modelo",100);text(p.version,"Versión",100);text(p.source,"URL oficial del modelo y versión",1000);bool(p.confirmed);
+        let url;try { url=new URL(p.source); } catch (_) { fail(t("Indique documentación oficial del modelo y versión.")); }
+        const hosts={Cisco:["cisco.com"],Huawei:["huawei.com"],Fortinet:["fortinet.com"],MikroTik:["mikrotik.com"]}[vendor];
+        if (url.protocol!=="https:" || url.username || url.password || !hosts.some(h=>url.hostname===h || url.hostname.endsWith("."+h)) || p.source.length>1000) fail(t("Indique documentación oficial del modelo y versión."));
+        if (!Array.isArray(p.ports) || p.ports.length>1000) fail(t("Perfil físico inválido."));
+        const links=connected(n), names=new Set(),ids=new Set();
+        for (const port of p.ports) {
+          if (!port || Object.keys(port).some(k=>!["linkId","name","role","binding"].includes(k))) fail(t("Perfil físico inválido."));
+          const l=links.find(l=>l.id===port.linkId);
+          if (!l || ids.has(port.linkId)) fail(t("Referencia física de enlace inválida."));
+          ids.add(port.linkId);physicalName(port.name,vendor);
+          const key=port.name.toLowerCase();if(names.has(key)) fail(t("Interfaz física duplicada."));names.add(key);
+          enumVal(port.role,physicalRoles,"Función");
+          if (typeof port.binding!=="string" || port.binding.length>1000) fail(t("Perfil físico inválido."));
+          if (p.confirmed && (port.binding!==physicalBinding(l,n) ||
+              (l.type==="trunk" && !["trunk","uplink"].includes(port.role)) ||
+              (l.type==="access" && !["access","LAN","gestión"].includes(port.role)) ||
+              (l.type==="routed" && !["WAN","LAN","uplink","gestión","tránsito"].includes(port.role)))) fail(t("Perfil archivado no coincide con los enlaces."));
+        }
+        if (p.confirmed && (!links.length || ids.size!==links.length)) fail(t("Perfil archivado incompleto."));
+        return p;
+      }
+      /** Depura metadatos históricos al cambiar enlaces; no exige reconfirmación ni bloquea CLI automática. */
+      function refreshPhysicalProfiles() {
+        for (const n of state.nodes) for (const [vendor,p] of Object.entries(n.interfaceProfiles||{})) {
+          const links=connected(n), previousCount=p.ports.length;
+          p.ports=p.ports.filter(port=>links.some(l=>l.id===port.linkId));
+          if (p.ports.length!==previousCount || p.ports.length!==links.length || p.ports.some(port=>port.binding!==physicalBinding(links.find(l=>l.id===port.linkId),n))) {
+            p.confirmed=false;delete state.configs[n.id+"-"+vendor];
+          }
+        }
+      }
+      /** Defensa compartida por los cuatro adaptadores; AP nunca recibe plantilla genérica. */
+      function excludeAccessPoint(n) {
+        // Exclusión por tipo, incluso cuando el adaptador se invoca directamente.
+        if (accessPoint(n)) fail(t("AP excluido de CLI genérica: requiere modelo, firmware y administración específicos."));
+      }
+      /** Resuelve los puertos del enlace por marca; no exige modelo ni confirmación manual.
+       * Los nombres históricos de perfiles se usan solo para verificar archivos antiguos, nunca para CLI nueva. */
       function endpoint(l, n, vendor) {
         const side = l.a === n.id ? "a" : "b",
           r = row(l.network);
         return {
-          iface: l[side + (vendor === "MikroTik" ? "m" : vendor === "Fortinet" ? "f" : vendor === "Cisco" ? "c" : "h")],
+          iface: (archivedPhysicalNames ? n.interfaceProfiles?.[vendor]?.ports.find(p=>p.linkId===l.id)?.name : "") || l[side + (vendor === "MikroTik" ? "m" : vendor === "Fortinet" ? "f" : vendor === "Cisco" ? "c" : "h")],
           ip: r ? (side === "a" ? r.first : r.last) : "",
           r,
           peer: node(l.a === n.id ? l.b : l.a),
         };
       } // Los extremos routed reciben first/last de la misma /30.
+      /**
+       * Entradas: ID del equipo y orden legado.
+       * Proceso / salida: Conserva router-ID de IDs automáticos nN al editar otras sedes; IDs personalizados mantienen regla histórica.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function routerId(n) {
-        const index = state.nodes.findIndex((x) => x.id === n.id) + 1;
+        // Los ID automáticos nN conservan su router-ID aunque se quite otra sede.
+        // Los proyectos antiguos con ID personalizados mantienen su cálculo legado.
+        const ordinal=n.id.match(/^n(\d+)$/),
+          index = ordinal && Number(ordinal[1])<60000 ? Number(ordinal[1]) : state.nodes.findIndex((x) => x.id === n.id) + 1;
         return "10.255." + Math.floor(index / 254) + "." + ((index % 254) + 1);
       } // Router-ID único, no se copia 8.8.8.8 como loopback propia.
       // Huawei: ofrece equivalencias si la topología automática solo contiene Cisco.
       // No modifica fabricantes, nodos, enlaces, direccionamiento ni el generador Cisco.
+      // Selección real: jamás ofrece un Cisco como si fuera Huawei.
+      /**
+       * Entradas: Nombre oficial del fabricante.
+       * Proceso / salida: Filtra exclusivamente nodos asignados y soportados; las equivalencias viven solo en Comparación.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function configNodes(vendor) {
         if (vendor === "MikroTik") return state.nodes.filter(mikrotikNode);
         if (vendor === "Fortinet") return state.nodes.filter(fortinetNode);
-        const nodes = state.nodes.filter(
-          (n) => configurable(n) && n.vendor === vendor,
-        );
-        return vendor === "Huawei" && !nodes.length
-          ? state.nodes.filter(configurable)
-          : nodes;
+        return state.nodes.filter(n => configurable(n) && n.vendor === vendor);
       }
+      /**
+       * Entradas: Fabricante Cisco o Huawei.
+       * Proceso / salida: Muestra nodos reales, opciones y CLI guardadas; no ofrece un Cisco como equipo Huawei.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function configView(vendor) {
         const nodes = configNodes(vendor);
         return (
@@ -3344,7 +4013,7 @@
             t("Configuración") + " " + vendor,
             vendor === "Cisco"
               ? t("Propuestas para IOS / IOS XE con VLAN, SVI, OSPF y SSH. Elija equipo o genere toda la marca.")
-              : t("Propuestas para VRP con Vlanif, OSPF, AAA y STelnet. La equivalencia utiliza exactamente el mismo plan. Si no hay equipos marcados como Huawei, se ofrecen los equipos configurables de la topología como equivalentes VRP, sin cambiar su fabricante."),
+              : t("Propuestas VRP para los equipos Huawei seleccionados. Use Comparación para equivalencias explícitas con Cisco."),
           ) +
           configControls() +
           `<div class="card"><div class="actions"><select id="confNode" aria-label="${t("Equipo a configurar")}">${nodes.map((n) => `<option value="${n.id}">${esc(n.name)} · ${esc(siteName(n.site))}</option>`).join("")}</select><button class="primary" onclick="generateSelected('${vendor}')">${t("Generar equipo")}</button><button onclick="generateAll('${vendor}')">${t("Generar todos los")} ${vendor}</button><button onclick="downloadAll('${vendor}')">${t("Descargar todos")}</button></div><div class="notice warn">${t("Configuración preliminar; ajuste interfaces y sintaxis al modelo/versión del equipo. &lt;CAMBIAR_EN_PRODUCCION&gt; exige reemplazo externo antes de aplicar. Los prompts interactivos de claves y guardado se atienden en el equipo. No se genera configuración genérica para firewall, AP, ISP, PC o servidor.")}</div>${nodes.length ? nodes.map((n) => configBlock(n, vendor)).join("") : `<div class="empty">${t("Genere una topología y asigne equipos a esta marca. Para evaluar el mismo equipo con ambas sintaxis use Comparación.")}</div>`}</div>`
@@ -3402,9 +4071,13 @@
           return true;
         });
       } // Las opciones modificadas invalidan los textos generados.
+      /**
+       * Entradas: Nodo IOS/VRP, opciones y topología.
+       * Proceso / salida: Exige plan confirmado sin borradores y dependencias técnicas válidas antes de producir CLI.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function assertReady(n) {
-        if (!state.approved || !state.plan.length)
-          fail(t("Confirme primero el plan."));
+        requireConfirmedPlan();
         hostname(n.name);
         if (!configurable(n))
           fail(t("El tipo seleccionado no dispone de plantilla IOS/VRP."));
@@ -3439,6 +4112,7 @@
           fail(t("Interfaces de switching requieren crear VLAN."));
       } // Bloqueos técnicos concretos, sin afirmar funcionalidad incompleta.
       function generate(n, vendor) {
+        excludeAccessPoint(n);
         if (vendor === "MikroTik") return generateMikroTik(n);
         if (vendor === "Fortinet") return generateFortinet(n);
         if (!["Cisco", "Huawei"].includes(vendor) || fortinetNode(n) || mikrotikNode(n))
@@ -3816,9 +4490,15 @@
           (x.type === "Switch capa 3" || (fortinetNode(x) && connected(x).some((l) =>
             l.type === "trunk" || (l.type === "access" && l.vlan === r.id)))));
       }
+      /**
+       * Entradas: Firewall Fortinet con interfaces explícitas del plan.
+       * Proceso / salida: Exige aprobación efectiva y controles existentes; conserva gramática FortiOS, políticas seguras y límites de laboratorio.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function generateFortinet(n) {
+        excludeAccessPoint(n);
         if (!fortinetNode(n)) fail(t("FortiOS solo admite nodos Firewall de fabricante Fortinet."));
-        if (!state.approved || !state.plan.length) fail(t("Confirme primero el plan v3."));
+        requireConfirmedPlan();
         hostname(n.name);
         if (n.ip || n.network)
           fail(t("Fortinet: deje vacíos IP/red del nodo; las direcciones de sus interfaces se toman del plan y de los enlaces."));
@@ -4048,9 +4728,15 @@
         if (!ranges.length) fail(t("MikroTik: no quedan IP para DHCP en VLAN {0}", [r.id]));
         return ranges.join(",");
       }
+      /**
+       * Entradas: Router MikroTik con interfaces explícitas del plan.
+       * Proceso / salida: Exige aprobación efectiva y validaciones existentes; conserva gramática RouterOS y endurecimiento sin ejecutar comandos.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function generateMikroTik(n) {
+        excludeAccessPoint(n);
         if (!mikrotikNode(n)) fail(t("RouterOS solo admite nodos Router de fabricante MikroTik."));
-        if (!state.approved || !state.plan.length) fail(t("MikroTik: confirme primero el plan v3."));
+        requireConfirmedPlan();
         hostname(n.name);
         if (n.ip || n.network) fail(t("MikroTik: deje vacíos IP/red del nodo; se derivan del plan y de sus enlaces."));
         if (!connected(n).length) fail(t("MikroTik: el router no tiene enlaces."));
@@ -4569,113 +5255,6 @@
             .join("")}</div></div>`
         );
       } // Resume hechos calculados, no pruebas de producción.
-      function evidenceView() {
-        const ci = Object.values(state.configs).some(
-            (x) =>
-              /hostname .+\nvlan |hostname /s.test(x.text) &&
-              /interface Vlan\d/.test(x.text),
-          ),
-          hw = Object.values(state.configs).some(
-            (x) => /sysname /.test(x.text) && /interface Vlanif/.test(x.text),
-          );
-        return (
-          title(
-            t("Evidencias Corte 2"),
-            t("Capture los resultados reales de su proyecto. El documento y los commits se verifican fuera de esta aplicación."),
-          ) +
-          `<div class="card"><h2>${t("Capturas para la entrega")}</h2><div class="tablewrap"><table><thead><tr><th>${t("Archivo")}</th><th>${t("Qué debe verse")}</th><th>${t("Abrir")}</th></tr></thead><tbody>${[
-            [
-              "01-subnetting.png",
-              t("IP, prefijo, red, broadcast y hosts del ejemplo o una subred del proyecto."),
-              4,
-            ],
-            [
-              "02-topologia.png",
-              t("Equipos, nombres, enlaces, sedes, VLAN y redes del plan."),
-              5,
-            ],
-            [
-              "03-config-cisco.png",
-              t("Hostname, VLAN y dirección IP. Seleccione un core para incluir SVI."),
-              6,
-            ],
-            [
-              "04-config-huawei.png",
-              t("Sysname, VLAN y dirección IP. Use Comparación si no tiene un core Huawei."),
-              7,
-            ],
-            [
-              "05-github-commits.png",
-              t("Captura directamente en GitHub con al menos cinco commits claros. No se crean ni verifican commits aquí."),
-              -1,
-            ],
-          ]
-            .map(
-              ([f, d, i]) =>
-                `<tr><td class="mono">${f}</td><td>${d}</td><td>${i >= 0 ? `<button onclick="go(${i})">${t("Ver sección")}</button>` : t("Verificar en GitHub")}</td></tr>`,
-            )
-            .join(
-              "",
-            )}</tbody></table></div></div><div class="card"><h2>${t("Cumplimiento Corte 2")}</h2><div class="statuslist">${[
-            [
-              t("Subnetting funcional — 20%"),
-              !!state.subnetOK,
-              t("Ejecute un cálculo válido."),
-            ],
-            [
-              t("Carga de topología — 15%"),
-              state.nodes.length > 0 && state.links.length > 0,
-              t("Genere o transcriba su topología."),
-            ],
-            [
-              t("Configuración Cisco + Huawei — 25%"),
-              ci && hw,
-              t("Genere ambas sintaxis con VLAN e IP."),
-            ],
-            [
-              t("Ciberdefensa aplicada — 10%"),
-              true,
-              "Validaciones y políticas incorporadas; revisar advertencias.",
-            ],
-            [
-              t("Documento — 10%"),
-              false,
-              t("Verificación externa: no se ha comprobado ningún PDF."),
-            ],
-            [
-              t("Repositorio GitHub — 20%"),
-              false,
-              t("Verificación externa: no se ha comprobado ningún repositorio ni commits."),
-            ],
-          ]
-            .map(
-              ([label, ok, d]) =>
-                `<div class="statusrow"><div>${label}<br><small>${t(d)}</small></div>${badge(ok)}</div>`,
-            )
-            .join(
-              "",
-            )}</div><div class="notice warn">${t("Estos indicadores no certifican la calificación. Capturas, PDF, pruebas con simulador/equipos y repositorio deben existir realmente para sustentarlos.")}</div></div><div class="card"><h3>${t("Glosario para sustentar")}</h3><div class="grid">${Object.entries(
-            {
-              VLAN: "Segmento lógico de capa 2.",
-              Gateway: "Salida de una subred hacia otras redes.",
-              CIDR: "Prefijo /n: bits que identifican la red.",
-              Broadcast:
-                "Dirección para todos los hosts de una subred convencional.",
-              VLSM: "Subredes de tamaños variables según capacidad requerida.",
-              WAN: "Interconexión de redes entre ubicaciones.",
-              Trunk: "Enlace de capa 2 que transporta varias VLAN.",
-              Access: "Puerto de capa 2 asignado a una sola VLAN.",
-              ISP: "Proveedor de conectividad.",
-              OSPF: "Protocolo que calcula rutas usando el estado de los enlaces.",
-              LACP: "Agrupa enlaces físicos en un enlace lógico.",
-              HSRP_VRRP: "Gateway virtual redundante entre dos equipos.",
-            },
-          )
-            .map(([k, v]) => `<div><strong>${k}</strong><p>${t(v)}</p></div>`)
-            .join("")}</div></div>`
-        );
-      } // Rúbrica: documento y GitHub siempre quedan pendientes de verificación externa.
-      /* =================== Persistencia local y archivos =================== */
       function download(name, content, mime) {
         const blob = new Blob([content], { type: mime + ";charset=utf-8" }),
           url = URL.createObjectURL(blob),
@@ -4753,37 +5332,27 @@
           fail(t("{0}: el bloque debe estar completamente dentro de RFC1918.", [label]));
         return block;
       } // Parser común y contención numérica; no normaliza redes desalineadas.
+      // Validación pura de tres dominios: fallback, sedes independientes y tránsito.
+      // Devuelve normalmente o lanza un error contextual; nunca normaliza redes.
+      /**
+       * Entradas: Proyecto y candidatas de todas las sedes.
+       * Proceso / salida: Valida privacidad y alineación de cada dominio; rechaza solapamientos sede/sede y sede/tránsito sin exigir contención global.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function validateSiteBlocks(project, sites) {
-        const blocks = [];
+        privateIPv4Block(project.base,"Bloque global");
+        const transit=project.transitBase ? privateIPv4Block(project.transitBase,"Bloque de tránsito") : null;
+        if (transit && transit.prefix>30) fail(t("Tránsito requiere /30 o mayor."));
+        const blocks=[];
         for (const site of sites) {
           if (!site.ipv4Base) continue;
-          const label = t("Sede «{0}»: ", [site.name]);
-          const block = privateIPv4Block(site.ipv4Base, label.slice(0, -2));
-          let global, transit;
-          try {
-            global = subnet(project.base);
-          } catch (e) {
-            fail(t("{0}no se puede verificar la contención: bloque global inválido.", [label]));
-          }
-          if (block.net < global.net || block.end > global.end)
-            fail(t("{0}el bloque queda fuera del bloque global {1}.", [label, project.base]));
-          const other = blocks.find(
-            (r) => block.net <= r.end && r.net <= block.end,
-          );
-          if (other)
-            fail(t("{0}el bloque se solapa con la sede «{1}».", [label, other.name]));
-          if (project.transitBase) {
-            try {
-              transit = subnet(project.transitBase);
-            } catch (e) {
-              fail(t("{0}no se puede comprobar el solapamiento: bloque de tránsito inválido.", [label]));
-            }
-            if (block.net <= transit.end && transit.net <= block.end)
-              fail(t("{0}el bloque se solapa con el bloque de tránsito.", [label]));
-          }
-          blocks.push({ net: block.net, end: block.end, name: site.name });
+          const block=privateIPv4Block(site.ipv4Base,t("Sede «{0}»: ",[site.name]));
+          const other=blocks.find(r => block.net<=r.end && r.net<=block.end);
+          if (other) fail(t("{0}el bloque se solapa con la sede «{1}».",[site.name+": ",other.name]));
+          if (transit && block.net<=transit.end && transit.net<=block.end) fail(t("{0}el bloque se solapa con el bloque de tránsito.",[site.name+": "]));
+          blocks.push({...block,name:site.name});
         }
-      } // Valida intenciones de sede sin contrastarlas con el plan efectivo.
+      }
       function migrateV2(src) {
         return {
           ...src,
@@ -4807,6 +5376,11 @@
         if (typeof value !== "string") fail(t("{0}: se requiere una cadena.", [label]));
         return value;
       } // En esta etapa las intenciones se conservan, pero no alimentan VLSM.
+      /**
+       * Entradas: Objeto JSON v2, v3 o v4 no confiable.
+       * Proceso / salida: Reconstruye contrato, perfiles y overrides opcionales; valida pools/plan, relaciones y CLI sin asignar nuevas redes y restaura estado temporal.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function validateImport(data) {
         if (
           !data ||
@@ -4863,6 +5437,10 @@
             bandwidth: num(s.bandwidth, 0, 100000, "Banda"),
             counts: null,
           };
+          // Validar tipo explícito sin inferir confirmación desde un proyecto antiguo.
+          if (s.confirmed !== undefined) o.confirmed=bool(s.confirmed);
+          const profile=validateVendorProfile(s.vendorProfile);
+          if (profile) o.vendorProfile=profile;
           o.busy.split(",").forEach((n) => num(n.trim(), 1, o.floors, "Piso"));
           for (const k of [
             "wifi",
@@ -4976,9 +5554,22 @@
             fail(t("Gateway importado fuera de subred."));
           if (v && v.gateway && v.gateway !== o.gateway)
             fail(t("Gateway de VLAN y plan incoherentes."));
-          const base = subnet(out.project.base);
+          // Revalidar el pool efectivo evita aceptar planes fuera de la sede.
+          const site = out.sites.find((s) => s.id === o.site),
+            base = subnet(kind === "vlan" ? site.ipv4Base || out.project.base
+              : out.project.transitBase || out.project.base);
           if (o.net < base.net || o.end > base.end)
             fail(t("Red fuera del bloque base."));
+          // Los pools globales no pueden invadir reservas de ninguna otra sede.
+          for (const other of out.sites) {
+            if (!other.ipv4Base || (kind === "vlan" && other.id === o.site)) continue;
+            const block = subnet(other.ipv4Base);
+            if (o.net <= block.end && block.net <= o.end) fail(t("Red invade otra sede."));
+          }
+          if (kind === "vlan" && out.project.transitBase) {
+            const transit = subnet(out.project.transitBase);
+            if (o.net <= transit.end && transit.net <= o.end) fail(t("LAN invade tránsito."));
+          }
           return o;
         });
         unique(
@@ -5018,15 +5609,20 @@
           const r = out.plan.find((r) => r.key === n.network),
             o = {
               id: idVal(n.id),
+              ...(n.autoKey === undefined ? {} : {autoKey: text(n.autoKey,"Clave automática",160)}),
+              ...(n.vendorOverride === undefined ? {} : {vendorOverride: bool(n.vendorOverride)}),
+              ...(n.nameOverride === undefined ? {} : {nameOverride: bool(n.nameOverride)}),
+              ...(n.interfaceProfiles===undefined?{}:{interfaceProfiles:structuredClone(n.interfaceProfiles)}),
               name: hostname(n.name),
               type: enumVal(n.type, kinds, "Tipo de equipo"),
-              vendor: enumVal(n.vendor, ["Cisco", "Huawei", "Fortinet", "MikroTik"], "Fabricante"),
+              vendor: enumVal(n.vendor, ["Cisco", "Huawei", "Fortinet", "MikroTik", "Genérico"], "Fabricante"),
               site: n.site,
               ip: n.ip ? ipStr(ipNum(n.ip)) : "",
               network: n.network ? idVal(n.network) : "",
               x: num(n.x, 0, 100000, "X", false),
               y: num(n.y, 0, 100000, "Y", false),
             };
+          validateNodeVendor(o);
           if (o.vendor === "MikroTik" && !mikrotikNode(o)) fail(t("MikroTik requiere tipo Router."));
           if (o.vendor === "Fortinet" && !fortinetNode(o)) fail(t("Fortinet requiere tipo Firewall."));
           if (o.network && (!r || r.site !== o.site || r.kind !== "vlan"))
@@ -5044,6 +5640,7 @@
           "Hostname",
         );
         unique(out.nodes.map((n) => n.ip).filter(Boolean), "IP de equipo");
+        unique(out.nodes.map(n => n.autoKey).filter(Boolean), "Clave automática");
         out.links = src.links.map((l) => {
           if (
             !out.nodes.some((n) => n.id === l.a) ||
@@ -5097,9 +5694,14 @@
         if (out.calc) addressCalculation(out.calc);
         out.subnetOK = src.subnetOK === true;
         out.revision = num(src.revision, 0, 100000000, "Revisión");
-        const previous = state;
+        const previous = state, previousEditing=vlanEditing, previousPending=[...sitePending];
         try {
-          state = out;
+          state = out; vlanEditing=false; sitePending.clear();
+          for (const n of out.nodes) if (n.interfaceProfiles!==undefined) {
+            if (!n.interfaceProfiles || typeof n.interfaceProfiles!=="object" || Array.isArray(n.interfaceProfiles)) fail(t("Perfil físico inválido."));
+            for (const [vendor,profile] of Object.entries(n.interfaceProfiles)) validatePhysicalProfile(n,vendor,profile);
+          }
+          checkingArchive=true;
           for (const l of out.links)
             validateLink(
               l,
@@ -5119,12 +5721,18 @@
                 val.revision !== out.revision
               )
                 continue;
-              const generated = generate(n, m[2]);
+              let generated = generate(n, m[2]);
+              if (generated !== val.text && n.interfaceProfiles?.[m[2]]) {
+                // No se pierde texto histórico válido ni se acepta CLI arbitraria del JSON.
+                archivedPhysicalNames=true;
+                try { generated=generate(n,m[2]); } finally { archivedPhysicalNames=false; }
+              }
               if (generated === val.text)
                 out.configs[key] = { text: generated, revision: out.revision };
             }
         } finally {
-          state = previous;
+          checkingArchive=false;archivedPhysicalNames=false;
+          state = previous; vlanEditing=previousEditing; previousPending.forEach(id=>sitePending.add(id));
         }
         let img = data.imageData || "";
         if (
@@ -5154,8 +5762,14 @@
       function unique(values, label) {
         if (new Set(values).size !== values.length) fail(t("{0} duplicado.", [label]));
       } // Integridad referencial.
+      /**
+       * Entradas: Resultado ya validado por validateImport.
+       * Proceso / salida: Reemplaza proyecto de forma atómica y limpia borradores/banderas anteriores; no llama al asignador.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function applyImport(data) {
         state = data.state;
+        inventoryEditing.clear(); formDrafts.clear(); siteEditing.clear(); sitePending.clear(); siteSnapshots.clear(); vlanEditing=false; sshHistory=""; sshDevice="";
         imageData = data.imageData;
         imageMode = false;
         selectedSite = 0;
@@ -5163,6 +5777,11 @@
         page = 0;
         render();
       } // El reemplazo ocurre solo después de validación completa.
+      /**
+       * Entradas: Confirmación de crear un proyecto nuevo.
+       * Proceso / salida: Reinicia estado y borradores solo si acepta; conserva claves de almacenamiento y preferencia de idioma.
+       * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
+       */
       function newProject() {
         if (
           confirm(
@@ -5170,12 +5789,18 @@
           )
         ) {
           state = fresh();
+          inventoryEditing.clear(); formDrafts.clear(); siteEditing.clear(); sitePending.clear(); siteSnapshots.clear(); vlanEditing=false; sshHistory=""; sshDevice="";
           imageData = "";
           selectedSite = 0;
           page = 1;
           render();
         }
       } // No elimina la copia local ya guardada.
+      /**
+       * Entradas: confirmación de reemplazo por datos ficticios.
+       * Salida: laboratorio limpio; elimina borradores de presentación anteriores.
+       * No sobrescribe localStorage ni preferencias de idioma.
+       */
       function demo() {
         if (
           !confirm(
@@ -5184,6 +5809,8 @@
         )
           return;
         state = fresh();
+        // Un laboratorio nuevo no hereda borradores del proyecto sustituido.
+        inventoryEditing.clear(); formDrafts.clear(); siteEditing.clear(); sitePending.clear(); siteSnapshots.clear(); vlanEditing=false; sshHistory=""; sshDevice="";
         state.project = {
           ...state.project,
           name: "WAN · Laboratorio Corte 2",
@@ -5288,6 +5915,141 @@
           "text/html",
         );
       } // Informe estático con datos reales del proyecto actual.
+      /* Consola opcional: todo estado de sesión es efímero y ajeno a state/JSON. */
+      let sshMode="simulation", sshDevice="", sshHistory="", sshSocket=null,
+        sshTerminal=null, sshFit=null, sshObserver=null, sshLibrary=null, sshStatusCode="disconnected", sshConnecting=false, sshGeneration=0;
+      const sshLabels={disconnected:"Desconectado",connecting:"Conectando",connected:"Conectado",ended:"Sesión finalizada",
+        authentication:"Error de autenticación",network:"Error de red",host_key:"Clave de host desconocida o modificada: verifique la huella con el servicio local.",
+        unauthorized:"Sesión local no autorizada",destination_denied:"Destino no autorizado por el servicio local",invalid_request:"Solicitud SSH no válida",terminal_unsupported:"El equipo no permite shell/PTY interactivo."};
+
+      /** Cambia solo la pestaña visual; abandonar una sesión real la cierra. */
+      function sshTab(mode) { sshMode=mode==="real"?"real":"simulation"; render(); }
+      /** Busca una selección estable; jamás cambia marcas o datos del dispositivo. */
+      function sshSelected() { return state.nodes.find(n=>n.id===sshDevice)||null; }
+      /** Solo IP explícita de Gestión: nunca se infiere desde WAN/SVI/gateway. */
+      function sshManagementAddress(n) {
+        return n && row(n.network)?.role==="Gestión" && ["Switch","Switch capa 3","Router","Firewall"].includes(n.type) ? n.ip||"" : "";
+      }
+      /** Renderiza HTML escapado; simulación no descarga librerías ni abre conexiones. */
+      function sshConsoleView() {
+        const n=sshSelected(), real=sshMode==="real",
+          service=location.hostname==="127.0.0.1" && location.protocol==="http:" && !!document.querySelector('meta[name="wan-ssh-service"]');
+        const select=`<select id="sshDevice" onchange="sshChooseDevice(this.value)"><option value="">${t("Conexión manual / seleccione equipo")}</option>${state.nodes.map(n=>`<option value="${esc(n.id)}" ${n.id===sshDevice?"selected":""}>${esc(n.name)} · ${esc(n.vendor)}</option>`).join("")}</select>`;
+        return title(t("Consola SSH"),t("Simulación educativa y conexión real son independientes. Nunca se aplican configuraciones automáticamente."))+`<p><a href="docs/manual-ssh.md" target="_blank" rel="noopener">${t("Manual de consola SSH")}</a></p>`+
+          `<div class="card"><div class="actions" role="tablist" aria-label="${t("Modalidad SSH")}"><button role="tab" aria-selected="${!real}" onclick="sshTab('simulation')">${t("Simulación")}</button><button role="tab" aria-selected="${real}" onclick="sshTab('real')">${t("Conexión real")}</button></div><div class="field"><label for="sshDevice">${t("Dispositivo de la topología")}</label>${select}</div>${n?`<p>${esc(n.name)} · ${esc(n.vendor)} · ${t(n.type)}</p><p class="mono">${esc(connected(n).map(l=>endpoint(l,n,n.vendor).iface||"—").join(" · "))}</p>`:""}
+          ${real ? `<div class="notice">${t("La conexión manual no requiere VLSM. Use únicamente equipos autorizados. Cambiar idioma, pestaña o módulo cierra la sesión; no se guarda el historial real.")}</div><div id="sshService" class="notice ${service?"":"warn"}">${t(service?"Servicio local disponible":"Servicio no disponible: inicie Python y abra http://127.0.0.1:8765 (o el puerto configurado).")}</div><div class="grid">${field(t("IP o hostname autorizado"),"sshHost",sshManagementAddress(n))}${field(t("Puerto SSH"),"sshPort",22,"number",'min="1" max="65535"')}${field(t("Usuario SSH"),"sshUser","")}<div class="field"><label for="sshMethod">${t("Autenticación")}</label><select id="sshMethod" onchange="sshAuthMethod()"><option value="password">${t("Contraseña")}</option><option value="key">${t("Clave privada")}</option></select></div><div id="sshPasswordBox" class="field"><label for="sshPassword">${t("Contraseña")}</label><input id="sshPassword" type="password" maxlength="1024" autocomplete="off"></div><div id="sshKeyBox" class="field hidden"><label for="sshPrivateKey">${t("Clave privada (solo memoria)")}</label><textarea id="sshPrivateKey" maxlength="32768" autocomplete="off" spellcheck="false"></textarea><label for="sshPassphrase">${t("Frase de clave (opcional)")}</label><input id="sshPassphrase" type="password" maxlength="1024" autocomplete="off"></div></div><label class="check"><input type="checkbox" id="sshAuthorization">${t("Autorizo esta conexión al destino configurado en mi servicio local")}</label><p>${t("Si falta IP de gestión explícita, introdúzcala manualmente. No use una IP WAN o gateway como administración sin verificarla.")}</p><div class="actions"><button class="primary" id="sshConnect" ${service?"":"disabled"} onclick="sshConnect()">${t("Conectar")}</button><button id="sshDisconnect" disabled onclick="sshDisconnect()">${t("Desconectar")}</button><button id="sshRealClear" disabled onclick="sshClearReal()">${t("Limpiar consola")}</button></div><p id="sshConnectionStatus" role="status">${t(sshLabels[sshStatusCode]||sshLabels.disconnected)}</p><div id="sshTerminal" class="ssh-terminal" aria-label="${t("Terminal SSH real")}"></div>`
+          : `<div class="notice warn">${t("SIMULACIÓN: no existe conexión SSH ni acceso a equipos. Respuestas derivadas del proyecto, no del sistema operativo del dispositivo.")}</div>${!confirmedPlan()?`<p class="notice warn">${t("Plan no confirmado: confirme VLAN/VLSM para consultar datos simulados.")}</p>`:""}<p>${t("Comandos soportados")}: ${esc(sshCommands(n).join(" · "))}</p><pre id="sshSimulation" class="ssh-terminal" role="log" aria-label="${t("Terminal simulada")}">${esc(sshHistory)}</pre><label for="sshCommand">${t("Comando simulado")}</label><div class="actions"><input id="sshCommand" class="mono" maxlength="500" onkeydown="if(event.key==='Enter'){event.preventDefault();sshRunSimulation()}"><button onclick="sshRunSimulation()">${t("Enviar comando")}</button><button id="sshSimClear" ${sshHistory?"":"disabled"} onclick="sshClearSimulation()">${t("Limpiar consola")}</button><button onclick="sshResetSimulation()">${t("Reiniciar simulación")}</button></div>`}</div>`;
+      }
+      /** Selección no sensible; n.ip solo se considera administración si pertenece a Gestión. */
+      function sshChooseDevice(id) { sshDevice=state.nodes.some(n=>n.id===id)?id:"";sshHistory="";render(); }
+      /** Lista cerrada por fabricante: no pretende emular un NOS completo. */
+      function sshCommands(n) {
+        return ["help",...(n?.vendor==="Cisco"?["show running-config","show ip interface brief","show vlan brief","show ip route"]:
+          n?.vendor==="Huawei"?["display current-configuration","display ip interface brief","display vlan","display ip routing-table"]:
+          n?.vendor==="Fortinet"?["show","show system interface","get router info routing-table all"]:
+          n?.vendor==="MikroTik"?["/export","/ip address print","/interface print","/ip route print"]:[])];
+      }
+      /** Resuelve una consulta de lectura: no interpreta programas ni envía red. */
+      function sshRunSimulation() {
+        const command=$("sshCommand").value.trim(), n=sshSelected();$("sshCommand").value="";
+        let output;
+        if (command==="help"||command==="?") output=sshCommands(n).join("\n");
+        else if (!n) output=t("Seleccione un dispositivo para simular.");
+        else if (!sshCommands(n).includes(command)) output=t("Comando no disponible en el simulador");
+        else if (!confirmedPlan()) output=t("Plan no confirmado: confirme VLAN/VLSM para consultar datos simulados.");
+        else if (["show running-config","display current-configuration","show","/export"].includes(command)) {
+          const item=state.configs[n.id+"-"+n.vendor];
+          output=item?.revision===state.revision?item.text:t("Genere primero la configuración de este equipo en su módulo.");
+        } else if (/vlan$|vlan brief$/.test(command)) output=state.plan.filter(r=>r.kind==="vlan"&&r.site===n.site).map(r=>`VLAN ${r.id} ${r.name} ${r.network}/${r.prefix}`).join("\n");
+        else if (/route|routing-table/.test(command)) output=t("Inventario del plan; no es una tabla de rutas aprendidas.")+"\n"+state.plan.map(r=>`${r.network}/${r.prefix} ${r.name}`).join("\n");
+        else output=connected(n).map(l=>{const e=endpoint(l,n,n.vendor);return `${e.iface||"—"} ${e.ip||n.ip||"—"} ${l.type}`;}).join("\n");
+        sshHistory=(sshHistory+"\n"+t("SIMULACIÓN")+" "+(n?.name||"WAN")+"> "+command+"\n"+output+"\n").slice(-40000);
+        $("sshSimulation").textContent=sshHistory;$("sshSimClear").disabled=false;$("sshSimulation").scrollTop=$("sshSimulation").scrollHeight;
+      }
+      /** Limpiar/reiniciar solo afectan al buffer educativo en memoria. */
+      function sshClearSimulation() { sshHistory="";if($("sshSimulation"))$("sshSimulation").textContent="";if($("sshSimClear"))$("sshSimClear").disabled=true; }
+      /** Reinicia la entrada/buffer educativo y confirma la acción; no cambia el proyecto. */
+      function sshResetSimulation() { sshClearSimulation();if($("sshCommand"))$("sshCommand").value="";toast(t("Simulación reiniciada.")); }
+      /** Cambia campos de credenciales y borra los que dejan de utilizarse. */
+      function sshAuthMethod() {
+        const key=$("sshMethod").value==="key";
+        $("sshKeyBox").classList.toggle("hidden",!key);$("sshPasswordBox").classList.toggle("hidden",key);
+        $("sshPassword").value="";$("sshPrivateKey").value="";$("sshPassphrase").value="";
+      }
+      /** Recursos locales opcionales: la simulación nunca los necesita. */
+      function sshLoadTerminal() {
+        if (window.Terminal&&window.FitAddon) return Promise.resolve();
+        if (sshLibrary) return sshLibrary;
+        const style=document.createElement("link");style.rel="stylesheet";style.href="ssh_service/static/xterm.css";document.head.append(style);
+        const load=src=>new Promise((resolve,reject)=>{const script=document.createElement("script");script.src=src;script.onload=resolve;script.onerror=()=>reject(Error(t("Recursos locales de terminal no disponibles.")));document.head.append(script);});
+        sshLibrary=load("ssh_service/static/xterm.js").then(()=>load("ssh_service/static/addon-fit.js")).catch(e=>{sshLibrary=null;throw e;});return sshLibrary;
+      }
+      /** Refleja solo estados recibidos o locales; connected exige autenticación del servidor. */
+      function sshSetStatus(code) {
+        sshStatusCode=code;
+        const busy=["connected","connecting"].includes(code);
+        for(const id of ["sshHost","sshPort","sshUser","sshMethod","sshPassword","sshPrivateKey","sshPassphrase","sshAuthorization","sshDevice"])if($(id))$(id).disabled=busy;
+        if($("sshConnectionStatus"))$("sshConnectionStatus").textContent=t(sshLabels[code]||sshLabels.network);
+        if($("sshConnect"))$("sshConnect").disabled=["connected","connecting"].includes(code);
+        if($("sshDisconnect"))$("sshDisconnect").disabled=!["connected","connecting"].includes(code);
+      }
+      /** Abre una sesión explícita. Nunca usa ni envía state/configs/CLI al servicio. */
+      async function sshConnect() {
+        let payload=null, generation=sshGeneration;
+        try {
+          if (!document.querySelector('meta[name="wan-ssh-service"]') || location.hostname!=="127.0.0.1" || location.protocol!=="http:") throw Error(t("Servicio SSH local no disponible."));
+          if (!$("sshAuthorization").checked) throw Error(t("Confirme que autoriza la conexión."));
+          if (sshSocket||sshConnecting) return;
+          const host=$("sshHost").value.trim(),user=$("sshUser").value.trim(),port=Number($("sshPort").value);
+          if(!host||!user||!Number.isInteger(port)||port<1||port>65535) throw Error(t("Indique host, puerto y usuario válidos."));
+          if(sshTerminal)sshDispose();
+          generation=sshGeneration;sshConnecting=true;sshSetStatus("connecting");
+          await sshLoadTerminal();
+          if(generation!==sshGeneration||!$("sshTerminal")||page!==13||sshMode!=="real")return;
+          sshTerminal=new Terminal({cursorBlink:true,scrollback:1000,convertEol:false,fontSize:14});
+          sshFit=new FitAddon.FitAddon();sshTerminal.loadAddon(sshFit);sshTerminal.open($("sshTerminal"));sshFit.fit();
+          const response=await fetch("/ssh/bootstrap",{headers:{"X-WAN-Client":"ssh-ui"},credentials:"same-origin",cache:"no-store"});
+          if(!response.ok)throw Error(t("Sesión local no autorizada"));
+          const auth=await response.json();
+          if(generation!==sshGeneration||!$("sshTerminal"))return;
+          payload={type:"connect",token:auth.token,host,port,user,method:$("sshMethod").value,
+            password:$("sshPassword").value,privateKey:$("sshPrivateKey").value,passphrase:$("sshPassphrase").value,
+            cols:Math.max(20,Math.min(300,sshTerminal.cols)),rows:Math.max(5,Math.min(120,sshTerminal.rows))};
+          // Las referencias a secretos se vacían inmediatamente; nunca se guardan en el modelo.
+          $("sshPassword").value="";$("sshPrivateKey").value="";$("sshPassphrase").value="";
+          sshSetStatus("connecting");
+          const socket=new WebSocket(`ws://${location.host}/ssh/ws`);sshSocket=socket;sshConnecting=false;
+          socket.onopen=()=>{if(sshSocket!==socket||!payload){socket.close();return;}socket.send(JSON.stringify(payload));payload=null;};
+          socket.onmessage=event=>{
+            if(sshSocket!==socket)return;
+            const message=JSON.parse(event.data);
+            if(message.type==="output"&&typeof message.data==="string"){sshTerminal?.write(Uint8Array.from(atob(message.data),c=>c.charCodeAt(0)),()=>{if(socket.readyState===WebSocket.OPEN)socket.send(JSON.stringify({type:"ack"}));});if($("sshRealClear"))$("sshRealClear").disabled=false;}
+            else if(message.type==="status")sshSetStatus(message.status);
+            else if(message.type==="error")sshSetStatus(Object.hasOwn(sshLabels,message.code)?message.code:"network");
+          };
+          socket.onerror=()=>{if(sshSocket===socket)sshSetStatus("network");};
+          socket.onclose=()=>{payload=null;if(sshSocket===socket){sshSocket=null;if(["connecting","connected"].includes(sshStatusCode))sshSetStatus("ended");}};
+          sshTerminal.onData(data=>{if(socket.readyState===WebSocket.OPEN&&sshStatusCode==="connected")socket.send(JSON.stringify({type:"input",data}));});
+          sshObserver=new ResizeObserver(()=>{
+            if(!sshTerminal||!$("sshTerminal"))return;sshFit.fit();
+            if(socket.readyState===WebSocket.OPEN&&sshStatusCode==="connected")socket.send(JSON.stringify({type:"resize",cols:Math.max(20,Math.min(300,sshTerminal.cols)),rows:Math.max(5,Math.min(120,sshTerminal.rows))}));
+          });sshObserver.observe($("sshTerminal"));sshTerminal.focus();
+        } catch(error) {payload=null;if(generation!==sshGeneration)return;sshDispose();sshSetStatus("network");toast(error.message,true);}
+      }
+      /** Cierre idempotente al salir de vista, cambiar idioma o desconectar. */
+      function sshDispose() {
+        sshGeneration++;sshConnecting=false;
+        const socket=sshSocket;sshSocket=null;
+        if(socket){socket.onclose=null;socket.onerror=null;socket.onmessage=null;socket.close();}
+        sshObserver?.disconnect();sshObserver=null;sshTerminal?.dispose();sshTerminal=null;sshFit=null;sshStatusCode="disconnected";
+        for(const id of ["sshPassword","sshPrivateKey","sshPassphrase"])if($(id))$(id).value="";
+      }
+      /** Desconecta por orden del usuario y muestra fin de sesión, incluso al cancelar conexión. */
+      function sshDisconnect() {sshDispose();sshSetStatus("ended");}
+      /** Borra solo la pantalla xterm; jamás envía clear ni otros comandos al dispositivo. */
+      function sshClearReal() {sshTerminal?.clear();if($("sshRealClear"))$("sshRealClear").disabled=true;}
+      window.addEventListener("pagehide",()=>sshDispose());
+
       render(); // Primer render: no genera topologías ni pruebas ficticias automáticamente.
     </script>
   </body>

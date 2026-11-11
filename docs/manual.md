@@ -1,5 +1,17 @@
 # Manual de usuario — WAN Architect, Corte 3
 
+## Ajuste vigente del PR #10: generación automática y menú
+
+- **VLAN/VLSM sigue requiriendo un plan válido y confirmado** antes de Topología, fabricantes o Comparación. Revertir borradores reconoce la aprobación anterior. Subnetting, Ciberdefensa, IPv6 y SSH manual conservan su acceso independiente y sus validaciones.
+- **Se retiró el formulario Confirmar interfaces físicas** y sus campos obligatorios. Tras generar la topología y seleccionar marcas compatibles, pulse Generar equipo o Generar todos: no se solicitan modelo, versión, URL ni confirmación adicional de puertos. Las interfaces se derivan automáticamente de los enlaces por fabricante. El editor normal de enlaces sigue disponible para ajustar sus nombres y valida entradas inseguras/duplicadas.
+- Los nombres son propuestas de laboratorio: **verifique puertos, modelo, versión y configuración existente antes de aplicar CLI a un equipo físico**. Es una advertencia visual, no un requisito de generación ni una certificación física.
+- **AP**: permanecen en inventario, topología, VLAN y enlaces, con IP, máscara y gateway de gestión en su editor. Ninguno de los cuatro adaptadores genera CLI genérica para AP; sus comandos específicos requieren modelo, firmware y modalidad de administración. El switch vecino conserva su puerto hacia el AP.
+- **Menú consecutivo**: 06 Configuración Cisco, 07 Configuración Huawei, 08 Configuración Fortinet, 09 Configuración MikroTik, 10 Comparación, 11 Ciberdefensa y uso de IA. Los demás módulos permanecen; IPv6 conserva 12 y SSH 13. Numeración desde 00, flechas y progreso usan ese mismo orden en Español/English.
+- **Comparación** produce ambas sintaxis automáticamente sin pedir perfiles ni cambiar el fabricante real. La selección de fabricantes mixtos por sede/función/dispositivo continúa disponible.
+- **Guardado y carga**: JSON v2/v3/v4 y localStorage conservan sus migraciones. Si un v4 anterior contiene perfiles de interfaces, se preservan como metadatos históricos, pero no dirigen la CLI nueva. Sus textos canónicos archivados pueden restaurarse sin perderlos; al regenerar se usan los puertos del enlace. No se asignan redes durante la carga.
+
+Detalle del contrato: [perfiles históricos y compatibilidad](documentacion-codigo.md#perfiles-físicos-opcionales-y-compatibilidad). Resultados y límites: [pruebas del ajuste](pruebas-interfaces.md).
+
 Versión documental de la interfaz bilingüe; base main `6ac46f9257143f88ec8cb7b47c020bb3739adbfa`, aplicación `WAN_v4.html`, esquema v4. Estudiante: Daisy Jurleny Rodriguez · Fundación Universitaria Compensar. Las configuraciones son propuestas para revisión manual; **no se ejecutan sobre equipos**. Usar exclusivamente datos ficticios o infraestructura de laboratorio autorizada.
 
 ## 1. Instalación y apertura
@@ -17,9 +29,9 @@ Abrir `http://127.0.0.1:8000/WAN_v4.html`. Cerrar con Ctrl+C. No publicar el ser
 ## 2. Proyecto, sedes e inventario
 
 1. En **Datos del proyecto**, introducir nombre, empresa ficticia, actividad, infraestructura, segmentación y número de sedes. Confirmar datos del proyecto y aplicar el número de sedes.
-2. Seleccionar cada sede, registrar pisos, usuarios, áreas, servicios y redundancia; confirmar su ficha. El bloque IPv4 de sede es opcional y debe estar alineado, ser privado, estar dentro del global y no solaparse con otras sedes/tránsito.
+2. Seleccionar cada sede, registrar pisos, usuarios, áreas, servicios y redundancia; confirmar su ficha. El bloque IPv4 de sede es opcional y debe estar alineado, ser privado, poder ser independiente del predeterminado y no solaparse con otras sedes/tránsito.
 3. Revisar **Estimación e infraestructura**. Las cantidades son estimaciones preliminares; no sustituyen estudios RF, inventarios físicos ni dimensionamiento profesional.
-4. Preparar las fichas antes de avanzar: `saveSite()` conserva su comportamiento histórico de invalidar VLAN, plan y datos derivados al confirmar. Guardar una copia antes de revisar sedes de un diseño avanzado.
+4. Confirmar fichas e inventario. Una confirmación idéntica conserva el diseño; un cambio real invalida dependencias locales y vecinos WAN afectados. El inventario confirmado muestra resumen y **Editar inventario**; restaurar estimación solicita confirmación.
 
 El ejemplo integrado es ficticio. Se puede usar para aprender el flujo sin introducir datos sensibles. No reutilizar su nombre de empresa, DNS o cantidades como si fueran requisitos de una organización real.
 
@@ -27,7 +39,7 @@ El ejemplo integrado es ficticio. Se puede usar para aprender el flujo sin intro
 
 Proponer VLAN y revisar sede, ID, nombre, servicio, hosts y DHCP de cada fila. Se permite repetir ID entre sedes, pero no dentro de una sede. Mantener una VLAN de Gestión por sede. Los hosts y el crecimiento afectan la capacidad calculada.
 
-En **VLAN y VLSM**, confirmar el bloque global privado, crecimiento y DNS. Vacío en **Subred IPv4 / CIDR (opcional)** mantiene asignación automática; una red manual, por ejemplo `10.20.20.0/24`, no es el gateway ni el pool DHCP. Debe estar alineada, tener capacidad y respetar el bloque de sede o el espacio global libre. LAN /31 y /32 se rechazan. El bloque de tránsito `project.transitBase` se conserva por JSON v4; no tiene control visual propio.
+En **VLAN y VLSM**, confirmar el bloque predeterminado privado, el bloque opcional de tránsito, crecimiento y DNS. Los bloques propios de sede pueden ser independientes del predeterminado; todos deben ser privados, alineados y no solapados. Vacío en **Subred IPv4 / CIDR (opcional)** mantiene asignación automática; una red manual, por ejemplo `10.20.20.0/24`, no es el gateway ni el pool DHCP. Debe estar alineada, tener capacidad y respetar el bloque de sede o el espacio global libre. LAN /31 y /32 se rechazan. El bloque de tránsito `project.transitBase` tiene control visible y persistencia v4. Una sede sin bloque utiliza el fallback libre excluyendo reservas de otras sedes y tránsito.
 
 Pulsar **Confirmar VLAN y calcular VLSM**. Primero se reservan manuales/bloques de sede/tránsito; las automáticas buscan huecos CIDR alineados. Si falta capacidad o hay solapamiento, no se sustituye el plan anterior ni se pierden las entradas visibles. No ampliar redes manuales silenciosamente.
 
@@ -47,6 +59,11 @@ Las VLAN utilizadas son las del estado confirmado; guardar antes sus cambios en 
 
 ## 5. Topología e interfaces
 
+Antes de generar, elegir **Fabricantes por sede y función** y confirmar. Router, core, acceso y distribución activa exigen elección; firewall Fortinet y router secundario son opcionales y requieren recalcular tránsitos. Genérico identifica terminales sin CLI; no se asigna Cisco automáticamente. Los dos cores redundantes deben compartir fabricante. Editores permiten asignación individual y exigen puertos de destino válidos.
+
+**Reorganizar diagrama** cambia solo coordenadas; zoom y desplazamiento permiten inspeccionar lienzos grandes. Iconos originales diferencian equipos, colores diferencian WAN/routed/trunk/access y hover/tablas muestran detalles completos. Regenerar conserva IDs automáticos y equipos manuales; los equipos antiguos sin autoKey se conservan sin inferir autoría. Nombres/elecciones individuales explícitas se mantienen.
+
+
 Tras confirmar IPv4, ir a **Topología → Generar desde el plan**. Revisar roles, sedes, enlaces y puertos. La WAN dibujada es un laboratorio enrutado: no constituye VPN, cifrado ni conexión real con un ISP. Arrastrar nodos solo modifica su posición; generar de nuevo reconstruye el diseño.
 
 Para editar/agregar equipos, usar hostname seguro, tipo y fabricante compatibles. Para cada enlace indicar extremos, tipo, red de tránsito /30 existente y puertos de cada fabricante. Los campos Cisco, Huawei, Fortinet y MikroTik son separados. No repetir un puerto en dos enlaces. Access, trunk y routed tienen validaciones distintas. Una imagen importada se usa como referencia manual; no reconoce automáticamente equipos ni enlaces.
@@ -57,7 +74,7 @@ Las opciones compartidas de OSPF, DHCP/relay y ruta por defecto pueden invalidar
 
 ### Cisco IOS/IOS XE y Huawei VRP
 
-La topología automática sirve para el flujo de routers/switches y cores. Elegir fabricante, equipo y opciones; generar un equipo o todos. Huawei ofrece equivalencias si no existen nodos Huawei: revisar interfaces y capacidades del modelo real. **Comparación** no convierte hardware ni certifica interoperabilidad. Las propuestas incluyen VLAN, SVI/Vlanif, IP, OSPF, DHCP o relay y funciones según rol/opciones. HSRP y VRRP no forman un mismo grupo interoperable; no mezclar cores de distinta marca para suponer redundancia común.
+La topología automática sirve para el flujo de routers/switches y cores. Elegir fabricante, equipo y opciones; generar un equipo o todos. Huawei muestra solo equipos realmente asignados a Huawei; las equivalencias IOS/VRP se solicitan exclusivamente en Comparación. **Comparación** no convierte hardware ni certifica interoperabilidad. Las propuestas incluyen VLAN, SVI/Vlanif, IP, OSPF, DHCP o relay y funciones según rol/opciones. HSRP y VRRP no forman un mismo grupo interoperable; no mezclar cores de distinta marca para suponer redundancia común.
 
 ### Fortinet FortiOS
 
@@ -84,13 +101,16 @@ No combinar el laboratorio automático con cores y el escenario perimetral que r
 
 ## 8. Pruebas, seguridad y evidencia
 
+Revisión integral actual: **50/50**, C01–C31 y N01–N19, en [reporte actual](../tests/reporte-revision-integral.html). Los reportes/capturas académicos anteriores siguen siendo históricos, sin sobrescribirlos. La navegación tiene 13 módulos: Fortinet 10, MikroTik 11, IPv6 12; se retiró exclusivamente la pantalla Evidencias Corte 2.
+
+
 Seguir [docs/pruebas.md](pruebas.md) para instalar Playwright/Chromium y ejecutar:
 
 ```bash
 python tests/test_corte3.py
 ```
 
-El runner abre/cierra HTTP local y contextos limpios, imprime C01–C31 y el porcentaje real. Detener la publicación si devuelve no cero. El 31/31 registrado es del conjunto ejecutado, no certificación de toda la app ni hardware. La captura 09 y el reporte versionado identifican la nueva ejecución de 31 casos por commit base y hashes.
+El runner abre/cierra HTTP local y contextos limpios, imprime C01–C31/N01–N19 y el porcentaje real. Detener la publicación si devuelve no cero. El 50/50 actual es del conjunto ejecutado, no certificación de toda la app ni hardware. La captura 09 y el reporte anterior conservan el resultado histórico de 31 casos, con su commit y hashes originales.
 
 Antes de compartir: usar datos ficticios, revisar nombres/IP/configuraciones, no introducir secretos y conservar `<CAMBIAR_EN_PRODUCCION>` como marcador externo. Consultar [seguridad](seguridad.md) y [políticas IA](politicas-ia.md). La [captura 08](capturas/08-ciberdefensa.png) muestra una IPv4 rechazada conservando el último resultado válido.
 
@@ -104,7 +124,10 @@ Usar Tab para enfocar y Enter para activar botones nativos; Espacio/Enter activa
 
 ## 10. Inventario y auditoría de controles
 
-Se inventariaron **58 plantillas `<button>` estáticas/dinámicas**, dos importadores con rol de botón y un selector de idioma: 61 controles de estas clases. No es un conteo fijo de instancias: cada fila VLAN, equipo, enlace o configuración puede crear botones. **0 eliminados**: todos tenían función real; se conservaron los que requieren datos. Se corrigió la disponibilidad de Vista automática y se añadieron validaciones explícitas a copia/descarga sin configuración. C28 activó 54 familias/objetivos con Enter; C29 cubre selección manual y ambos importadores, y C21–C25/C30–C31 el selector/idiomas.
+La revisión actual verifica **62 plantillas button** con handler, dos importadores y selector de idioma. Se mantienen acciones de edición de inventario, confirmación de fabricantes, zoom/reorganización, teclado, validación y bloqueos reales. Ver C27/C28 y N04/N09/N12/N13. El detalle anterior y su manifiesto se conservan como antecedente; las acciones exclusivas del módulo de evidencias ya no están en la interfaz.
+
+
+La auditoría histórica de main 1956d18 inventarió **58 plantillas `<button>` estáticas/dinámicas**, dos importadores con rol de botón y un selector de idioma: 61 controles de estas clases. No es un conteo fijo de instancias: cada fila VLAN, equipo, enlace o configuración puede crear botones. **0 eliminados**: todos tenían función real; se conservaron los que requieren datos. Se corrigió la disponibilidad de Vista automática y se añadieron validaciones explícitas a copia/descarga sin configuración. C28 activó 54 familias/objetivos con Enter; C29 cubre selección manual y ambos importadores, y C21–C25/C30–C31 el selector/idiomas.
 
 | Vista / controles | Acción observable o validación | Evidencia automatizada |
 | --- | --- | --- |
@@ -113,7 +136,7 @@ Se inventariaron **58 plantillas `<button>` estáticas/dinámicas**, dos importa
 | Importar / Exportar JSON | Selector de archivo accesible, validación atómica y descarga JSON | C03–C05/C17/C19/C28/C29 |
 | Idioma / Language | Cambia la interfaz y persiste solo la preferencia | C21–C26/C30/C31 |
 | Confirmar proyecto / Aplicar sedes / Cargar ejemplo | Guarda datos, ajusta sedes con confirmación o carga laboratorio ficticio | C28 |
-| Confirmar sede / Eliminar sede | Guarda ficha o pide confirmación; invalidación histórica vigente | C28; límite explicado en §2 |
+| Confirmar sede / Eliminar sede | Guarda solo cambios reales y conserva dependencias no afectadas | C28; límite explicado en §2 |
 | Confirmar inventario / Restaurar estimación | Guarda cantidades o restaura cálculo con confirmación | C28 |
 | Proponer segmentación / Volver a proponer / Agregar VLAN | Crea propuesta revisable, solicita confirmación o añade fila | C06/C07/C28 |
 | Confirmar VLAN/VLSM / Eliminar fila | Calcula o valida antes de sustituir; elimina solo seleccionada y conserva otras ediciones | C06–C08/C28 |
@@ -131,7 +154,7 @@ Se inventariaron **58 plantillas `<button>` estáticas/dinámicas**, dos importa
 
 La prueba de impresión comprueba la llamada al navegador mediante un sustituto de la API; no afirma haber impreso una hoja física. Las opciones checkbox/select editan valores; no son botones decorativos. El inventario no certifica todas las combinaciones de datos posibles.
 
-## 11. Evidencias 01–10 y laboratorios
+## 11. Evidencias históricas 01–10 y laboratorios
 
 | Archivo | Lectura correcta |
 | --- | --- |
@@ -150,9 +173,9 @@ La prueba de impresión comprueba la llamada al navegador mediante un sustituto 
 
 05 se obtuvo de `https://github.com/Daisy-redeswan/redes-wan-Rodriguez/commits/main/`, respuesta 200; TLS verificado mediante el proxy de confianza del entorno. Chromium renderizó los bytes auténticos recibidos. Recursos externos de estilos/avatares bloqueados: la imagen conserva el render nativo legible y no reconstruye mensajes ni DOM. Las capturas de la app usan HTTP local y contextos limpios; el informe identifica fuentes y resultados.
 
-Pendientes: modelos/firmware y validación física, aclaración de configuraciones IPv6, pools DHCP/reservas editables e invalidación histórica de sedes. La revisión responsive 1440/390 px no certifica todos los anchos o dispositivos. No se aplicaron configuraciones a infraestructura real.
+Pendientes: modelos/firmware y validación física, aclaración de configuraciones IPv6, pools DHCP/reservas editables y cobertura completa de combinaciones masivas. La revisión responsive 1440/390 px no certifica todos los anchos o dispositivos. No se aplicaron configuraciones a infraestructura real.
 
-## Anexo: las 58 plantillas de botón inventariadas
+## Anexo histórico: 58 plantillas de la base main 1956d18
 
 Cada fila identifica una plantilla del HTML/JavaScript. «…» representa datos o parámetros dinámicos; no otra acción sin implementar. Los importadores JSON/imagen y el selector de idioma se contabilizan por separado y se prueban en C29/C21–C25.
 
