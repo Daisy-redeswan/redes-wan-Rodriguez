@@ -1,19 +1,19 @@
 # Matriz de fabricantes de WAN Architect
 
-## Actualización del PR #10: interfaces declaradas y AP
+## Actualización del PR #10: generación automática y AP
 
-La tabla histórica inferior describe funciones de los adaptadores; sus puertos `ac/bc/ah/bh/af/bf/am/bm` se consideran **propuestas heredadas**, no inventario físico comprobado. La nueva generación exige `nodes[].interfaceProfiles[fabricante]` con modelo/versión, fuente oficial, confirmación y correspondencia puerto–enlace–función. `endpoint()` resuelve los nombres declarados y cada adaptador los consume exactamente; no se certifica su existencia mediante una expresión regular.
+La generación vuelve a usar automáticamente los puertos de enlaces `ac/bc/ah/bh/af/bf/am/bm`, seleccionados por fabricante a través de `endpoint()`. **No exige perfil, modelo, versión, URL ni confirmación física adicional.** La revisión de nombres/modelo/versión antes de aplicar configuraciones se mantiene como advertencia visual; no certifica inventario físico. Los perfiles v4 previos se preservan como metadatos y para restaurar CLI archivadas canónicas, sin dirigir la generación nueva.
 
 Cisco/Huawei siguen limitados a roles de routing/switching soportados; Fortinet a Firewall y MikroTik a Router. Los cuatro excluyen explícitamente Access Points. Se mantienen nodos AP, IP de gestión, máscara, gateway, VLAN y enlaces; sus comandos específicos quedan pendientes de modelo, firmware y modalidad de administración. La CLI del switch vecino conserva su enlace hacia el AP.
 
-**Fuentes oficiales para nomenclatura e inventario** (consulta de esta tarea, 11 de noviembre de 2026):
+**Fuentes oficiales conservadas de la revisión anterior de nomenclatura** (11 de noviembre de 2026):
 
 - [Cisco IOS XE: interfaces físicas/virtuales y tipo/número](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/interface/configuration/xe-16-10/ir-xe-16-10-book.pdf). La guía ejemplifica familias/números; no certifica todos los modelos IOS/IOS XE.
 - [Huawei: interfaces, VLAN y comprobación del gateway](https://info.support.huawei.com/network/ptmngsys/Web/tsrev_ar/en/content/ar/29_edesk_user_cannot_ping_gateway/edesk_user_cannot_ping_gateway_edesk001.html) y [comprobación de interfaces 10GE](https://info.support.huawei.com/network/ptmngsys/Web/tsrev_ce/en/content/ce/07_edesk_dc_fiber_interface_down/edesk_dc_fiber_interface_down_edesk005.html). Cada ejemplo debe contrastarse con la documentación real del equipo.
 - [Fortinet FortiOS 7.4.8: interfaces físicas](https://docs.fortinet.com/document/fortigate/7.4.8/administration-guide/620045/physical-interface). El índice oficial consultado confirma que los puertos dependen del modelo; abrir el artículo completo devolvió HTTP 403 en este entorno. No se afirma inspección completa del artículo ni validación de un FortiGate físico.
 - [MikroTik: interfaz, nombre y default-name](https://manual.mikrotik.com/docs/cli-reference/interface/). Se distingue nombre configurado de nombre de fábrica; no se presupone que todos los equipos tengan `ether1` o idéntico inventario.
 
-El editor reconoce familias léxicas implementadas (Cisco/Huawei) y los nombres seguros que ya admiten FortiOS/RouterOS. Fortinet conserva el límite de 15 caracteres, sin nombres con `/`; RouterOS conserva 31 caracteres y reserva `wan-` para objetos generados. Una nomenclatura fuera de ese soporte se bloquea, incluso si existe en otro modelo real. Comparación exige dos declaraciones independientes. Validación textual, regresión exacta y límites: [pruebas adicionales](pruebas-interfaces.md).
+Los editores de enlaces y generadores conservan sus validadores originales y rechazan nombres inseguros, duplicados y roles incompatibles. Las familias léxicas adicionales de perfiles solo se leen por compatibilidad con archivos anteriores; ya no hay editor ni confirmación de esos perfiles. Comparación IOS/VRP vuelve a generar las dos propuestas sin declaraciones adicionales. Las cuatro marcas son consecutivas en el menú: Cisco, Huawei, Fortinet y MikroTik; después Comparación y Ciberdefensa. Validación textual, regresión exacta y límites: [pruebas adicionales](pruebas-interfaces.md).
 
 ## Alcance y fuentes
 

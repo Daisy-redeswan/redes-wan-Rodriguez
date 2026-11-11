@@ -1,68 +1,56 @@
-# Pruebas adicionales del PR #10: navegación, AP e interfaces
+# Pruebas del PR #10: interfaces automáticas, AP y menú
 
-## Fuentes, versión y resultado real
+## Resultado, entorno y procedencia
 
-- Rama: `fix/revision-integral-wan-architect`; base de trabajo `ce1873ccf41691474dead928c7b55c561ce7ad58`; main `1956d1872363c88399f5e8240abb1d7a13bca340`.
-- Ejecución UI: **2026-11-11T12:25:40-05:00**, Python 3.12.14, Playwright 1.62.0, Chromium 154.0.8037.57, Linux; HTTP loopback y contexto limpio por caso. Aproximadamente 85 s.
-- **72/72 UI superadas**: C01–C31, N01–N19, P01–P08 y Q01–Q14. **26/26 SSH local superadas**, aproximadamente 11 s, con el servicio y runner SSH sin cambios, AsyncSSH 2.24.1/aiohttp 3.14.5. Incluye el navegador con el HTML actual.
-- **98 superadas / 98 ejecutadas × 100 = 100%**. Fallidas: 0; bloqueadas/no ejecutadas dentro de ambas matrices: 0. No equivale a cobertura total ni porcentaje de compatibilidad física.
-- SHA-256 del HTML probado: `b89a27a766f86fd3928ed444641957544dee5cc7f9e7b2653c07e5f94ddf2fab`.
-- SHA-256 del runner UI probado: `10037ed0b0d2fa9c1554f40ba31e15e84f67f8b3c9f78e903778e03443f7649c`.
-- [Reporte real de 72 casos](../tests/reporte-interfaces.html), con esperado/obtenido/estado/tiempo y hashes. El campo Commit identifica el HEAD antes de los commits de esta tarea; los hashes identifican exactamente los archivos modificados ejecutados. El reporte no atribuye los cambios al blob base.
+- Rama `fix/revision-integral-wan-architect`; base `9675ce7f1c553e1225609772cbb6a500822fa2f0`; main intacto `1956d1872363c88399f5e8240abb1d7a13bca340`.
+- Ejecución **2026-11-11T13:02:18-05:00**, Linux, Python 3.12.14, Playwright 1.62.0 y Chromium 154.0.8037.57, HTTP loopback y contexto limpio por caso.
+- **73/73 aplicación**, aproximadamente 80 s: C01–C31, N01–N19, P01–P08 y Q01–Q15. **26/26 SSH local**, 10.754 s, AsyncSSH 2.24.1/aiohttp 3.14.5, con servicio y runner SSH sin cambios.
+- **99 superadas / 99 ejecutadas × 100 = 100%**. Fallidas, bloqueadas y no ejecutadas dentro de ambas matrices: 0. No es porcentaje de certificación ni cobertura absoluta.
+- HTML SHA-256: `a5b13cfbeae69b8588ce18a7735925aa919b2a5d1dfc5c199941416fff04bbaf`.
+- Runner UI SHA-256: `a70494d3575af149b058465b2c17c2fba259146aab73b3f79a8112de8c716301`.
+- [Reporte real de 73 casos](../tests/reporte-interfaces.html), con esperado/obtenido/estado y tiempo. El Commit del reporte es el HEAD anterior a los commits de este ajuste; sus hashes identifican el código y suite ejecutados, no el blob base sin modificar.
+- La repetición SSH de esta tarea imprimió `Ran 26 tests`, `OK` y `26/26 = 100.00%`. [Matriz SSH y procedimiento](pruebas-ssh.md); el reporte enlazado allí sigue siendo histórico y no se atribuye a esta nueva ejecución.
 
-El servicio SSH conserva sus [26 casos documentados](pruebas-ssh.md) y [reporte histórico](../tests/reporte-ssh-servicio.json); su repetición de esta tarea terminó con `Ran 26 tests`, `OK`, `26/26 = 100.00%`, en 10.587 s. No se suman las ejecuciones históricas. No se ejecutó ninguna configuración ni se conectaron equipos reales de fabricante.
-
-## Reproducción
+## Reproducir
 
 ```bash
 python tests/test_corte3.py
-```
-
-Opcional para conservar evidencia nueva:
-
-```bash
 python tests/test_corte3.py --report tests/reporte-interfaces.html
 ```
 
-Para el servicio SSH, activar el entorno virtual y las dependencias separadas según el [manual SSH](manual-ssh.md); después:
+Para SSH, en el entorno opcional descrito en el [manual SSH](manual-ssh.md):
 
 ```bash
 python tests/test_ssh_service.py
 ```
 
-Ambos runners devuelven código distinto de cero ante fallos. La suite UI inicia/cierra HTTP y usa contexto nuevo por caso. Los perfiles de pruebas se declaran explícitamente como **LAB-FICTICIO / LAB-no-fisica** o **LABORATORIO-DECLARADO**, con puertos deterministas y fuentes oficiales; no son inventarios físicos certificados. No se añadieron dependencias.
+No se añadieron dependencias. Ambos runners finalizan sus servidores/contextos y devuelven código no cero si falla un caso. Los comandos de fabricantes se inspeccionan como texto; no se ejecutan.
 
-## Casos nuevos: esperado y evidencia obtenida
+## Casos afectados y evidencia observable
 
-Todos los casos siguientes están **superados** en el reporte; cada uno corre en un contexto limpio.
+Todos están **superados** en el reporte actual:
 
-| Caso | Esperado | Obtenido observable |
+| Casos | Esperado | Obtenido |
 | --- | --- | --- |
-| Q01 | Bloquear módulos dependientes por todas las rutas | Seis destinos bloqueados por menú y `go`; Siguiente y `render` protegidos; cuatro módulos independientes accesibles; estado intacto |
-| Q02 | Reconocer aprobación válida y bloquear borradores | Bandera antigua no bloquea; cambio pendiente conserva el mismo DOM; salto directo tampoco lo reconstruye; revertir/cargar reconoce la aprobación |
-| Q03 | Conservar AP sin CLI genérica | Seis AP con VLAN/IP/máscara/gateway/enlaces; ninguna lista/adaptador ni llamada directa genera CLI; JSON conserva datos |
-| Q04 | No certificar propuestas antiguas | Botón y llamada directa bloqueados sin perfil; v2 carga cuatro textos archivados sin inventar perfiles |
-| Q05 | Cisco usa interfaces declaradas | Tres nombres TenGigabitEthernet introducidos por formulario coinciden exactamente con CLI y `endpoint` |
-| Q06 | Huawei usa interfaces declaradas | Tres nombres XGigabitEthernet coinciden con CLI y `endpoint` |
-| Q07 | Fortinet usa interfaces declaradas | Dos nombres físicos declarados `lanLab...` coinciden con CLI y enlaces |
-| Q08 | MikroTik usa interfaces declaradas | Dos nombres físicos declarados `sfp-sfpplus...` coinciden con CLI y enlaces |
-| Q09 | Rechazar errores físicos atómicamente | Duplicado, inyección, modelo vacío, función incoherente y dominio engañoso rechazados; DOM/estado/CLI/localStorage intactos |
-| Q10 | Persistir perfiles y validar importación | JSON/localStorage exactos, salvo materialización previa de `subnetOK=false`; siete perfiles malformados rechazados; v2/v3 sin llamadas al asignador ni certificación implícita |
-| Q11 | Reconfirmar cambios de enlaces | Editar/eliminar retira confirmación afectada, conserva perfiles editables y elimina referencias huérfanas; JSON válido |
-| Q12 | Comparar con perfiles separados | Sin perfil Huawei no genera ambas salidas; al declararlo produce IOS/VRP sin cambiar marca real ni mezclar interfaces |
-| Q13 | Editor bilingüe, teclado y responsive | 1440/390 px sin desbordamiento nuevo; guardar inválido/cancelar con Enter; modelo/versión/controles EN, estado intacto; capturas temporales inspeccionadas |
-| Q14 | Rechazar aprobación incoherente | Red ausente, hosts desactualizados, números de red incoherentes y pool incompatible bloquean Topología sin mutar datos |
+| Q01/Q02/Q14 | Mantener aprobación efectiva y navegación protegida | Borradores/planes incoherentes bloquean Topología/fabricantes/Comparación; revertir reconoce aprobación; calculadora, seguridad, IPv6 y SSH manual siguen accesibles |
+| Q03 | Conservar AP sin CLI genérica | Seis AP mantienen VLAN, IP, máscara, gateway, enlaces y JSON; listas y llamadas directas de cuatro adaptadores los excluyen |
+| Q04 | No exigir confirmación física | Generación Cisco por botón y API sin perfil; modal/funciones del formulario ausentes; archivo v2 con cuatro textos conservado |
+| Q05–Q08 | Cuatro generadores automáticos | Cisco/Huawei usan tres puertos y Fortinet/MikroTik dos en sus laboratorios; nombres coinciden exactamente con los enlaces; sin perfiles ni requisitos nuevos |
+| Q09 | Mantener seguridad de nombres | Cuatro entradas maliciosas en puertos Cisco/Huawei/Fortinet/MikroTik rechazadas atómicamente por el editor de enlaces |
+| Q10 | JSON y persistencia compatibles | v4 previo con perfiles y CLI histórica conservado; regeneración automática e ida/vuelta exacta; localStorage exacto; v2/v3 sin nuevas asignaciones |
+| Q11 | Editar/eliminar enlaces sin reconfirmación física | Nuevo puerto usado directamente; eliminación mantiene JSON coherente y permite regenerar; sin modal adicional |
+| Q12 | Comparación sin perfiles | IOS/VRP automáticos con sintaxis y nombres separados; marca real intacta |
+| Q13 | Avisos visuales ES/EN y responsive | Dieciséis combinaciones de cuatro vistas/idiomas/anchos 1440 y 390; sin formulario ni desbordamiento nuevo; advertencia y Cancelar por teclado |
+| Q15 | Nuevo orden de módulos | Cisco/Huawei/Fortinet/MikroTik/Comparación/Ciberdefensa en ES/EN; Enter, flechas, numeración y catorce indicadores correctos; sin cambiar estado |
 
-## Conservación de las 84 pruebas anteriores
+## Regresiones y cambios deliberados de pruebas
 
-No se eliminó ni se omitió ningún caso C/N/P o SSH. Los laboratorios de generación ahora declaran perfiles ficticios antes de pedir CLI. C26 conserva **los mismos ocho hashes de referencia** (cuatro fabricantes × ES/EN), sin modificar fixtures ni actualizar referencias para ocultar regresiones. C03–C05 conservan planes/topología/CLI de importaciones antiguas sin reasignación. Direccionamiento IPv4 independiente/mixto, IPv6, idioma, descargas, portapapeles, topología y SSH siguen en regresión.
+Se conservan todos los identificadores C/N/P y los 26 casos SSH. Los ocho hashes CLI históricos (cuatro fabricantes × ES/EN) siguen idénticos, sin modificar referencias para ocultar regresiones. Migraciones, localStorage, IPv4 independiente/mixto, IPv6, topología mixta, controles, descargas, portapapeles, idioma, seguridad y SSH pasan.
 
-C27, N07, P03 y P08 esperan ahora rechazo **al navegar**, además de las defensas al generar: no esperan poder abrir una vista dependiente inválida. N15 compara todos los atributos de equipos/redes no afectados y sus CLI; el vecino WAN afectado debe retirar confirmación física si perdió un enlace, mientras otros perfiles siguen idénticos. Se conserva la normalización histórica que materializa `subnetOK=false` al importar un proyecto sin esa propiedad; no se cambió producción para ocultarla.
+Se elimina el helper que añadía perfiles antes de generar: los laboratorios normales prueban ahora el flujo automático sin preparar confirmaciones. Un helper de metadatos archivados se usa solo en Q10 para reproducir un v4 anterior válido; no habilita la CLI normal. Q04–Q13 reemplazan expectativas del formulario eliminado por los requisitos vigentes; no se omiten como casos fallidos. Q15 es nuevo. Los índices de Comparación, Ciberdefensa, Fortinet y MikroTik se actualizan también en las pruebas antiguas, sin alterar direcciones, algoritmos ni valores de referencia. La materialización histórica de `subnetOK=false` al importar sigue contemplada, sin modificar producción.
 
-## Inspección y límites
+## Límites
 
-`node --check`, compilación JavaScript en Chromium y consola/página en los 72 casos, sintaxis Python, revisión HTML, `git diff --check`, enlaces locales y patrones de secretos/temporales se revisaron. Se inspeccionaron capturas reales temporales del editor a 1440/390; no se sustituyeron evidencias académicas. El código nuevo contiene comentarios en español; fuentes oficiales y límites por marca en la [matriz](matriz-fabricantes.md).
+Las propuestas usan los puertos del enlace de cada marca y muestran advertencias de revisar hardware antes de aplicarlas. No se certifican modelo, firmware, puerto físico, conectividad WAN/RF ni AP específico; no se realizaron pruebas físicas ni en Windows. Las fuentes oficiales previas siguen en la [matriz](matriz-fabricantes.md); no se amplió soporte ni se inventaron comandos. Los perfiles antiguos se validan por seguridad como datos archivados y no dirigen la generación nueva.
 
-**No ejecutado físicamente:** modelos, firmware, inventario de puertos, conectividad WAN/RF, Windows y configuración de AP específicos. Las restricciones léxicas evitan comandos inseguros, pero no demuestran que exista un puerto. La URL debe ser oficial; la app no inspecciona su contenido ni consulta hardware. Fortinet devolvió HTTP 403 al abrir el artículo completo: se consultó su índice oficial, sin atribuirle una lectura completa. Nomenclaturas fuera del adaptador se rechazan en lugar de inventarlas.
-
-La comprobación exploratoria histórica `file://` permanece bloqueada por política del navegador administrado; no se repitió ni se contabilizó como éxito. El uso autónomo por HTTP estático/simulación conserva sus pruebas. La consola SSH opcional solo se conectó al servidor de laboratorio loopback, sin ejecutar CLI de fabricantes. IPv6 sigue siendo planificación separada; no se ampliaron sus generadores.
+La comprobación histórica `file://` permanece bloqueada por política del Chromium administrado y no se contabiliza como éxito. El frontend/simulación por HTTP estático sigue probado. SSH real se prueba exclusivamente en loopback con credenciales efímeras, sin aplicar CLI. Los PDF/capturas académicos, AGENTS.md, backend y fixtures quedan intactos.

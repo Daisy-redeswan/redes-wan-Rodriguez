@@ -1,11 +1,10 @@
 # Estado de WAN Architect
 
-## Ajustes adicionales del PR #10: navegación, AP e interfaces
+## Ajuste vigente del PR #10: interfaces automáticas y orden del menú
 
-Revisión sobre `ce1873ccf41691474dead928c7b55c561ce7ad58`; main permanece en `1956d1872363c88399f5e8240abb1d7a13bca340`. Ejecución 2026-11-11T12:25:40-05:00: **72/72 aplicación + 26/26 SSH local = 98/98 (100%)**, 0 fallidas/bloqueadas/no ejecutadas en las matrices. Se conservan las 84 pruebas anteriores y se añaden Q01–Q14; las cantidades históricas inferiores no se suman nuevamente. [Detalle reproducible y límites](pruebas-interfaces.md), [reporte real de aplicación](../tests/reporte-interfaces.html).
+Base de trabajo `9675ce7f1c553e1225609772cbb6a500822fa2f0`; main conservado en `1956d1872363c88399f5e8240abb1d7a13bca340`. Ejecución 2026-11-11T13:02:18-05:00: **73/73 aplicación + 26/26 SSH local = 99/99 (100%)**, 0 fallidas/bloqueadas/no ejecutadas dentro de las matrices. Se mantienen los 58 casos C/N/P y los 26 SSH; Q04–Q13 cambian sus expectativas porque se retiró expresamente el formulario físico, y Q15 verifica el nuevo menú. No se alteraron fixtures ni hashes CLI de referencia. [Resultados y límites](pruebas-interfaces.md), [reporte real](../tests/reporte-interfaces.html).
 
-La navegación dependiente exige plan válido/confirmado desde menú, botones y código; la aprobación se reconoce comparando datos/borradores, no una bandera antigua. Los AP mantienen inventario, topología y administración, pero no reciben CLI genérica. Cada dispositivo requiere perfiles físicos declarados por fabricante, con modelo/versión, fuente oficial, funciones y relación puerto–enlace; duplicados y referencias inconsistentes se rechazan. Proyectos antiguos siguen cargando sin inventar puertos ni asignar redes. CLI y perfiles son propuestas/declaraciones, **sin certificación física**.
-
+Se elimina la confirmación manual de interfaces: los cuatro adaptadores vuelven a tomar puertos automáticamente de los enlaces, sin pedir modelo/versión/URL/perfil. El aviso de revisar hardware es visual. AP conserva inventario, topología y administración, excluido de CLI genérica. El menú agrupa Cisco → Huawei → Fortinet → MikroTik → Comparación → Ciberdefensa; permanecen las demás vistas, ES/EN, flechas y progreso. La confirmación del plan VLAN/VLSM, fabricantes mixtos, IPv4/IPv6, JSON v2/v3/v4 y SSH se conservan. Los perfiles v4 antiguos permanecen como metadatos/CLI archivada, sin controlar propuestas nuevas ni exigir confirmaciones.
 
 ## Registro anterior: confirmaciones y consola SSH (84 casos)
 
