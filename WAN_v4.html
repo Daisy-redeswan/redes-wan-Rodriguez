@@ -573,6 +573,12 @@
       /* La ficha confirmada usa deshabilitación nativa accesible sin perder sus valores. */
       #siteFields { border: 0; padding: 0; margin: 14px 0; min-width: 0; }
       #siteFields:disabled { opacity: .85; }
+      /* Consolas acotadas: texto seguro, contraste y desplazamiento propio. */
+      .ssh-terminal { background:#101c2d; color:#d4e5ec; min-height:280px; height:360px; max-width:100%; overflow:auto; padding:12px; white-space:pre-wrap; overflow-wrap:anywhere; }
+      #sshTerminal { padding:8px; white-space:normal; }
+      #sshKeyBox textarea { min-height:120px; font-family:monospace; }
+      /* La pestaña activa se identifica por estado accesible, no por texto fijo. */
+      [role="tab"][aria-selected="true"] { background:#008579; color:white; border-color:#008579; }
     </style>
   </head>
   <body>
@@ -1378,7 +1384,7 @@
       function setLanguage(language) {
         if (!["es", "en"].includes(language) || language === uiLanguage) return;
         const controls = [...document.querySelectorAll("input[id],select[id],textarea[id]")]
-          .filter(el => el.id !== "languageSelect" && el.type !== "file")
+          .filter(el => el.id !== "languageSelect" && el.type !== "file" && el.type !== "password" && el.id !== "sshPrivateKey")
           .map(el => ({id:el.id, value:el.value, checked:el.checked, start:el.selectionStart, end:el.selectionEnd}));
         const focused = document.activeElement?.id, scroll = [scrollX, scrollY];
         const previous = uiLanguage;
@@ -1454,6 +1460,9 @@
         "Bloque privado propio; puede ser independiente del predeterminado. No debe solaparse con otra sede ni con tránsito.": "Independent private site block; it must not overlap another site or transit."
       });
       Object.assign(I18N.en, {"Sede confirmada": "Site confirmed", "Sede pendiente o en edición": "Site pending or being edited", "Editar sede": "Edit site", "Sede confirmada.": "Site confirmed.", "Asignación automática pendiente": "Automatic allocation pending", "Continuar a Topología": "Continue to Topology", "Mínimo por capacidad del conjunto: /{0}.": "Minimum aggregate capacity: /{0}.", "{0}: bloque {1}/{2}; hosts {3}, crecimiento {4}%, reserva {5}, requiere {6} IP útiles y /{7} ({8} direcciones). No existe hueco contiguo suficiente. {9}": "{0}: block {1}/{2}; hosts {3}, growth {4}%, reserve {5}, requires {6} usable IPs and /{7} ({8} addresses). No contiguous space is large enough. {9}"});
+      Object.assign(I18N.en, {"Consola SSH": "SSH console", "Simulación": "Simulation", "Conexión real": "Real connection", "Modalidad SSH": "SSH mode", "Dispositivo de la topología": "Topology device", "Conexión manual / seleccione equipo": "Manual connection / select device", "Simulación educativa y conexión real son independientes. Nunca se aplican configuraciones automáticamente.": "Educational simulation and real connections are independent. Configurations are never applied automatically.", "La conexión manual no requiere VLSM. Use únicamente equipos autorizados. Cambiar idioma, pestaña o módulo cierra la sesión; no se guarda el historial real.": "Manual connection does not require VLSM. Use authorized devices only. Changing language, tab or module closes the session; real history is not saved.", "Servicio local disponible": "Local service available", "Servicio no disponible: inicie Python y abra http://127.0.0.1:8765 (o el puerto configurado).": "Service unavailable: start Python and open http://127.0.0.1:8765 (or the configured port).", "IP o hostname autorizado": "Authorized IP or hostname", "Puerto SSH": "SSH port", "Usuario SSH": "SSH username", "Autenticación": "Authentication", "Contraseña": "Password", "Clave privada": "Private key", "Clave privada (solo memoria)": "Private key (memory only)", "Frase de clave (opcional)": "Key passphrase (optional)", "Autorizo esta conexión al destino configurado en mi servicio local": "I authorize this connection to the target configured in my local service", "Si falta IP de gestión explícita, introdúzcala manualmente. No use una IP WAN o gateway como administración sin verificarla.": "Enter a missing explicit management IP manually. Do not assume a WAN or gateway IP is an administration address.", "Conectar": "Connect", "Desconectar": "Disconnect", "Limpiar consola": "Clear console", "Terminal SSH real": "Real SSH terminal", "SIMULACIÓN: no existe conexión SSH ni acceso a equipos. Respuestas derivadas del proyecto, no del sistema operativo del dispositivo.": "SIMULATION: no SSH connection or device access. Responses come from the project, not a device operating system.", "Plan no confirmado: confirme VLAN/VLSM para consultar datos simulados.": "Unconfirmed plan: confirm VLAN/VLSM to query simulated data.", "Comandos soportados": "Supported commands", "Terminal simulada": "Simulated terminal", "Comando simulado": "Simulated command", "Enviar comando": "Send command", "Reiniciar simulación": "Reset simulation", "Seleccione un dispositivo para simular.": "Select a device to simulate.", "Comando no disponible en el simulador": "Command unavailable in the simulator", "Genere primero la configuración de este equipo en su módulo.": "Generate this device configuration in its module first.", "Inventario del plan; no es una tabla de rutas aprendidas.": "Plan inventory; this is not a learned routing table.", "SIMULACIÓN": "SIMULATION", "Simulación reiniciada.": "Simulation reset.", "Recursos locales de terminal no disponibles.": "Local terminal resources unavailable.", "Servicio SSH local no disponible.": "Local SSH service unavailable.", "Confirme que autoriza la conexión.": "Confirm authorization for this connection.", "Indique host, puerto y usuario válidos.": "Enter a valid host, port and username.", "Desconectado": "Disconnected", "Conectando": "Connecting", "Conectado": "Connected", "Sesión finalizada": "Session ended", "Error de autenticación": "Authentication error", "Error de red": "Network error", "Clave de host desconocida o modificada: verifique la huella con el servicio local.": "Unknown or changed host key: verify its fingerprint with the local service.", "Sesión local no autorizada": "Unauthorized local session", "Destino no autorizado por el servicio local": "Target not authorized by the local service", "Solicitud SSH no válida": "Invalid SSH request"});
+      Object.assign(I18N.en, {"Manual de consola SSH":"SSH console manual"});
+      Object.assign(I18N.en, {"El equipo no permite shell/PTY interactivo.":"The device does not allow an interactive shell/PTY."});
       // Nuevas etiquetas del flujo; CLI y datos nunca se traducen.
       /* =================== Estado, validadores y aritmética IPv4 =================== */
       const $ = (id) => document.getElementById(id); // Acceso centralizado a elementos por ID.
@@ -1483,6 +1492,7 @@
         "Configuración Fortinet",
         "Configuración MikroTik",
         "Planificación IPv6",
+        "Consola SSH",
       ]; // Etapas visibles del flujo.
       const kinds = [
         "Router",
@@ -1742,7 +1752,7 @@
       }
       // Borradores de presentación: nunca se serializan como datos confirmados.
       const inventoryEditing = new Set(), formDrafts = new Map(), siteEditing = new Set(), siteSnapshots = new Map(), sitePending = new Set();
-      let vlanEditing = false;
+      let vlanEditing = false, lastVlanFocus="base";
       /**
        * Entradas: Página y controles visibles de sede, inventario o VLAN.
        * Proceso / salida: Copia valores/checks en memoria de presentación; no guarda datos sin confirmar en JSON.
@@ -1860,6 +1870,8 @@
        * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
        */
       function render() {
+        // Una vista reconstruida no conserva una sesión real oculta/huérfana.
+        sshDispose();
         document.documentElement.lang = uiLanguage;
         document.title = t("WAN Architect · Diseño empresarial");
         document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent=t(el.dataset.i18n); });
@@ -1891,6 +1903,7 @@
           fortinetView,
           mikrotikView,
           ipv6View,
+          sshConsoleView,
         ][page]();
         $("stepfoot").innerHTML =
           `<button ${page === 0 ? "disabled" : ""} onclick="go(${page - 1})">${t("← Anterior")}</button><button class="primary" ${page === steps.length - 1 ? "disabled" : ""} onclick="go(${page + 1})">${t("Siguiente →")}</button>`;
@@ -1915,7 +1928,7 @@
           // Un borrador bloquea dependencias, pero no destruye el último plan.
           vlanEditing = vlanFormChanged();
           captureDraft();
-          $("vlanStatus").textContent = t(state.approved && !vlanEditing ? "VLAN confirmadas" : "Pendiente de confirmación");
+          updateVlanStatus();
         };
       } // Solo se reconstruye la etapa visible.
       /* =================== Datos por sede y estimación explicable =================== */
@@ -1975,6 +1988,7 @@
        * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
        */
       function projectView() {
+        // confirmed es opcional en v4: ausente nunca implica una ficha confirmada.
         const s = state.sites[selectedSite] || state.sites[0];
         selectedSite = state.sites.indexOf(s);
         return (
@@ -2055,6 +2069,7 @@
        * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
        */
       function saveSite() {
+        // Solo el éxito publica confirmed=true; un error conserva ficha y borrador.
         safe(() => {
           const old = state.sites[selectedSite],
             s = {
@@ -2309,7 +2324,7 @@
             t("VLAN y plan de direccionamiento"),
             "Confirme los segmentos; el VLSM los ordena por tamaño y asigna redes sin solaparse. Incluye tránsito router–core y WAN entre sedes.",
           ) +
-          `<div class="card"><div class="grid">${field(t("Bloque predeterminado del proyecto"), "base", state.project.base)}${field(t("Bloque de tránsito (opcional)"), "transitBase", state.project.transitBase)}${field(t("Reserva de crecimiento (%)"), "growth", state.project.growth, "number", 'min="0" max="100"')}${field(t("DNS para DHCP"), "dns", state.project.dns)}</div><div class="notice">${t("Hosts solicitados son terminales; el cálculo añade crecimiento y una IP de gateway, o tres IP si hay dos cores. El gateway no cuenta como host disponible para terminales. Las redes de tránsito son /30 y no usan VLAN.")}</div><div class="actions"><button onclick="proposeVlans(true)">${t("Volver a proponer")}</button><button onclick="addVlan()">${t("Agregar VLAN")}</button><span id="vlanStatus" class="badge ${state.approved && !vlanEditing ? "" : "warn"}">${t(state.approved && !vlanEditing ? "VLAN confirmadas" : "Pendiente de confirmación")}</span><button class="primary" onclick="confirmVlans()">${t(state.approved ? "Recalcular VLAN" : "Confirmar VLAN y calcular VLSM")}</button></div></div><div class="card"><h2>${t("Segmentos editables por sede")}</h2><p id="vlanCidrHelp" class="hint">${t("Subred IPv4 / CIDR (opcional): deje vacío para asignación automática. Define la red completa de la VLAN; no es el gateway ni un rango DHCP.")}</p>${state.vlans.length ? `<div class="tablewrap"><table><thead><tr><th>${t("Sede")}</th><th>${t("VLAN")}</th><th>${t("Nombre")}</th><th>${t("Subred IPv4 / CIDR (opcional)")}</th><th>${t("Servicio")}</th><th>${t("Hosts terminales")}</th><th>${t("DHCP local")}</th><th>${t("Acción")}</th></tr></thead><tbody>${state.vlans.map((v, i) => `<tr><td><select id="vs${i}" aria-label="${t("Sede de VLAN")}">${state.sites.map((s) => `<option value="${s.id}" ${s.id === v.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></td><td><input class="num" aria-label="${t("VLAN")}" id="vi${i}" value="${v.id}" type="number" min="2" max="4094"></td><td><input aria-label="${t("Nombre VLAN")}" id="vn${i}" value="${esc(v.name)}"></td><td><input aria-label="${t("Subred IPv4 / CIDR (opcional)")}" id="vc${i}" value="${esc(v.ipv4Cidr || "")}" placeholder="${esc(state.approved && !vlanEditing ? (state.plan.find(r=>r.key===v.key)?.network ? state.plan.find(r=>r.key===v.key).network+'/'+state.plan.find(r=>r.key===v.key).prefix : t("Asignación automática pendiente")) : t("Asignación automática pendiente"))}" aria-describedby="vlanCidrHelp"></td><td><select aria-label="${t("Servicio")}" id="vr${i}">${optsHTML(roles, v.role)}</select></td><td><input class="num" aria-label="${t("Hosts")}" id="vh${i}" type="number" value="${v.hosts}"></td><td><input aria-label="${t("DHCP local")}" id="vd${i}" type="checkbox" ${v.dhcp ? "checked" : ""}></td><td><button class="small danger" onclick="deleteVlan(${i})">${t("Eliminar")}</button></td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">${t("Confirme los datos y genere una propuesta desde Estimación, o agregue sus segmentos manualmente.")}</div>`}</div>${state.approved && !vlanEditing ? `<button class="primary" onclick="go(5)">${t("Continuar a Topología")}</button>` : ""}${planTable()}`
+          `<div class="card"><div class="grid">${field(t("Bloque predeterminado del proyecto"), "base", state.project.base)}${field(t("Bloque de tránsito (opcional)"), "transitBase", state.project.transitBase)}${field(t("Reserva de crecimiento (%)"), "growth", state.project.growth, "number", 'min="0" max="100"')}${field(t("DNS para DHCP"), "dns", state.project.dns)}</div><div class="notice">${t("Hosts solicitados son terminales; el cálculo añade crecimiento y una IP de gateway, o tres IP si hay dos cores. El gateway no cuenta como host disponible para terminales. Las redes de tránsito son /30 y no usan VLAN.")}</div><div class="actions"><button onclick="proposeVlans(true)">${t("Volver a proponer")}</button><button onclick="addVlan()">${t("Agregar VLAN")}</button><span id="vlanStatus" class="badge ${state.approved && !vlanEditing && !sitePending.size ? "" : "warn"}">${t(state.approved && !vlanEditing && !sitePending.size ? "VLAN confirmadas" : "Pendiente de confirmación")}</span><button class="primary" onclick="confirmVlans()">${t(state.approved ? "Recalcular VLAN" : "Confirmar VLAN y calcular VLSM")}</button></div></div><div class="card"><h2>${t("Segmentos editables por sede")}</h2><p id="vlanCidrHelp" class="hint">${t("Subred IPv4 / CIDR (opcional): deje vacío para asignación automática. Define la red completa de la VLAN; no es el gateway ni un rango DHCP.")}</p>${state.vlans.length ? `<div class="tablewrap"><table><thead><tr><th>${t("Sede")}</th><th>${t("VLAN")}</th><th>${t("Nombre")}</th><th>${t("Subred IPv4 / CIDR (opcional)")}</th><th>${t("Servicio")}</th><th>${t("Hosts terminales")}</th><th>${t("DHCP local")}</th><th>${t("Acción")}</th></tr></thead><tbody>${state.vlans.map((v, i) => `<tr><td><select id="vs${i}" aria-label="${t("Sede de VLAN")}">${state.sites.map((s) => `<option value="${s.id}" ${s.id === v.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></td><td><input class="num" aria-label="${t("VLAN")}" id="vi${i}" value="${v.id}" type="number" min="2" max="4094"></td><td><input aria-label="${t("Nombre VLAN")}" id="vn${i}" value="${esc(v.name)}"></td><td><input aria-label="${t("Subred IPv4 / CIDR (opcional)")}" id="vc${i}" value="${esc(v.ipv4Cidr || "")}" placeholder="${esc(state.approved && !vlanEditing && !sitePending.size ? (state.plan.find(r=>r.key===v.key)?.network ? state.plan.find(r=>r.key===v.key).network+'/'+state.plan.find(r=>r.key===v.key).prefix : t("Asignación automática pendiente")) : t("Asignación automática pendiente"))}" aria-describedby="vlanCidrHelp"></td><td><select aria-label="${t("Servicio")}" id="vr${i}">${optsHTML(roles, v.role)}</select></td><td><input class="num" aria-label="${t("Hosts")}" id="vh${i}" type="number" value="${v.hosts}"></td><td><input aria-label="${t("DHCP local")}" id="vd${i}" type="checkbox" ${v.dhcp ? "checked" : ""}></td><td><button class="small danger" onclick="deleteVlan(${i})">${t("Eliminar")}</button></td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">${t("Confirme los datos y genere una propuesta desde Estimación, o agregue sus segmentos manualmente.")}</div>`}</div>${state.approved && !vlanEditing && !sitePending.size ? `<button class="primary" onclick="go(5)">${t("Continuar a Topología")}</button>` : ""}${planTable()}`
         );
       }
       /**
@@ -2583,9 +2598,10 @@
             : Math.ceil(cursor / r.size) * r.size;
           if (cursor === null || cursor + r.size - 1 > pool.end) {
             const site=state.sites.find(s=>s.id===r.site),
-              total=req.filter(x=>x.site===r.site && x.kind==="vlan").reduce((n,x)=>n+x.size,0),
+              total=req.filter(x=>x.site===r.site && x.kind==="vlan").reduce((n,x)=>n+2**Math.max(2,Math.ceil(Math.log2(x.required+2))),0),
               minimum=site?.ipv4Base && r.kind==="vlan" && !vlans.some(v=>v.site===r.site && v.ipv4Cidr) && total>pool.total
                 ? t("Mínimo por capacidad del conjunto: /{0}.",[32-Math.ceil(Math.log2(total))]) : "";
+            lastVlanFocus=r.kind==="vlan" ? "vh"+vlans.findIndex(v=>v.key===r.key) : "transitBase";
             fail(t("{0}: bloque {1}/{2}; hosts {3}, crecimiento {4}%, reserva {5}, requiere {6} IP útiles y /{7} ({8} direcciones). No existe hueco contiguo suficiente. {9}",[r.kind==="vlan"?siteName(r.site)+" · VLAN "+r.id+" «"+r.name+"»":r.name,pool.network,pool.prefix,r.hosts,growth,r.reserve,r.required,r.prefix,r.size,minimum]));
           }
           const info = subnet(ipStr(cursor) + "/" + r.prefix);
@@ -2615,7 +2631,13 @@
        * Proceso / salida: Calcula antes de guardar; error conserva todo, igualdad mantiene aprobación y cambios invalidan dependencias diferenciales.
        * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
        */
+      /** Actualiza aprobación/previsualizaciones sin reconstruir ni perder el formulario. */
+      function updateVlanStatus() {
+        if($("vlanStatus"))$("vlanStatus").textContent=t(state.approved&&!vlanEditing&&!sitePending.size?"VLAN confirmadas":"Pendiente de confirmación");
+        state.vlans.forEach((v,i)=>{const el=$("vc"+i),r=state.plan.find(r=>r.key===v.key);if(el)el.placeholder=state.approved&&!vlanEditing&&!sitePending.size&&r?r.network+"/"+r.prefix:t("Asignación automática pendiente");});
+      }
       function confirmVlans() {
+        lastVlanFocus="base";
         const result=safe(() => {
           projectValid();
           if (!state.vlans.length) fail(t("Añada VLAN antes de calcular."));
@@ -2653,8 +2675,8 @@
         });
         if (result===false) {
           vlanEditing=true;
-          if ($("vlanStatus")) $("vlanStatus").textContent=t("Pendiente de confirmación");
-          $("base")?.focus();
+          updateVlanStatus();
+          ($(lastVlanFocus)||$("base"))?.focus();
         }
       } // Nada se guarda si una VLAN o el bloque resultan inválidos.
       /**
@@ -5294,6 +5316,7 @@
             bandwidth: num(s.bandwidth, 0, 100000, "Banda"),
             counts: null,
           };
+          // Validar tipo explícito sin inferir confirmación desde un proyecto antiguo.
           if (s.confirmed !== undefined) o.confirmed=bool(s.confirmed);
           const profile=validateVendorProfile(s.vendorProfile);
           if (profile) o.vendorProfile=profile;
@@ -5549,9 +5572,9 @@
         if (out.calc) addressCalculation(out.calc);
         out.subnetOK = src.subnetOK === true;
         out.revision = num(src.revision, 0, 100000000, "Revisión");
-        const previous = state, previousEditing=vlanEditing;
+        const previous = state, previousEditing=vlanEditing, previousPending=[...sitePending];
         try {
-          state = out; vlanEditing=false;
+          state = out; vlanEditing=false; sitePending.clear();
           for (const l of out.links)
             validateLink(
               l,
@@ -5576,7 +5599,7 @@
                 out.configs[key] = { text: generated, revision: out.revision };
             }
         } finally {
-          state = previous; vlanEditing=previousEditing;
+          state = previous; vlanEditing=previousEditing; previousPending.forEach(id=>sitePending.add(id));
         }
         let img = data.imageData || "";
         if (
@@ -5613,7 +5636,7 @@
        */
       function applyImport(data) {
         state = data.state;
-        inventoryEditing.clear(); formDrafts.clear(); siteEditing.clear(); sitePending.clear(); siteSnapshots.clear(); vlanEditing=false;
+        inventoryEditing.clear(); formDrafts.clear(); siteEditing.clear(); sitePending.clear(); siteSnapshots.clear(); vlanEditing=false; sshHistory=""; sshDevice="";
         imageData = data.imageData;
         imageMode = false;
         selectedSite = 0;
@@ -5633,7 +5656,7 @@
           )
         ) {
           state = fresh();
-          inventoryEditing.clear(); formDrafts.clear(); siteEditing.clear(); sitePending.clear(); siteSnapshots.clear(); vlanEditing=false;
+          inventoryEditing.clear(); formDrafts.clear(); siteEditing.clear(); sitePending.clear(); siteSnapshots.clear(); vlanEditing=false; sshHistory=""; sshDevice="";
           imageData = "";
           selectedSite = 0;
           page = 1;
@@ -5654,7 +5677,7 @@
           return;
         state = fresh();
         // Un laboratorio nuevo no hereda borradores del proyecto sustituido.
-        inventoryEditing.clear(); formDrafts.clear(); siteEditing.clear(); sitePending.clear(); siteSnapshots.clear(); vlanEditing=false;
+        inventoryEditing.clear(); formDrafts.clear(); siteEditing.clear(); sitePending.clear(); siteSnapshots.clear(); vlanEditing=false; sshHistory=""; sshDevice="";
         state.project = {
           ...state.project,
           name: "WAN · Laboratorio Corte 2",
@@ -5759,6 +5782,141 @@
           "text/html",
         );
       } // Informe estático con datos reales del proyecto actual.
+      /* Consola opcional: todo estado de sesión es efímero y ajeno a state/JSON. */
+      let sshMode="simulation", sshDevice="", sshHistory="", sshSocket=null,
+        sshTerminal=null, sshFit=null, sshObserver=null, sshLibrary=null, sshStatusCode="disconnected", sshConnecting=false, sshGeneration=0;
+      const sshLabels={disconnected:"Desconectado",connecting:"Conectando",connected:"Conectado",ended:"Sesión finalizada",
+        authentication:"Error de autenticación",network:"Error de red",host_key:"Clave de host desconocida o modificada: verifique la huella con el servicio local.",
+        unauthorized:"Sesión local no autorizada",destination_denied:"Destino no autorizado por el servicio local",invalid_request:"Solicitud SSH no válida",terminal_unsupported:"El equipo no permite shell/PTY interactivo."};
+
+      /** Cambia solo la pestaña visual; abandonar una sesión real la cierra. */
+      function sshTab(mode) { sshMode=mode==="real"?"real":"simulation"; render(); }
+      /** Busca una selección estable; jamás cambia marcas o datos del dispositivo. */
+      function sshSelected() { return state.nodes.find(n=>n.id===sshDevice)||null; }
+      /** Solo IP explícita de Gestión: nunca se infiere desde WAN/SVI/gateway. */
+      function sshManagementAddress(n) {
+        return n && row(n.network)?.role==="Gestión" && ["Switch","Switch capa 3","Router","Firewall"].includes(n.type) ? n.ip||"" : "";
+      }
+      /** Renderiza HTML escapado; simulación no descarga librerías ni abre conexiones. */
+      function sshConsoleView() {
+        const n=sshSelected(), real=sshMode==="real",
+          service=location.hostname==="127.0.0.1" && location.protocol==="http:" && !!document.querySelector('meta[name="wan-ssh-service"]');
+        const select=`<select id="sshDevice" onchange="sshChooseDevice(this.value)"><option value="">${t("Conexión manual / seleccione equipo")}</option>${state.nodes.map(n=>`<option value="${esc(n.id)}" ${n.id===sshDevice?"selected":""}>${esc(n.name)} · ${esc(n.vendor)}</option>`).join("")}</select>`;
+        return title(t("Consola SSH"),t("Simulación educativa y conexión real son independientes. Nunca se aplican configuraciones automáticamente."))+`<p><a href="docs/manual-ssh.md" target="_blank" rel="noopener">${t("Manual de consola SSH")}</a></p>`+
+          `<div class="card"><div class="actions" role="tablist" aria-label="${t("Modalidad SSH")}"><button role="tab" aria-selected="${!real}" onclick="sshTab('simulation')">${t("Simulación")}</button><button role="tab" aria-selected="${real}" onclick="sshTab('real')">${t("Conexión real")}</button></div><div class="field"><label for="sshDevice">${t("Dispositivo de la topología")}</label>${select}</div>${n?`<p>${esc(n.name)} · ${esc(n.vendor)} · ${t(n.type)}</p><p class="mono">${esc(connected(n).map(l=>endpoint(l,n,n.vendor).iface||"—").join(" · "))}</p>`:""}
+          ${real ? `<div class="notice">${t("La conexión manual no requiere VLSM. Use únicamente equipos autorizados. Cambiar idioma, pestaña o módulo cierra la sesión; no se guarda el historial real.")}</div><div id="sshService" class="notice ${service?"":"warn"}">${t(service?"Servicio local disponible":"Servicio no disponible: inicie Python y abra http://127.0.0.1:8765 (o el puerto configurado).")}</div><div class="grid">${field(t("IP o hostname autorizado"),"sshHost",sshManagementAddress(n))}${field(t("Puerto SSH"),"sshPort",22,"number",'min="1" max="65535"')}${field(t("Usuario SSH"),"sshUser","")}<div class="field"><label for="sshMethod">${t("Autenticación")}</label><select id="sshMethod" onchange="sshAuthMethod()"><option value="password">${t("Contraseña")}</option><option value="key">${t("Clave privada")}</option></select></div><div id="sshPasswordBox" class="field"><label for="sshPassword">${t("Contraseña")}</label><input id="sshPassword" type="password" maxlength="1024" autocomplete="off"></div><div id="sshKeyBox" class="field hidden"><label for="sshPrivateKey">${t("Clave privada (solo memoria)")}</label><textarea id="sshPrivateKey" maxlength="32768" autocomplete="off" spellcheck="false"></textarea><label for="sshPassphrase">${t("Frase de clave (opcional)")}</label><input id="sshPassphrase" type="password" maxlength="1024" autocomplete="off"></div></div><label class="check"><input type="checkbox" id="sshAuthorization">${t("Autorizo esta conexión al destino configurado en mi servicio local")}</label><p>${t("Si falta IP de gestión explícita, introdúzcala manualmente. No use una IP WAN o gateway como administración sin verificarla.")}</p><div class="actions"><button class="primary" id="sshConnect" ${service?"":"disabled"} onclick="sshConnect()">${t("Conectar")}</button><button id="sshDisconnect" disabled onclick="sshDisconnect()">${t("Desconectar")}</button><button id="sshRealClear" disabled onclick="sshClearReal()">${t("Limpiar consola")}</button></div><p id="sshConnectionStatus" role="status">${t(sshLabels[sshStatusCode]||sshLabels.disconnected)}</p><div id="sshTerminal" class="ssh-terminal" aria-label="${t("Terminal SSH real")}"></div>`
+          : `<div class="notice warn">${t("SIMULACIÓN: no existe conexión SSH ni acceso a equipos. Respuestas derivadas del proyecto, no del sistema operativo del dispositivo.")}</div>${!state.approved||vlanEditing||sitePending.size?`<p class="notice warn">${t("Plan no confirmado: confirme VLAN/VLSM para consultar datos simulados.")}</p>`:""}<p>${t("Comandos soportados")}: ${esc(sshCommands(n).join(" · "))}</p><pre id="sshSimulation" class="ssh-terminal" role="log" aria-label="${t("Terminal simulada")}">${esc(sshHistory)}</pre><label for="sshCommand">${t("Comando simulado")}</label><div class="actions"><input id="sshCommand" class="mono" maxlength="500" onkeydown="if(event.key==='Enter'){event.preventDefault();sshRunSimulation()}"><button onclick="sshRunSimulation()">${t("Enviar comando")}</button><button id="sshSimClear" ${sshHistory?"":"disabled"} onclick="sshClearSimulation()">${t("Limpiar consola")}</button><button onclick="sshResetSimulation()">${t("Reiniciar simulación")}</button></div>`}</div>`;
+      }
+      /** Selección no sensible; n.ip solo se considera administración si pertenece a Gestión. */
+      function sshChooseDevice(id) { sshDevice=state.nodes.some(n=>n.id===id)?id:"";sshHistory="";render(); }
+      /** Lista cerrada por fabricante: no pretende emular un NOS completo. */
+      function sshCommands(n) {
+        return ["help",...(n?.vendor==="Cisco"?["show running-config","show ip interface brief","show vlan brief","show ip route"]:
+          n?.vendor==="Huawei"?["display current-configuration","display ip interface brief","display vlan","display ip routing-table"]:
+          n?.vendor==="Fortinet"?["show","show system interface","get router info routing-table all"]:
+          n?.vendor==="MikroTik"?["/export","/ip address print","/interface print","/ip route print"]:[])];
+      }
+      /** Resuelve una consulta de lectura: no interpreta programas ni envía red. */
+      function sshRunSimulation() {
+        const command=$("sshCommand").value.trim(), n=sshSelected();$("sshCommand").value="";
+        let output;
+        if (command==="help"||command==="?") output=sshCommands(n).join("\n");
+        else if (!n) output=t("Seleccione un dispositivo para simular.");
+        else if (!sshCommands(n).includes(command)) output=t("Comando no disponible en el simulador");
+        else if (!state.approved||vlanEditing||sitePending.size) output=t("Plan no confirmado: confirme VLAN/VLSM para consultar datos simulados.");
+        else if (["show running-config","display current-configuration","show","/export"].includes(command)) {
+          const item=state.configs[n.id+"-"+n.vendor];
+          output=item?.revision===state.revision?item.text:t("Genere primero la configuración de este equipo en su módulo.");
+        } else if (/vlan$|vlan brief$/.test(command)) output=state.plan.filter(r=>r.kind==="vlan"&&r.site===n.site).map(r=>`VLAN ${r.id} ${r.name} ${r.network}/${r.prefix}`).join("\n");
+        else if (/route|routing-table/.test(command)) output=t("Inventario del plan; no es una tabla de rutas aprendidas.")+"\n"+state.plan.map(r=>`${r.network}/${r.prefix} ${r.name}`).join("\n");
+        else output=connected(n).map(l=>{const e=endpoint(l,n,n.vendor);return `${e.iface||"—"} ${e.ip||n.ip||"—"} ${l.type}`;}).join("\n");
+        sshHistory=(sshHistory+"\n"+t("SIMULACIÓN")+" "+(n?.name||"WAN")+"> "+command+"\n"+output+"\n").slice(-40000);
+        $("sshSimulation").textContent=sshHistory;$("sshSimClear").disabled=false;$("sshSimulation").scrollTop=$("sshSimulation").scrollHeight;
+      }
+      /** Limpiar/reiniciar solo afectan al buffer educativo en memoria. */
+      function sshClearSimulation() { sshHistory="";if($("sshSimulation"))$("sshSimulation").textContent="";if($("sshSimClear"))$("sshSimClear").disabled=true; }
+      /** Reinicia la entrada/buffer educativo y confirma la acción; no cambia el proyecto. */
+      function sshResetSimulation() { sshClearSimulation();if($("sshCommand"))$("sshCommand").value="";toast(t("Simulación reiniciada.")); }
+      /** Cambia campos de credenciales y borra los que dejan de utilizarse. */
+      function sshAuthMethod() {
+        const key=$("sshMethod").value==="key";
+        $("sshKeyBox").classList.toggle("hidden",!key);$("sshPasswordBox").classList.toggle("hidden",key);
+        $("sshPassword").value="";$("sshPrivateKey").value="";$("sshPassphrase").value="";
+      }
+      /** Recursos locales opcionales: la simulación nunca los necesita. */
+      function sshLoadTerminal() {
+        if (window.Terminal&&window.FitAddon) return Promise.resolve();
+        if (sshLibrary) return sshLibrary;
+        const style=document.createElement("link");style.rel="stylesheet";style.href="ssh_service/static/xterm.css";document.head.append(style);
+        const load=src=>new Promise((resolve,reject)=>{const script=document.createElement("script");script.src=src;script.onload=resolve;script.onerror=()=>reject(Error(t("Recursos locales de terminal no disponibles.")));document.head.append(script);});
+        sshLibrary=load("ssh_service/static/xterm.js").then(()=>load("ssh_service/static/addon-fit.js")).catch(e=>{sshLibrary=null;throw e;});return sshLibrary;
+      }
+      /** Refleja solo estados recibidos o locales; connected exige autenticación del servidor. */
+      function sshSetStatus(code) {
+        sshStatusCode=code;
+        const busy=["connected","connecting"].includes(code);
+        for(const id of ["sshHost","sshPort","sshUser","sshMethod","sshPassword","sshPrivateKey","sshPassphrase","sshAuthorization","sshDevice"])if($(id))$(id).disabled=busy;
+        if($("sshConnectionStatus"))$("sshConnectionStatus").textContent=t(sshLabels[code]||sshLabels.network);
+        if($("sshConnect"))$("sshConnect").disabled=["connected","connecting"].includes(code);
+        if($("sshDisconnect"))$("sshDisconnect").disabled=!["connected","connecting"].includes(code);
+      }
+      /** Abre una sesión explícita. Nunca usa ni envía state/configs/CLI al servicio. */
+      async function sshConnect() {
+        let payload=null, generation=sshGeneration;
+        try {
+          if (!document.querySelector('meta[name="wan-ssh-service"]') || location.hostname!=="127.0.0.1" || location.protocol!=="http:") throw Error(t("Servicio SSH local no disponible."));
+          if (!$("sshAuthorization").checked) throw Error(t("Confirme que autoriza la conexión."));
+          if (sshSocket||sshConnecting) return;
+          const host=$("sshHost").value.trim(),user=$("sshUser").value.trim(),port=Number($("sshPort").value);
+          if(!host||!user||!Number.isInteger(port)||port<1||port>65535) throw Error(t("Indique host, puerto y usuario válidos."));
+          if(sshTerminal)sshDispose();
+          generation=sshGeneration;sshConnecting=true;sshSetStatus("connecting");
+          await sshLoadTerminal();
+          if(generation!==sshGeneration||!$("sshTerminal")||page!==13||sshMode!=="real")return;
+          sshTerminal=new Terminal({cursorBlink:true,scrollback:1000,convertEol:false,fontSize:14});
+          sshFit=new FitAddon.FitAddon();sshTerminal.loadAddon(sshFit);sshTerminal.open($("sshTerminal"));sshFit.fit();
+          const response=await fetch("/ssh/bootstrap",{headers:{"X-WAN-Client":"ssh-ui"},credentials:"same-origin",cache:"no-store"});
+          if(!response.ok)throw Error(t("Sesión local no autorizada"));
+          const auth=await response.json();
+          if(generation!==sshGeneration||!$("sshTerminal"))return;
+          payload={type:"connect",token:auth.token,host,port,user,method:$("sshMethod").value,
+            password:$("sshPassword").value,privateKey:$("sshPrivateKey").value,passphrase:$("sshPassphrase").value,
+            cols:Math.max(20,Math.min(300,sshTerminal.cols)),rows:Math.max(5,Math.min(120,sshTerminal.rows))};
+          // Las referencias a secretos se vacían inmediatamente; nunca se guardan en el modelo.
+          $("sshPassword").value="";$("sshPrivateKey").value="";$("sshPassphrase").value="";
+          sshSetStatus("connecting");
+          const socket=new WebSocket(`ws://${location.host}/ssh/ws`);sshSocket=socket;sshConnecting=false;
+          socket.onopen=()=>{if(sshSocket!==socket||!payload){socket.close();return;}socket.send(JSON.stringify(payload));payload=null;};
+          socket.onmessage=event=>{
+            if(sshSocket!==socket)return;
+            const message=JSON.parse(event.data);
+            if(message.type==="output"&&typeof message.data==="string"){sshTerminal?.write(Uint8Array.from(atob(message.data),c=>c.charCodeAt(0)),()=>{if(socket.readyState===WebSocket.OPEN)socket.send(JSON.stringify({type:"ack"}));});if($("sshRealClear"))$("sshRealClear").disabled=false;}
+            else if(message.type==="status")sshSetStatus(message.status);
+            else if(message.type==="error")sshSetStatus(Object.hasOwn(sshLabels,message.code)?message.code:"network");
+          };
+          socket.onerror=()=>{if(sshSocket===socket)sshSetStatus("network");};
+          socket.onclose=()=>{payload=null;if(sshSocket===socket){sshSocket=null;if(["connecting","connected"].includes(sshStatusCode))sshSetStatus("ended");}};
+          sshTerminal.onData(data=>{if(socket.readyState===WebSocket.OPEN&&sshStatusCode==="connected")socket.send(JSON.stringify({type:"input",data}));});
+          sshObserver=new ResizeObserver(()=>{
+            if(!sshTerminal||!$("sshTerminal"))return;sshFit.fit();
+            if(socket.readyState===WebSocket.OPEN&&sshStatusCode==="connected")socket.send(JSON.stringify({type:"resize",cols:Math.max(20,Math.min(300,sshTerminal.cols)),rows:Math.max(5,Math.min(120,sshTerminal.rows))}));
+          });sshObserver.observe($("sshTerminal"));sshTerminal.focus();
+        } catch(error) {payload=null;if(generation!==sshGeneration)return;sshDispose();sshSetStatus("network");toast(error.message,true);}
+      }
+      /** Cierre idempotente al salir de vista, cambiar idioma o desconectar. */
+      function sshDispose() {
+        sshGeneration++;sshConnecting=false;
+        const socket=sshSocket;sshSocket=null;
+        if(socket){socket.onclose=null;socket.onerror=null;socket.onmessage=null;socket.close();}
+        sshObserver?.disconnect();sshObserver=null;sshTerminal?.dispose();sshTerminal=null;sshFit=null;sshStatusCode="disconnected";
+        for(const id of ["sshPassword","sshPrivateKey","sshPassphrase"])if($(id))$(id).value="";
+      }
+      /** Desconecta por orden del usuario y muestra fin de sesión, incluso al cancelar conexión. */
+      function sshDisconnect() {sshDispose();sshSetStatus("ended");}
+      /** Borra solo la pantalla xterm; jamás envía clear ni otros comandos al dispositivo. */
+      function sshClearReal() {sshTerminal?.clear();if($("sshRealClear"))$("sshRealClear").disabled=true;}
+      window.addEventListener("pagehide",()=>sshDispose());
+
       render(); // Primer render: no genera topologías ni pruebas ficticias automáticamente.
     </script>
   </body>
