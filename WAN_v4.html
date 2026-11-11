@@ -570,6 +570,9 @@
       .diagram svg { max-width: none; display: block; height: auto; }
       .node { cursor: grab; outline: none; }
       .node:focus rect { stroke: #d17700; stroke-width: 3; }
+      /* La ficha confirmada usa deshabilitación nativa accesible sin perder sus valores. */
+      #siteFields { border: 0; padding: 0; margin: 14px 0; min-width: 0; }
+      #siteFields:disabled { opacity: .85; }
     </style>
   </head>
   <body>
@@ -1450,6 +1453,7 @@
         "Automática": "Automatic",
         "Bloque privado propio; puede ser independiente del predeterminado. No debe solaparse con otra sede ni con tránsito.": "Independent private site block; it must not overlap another site or transit."
       });
+      Object.assign(I18N.en, {"Sede confirmada": "Site confirmed", "Sede pendiente o en edición": "Site pending or being edited", "Editar sede": "Edit site", "Sede confirmada.": "Site confirmed.", "Asignación automática pendiente": "Automatic allocation pending", "Continuar a Topología": "Continue to Topology", "Mínimo por capacidad del conjunto: /{0}.": "Minimum aggregate capacity: /{0}.", "{0}: bloque {1}/{2}; hosts {3}, crecimiento {4}%, reserva {5}, requiere {6} IP útiles y /{7} ({8} direcciones). No existe hueco contiguo suficiente. {9}": "{0}: block {1}/{2}; hosts {3}, growth {4}%, reserve {5}, requires {6} usable IPs and /{7} ({8} addresses). No contiguous space is large enough. {9}"});
       // Nuevas etiquetas del flujo; CLI y datos nunca se traducen.
       /* =================== Estado, validadores y aritmética IPv4 =================== */
       const $ = (id) => document.getElementById(id); // Acceso centralizado a elementos por ID.
@@ -1737,7 +1741,7 @@
         Object.values(state.configs).forEach(item => item.revision=state.revision);
       }
       // Borradores de presentación: nunca se serializan como datos confirmados.
-      const inventoryEditing = new Set(), formDrafts = new Map();
+      const inventoryEditing = new Set(), formDrafts = new Map(), siteEditing = new Set(), siteSnapshots = new Map(), sitePending = new Set();
       let vlanEditing = false;
       /**
        * Entradas: Página y controles visibles de sede, inventario o VLAN.
@@ -1789,8 +1793,18 @@
        * Proceso / salida: Lanza un error si falta cálculo confirmado; las vistas independientes siguen navegables.
        * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
        */
+      /** Activa una ficha sin borrar valores; captura referencia para detectar cambios reales. */
+      function editSite() {
+        siteEditing.add(state.sites[selectedSite].id);
+        render();
+        siteSnapshots.set(state.sites[selectedSite].id, siteFormSnapshot());
+      }
+      /** Serializa exclusivamente controles no sensibles de la ficha visible. */
+      function siteFormSnapshot() {
+        return JSON.stringify([...$("siteFields").querySelectorAll("input")].map(el=>[el.id,el.value,el.checked]));
+      }
       function requireConfirmedPlan() {
-        if (!state.approved || !state.plan.length || vlanEditing)
+        if (!state.approved || !state.plan.length || vlanEditing || sitePending.size)
           fail(t("Confirme primero VLAN y VLSM."));
       }
       function invalidate(level = "project") {
@@ -1885,6 +1899,13 @@
         if (page === 5) bindDrag();
         restoreDraft();
         $("view").oninput = null;
+        if (page===1) $("view").oninput=(event)=>{
+          if (!$("siteFields").contains(event.target)) return;
+          const id=state.sites[selectedSite].id, initial=siteSnapshots.get(id);
+          if (initial && initial===siteFormSnapshot()) sitePending.delete(id); else sitePending.add(id);
+          $("siteStatus").textContent=t(sitePending.has(id)?"Cambios sin guardar":"Sede pendiente o en edición");
+          captureDraft();
+        };
         if (page === 2) $("view").oninput = (event) => {
           const match=event.target.id.match(/^c(\d+)_/);
           if (match && $("inventoryStatus"+match[1])) $("inventoryStatus"+match[1]).textContent=t("Cambios sin guardar");
@@ -1961,7 +1982,7 @@
             t("Datos del proyecto"),
             t("Registre cada sede por separado. Confirme los cambios para que estimación, VLAN, direccionamiento y topología utilicen la misma información."),
           ) +
-          `<div class="notice">${t("Flujo: datos → estimación → confirmar VLAN → VLSM → topología → configuraciones. Cambiar datos confirmados invalida las etapas dependientes.")}</div><div class="card"><h2>${t("Identificación y alcance")}</h2><div class="grid">${field(t("Nombre del proyecto *"), "pname", state.project.name)}${field(t("Empresa *"), "pcompany", state.project.company)}${field(t("Actividad * (ej. clínica, educación, comercio)"), "pactivity", state.project.activity)}<div class="field"><label for="ptype">${t("Infraestructura")}</label><select id="ptype">${optsHTML(["Casa", "Oficina", "Edificio", "Campus", "Varias sedes"], state.project.type)}</select></div><div class="field"><label for="psegment">${t("Criterio de segmentación")}</label><select id="psegment">${optsHTML(["Servicios", "Departamentos"], state.project.segmentation)}</select></div>${field(t("Número de sedes (1–12)"), "sitecount", state.sites.length, "number", 'min="1" max="12"')}</div><label class="check"><input id="pinter" type="checkbox" ${state.project.interconnect ? "checked" : ""}>${t("Interconectar las sedes mediante enlaces WAN enrutados")}</label><div class="actions"><button class="primary" onclick="saveProject()">${t("Confirmar datos del proyecto")}</button><button onclick="resizeSites()">${t("Aplicar número de sedes")}</button><button onclick="demo()">${t("Cargar ejemplo de laboratorio")}</button></div></div><div class="card"><div class="sitehead"><h2>${t("Ficha individual de la sede")}</h2><div class="actions"><select class="sitecount" aria-label="${t("Sede activa")}" onchange="selectSite(+this.value)">${state.sites.map((x, i) => `<option value="${i}" ${i === selectedSite ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select><button class="danger" onclick="removeSite()">${t("Eliminar sede")}</button></div></div><div class="grid">${field(t("Nombre de sede *"), "sname", s.name)}${field(t("Bloque IPv4 de la sede (opcional)"), "sipv4Base", s.ipv4Base, "text", 'placeholder="10.10.0.0/16" aria-describedby="siteIpv4Help"')}${field(t("Número de pisos"), "sfloors", s.floors, "number", 'min="1" max="50"')}${field("Usuarios", "susers", s.users, "number", 'min="1" max="100000"')}${field(t("Dispositivos personales por usuario"), "sratio", s.ratio, "number", 'min="1" max="10" step="0.1"')}${field(t("Pisos más concurridos (separados por coma)"), "sbusy", s.busy)}${field(t("Áreas / departamentos (separados por coma)"), "sareas", s.areas)}${field(t("Ancho de banda Mbps (0 = sugerir)"), "sbw", s.bandwidth, "number", 'min="0" max="100000"')}</div><div class="grid" style="margin-top:16px">${[
+          `<div class="notice">${t("Flujo: datos → estimación → confirmar VLAN → VLSM → topología → configuraciones. Cambiar datos confirmados invalida las etapas dependientes.")}</div><div class="card"><h2>${t("Identificación y alcance")}</h2><div class="grid">${field(t("Nombre del proyecto *"), "pname", state.project.name)}${field(t("Empresa *"), "pcompany", state.project.company)}${field(t("Actividad * (ej. clínica, educación, comercio)"), "pactivity", state.project.activity)}<div class="field"><label for="ptype">${t("Infraestructura")}</label><select id="ptype">${optsHTML(["Casa", "Oficina", "Edificio", "Campus", "Varias sedes"], state.project.type)}</select></div><div class="field"><label for="psegment">${t("Criterio de segmentación")}</label><select id="psegment">${optsHTML(["Servicios", "Departamentos"], state.project.segmentation)}</select></div>${field(t("Número de sedes (1–12)"), "sitecount", state.sites.length, "number", 'min="1" max="12"')}</div><label class="check"><input id="pinter" type="checkbox" ${state.project.interconnect ? "checked" : ""}>${t("Interconectar las sedes mediante enlaces WAN enrutados")}</label><div class="actions"><button class="primary" onclick="saveProject()">${t("Confirmar datos del proyecto")}</button><button onclick="resizeSites()">${t("Aplicar número de sedes")}</button><button onclick="demo()">${t("Cargar ejemplo de laboratorio")}</button></div></div><div class="card"><div class="sitehead"><h2>${t("Ficha individual de la sede")}</h2><div class="actions"><select class="sitecount" aria-label="${t("Sede activa")}" onchange="selectSite(+this.value)">${state.sites.map((x, i) => `<option value="${i}" ${i === selectedSite ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select><button class="danger" onclick="removeSite()">${t("Eliminar sede")}</button></div></div><div id="siteStatus" class="badge ${s.confirmed && !siteEditing.has(s.id) ? "" : "warn"}">${t(s.confirmed && !siteEditing.has(s.id) ? "Sede confirmada" : "Sede pendiente o en edición")}</div>${s.confirmed && !siteEditing.has(s.id) ? `<p>${esc(s.name)} · ${s.users} ${t("Usuarios")} · ${s.floors} ${t("Pisos")} · ${esc(s.ipv4Base || state.project.base)}</p>` : ""}<fieldset id="siteFields" ${s.confirmed && !siteEditing.has(s.id) ? "disabled" : ""}><div class="grid">${field(t("Nombre de sede *"), "sname", s.name)}${field(t("Bloque IPv4 de la sede (opcional)"), "sipv4Base", s.ipv4Base, "text", 'placeholder="10.10.0.0/16" aria-describedby="siteIpv4Help"')}${field(t("Número de pisos"), "sfloors", s.floors, "number", 'min="1" max="50"')}${field("Usuarios", "susers", s.users, "number", 'min="1" max="100000"')}${field(t("Dispositivos personales por usuario"), "sratio", s.ratio, "number", 'min="1" max="10" step="0.1"')}${field(t("Pisos más concurridos (separados por coma)"), "sbusy", s.busy)}${field(t("Áreas / departamentos (separados por coma)"), "sareas", s.areas)}${field(t("Ancho de banda Mbps (0 = sugerir)"), "sbw", s.bandwidth, "number", 'min="0" max="100000"')}</div><div class="grid" style="margin-top:16px">${[
             ["wifi", "WiFi"],
             ["voip", t("Telefonía IP")],
             ["cctv", t("Cámaras IP")],
@@ -1975,7 +1996,7 @@
             )
             .join(
               "",
-            )}</div><div id="siteIpv4Help" class="hint">${t("Opcional: deje vacío para conservar el comportamiento heredado. Este bloque se valida y delimita la asignación VLSM automática de sus VLAN.")}</div><div class="hint">${t("La redundancia reserva un gateway virtual y dos IP físicas por VLAN. Los pisos concurridos se usan para identificar prioridad de cobertura; la cantidad de AP requiere luego un estudio RF.")}</div><div class="actions" style="margin-top:16px"><button class="primary" onclick="saveSite()">${t("Confirmar esta sede")}</button></div></div>`
+            )}</div><div id="siteIpv4Help" class="hint">${t("Opcional: deje vacío para conservar el comportamiento heredado. Este bloque se valida y delimita la asignación VLSM automática de sus VLAN.")}</div><div class="hint">${t("La redundancia reserva un gateway virtual y dos IP físicas por VLAN. Los pisos concurridos se usan para identificar prioridad de cobertura; la cantidad de AP requiere luego un estudio RF.")}</div></fieldset><div class="actions" style="margin-top:16px">${s.confirmed && !siteEditing.has(s.id) ? `<button class="primary" onclick="editSite()">${t("Editar sede")}</button>` : `<button class="primary" onclick="saveSite()">${t("Confirmar esta sede")}</button>`}</div></div>`
         );
       }
       function saveProject() {
@@ -2038,6 +2059,7 @@
           const old = state.sites[selectedSite],
             s = {
               ...old,
+              confirmed: true,
               name: text($("sname").value, "Sede"),
               ipv4Base: $("sipv4Base").value.trim(),
               floors: num($("sfloors").value, 1, 50, "Pisos"),
@@ -2076,8 +2098,8 @@
           // No guardar una intención manual que quedaría fuera del nuevo pool.
           manualVlanNetworks(state.project,state.sites.map(x=>x.id===s.id?s:x),state.vlans,state.nodes);
           // Confirmar sin cambios no destruye un diseño válido.
-          if (JSON.stringify(old) !== JSON.stringify(s)) {
-            const addressOnly = Object.keys(old).filter(k => !["name","ipv4Base","bandwidth"].includes(k)).every(k => JSON.stringify(old[k])===JSON.stringify(s[k]));
+          if (JSON.stringify({...old,confirmed:true}) !== JSON.stringify(s)) {
+            const addressOnly = Object.keys(old).filter(k => !["name","ipv4Base","bandwidth","confirmed"].includes(k)).every(k => JSON.stringify(old[k])===JSON.stringify(s[k]));
             state.sites[selectedSite] = s;
             if (!addressOnly || old.ipv4Base!==s.ipv4Base) invalidateSite(s.id, !addressOnly);
             // Un nombre o ancho de banda no altera redes ni interfaces.
@@ -2086,9 +2108,11 @@
               state.configs=Object.fromEntries(Object.entries(state.configs).filter(([key])=>!ids.some(id=>key.startsWith(id+"-"))));
             }
           }
+          state.sites[selectedSite].confirmed=true;
+          siteEditing.delete(s.id); sitePending.delete(s.id); siteSnapshots.delete(s.id);
           formDrafts.delete("site:"+s.id);
           render();
-          toast(t("Sede confirmada; estimaciones recalculadas."));
+          toast(t("Sede confirmada."));
         });
       } // Valida pisos, usuarios y nombres antes de reemplazar una ficha.
       /**
@@ -2285,7 +2309,7 @@
             t("VLAN y plan de direccionamiento"),
             "Confirme los segmentos; el VLSM los ordena por tamaño y asigna redes sin solaparse. Incluye tránsito router–core y WAN entre sedes.",
           ) +
-          `<div class="card"><div class="grid">${field(t("Bloque predeterminado del proyecto"), "base", state.project.base)}${field(t("Bloque de tránsito (opcional)"), "transitBase", state.project.transitBase)}${field(t("Reserva de crecimiento (%)"), "growth", state.project.growth, "number", 'min="0" max="100"')}${field(t("DNS para DHCP"), "dns", state.project.dns)}</div><div class="notice">${t("Hosts solicitados son terminales; el cálculo añade crecimiento y una IP de gateway, o tres IP si hay dos cores. El gateway no cuenta como host disponible para terminales. Las redes de tránsito son /30 y no usan VLAN.")}</div><div class="actions"><button onclick="proposeVlans(true)">${t("Volver a proponer")}</button><button onclick="addVlan()">${t("Agregar VLAN")}</button><span id="vlanStatus" class="badge ${state.approved && !vlanEditing ? "" : "warn"}">${t(state.approved && !vlanEditing ? "VLAN confirmadas" : "Pendiente de confirmación")}</span><button class="primary" onclick="confirmVlans()">${t(state.approved ? "Recalcular VLAN" : "Confirmar VLAN y calcular VLSM")}</button></div></div><div class="card"><h2>${t("Segmentos editables por sede")}</h2><p id="vlanCidrHelp" class="hint">${t("Subred IPv4 / CIDR (opcional): deje vacío para asignación automática. Define la red completa de la VLAN; no es el gateway ni un rango DHCP.")}</p>${state.vlans.length ? `<div class="tablewrap"><table><thead><tr><th>${t("Sede")}</th><th>${t("VLAN")}</th><th>${t("Nombre")}</th><th>${t("Subred IPv4 / CIDR (opcional)")}</th><th>${t("Servicio")}</th><th>${t("Hosts terminales")}</th><th>${t("DHCP local")}</th><th>${t("Acción")}</th></tr></thead><tbody>${state.vlans.map((v, i) => `<tr><td><select id="vs${i}" aria-label="${t("Sede de VLAN")}">${state.sites.map((s) => `<option value="${s.id}" ${s.id === v.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></td><td><input class="num" aria-label="${t("VLAN")}" id="vi${i}" value="${v.id}" type="number" min="2" max="4094"></td><td><input aria-label="${t("Nombre VLAN")}" id="vn${i}" value="${esc(v.name)}"></td><td><input aria-label="${t("Subred IPv4 / CIDR (opcional)")}" id="vc${i}" value="${esc(v.ipv4Cidr || "")}" placeholder="${t("Automática · 10.10.20.0/24")}" aria-describedby="vlanCidrHelp"></td><td><select aria-label="${t("Servicio")}" id="vr${i}">${optsHTML(roles, v.role)}</select></td><td><input class="num" aria-label="${t("Hosts")}" id="vh${i}" type="number" value="${v.hosts}"></td><td><input aria-label="${t("DHCP local")}" id="vd${i}" type="checkbox" ${v.dhcp ? "checked" : ""}></td><td><button class="small danger" onclick="deleteVlan(${i})">${t("Eliminar")}</button></td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">${t("Confirme los datos y genere una propuesta desde Estimación, o agregue sus segmentos manualmente.")}</div>`}</div>${planTable()}`
+          `<div class="card"><div class="grid">${field(t("Bloque predeterminado del proyecto"), "base", state.project.base)}${field(t("Bloque de tránsito (opcional)"), "transitBase", state.project.transitBase)}${field(t("Reserva de crecimiento (%)"), "growth", state.project.growth, "number", 'min="0" max="100"')}${field(t("DNS para DHCP"), "dns", state.project.dns)}</div><div class="notice">${t("Hosts solicitados son terminales; el cálculo añade crecimiento y una IP de gateway, o tres IP si hay dos cores. El gateway no cuenta como host disponible para terminales. Las redes de tránsito son /30 y no usan VLAN.")}</div><div class="actions"><button onclick="proposeVlans(true)">${t("Volver a proponer")}</button><button onclick="addVlan()">${t("Agregar VLAN")}</button><span id="vlanStatus" class="badge ${state.approved && !vlanEditing ? "" : "warn"}">${t(state.approved && !vlanEditing ? "VLAN confirmadas" : "Pendiente de confirmación")}</span><button class="primary" onclick="confirmVlans()">${t(state.approved ? "Recalcular VLAN" : "Confirmar VLAN y calcular VLSM")}</button></div></div><div class="card"><h2>${t("Segmentos editables por sede")}</h2><p id="vlanCidrHelp" class="hint">${t("Subred IPv4 / CIDR (opcional): deje vacío para asignación automática. Define la red completa de la VLAN; no es el gateway ni un rango DHCP.")}</p>${state.vlans.length ? `<div class="tablewrap"><table><thead><tr><th>${t("Sede")}</th><th>${t("VLAN")}</th><th>${t("Nombre")}</th><th>${t("Subred IPv4 / CIDR (opcional)")}</th><th>${t("Servicio")}</th><th>${t("Hosts terminales")}</th><th>${t("DHCP local")}</th><th>${t("Acción")}</th></tr></thead><tbody>${state.vlans.map((v, i) => `<tr><td><select id="vs${i}" aria-label="${t("Sede de VLAN")}">${state.sites.map((s) => `<option value="${s.id}" ${s.id === v.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></td><td><input class="num" aria-label="${t("VLAN")}" id="vi${i}" value="${v.id}" type="number" min="2" max="4094"></td><td><input aria-label="${t("Nombre VLAN")}" id="vn${i}" value="${esc(v.name)}"></td><td><input aria-label="${t("Subred IPv4 / CIDR (opcional)")}" id="vc${i}" value="${esc(v.ipv4Cidr || "")}" placeholder="${esc(state.approved && !vlanEditing ? (state.plan.find(r=>r.key===v.key)?.network ? state.plan.find(r=>r.key===v.key).network+'/'+state.plan.find(r=>r.key===v.key).prefix : t("Asignación automática pendiente")) : t("Asignación automática pendiente"))}" aria-describedby="vlanCidrHelp"></td><td><select aria-label="${t("Servicio")}" id="vr${i}">${optsHTML(roles, v.role)}</select></td><td><input class="num" aria-label="${t("Hosts")}" id="vh${i}" type="number" value="${v.hosts}"></td><td><input aria-label="${t("DHCP local")}" id="vd${i}" type="checkbox" ${v.dhcp ? "checked" : ""}></td><td><button class="small danger" onclick="deleteVlan(${i})">${t("Eliminar")}</button></td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">${t("Confirme los datos y genere una propuesta desde Estimación, o agregue sus segmentos manualmente.")}</div>`}</div>${state.approved && !vlanEditing ? `<button class="primary" onclick="go(5)">${t("Continuar a Topología")}</button>` : ""}${planTable()}`
         );
       }
       /**
@@ -2557,12 +2581,13 @@
                 ...(pool === b ? reserved : []),
               ])
             : Math.ceil(cursor / r.size) * r.size;
-          if (cursor === null || cursor + r.size - 1 > pool.end)
-            fail(
-              t("{0}: no hay hueco CIDR contiguo /{1} ({2} direcciones, {3} IP útiles requeridas) en {4}/{5}. Amplíe el bloque o reduzca hosts.", [r.kind === "vlan"
-                ? t("Sede «{0}», VLAN {1} «{2}»", [siteName(r.site), r.id, r.name])
-                : "Tránsito «" + r.name + "», " + siteName(r.site), r.prefix, r.size, r.required, pool.network, pool.prefix]),
-            );
+          if (cursor === null || cursor + r.size - 1 > pool.end) {
+            const site=state.sites.find(s=>s.id===r.site),
+              total=req.filter(x=>x.site===r.site && x.kind==="vlan").reduce((n,x)=>n+x.size,0),
+              minimum=site?.ipv4Base && r.kind==="vlan" && !vlans.some(v=>v.site===r.site && v.ipv4Cidr) && total>pool.total
+                ? t("Mínimo por capacidad del conjunto: /{0}.",[32-Math.ceil(Math.log2(total))]) : "";
+            fail(t("{0}: bloque {1}/{2}; hosts {3}, crecimiento {4}%, reserva {5}, requiere {6} IP útiles y /{7} ({8} direcciones). No existe hueco contiguo suficiente. {9}",[r.kind==="vlan"?siteName(r.site)+" · VLAN "+r.id+" «"+r.name+"»":r.name,pool.network,pool.prefix,r.hosts,growth,r.reserve,r.required,r.prefix,r.size,minimum]));
+          }
           const info = subnet(ipStr(cursor) + "/" + r.prefix);
           const row = {
             ...r,
@@ -2591,7 +2616,7 @@
        * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
        */
       function confirmVlans() {
-        safe(() => {
+        const result=safe(() => {
           projectValid();
           if (!state.vlans.length) fail(t("Añada VLAN antes de calcular."));
           const vlans = readVlans(),
@@ -2626,6 +2651,11 @@
           render();
           toast(t("VLSM validado y confirmado. Continúe con la topología."));
         });
+        if (result===false) {
+          vlanEditing=true;
+          if ($("vlanStatus")) $("vlanStatus").textContent=t("Pendiente de confirmación");
+          $("base")?.focus();
+        }
       } // Nada se guarda si una VLAN o el bloque resultan inválidos.
       /**
        * Entradas: Filas efectivas del plan.
@@ -5264,6 +5294,7 @@
             bandwidth: num(s.bandwidth, 0, 100000, "Banda"),
             counts: null,
           };
+          if (s.confirmed !== undefined) o.confirmed=bool(s.confirmed);
           const profile=validateVendorProfile(s.vendorProfile);
           if (profile) o.vendorProfile=profile;
           o.busy.split(",").forEach((n) => num(n.trim(), 1, o.floors, "Piso"));
@@ -5582,7 +5613,7 @@
        */
       function applyImport(data) {
         state = data.state;
-        inventoryEditing.clear(); formDrafts.clear(); vlanEditing=false;
+        inventoryEditing.clear(); formDrafts.clear(); siteEditing.clear(); sitePending.clear(); siteSnapshots.clear(); vlanEditing=false;
         imageData = data.imageData;
         imageMode = false;
         selectedSite = 0;
@@ -5602,7 +5633,7 @@
           )
         ) {
           state = fresh();
-          inventoryEditing.clear(); formDrafts.clear(); vlanEditing=false;
+          inventoryEditing.clear(); formDrafts.clear(); siteEditing.clear(); sitePending.clear(); siteSnapshots.clear(); vlanEditing=false;
           imageData = "";
           selectedSite = 0;
           page = 1;
@@ -5623,7 +5654,7 @@
           return;
         state = fresh();
         // Un laboratorio nuevo no hereda borradores del proyecto sustituido.
-        inventoryEditing.clear(); formDrafts.clear(); vlanEditing=false;
+        inventoryEditing.clear(); formDrafts.clear(); siteEditing.clear(); sitePending.clear(); siteSnapshots.clear(); vlanEditing=false;
         state.project = {
           ...state.project,
           name: "WAN · Laboratorio Corte 2",
