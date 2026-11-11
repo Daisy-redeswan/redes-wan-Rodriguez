@@ -1,5 +1,15 @@
 # Trazabilidad del Corte 3
 
+## Ajustes adicionales del PR #10: navegación, AP e interfaces
+
+Revisión sobre `ce1873ccf41691474dead928c7b55c561ce7ad58`; main permanece en `1956d1872363c88399f5e8240abb1d7a13bca340`. Ejecución 2026-11-11T12:25:40-05:00: **72/72 aplicación + 26/26 SSH local = 98/98 (100%)**, 0 fallidas/bloqueadas/no ejecutadas en las matrices. Se conservan las 84 pruebas anteriores y se añaden Q01–Q14; las cantidades históricas inferiores no se suman nuevamente. [Detalle reproducible y límites](pruebas-interfaces.md), [reporte real de aplicación](../tests/reporte-interfaces.html).
+
+La navegación dependiente exige plan válido/confirmado desde menú, botones y código; la aprobación se reconoce comparando datos/borradores, no una bandera antigua. Los AP mantienen inventario, topología y administración, pero no reciben CLI genérica. Cada dispositivo requiere perfiles físicos declarados por fabricante, con modelo/versión, fuente oficial, funciones y relación puerto–enlace; duplicados y referencias inconsistentes se rechazan. Proyectos antiguos siguen cargando sin inventar puertos ni asignar redes. CLI y perfiles son propuestas/declaraciones, **sin certificación física**.
+
+Esta actualización aporta Q01/Q02/Q14 al flujo y confirmación; Q03/Q04–Q12 a fabricantes/ciberdefensa; Q13 a presentación y teclado. No cambia porcentajes de rúbrica, no certifica conectividad ni reemplaza capturas/PDF académicos históricos. La matriz inferior conserva el contexto anterior y sus cifras; el conjunto actual es el indicado arriba.
+
+## Registro anterior de trazabilidad (50 casos)
+
 > Revisión integral sobre main 1956d18: pools independientes, inventario/VLAN confirmados, topología mixta y 50/50. PDF y capturas anteriores se conservan como históricos; no se regeneraron en esta tarea.
 
 ## Fuente y versión

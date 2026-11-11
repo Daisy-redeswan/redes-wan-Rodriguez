@@ -1,6 +1,13 @@
 # Pruebas reproducibles de WAN Architect — Corte 3 y revisión integral
 
-## Actualización: confirmaciones y consola SSH
+## Ajustes adicionales del PR #10: navegación, AP e interfaces
+
+Revisión sobre `ce1873ccf41691474dead928c7b55c561ce7ad58`; main permanece en `1956d1872363c88399f5e8240abb1d7a13bca340`. Ejecución 2026-11-11T12:25:40-05:00: **72/72 aplicación + 26/26 SSH local = 98/98 (100%)**, 0 fallidas/bloqueadas/no ejecutadas en las matrices. Se conservan las 84 pruebas anteriores y se añaden Q01–Q14; las cantidades históricas inferiores no se suman nuevamente. [Detalle reproducible y límites](pruebas-interfaces.md), [reporte real de aplicación](../tests/reporte-interfaces.html).
+
+La navegación dependiente exige plan válido/confirmado desde menú, botones y código; la aprobación se reconoce comparando datos/borradores, no una bandera antigua. Los AP mantienen inventario, topología y administración, pero no reciben CLI genérica. Cada dispositivo requiere perfiles físicos declarados por fabricante, con modelo/versión, fuente oficial, funciones y relación puerto–enlace; duplicados y referencias inconsistentes se rechazan. Proyectos antiguos siguen cargando sin inventar puertos ni asignar redes. CLI y perfiles son propuestas/declaraciones, **sin certificación física**.
+
+
+## Registro anterior: confirmaciones y consola SSH (84 casos)
 
 Código sobre el HEAD de referencia PR #10 `194a43e`; véanse [manual SSH](manual-ssh.md), [servicio opcional](../ssh_service/README.md) y [pruebas actuales](pruebas-ssh.md). **58/58 UI + 26/26 SSH local = 84/84 ejecutadas**; una comprobación exploratoria file:// bloqueada por política se declara aparte. Windows y fabricantes físicos no ejecutados.
 

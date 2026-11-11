@@ -245,3 +245,39 @@ El protocolo WS usa connect (credenciales solo en memoria), status/error, output
 Detalles, tamaños, modelo de confianza, instalación Windows, rotación de claves y solución de problemas están en [manual SSH](manual-ssh.md) y [README del servicio](../ssh_service/README.md). Código de terceros en static se conserva sin reescribir, con licencias y hashes; los comentarios nuevos propios están en español. No se insertan comentarios dentro de cadenas CLI/atributos donde romperían el programa.
 
 Pruebas actuales: [pruebas-ssh.md](pruebas-ssh.md). El mecanismo SSH se probó realmente en loopback, no físicamente en marcas. Windows no ejecutado y file:// bloqueado por política son límites declarados, no éxitos inferidos.
+
+
+## Navegación y aprobación efectiva — ajustes adicionales del PR #10
+
+La causa de acceso indebido era que `go(i)` no verificaba dependencias: el control existía solo al generar. Otra causa de rechazo falso era usar `vlanEditing` como verdad persistente después de un intento fallido o una edición revertida, en lugar de comparar datos.
+
+`confirmedPlan()` exige `approved === true`, VLAN y plan no vacíos, claves únicas, redes/máscaras/números coherentes, tránsitos requeridos y correspondencia de sede, ID, nombre, servicio, DHCP, hosts, pool, capacidad y CIDR manual. No ejecuta `allocate()`, no reasigna ni cambia datos. `pendingVlans()` consulta controles visibles o el borrador conservado, aun al intentar un salto programático de página. Revertir valores recupera una aprobación realmente válida; una bandera sola no confirma ni invalida redes.
+
+`requireConfirmedPlan()` es el guardián compartido de navegación, topología y adaptadores. `dependentPage()` identifica seis vistas dependientes. `go()` comprueba antes de capturar/reconstruir el formulario; un rechazo conserva DOM y estado. `render()` protege además una asignación directa de página. `updateVlanStatus()` actualiza badge, previsualización y botón Continuar con el mismo resultado, sin renderizar filas. Las comprobaciones de aprobación de la simulación SSH también usan esta fuente. Los módulos independientes no quedan bloqueados por VLSM.
+
+## Perfiles físicos opcionales y compatibilidad
+
+Se añade una **extensión opcional validada a los nodos v4**, en la misma línea de `vendorProfile` y `confirmed`; no se cambian versión, migradores, claves de almacenamiento ni datos IPv4/IPv6. No se hace obligatorio un campo nuevo para leer proyectos anteriores. Un lector antiguo puede descartar estos perfiles: no se garantiza guardado de ida y vuelta usando aplicaciones antiguas.
+
+`nodes[].interfaceProfiles` es un objeto cuyas únicas claves son Cisco, Huawei, Fortinet o MikroTik. Cada perfil contiene exactamente:
+
+- `model`, `version`, `source`: cadenas acotadas; fuente HTTPS de un dominio oficial de la marca, sin credenciales en URL. La aplicación no descarga ese artículo ni certifica el modelo: el usuario contrasta inventario/documentación antes de confirmar.
+- `confirmed`: booleano estricto, declaración explícita del usuario.
+- `ports`: lista de objetos con `linkId`, `name`, `role` y `binding`. Una interfaz por enlace conectado; nombres físicos únicos dentro del equipo/perfil. Las marcas alternativas de Comparación tienen perfiles distintos.
+- `binding`: cadena JSON de fabricante/tipo de nodo y extremos, clase, red, VLAN, LACP y propuestas heredadas del enlace. Permite detectar cambios de relación; no es una firma criptográfica ni prueba de existencia física.
+
+`physicalName()` restringe longitud y gramática de los adaptadores; no tiene un catálogo de puertos por modelo. `physicalBinding()` calcula la relación. `validatePhysicalProfile()` comprueba campos cerrados, tipos, fuente, duplicados, referencias, integridad de binding y funciones compatibles: trunk admite trunk/uplink; access admite access/LAN/gestión; routed admite WAN/LAN/uplink/gestión/tránsito. La confirmación exige todos los enlaces y al menos uno.
+
+`editPhysicalProfile()` construye el formulario por dispositivo/fabricante con nombres y funciones inicialmente vacíos; pide modelo, versión y fuente. `savePhysicalProfile()` valida todo antes de guardar. Un error conserva DOM, proyecto, CLI y almacenamiento. Guardar retira solo la CLI del equipo/adaptador cambiado, incrementa revisión y conserva las restantes. `configBlock()` ofrece el editor aunque no exista texto generado y distingue puertos sin confirmar de declaraciones sin validación física.
+
+`endpoint()` es la fuente común de nombres para los cuatro adaptadores: prefiere el perfil y conserva los alias antiguos para topología, simulación y comprobación de archivos. `requirePhysicalProfile()` bloquea generación nueva sin declaración completa y rechaza AP antes de cualquier adaptador. `generate()`, `generateFortinet()` y `generateMikroTik()` lo invocan incluso en llamadas directas. SVI, Vlanif, subinterfaces y bridges son objetos lógicos de los adaptadores; no se confunden con un puerto físico declarado.
+
+`refreshPhysicalProfiles()` poda referencias eliminadas y retira confirmación si cambió la relación o cantidad de enlaces. Se invoca al invalidar, modificar sedes, recalcular plan o regenerar topología. Se conservan perfiles de nodos automáticos estables y de equipos manuales. Cambiar fabricante/tipo retira perfiles del equipo para exigir una nueva declaración. Ningún ID se cambia para elegir puertos.
+
+`validateImport()` valida perfiles antes de usar interfaces; estados antiguos sin perfiles siguen siendo válidos. Durante su comprobación interna de CLI archivada activa `checkingArchive` en un bloque `try/finally`: permite reconstruir exclusivamente el texto canónico que debe coincidir exactamente con el recibido, sin consultar borradores de la pantalla actual. Nunca se usa ese contexto para una acción normal de generación. Se restauran estado y banderas también ante error. Las CLI antiguas válidas se conservan como archivo, no como certificación física; la UI sigue exigiendo perfiles al regenerar. La carga no llama a asignadores.
+
+## Access Points: administración sin CLI genérica
+
+`accessPoint()` clasifica por tipo, independientemente de la marca. `configurable()` y las listas por rol excluyen AP; la defensa de los adaptadores impide invocaciones directas. No se eliminan AP ni sus VLAN/IP/enlaces. `editNode()` presenta IP, máscara y gateway de gestión; la topología, el inventario, JSON y el puerto del switch vecino permanecen. Un adaptador AP específico requeriría modelo, firmware y modo autónomo/controlador; no se implementó ni se simuló.
+
+Fuentes oficiales y límites léxicos: [matriz de fabricantes](matriz-fabricantes.md). Reproducción, evidencia y relación Q01–Q14: [pruebas de interfaces y navegación](pruebas-interfaces.md).

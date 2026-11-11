@@ -1,5 +1,17 @@
 # Manual de usuario — WAN Architect, Corte 3
 
+## Ajustes adicionales del PR #10: navegación, AP y puertos reales
+
+- **VLAN/VLSM**: confirme un cálculo válido antes de entrar a Topología, Cisco, Huawei, Comparación, Fortinet o MikroTik. Menú lateral, Siguiente y llamadas de navegación aplican la misma regla. El aviso no borra lo escrito. Una bandera antigua de edición no anula un plan coherente: al revertir los valores pendientes se reconoce la aprobación anterior. Subnetting, Ciberdefensa, planificación IPv6 y SSH manual siguen disponibles; cada uno conserva sus propias validaciones.
+- **AP**: permanecen en inventario y topología, con enlaces y administración IPv4. Su editor muestra IP, máscara y gateway de la VLAN. No aparecen en listas de generación ni admiten CLI genérica por llamada directa, aunque su marca sea Cisco o Huawei. Configurarlos exige conocer modelo, firmware y administración autónoma/controlador; queda fuera de estos adaptadores. Los puertos del switch hacia un AP sí conservan su configuración correspondiente.
+- **Antes de generar CLI**, pulse **Confirmar interfaces físicas** en el bloque de cada equipo o en su editor de Topología. El fabricante real se elige en la topología/perfil de sede; en el formulario físico declare modelo, versión, URL oficial pertinente, nombre real de cada puerto y su función. Las funciones son WAN, LAN, uplink, trunk, access, gestión o tránsito, compatibles con el tipo de enlace. No se rellenan nombres de puertos nuevos ni se selecciona una función implícita. Confirme que coinciden con el inventario y guarde; esto es una declaración del usuario, **no una comprobación física**.
+- Una marca no identifica una distribución universal de puertos. Consulte el inventario y la documentación del modelo/versión. Los formatos no implementados se rechazan; no se convierten a puertos inventados. No introduzca secretos ni credenciales en esos campos.
+- Los nombres históricos de **Editar enlace** son propuestas heredadas. El perfil físico es la autoridad para la CLI nueva. Los identificadores de enlace y sus extremos enlazan ambos datos; cambiar/eliminar un enlace, su tipo o sus propuestas retira la confirmación afectada y exige revisar el perfil. Los perfiles de equipos sin cambios permanecen. Cambiar fabricante/tipo obliga a declarar sus puertos nuevamente.
+- En **Comparación**, IOS y VRP requieren perfiles explícitos separados para el mismo rol lógico. Una alternativa no cambia la marca real ni certifica hardware equivalente.
+- JSON v4 y localStorage guardan los perfiles. Los proyectos v2/v3/v4 anteriores se cargan sin asignar redes ni inventar perfiles. Sus CLI canónicas válidas siguen como texto archivado, con aviso de interfaces sin confirmar; generar una propuesta nueva requiere confirmación. Exporte el proyecto antes de migrarlo de navegador/origen.
+
+Véanse la [documentación del contrato](documentacion-codigo.md#perfiles-físicos-opcionales-y-compatibilidad) y las [pruebas de estos ajustes](pruebas-interfaces.md).
+
 Versión documental de la interfaz bilingüe; base main `6ac46f9257143f88ec8cb7b47c020bb3739adbfa`, aplicación `WAN_v4.html`, esquema v4. Estudiante: Daisy Jurleny Rodriguez · Fundación Universitaria Compensar. Las configuraciones son propuestas para revisión manual; **no se ejecutan sobre equipos**. Usar exclusivamente datos ficticios o infraestructura de laboratorio autorizada.
 
 ## 1. Instalación y apertura
