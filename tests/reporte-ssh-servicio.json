@@ -1,0 +1,118 @@
+{
+  "date": "2026-11-11T16:35:19.997021+00:00",
+  "commit": "194a43eaa3e894351e6f5a720baa4d69bbb8907e",
+  "python": "3.12.14",
+  "aiohttp": "3.14.5",
+  "asyncssh": "2.24.1",
+  "server_sha256": "b4a2a974703100355c6f11ea37c4f48d21cc41c6bc0e77cf04094b1feb8c6efa",
+  "test_sha256": "0d2db268b356330b16caa95eda275913241f080ea023ac8d6172118bc4901be3",
+  "records": [
+    {
+      "case": "test_authorization_deadline",
+      "status": "passed"
+    },
+    {
+      "case": "test_bootstrap_and_host_boundary",
+      "status": "passed"
+    },
+    {
+      "case": "test_browser_xterm_real",
+      "status": "passed"
+    },
+    {
+      "case": "test_cancel_during_negotiation",
+      "status": "passed"
+    },
+    {
+      "case": "test_changed_host_key",
+      "status": "passed"
+    },
+    {
+      "case": "test_closed_port_network_error",
+      "status": "passed"
+    },
+    {
+      "case": "test_credentials_never_persist_or_log",
+      "status": "passed"
+    },
+    {
+      "case": "test_destination_and_dns_pinning",
+      "status": "passed"
+    },
+    {
+      "case": "test_invalid_password",
+      "status": "passed"
+    },
+    {
+      "case": "test_key_registration_never_replaces_changed_key",
+      "status": "passed"
+    },
+    {
+      "case": "test_malformed_and_input_limits",
+      "status": "passed"
+    },
+    {
+      "case": "test_network_timeout",
+      "status": "passed"
+    },
+    {
+      "case": "test_output_backpressure",
+      "status": "passed"
+    },
+    {
+      "case": "test_password_interactive_and_unicode",
+      "status": "passed"
+    },
+    {
+      "case": "test_peer_drop_and_cleanup",
+      "status": "passed"
+    },
+    {
+      "case": "test_private_key_authentication",
+      "status": "passed"
+    },
+    {
+      "case": "test_pty_refusal_never_marks_connected",
+      "status": "passed"
+    },
+    {
+      "case": "test_pty_resize_disconnect_reconnect",
+      "status": "passed"
+    },
+    {
+      "case": "test_register_key_requires_exact_fingerprint",
+      "status": "passed"
+    },
+    {
+      "case": "test_scalar_and_oversized_frames",
+      "status": "passed"
+    },
+    {
+      "case": "test_service_shutdown_closes_ssh",
+      "status": "passed"
+    },
+    {
+      "case": "test_session_token_isolation",
+      "status": "passed"
+    },
+    {
+      "case": "test_simultaneous_session_isolation_and_limit",
+      "status": "passed"
+    },
+    {
+      "case": "test_stderr_and_remote_eof",
+      "status": "passed"
+    },
+    {
+      "case": "test_unknown_host_key",
+      "status": "passed"
+    },
+    {
+      "case": "test_ws_requires_origin_cookie_and_csrf",
+      "status": "passed"
+    }
+  ],
+  "passed": 26,
+  "executed": 26,
+  "skipped": 0
+}

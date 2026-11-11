@@ -393,7 +393,7 @@ def ipv6_plan(lab):
         offsets = [2, 3] if row["site"] == "s1" else [1]
         check(list(map(ipaddress.ip_address, row["physical"])) == [net.network_address + x for x in offsets], "Reservas físicas incorrectas")
     check(next(row for row in plan if row["site"] == "s1")["siteCidr"] == "fd12:3456:789a:100::/56", "No reservó primero la sede manual")
-    lab.evaluate("state.sites.reverse();state.vlans.reverse();go(13)")
+    lab.evaluate("state.sites.reverse();state.vlans.reverse();go(12)")
     lab.button("Confirmar planificación IPv6").click()
     check(lab.snapshot()["state"]["ipv6Plan"] == plan, "El orden de filas alteró el plan")
     payload = lab.export()
@@ -686,13 +686,13 @@ def language_default(lab):
     return "Español inicial, selector accesible y preferencia todavía no escrita."
 
 
-@case("C22", "Vistas ES/EN", "Las 13 vistas y editores muestran títulos, etiquetas y controles traducidos.")
+@case("C22", "Vistas ES/EN", "Las 14 vistas y editores muestran títulos, etiquetas y controles traducidos.")
 def translated_views(lab):
     lab.lab(scoped=True); lab.topology(); lab.configs('Cisco'); lab.configs('Huawei'); lab.ipv6()
-    expected = ['Overview','Project details','Estimation and infrastructure','VLANs and VLSM','IPv4 / IPv6 subnetting','Topology','Cisco configuration','Huawei configuration','Comparison','Cyberdefense and AI use','Fortinet configuration','MikroTik configuration','IPv6 planning']
+    expected = ['Overview','Project details','Estimation and infrastructure','VLANs and VLSM','IPv4 / IPv6 subnetting','Topology','Cisco configuration','Huawei configuration','Comparison','Cyberdefense and AI use','Fortinet configuration','MikroTik configuration','IPv6 planning','SSH console']
     for language in ['en','es']:
         lab.page.locator('#languageSelect').select_option(language)
-        for i in range(13):
+        for i in range(14):
             lab.page.locator(f'#nav button[onclick="go({i})"]').focus()
             lab.page.keyboard.press('Enter')
             check(lab.evaluate('page') == i, f"Navegación teclado {i}")
@@ -710,7 +710,7 @@ def translated_views(lab):
             check(lab.page.locator('#modalbody h2').inner_text()==(english if language=='en' else spanish),'Título de editor sin traducción')
             check(lab.button('Confirm device' if function.startswith('editNode') and language=='en' else 'Confirm link' if language=='en' else 'Confirmar equipo' if function.startswith('editNode') else 'Confirmar enlace').count()==1, 'Editor sin traducción')
             lab.page.keyboard.press('Escape')
-    return "13 vistas × 2 idiomas y 4 variantes de editor × 2; títulos y navegación con Enter."
+    return "14 vistas × 2 idiomas y 4 variantes de editor × 2; títulos y navegación con Enter."
 
 
 @case("C23", "Mensajes y confirmaciones bilingües", "Errores, guardado y confirmación nativa traducidos sin cambiar datos introducidos.")
@@ -811,7 +811,7 @@ def button_inventory(lab):
     check(all('onclick=' in tag for tag in tags),'Botón sin acción')
     check(lab.page.locator('label.filebtn[role=button][tabindex="0"][onkeydown]').count()==1,'Importador sin teclado')
     check(lab.button('← Anterior').is_disabled(),'Anterior activo al inicio')
-    lab.go(12);check(lab.button('Siguiente →').is_disabled(),'Siguiente activo al final')
+    lab.go(13);check(lab.button('Siguiente →').is_disabled(),'Siguiente activo al final')
     lab.go(5)
     check(lab.button('Vista automática').is_disabled(),'Vista automática activa sin imagen')
     lab.button('Descargar topología SVG').click();check(lab.page.locator('#toast.error').count()==1,'Descarga vacía sin validación')
@@ -831,7 +831,7 @@ def button_actions(lab):
     def restore(page,editor=None):
         lab.evaluate("arg=>{state=structuredClone(arg[0].state);imageData=arg[1];imageMode=true;page=arg[2];selectedSite=0;render();$('toast').className='toast hidden';$('toast').textContent='';if($('modal').open)closeModal()}",[baseline,pixel,page])
         if editor:lab.evaluate(editor)
-    for page,editor in [(i,None) for i in range(13)]+[(5,'editNode()'),(5,'editLink()')]:
+    for page,editor in [(i,None) for i in range(14)]+[(5,'editNode()'),(5,'editLink()')]:
         restore(page,editor)
         actions=lab.page.locator('button:visible').evaluate_all('(els)=>els.map(e=>({action:e.getAttribute("onclick"),disabled:e.disabled}))')
         for entry in actions:
@@ -843,17 +843,17 @@ def button_actions(lab):
             # Attribute comparison avoids quoting imported names in a selector.
             handles=lab.page.locator('button:visible').element_handles();target=next((h for h in handles if h.get_attribute('onclick')==action),None)
             check(target is not None,'Botón desaparecido: '+action)
-            before=lab.evaluate("JSON.stringify({state,render:__renders,modal:$('modal').open,toast:$('toast').textContent,printed:__printed,imageMode,zoom:document.querySelector('#toposvg')?.getAttribute('style')})")
+            before=lab.evaluate("JSON.stringify({state,render:__renders,modal:$('modal').open,toast:$('toast').textContent,printed:__printed,imageMode,sshHistory,zoom:document.querySelector('#toposvg')?.getAttribute('style')})")
             previous_downloads=len(downloads)
             target.focus();lab.page.keyboard.press('Enter')
             lab.page.wait_for_timeout(40)
-            after=lab.evaluate("JSON.stringify({state,render:__renders,modal:$('modal').open,toast:$('toast').textContent,printed:__printed,imageMode,zoom:document.querySelector('#toposvg')?.getAttribute('style')})")
+            after=lab.evaluate("JSON.stringify({state,render:__renders,modal:$('modal').open,toast:$('toast').textContent,printed:__printed,imageMode,sshHistory,zoom:document.querySelector('#toposvg')?.getAttribute('style')})")
             check(before!=after or len(downloads)>previous_downloads,'Sin efecto observable: '+action)
             found.add(family);visited.append(action)
     required={'saveLocal','loadLocal','exportJSON','newProject','saveProject','resizeSites','demo','removeSite','saveSite','saveCounts','resetCounts','proposeVlans','addVlan','deleteVlan','confirmVlans','downloadPlan','editGateway','inspectSubnet','calculate','confirmIPv6','buildTopology','editNode','editLink','downloadSVG','deleteNode','deleteLink','saveNode','saveLink','closeModal','generateSelected','generateAll','downloadAll','generateCompare','copyConfig','downloadConfig','downloadReport','window.print','go'}
     actual={a.split('(')[0] for a in visited}
     check(required<=actual,'Handlers no ejercitados: '+repr(required-actual))
-    return f"{len(found)} familias/objetivos activados con Enter; 38 handlers, descargas, impresión invocada y validaciones observables."
+    return f"{len(found)} familias/objetivos activados con Enter; {len(actual)} handlers, descargas, impresión invocada y validaciones observables."
 
 
 @case("C29", "Portapapeles e importadores con teclado", "Copia real, descarga intacta y file chooser accesible; fallback selecciona CLI.")
@@ -907,11 +907,11 @@ def bilingual_responsive(lab):
         lab.page.set_viewport_size({'width':width,'height':900})
         for language in ['es','en']:
             lab.evaluate('lang=>setLanguage(lang)',language)
-            for i in [0,1,3,4,5,6,7,8,9,10,11,12]:
+            for i in [0,1,3,4,5,6,7,8,9,10,11,12,13]:
                 lab.go(i)
                 check(lab.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),f'Desbordamiento {width}/{language}/{i}')
                 check(lab.page.locator('#languageSelect').is_visible(),'Selector oculto')
-    return "48 combinaciones vista/idioma/ancho sin desbordamiento de página; selector visible."
+    return "52 combinaciones vista/idioma/ancho sin desbordamiento de página; selector visible."
 
 
 @case("C31", "Catálogo y atributos traducibles", "Todas las claves literales t() y atributos de formulario tienen traducción; opciones conservan valores internos.")
@@ -1008,14 +1008,14 @@ def vlan_confirmation(lab):
 
 @case("N08", "Componentes retirados y navegación", "13 módulos, sin Evidencias Corte 2 ni explicaciones retiradas; calculadoras intactas.")
 def removed_components(lab):
-    check(lab.page.locator('#nav button').count()==13,'Numeración incorrecta')
+    check(lab.page.locator('#nav button').count()==14,'Numeración incorrecta')
     check('Evidencias Corte 2' not in lab.page.locator('#nav').inner_text(),'Módulo persiste')
     for i,removed in [(3,'¿Qué significan VLSM'),(4,'Interpretación')]:
         lab.go(i);check(removed not in lab.page.locator('#view').inner_text(),'Componente persiste')
-    lab.go(12);check(lab.button('Siguiente →').is_disabled(),'Último módulo incorrecto');lab.go(4)
+    lab.go(13);check(lab.button('Siguiente →').is_disabled(),'Último módulo incorrecto');lab.go(4)
     lab.page.locator('#calc').fill('192.168.10.50/26');lab.button('Calcular').click();lab.valid()
     check('192.168.10.63' in lab.page.locator('#calcResult').inner_text(),'Perdió resultado')
-    return '13 módulos navegables, explicaciones ausentes; red/broadcast /26 correctos.'
+    return '14 módulos navegables, explicaciones ausentes; red/broadcast /26 correctos.'
 
 @case("N09", "Topología mixta real", "Cisco router, Huawei core/switch, Fortinet firewall y MikroTik router secundario con puertos reales.")
 def mixed_topology(lab):
@@ -1078,7 +1078,9 @@ def new_bilingual(lab):
 @case("N14", "Sede sin cambios y dependencias locales", "Confirmar ficha idéntica no borra nada; cambiar bloque conserva datos de otra sede.")
 def site_invalidation(lab):
     lab.lab();lab.topology();before=lab.snapshot();lab.go(1);lab.button('Confirmar esta sede').click();lab.valid()
-    check(lab.snapshot()==before,'Ficha idéntica destruyó diseño')
+    expected=copy.deepcopy(before);expected['state']['sites'][0]['confirmed']=True
+    check(lab.snapshot()==expected,'Ficha idéntica destruyó diseño')
+    lab.button('Editar sede').click()
     lab.page.locator('#sipv4Base').fill('192.168.64.0/22');lab.button('Confirmar esta sede').click();lab.valid();after=lab.snapshot()['state']
     for key in ['vlans','nodes']:
         check([n for n in after[key] if n['site']=='s2']==[n for n in before['state'][key] if n['site']=='s2'],'Perdió otra sede')
@@ -1141,6 +1143,100 @@ def partial_proposal(lab):
     check(len({v['key'] for v in after['vlans']})==len(after['vlans']),'Claves duplicadas')
     lab.page.locator('button[onclick="confirmVlans()"]').click();lab.valid();disjoint(lab.snapshot()['state']['plan'])
     return 'Solo se completaron VLAN de s1; claves/CIDR manual/plan de s2 intactos y VLSM válido.'
+
+
+
+@case("P01", "Sede confirmada, edición y persistencia", "Resumen verde/Editar sede, campos bloqueados, edición sin pérdida y JSON/localStorage conservan confirmación.")
+def site_confirmation_ui(lab):
+    lab.lab();lab.topology();before=lab.snapshot()['state'];lab.go(1);lab.button('Confirmar esta sede').click();lab.valid()
+    check(lab.page.locator('#siteStatus').inner_text()=='Sede confirmada','Indicador incorrecto')
+    check(lab.page.locator('#sname').is_disabled() and lab.button('Editar sede').count()==1,'Ficha no bloqueada')
+    current=lab.snapshot()['state'];check(current['plan']==before['plan'] and current['nodes']==before['nodes'],'Confirmación sin cambios destruyó diseño')
+    lab.button('Editar sede').click();check(lab.page.locator('#sname').input_value()==before['sites'][0]['name'],'Perdió nombre')
+    lab.button('Confirmar esta sede').click();lab.valid();lab.button('Guardar proyecto').click();lab.evaluate('state=fresh();render();loadLocal()');lab.valid()
+    check(lab.snapshot()['state']['sites'][0]['confirmed'],'LocalStorage perdió confirmación')
+    lab.upload(lab.export());lab.valid();lab.go(1);check(lab.page.locator('#sname').is_disabled(),'JSON no restauró bloqueo')
+    lab.evaluate('selectSite(1)');check(lab.button('Confirmar esta sede').count()==1,'Sede nueva asumida confirmada')
+    lab.evaluate('selectSite(0)');check(lab.button('Editar sede').count()==1,'Cambio de sede perdió confirmación')
+    return 'Confirmada/resumen/bloqueo, Editar, navegación, JSON y localStorage; plan/nodos conservados.'
+
+@case("P02", "Previsualización y pools de dos sedes", "Automática pendiente antes de cálculo; redes reales en bloques independientes tras VLSM.")
+def per_site_preview(lab):
+    lab.lab();lab.go(1)
+    for i,block in enumerate(['192.168.32.0/22','172.16.0.0/22']):
+        lab.evaluate('i=>selectSite(i)',i);lab.page.locator('#sipv4Base').fill(block);lab.button('Confirmar esta sede').click();lab.valid()
+    lab.go(3);check(lab.page.locator('#vc0').get_attribute('placeholder')=='Asignación automática pendiente','Placeholder falso')
+    lab.page.locator('#transitBase').fill('10.20.250.0/24');lab.page.locator('button[onclick="confirmVlans()"]').click();lab.valid();state=lab.snapshot()['state'];disjoint(state['plan'])
+    for row in state['plan']:
+        pool=next(s['ipv4Base'] for s in state['sites'] if s['id']==row['site']) if row['kind']=='vlan' else state['project']['transitBase']
+        check(network(row).subnet_of(ipaddress.ip_network(pool)),'Fuera del pool de sede')
+    first=next(r for r in state['plan'] if r['key']==state['vlans'][0]['key']);check(lab.page.locator('#vc0').get_attribute('placeholder')==first['network']+'/'+str(first['prefix']),'No muestra subred efectiva')
+    return 'LAN en 192.168.32.0/22 y 172.16.0.0/22; tránsito separado; placeholder pendiente/efectivo correctos.'
+
+@case("P03", "Capacidad detallada y bloqueo de dependencias", "Error identifica sede/VLAN/pool/hosts/reservas; estado pendiente y foco corregible sin perder plan/texto.")
+def capacity_feedback(lab):
+    lab.lab();lab.evaluate("state.sites[0].ipv4Base='192.168.32.0/24';render()")
+    before=lab.snapshot();lab.page.locator('button[onclick="confirmVlans()"]').click()
+    message=lab.page.locator('#toast').inner_text()
+    check(all(x in message for x in ['VLAN','192.168.32.0/24','hosts','crecimiento','reserva','requiere']),'Detalle insuficiente '+message)
+    check(lab.page.locator('#vlanStatus').inner_text()=='Pendiente de confirmación' and lab.snapshot()==before,'Fallo confirmó o mutó estado')
+    check(lab.page.locator('#vc0').get_attribute('placeholder')=='Asignación automática pendiente','Placeholder obsoleto tras error')
+    check(lab.evaluate("document.activeElement.id.startsWith('vh')"),'No enfoca campo corregible')
+    lab.go(5);lab.button('Generar desde el plan').click();check(lab.snapshot()==before,'Generó dependencia sin aprobación efectiva')
+    lab.go(13);lab.page.get_by_role('tab',name='Conexión real',exact=True).click();check(lab.page.locator('#sshHost').is_enabled(),'SSH manual bloqueado por VLSM')
+    return 'Error contextual completo, estado pendiente/foco hosts, plan intacto; topología bloqueada y SSH manual accesible.'
+
+@case("P04", "Simulación basada en proyecto", "CLI/interfaces/VLAN reales del proyecto, comandos cerrados, limpiar/reiniciar y sin conexiones.")
+def ssh_simulation(lab):
+    lab.lab();lab.topology();configs=lab.configs('Cisco');before=lab.snapshot();lab.go(13)
+    first=lab.evaluate("configNodes('Cisco')[0].id");lab.page.locator('#sshDevice').select_option(first)
+    lab.page.locator('#sshCommand').fill('show running-config');lab.page.locator('#sshCommand').press('Enter')
+    check(configs[first+'-Cisco'] in lab.page.locator('#sshSimulation').inner_text(),'CLI simulada no corresponde')
+    lab.page.locator('#sshCommand').fill('configure terminal');lab.button('Enviar comando').click()
+    check('Comando no disponible en el simulador' in lab.page.locator('#sshSimulation').inner_text(),'Inventó comando')
+    lab.page.locator('#sshSimClear').click();check(lab.page.locator('#sshSimulation').inner_text()=='','No limpió')
+    lab.page.locator('#sshCommand').fill('show ip interface brief');lab.button('Enviar comando').click();check('GigabitEthernet' in lab.page.locator('#sshSimulation').inner_text(),'Sin interfaces del proyecto')
+    lab.button('Reiniciar simulación').click();check(lab.page.locator('#sshSimulation').inner_text()=='' and lab.snapshot()==before,'Reinicio alteró datos')
+    check(lab.evaluate('sshSocket===null'),'Simulación conectó red')
+    return 'Configuración exacta, interfaces del proyecto, comando no soportado rechazado, reinicio/limpieza sin mutar ni conectar.'
+
+@case("P05", "Consola sin Python y bilingüe", "Simulación local sin servicio; conexión real indica indisponibilidad, sin alterar datos al traducir.")
+def console_without_service(lab):
+    before=lab.snapshot();lab.go(13);lab.page.locator('#sshCommand').fill('help');lab.button('Enviar comando').click()
+    check('help' in lab.page.locator('#sshSimulation').inner_text(),'No funciona autónoma')
+    lab.page.get_by_role('tab',name='Conexión real',exact=True).click();check(lab.page.locator('#sshConnect').is_disabled(),'Habilitó servicio inexistente')
+    check('Servicio no disponible' in lab.page.locator('#sshService').inner_text(),'No informa indisponibilidad')
+    lab.evaluate("setLanguage('en')");check(lab.button('Connect').count()==1 and 'Service unavailable' in lab.page.locator('#sshService').inner_text(),'SSH no bilingüe')
+    check(lab.snapshot()==before and lab.evaluate('sshSocket===null'),'Consola alteró proyecto')
+    return 'Help/simulación sin servicio; conexión real deshabilitada e informativa ES/EN, proyecto intacto.'
+
+@case("P06", "Gestión explícita y credenciales efímeras", "No inferir gestión desde gateway/WAN/endpoint; no serializar secretos y borrarlos al abandonar la vista.")
+def ssh_ephemeral_ui(lab):
+    lab.lab();lab.topology();lab.go(13);lab.page.get_by_role('tab',name='Conexión real',exact=True).click()
+    lab.evaluate("state.nodes[0].ip='192.0.2.77';state.nodes[0].network='';sshChooseDevice(state.nodes[0].id)")
+    check(lab.page.locator('#sshHost').input_value()=='','Asumió IP de administración')
+    marker='FICTICIO-NO-CREDENCIAL';lab.page.locator('#sshPassword').fill(marker);before=lab.snapshot()
+    check(marker not in json.dumps(before) and marker not in lab.evaluate('JSON.stringify(localStorage)'),'Persistió secreto')
+    lab.evaluate("setLanguage('en')");check(lab.page.locator('#sshPassword').input_value()=='','Idioma restauró secreto')
+    lab.go(4);lab.go(13);check(lab.evaluate('sshSocket===null'),'Sesión huérfana')
+    return 'No infiere gestión; campo secreto fuera de JSON/localStorage y eliminado al cambiar idioma/vista.'
+
+@case("P07", "Importación antigua y confirmación estricta", "Archivo sin flag permanece editable; tipo inválido de confirmación se rechaza atómicamente.")
+def imported_site_confirmation(lab):
+    payload=lab.fixture();lab.upload(payload);lab.valid();lab.go(1)
+    check(lab.button('Confirmar esta sede').count()==1 and lab.page.locator('#sname').is_enabled(),'Asumió confirmación legada')
+    invalid=lab.snapshot();invalid['state']['sites'][0]['confirmed']='true';before=lab.snapshot();lab.upload(invalid)
+    check(lab.snapshot()==before and lab.page.locator('#toast.error').count()==1,'Importó flag de tipo inválido')
+    return 'v2 sin flag no se confirma por inferencia; cadena true rechazada sin sustituir estado.'
+
+@case("P08", "Edición sin cambios y bloqueo selectivo", "Editar sin cambios conserva aprobación; cambios pendientes bloquean derivados sin impedir navegación independiente.")
+def pending_site_guard(lab):
+    lab.lab();lab.topology();lab.go(1);lab.button('Confirmar esta sede').click();before=lab.snapshot();lab.button('Editar sede').click()
+    old=lab.page.locator('#susers').input_value();lab.page.locator('#susers').fill(str(int(old)+1));lab.go(5);lab.button('Generar desde el plan').click()
+    check(lab.snapshot()==before and lab.page.locator('#toast.error').count()==1,'Generó con sede pendiente')
+    lab.go(1);lab.page.locator('#susers').fill(old);lab.button('Confirmar esta sede').click();lab.valid();check(lab.snapshot()==before,'Valores idénticos invalidaron diseño')
+    lab.go(4);lab.page.locator('#calc').fill('192.168.1.10/24');lab.button('Calcular').click();lab.valid()
+    return 'Sede pendiente bloquea topología; revertir/confirmar conserva diseño y calculadora permanece independiente.'
 
 
 def main():
