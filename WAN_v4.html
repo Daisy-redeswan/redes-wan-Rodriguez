@@ -1478,8 +1478,8 @@
               "'": "&#39;",
             })[c],
         ); // Evita inyectar HTML desde nombres y JSON importados.
-      Object.assign(I18N.en, {"Confirmar interfaces físicas": "Confirm physical interfaces", "Declaradas por el usuario; sin validación física": "Declared by the user; not physically validated", "Interfaces físicas sin confirmar": "Physical interfaces not confirmed", "Perfil físico inválido.": "Invalid physical profile.", "Nombre de interfaz física inválido.": "Invalid physical interface name.", "Nomenclatura física no soportada por este adaptador.": "Physical naming is not supported by this adapter.", "Indique documentación oficial del modelo y versión.": "Provide official documentation for the model and version.", "Referencia física de enlace inválida.": "Invalid physical link reference.", "Interfaz física duplicada.": "Duplicate physical interface.", "Función o enlace cambió; reconfirme interfaces físicas.": "Role or link changed; confirm physical interfaces again.", "Confirme una interfaz física por enlace.": "Confirm one physical interface per link.", "AP excluido de CLI genérica: requiere modelo, firmware y administración específicos.": "AP excluded from generic CLI: specific model, firmware and management are required.", "Equipo {0}: confirme modelo, versión e interfaces físicas.": "Device {0}: confirm model, version and physical interfaces.", "Introduzca modelo, versión y nombres del inventario real. La declaración no certifica compatibilidad física. Comparación necesita perfiles separados por fabricante.": "Enter model, version and names from the actual inventory. This declaration does not certify physical compatibility. Comparison requires separate vendor profiles.", "Documentación oficial de interfaces": "Official interface documentation", "Modelo": "Model", "Versión": "Version", "URL oficial del modelo y versión": "Official URL for the model and version", "Nombre real de interfaz": "Actual interface name", "Función": "Role", "Confirmo los puertos contra el inventario del modelo y versión indicados": "I confirm the ports against the inventory of the stated model and version", "Guardar perfil físico": "Save physical profile", "Confirme los puertos del inventario antes de guardar.": "Confirm the inventory ports before saving.", "gestión": "management", "tránsito": "transit"});
-      Object.assign(I18N.en, {"Gestión AP":"AP management","Seleccione función":"Select role","Los puertos de este enlace son propuestas heredadas. Configure y confirme los puertos reales en el perfil físico de cada equipo antes de generar CLI.":"These link ports are legacy proposals. Configure and confirm actual ports in each device physical profile before generating CLI."});
+      Object.assign(I18N.en, {"Perfil físico inválido.": "Invalid physical profile.", "Nombre de interfaz física inválido.": "Invalid physical interface name.", "Nomenclatura física no soportada por este adaptador.": "Physical naming is not supported by this adapter.", "Indique documentación oficial del modelo y versión.": "Provide official documentation for the model and version.", "Referencia física de enlace inválida.": "Invalid physical link reference.", "Interfaz física duplicada.": "Duplicate physical interface.", "Perfil archivado no coincide con los enlaces.": "Archived profile does not match the links.", "Perfil archivado incompleto.": "Incomplete archived profile.", "AP excluido de CLI genérica: requiere modelo, firmware y administración específicos.": "AP excluded from generic CLI: specific model, firmware and management are required.", "Modelo": "Model", "Versión": "Version", "URL oficial del modelo y versión": "Official URL for the model and version"});
+      Object.assign(I18N.en, {"Gestión AP":"AP management","Los nombres de interfaces son propuestas automáticas. Verifique puertos, modelo y versión antes de aplicar configuraciones a equipos físicos.":"Interface names are automatic proposals. Verify ports, model and version before applying configurations to physical devices."});
       const steps = [
         "Resumen",
         "Datos del proyecto",
@@ -1489,10 +1489,10 @@
         "Topología",
         "Configuración Cisco",
         "Configuración Huawei",
-        "Comparación",
-        "Ciberdefensa y uso de IA",
         "Configuración Fortinet",
         "Configuración MikroTik",
+        "Comparación",
+        "Ciberdefensa y uso de IA",
         "Planificación IPv6",
         "Consola SSH",
       ]; // Etapas visibles del flujo.
@@ -1818,7 +1818,7 @@
       }
       // Durante la comprobación canónica de un archivo antiguo no se consultan borradores
       // de la pantalla actual ni se certifican sus puertos propuestos como físicos.
-      let checkingArchive = false;
+      let checkingArchive = false, archivedPhysicalNames = false;
       /** Comprueba datos efectivos, no una bandera histórica de edición. No asigna redes. */
       function confirmedPlan() {
         if (state.approved!==true || !state.plan.length || !state.vlans.length) return false;
@@ -1855,7 +1855,7 @@
       function requireConfirmedPlan() {
         if (!confirmedPlan()) fail(t("Confirme primero VLAN y VLSM."));
       }
-      function dependentPage(index) { return [5,6,7,8,10,11].includes(index); }
+      function dependentPage(index) { return [5,6,7,8,9,10].includes(index); }
       function invalidate(level = "project") {
         refreshPhysicalProfiles();
         if (level === "project" || level === "plan") state.ipv6Plan = [];
@@ -1946,16 +1946,16 @@
           topologyView,
           () => configView("Cisco"),
           () => configView("Huawei"),
-          compareView,
-          securityView,
           fortinetView,
           mikrotikView,
+          compareView,
+          securityView,
           ipv6View,
           sshConsoleView,
         ][page]();
         $("stepfoot").innerHTML =
           `<button ${page === 0 ? "disabled" : ""} onclick="go(${page - 1})">${t("← Anterior")}</button><button class="primary" ${page === steps.length - 1 ? "disabled" : ""} onclick="go(${page + 1})">${t("Siguiente →")}</button>`;
-        if ([6, 7, 10, 11].includes(page))
+        if ([6, 7, 8, 9].includes(page))
           $("view").insertAdjacentHTML("afterbegin", `<div class="notice">${t("Estas propuestas de fabricante son exclusivamente IPv4. IPv6 solo se calcula y planifica; su configuración requiere aclaración docente.")}</div>`);
         if (page === 5) bindDrag();
         restoreDraft();
@@ -3565,7 +3565,7 @@
             )
             .join(
               "",
-            )}</select></div></div>${accessPoint(n)&&row(n.network)?`<p class="notice">${t("Gestión AP")}: ${esc(n.ip)} · ${t("Máscara")}: ${esc(row(n.network).mask)} · Gateway: ${esc(row(n.network).gateway)}. ${t("AP excluido de CLI genérica: requiere modelo, firmware y administración específicos.")}</p>`:""}<p>${t("Las IP de interfaces enrutadas y SVI se toman del plan. Para los equipos manuales, asigne una VLAN e IP si requieren administración. Los nombres no pueden contener comandos.")}</p><div class="actions"><button class="primary" onclick="saveNode('${id}')">${t("Confirmar equipo")}</button><button onclick="closeModal()">${t("Cancelar")}</button>${id && !accessPoint(n) && ["Cisco","Huawei","Fortinet","MikroTik"].includes(n.vendor)?`<button onclick="editPhysicalProfile('${id}','${n.vendor}')">${t("Confirmar interfaces físicas")}</button>`:""}</div>`,
+            )}</select></div></div>${accessPoint(n)&&row(n.network)?`<p class="notice">${t("Gestión AP")}: ${esc(n.ip)} · ${t("Máscara")}: ${esc(row(n.network).mask)} · Gateway: ${esc(row(n.network).gateway)}. ${t("AP excluido de CLI genérica: requiere modelo, firmware y administración específicos.")}</p>`:""}<p>${t("Las IP de interfaces enrutadas y SVI se toman del plan. Para los equipos manuales, asigne una VLAN e IP si requieren administración. Los nombres no pueden contener comandos.")}</p><div class="actions"><button class="primary" onclick="saveNode('${id}')">${t("Confirmar equipo")}</button><button onclick="closeModal()">${t("Cancelar")}</button></div>`,
         );
       } // Editor permite los siete atributos solicitados.
       /**
@@ -3692,7 +3692,7 @@
             )
             .join("");
         modal(
-          `<h2>${t(id ? "Editar" : "Crear")} ${t("enlace")}</h2><p class="notice warn">${t("Los puertos de este enlace son propuestas heredadas. Configure y confirme los puertos reales en el perfil físico de cada equipo antes de generar CLI.")}</p><div class="grid"><div class="field"><label>${t("Equipo A")}</label><select id="la">${ns(l.a)}</select></div><div class="field"><label>${t("Equipo B")}</label><select id="lb">${ns(l.b)}</select></div><div class="field"><label>${t("Tipo")}</label><select id="ltype">${optsHTML(["trunk", "access", "routed"], l.type)}</select></div><div class="field"><label>${t("Red de tránsito (routed)")}</label><select id="lnet"><option value="">${t("Asignar nueva /30 desde VLSM")}</option>${state.plan
+          `<h2>${t(id ? "Editar" : "Crear")} ${t("enlace")}</h2><p class="notice warn">${t("Los nombres de interfaces son propuestas automáticas. Verifique puertos, modelo y versión antes de aplicar configuraciones a equipos físicos.")}</p><div class="grid"><div class="field"><label>${t("Equipo A")}</label><select id="la">${ns(l.a)}</select></div><div class="field"><label>${t("Equipo B")}</label><select id="lb">${ns(l.b)}</select></div><div class="field"><label>${t("Tipo")}</label><select id="ltype">${optsHTML(["trunk", "access", "routed"], l.type)}</select></div><div class="field"><label>${t("Red de tránsito (routed)")}</label><select id="lnet"><option value="">${t("Asignar nueva /30 desde VLSM")}</option>${state.plan
             .filter((r) => r.kind !== "vlan")
             .map(
               (r) =>
@@ -3906,16 +3906,10 @@
       function connected(n) {
         return state.links.filter((l) => l.a === n.id || l.b === n.id);
       } // Configuración limitada a interfaces realmente presentes.
-      // Contrato opcional v4: no migra ni certifica puertos de proyectos antiguos.
+      // Compatibilidad pasiva v4: perfiles de archivos anteriores, sin formulario ni requisito para generar CLI.
       const physicalVendors=["Cisco","Huawei","Fortinet","MikroTik"];
       const physicalRoles=["WAN","LAN","uplink","trunk","access","gestión","tránsito"];
-      const physicalSources={
-        Cisco:"https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/interface/configuration/xe-16-10/ir-xe-16-10-book.pdf",
-        Huawei:"https://info.support.huawei.com/network/ptmngsys/Web/tsrev_ar/en/content/ar/29_edesk_user_cannot_ping_gateway/edesk_user_cannot_ping_gateway_edesk001.html",
-        Fortinet:"https://docs.fortinet.com/document/fortigate/7.4.8/administration-guide/620045/physical-interface",
-        MikroTik:"https://manual.mikrotik.com/docs/cli-reference/interface/"
-      };
-      /** Vincula la declaración al extremo, tipo y función actuales; cambios exigen reconfirmar. */
+      /** Conserva la relación histórica de metadatos para validar y guardar proyectos anteriores. */
       function physicalBinding(l,n) {
         return JSON.stringify([n.vendor,n.type,l.a,l.b,l.type,l.network,l.vlan,l.bundle,l.ac,l.bc,l.ah,l.bh,l.af||"",l.bf||"",l.am||"",l.bm||""]);
       }
@@ -3950,12 +3944,12 @@
           if (p.confirmed && (port.binding!==physicalBinding(l,n) ||
               (l.type==="trunk" && !["trunk","uplink"].includes(port.role)) ||
               (l.type==="access" && !["access","LAN","gestión"].includes(port.role)) ||
-              (l.type==="routed" && !["WAN","LAN","uplink","gestión","tránsito"].includes(port.role)))) fail(t("Función o enlace cambió; reconfirme interfaces físicas."));
+              (l.type==="routed" && !["WAN","LAN","uplink","gestión","tránsito"].includes(port.role)))) fail(t("Perfil archivado no coincide con los enlaces."));
         }
-        if (p.confirmed && (!links.length || ids.size!==links.length)) fail(t("Confirme una interfaz física por enlace."));
+        if (p.confirmed && (!links.length || ids.size!==links.length)) fail(t("Perfil archivado incompleto."));
         return p;
       }
-      /** Una declaración obsoleta sigue editable, pero no habilita CLI ni conserva textos obsoletos. */
+      /** Depura metadatos históricos al cambiar enlaces; no exige reconfirmación ni bloquea CLI automática. */
       function refreshPhysicalProfiles() {
         for (const n of state.nodes) for (const [vendor,p] of Object.entries(n.interfaceProfiles||{})) {
           const links=connected(n), previousCount=p.ports.length;
@@ -3966,41 +3960,17 @@
         }
       }
       /** Defensa compartida por los cuatro adaptadores; AP nunca recibe plantilla genérica. */
-      function requirePhysicalProfile(n,vendor) {
+      function excludeAccessPoint(n) {
+        // Exclusión por tipo, incluso cuando el adaptador se invoca directamente.
         if (accessPoint(n)) fail(t("AP excluido de CLI genérica: requiere modelo, firmware y administración específicos."));
-        if (checkingArchive) return; // Reconstrucción canónica interna de CLI archivada; no es una acción de generación del usuario.
-        const profile=n?.interfaceProfiles?.[vendor];
-        if (!profile?.confirmed) fail(t("Equipo {0}: confirme modelo, versión e interfaces físicas.",[n?.name||""]));
-        validatePhysicalProfile(n,vendor,profile);
       }
-      /** Editor por dispositivo y fabricante. Los campos nuevos no afirman puertos existentes por defecto. */
-      function editPhysicalProfile(id,vendor) {
-        const n=node(id);if (!n || accessPoint(n)) return toast(t("AP excluido de CLI genérica: requiere modelo, firmware y administración específicos."),true);
-        enumVal(vendor,physicalVendors,"Fabricante");
-        const p=n.interfaceProfiles?.[vendor],links=connected(n);
-        modal(`<h2>${t("Confirmar interfaces físicas")} · ${esc(n.name)} · ${vendor}</h2><p>${t("Introduzca modelo, versión y nombres del inventario real. La declaración no certifica compatibilidad física. Comparación necesita perfiles separados por fabricante.")}</p><p><a href="${physicalSources[vendor]}" target="_blank" rel="noopener">${t("Documentación oficial de interfaces")}</a></p><div class="grid">${field("Modelo","physicalModel",p?.model||"")}${field("Versión","physicalVersion",p?.version||"")}${field("URL oficial del modelo y versión","physicalSource",p?.source||"")}</div>${links.map((l,i)=>{const old=p?.ports.find(p=>p.linkId===l.id);return `<div class="card"><strong>${esc(node(l.a===id?l.b:l.a)?.name)} · ${esc(l.type)} · ${esc(l.id)}</strong><div class="grid">${field("Nombre real de interfaz","physicalName"+i,old?.name||"")}<div class="field"><label for="physicalRole${i}">${t("Función")}</label><select id="physicalRole${i}"><option value="">${t("Seleccione función")}</option>${optsHTML(physicalRoles,old?.role||"")}</select></div></div></div>`}).join("")}<label class="check"><input id="physicalConfirm" type="checkbox">${t("Confirmo los puertos contra el inventario del modelo y versión indicados")}</label><div class="actions"><button class="primary" onclick="savePhysicalProfile('${id}','${vendor}')">${t("Guardar perfil físico")}</button><button onclick="closeModal()">${t("Cancelar")}</button></div>`);
-        // Evita que el foco automático en un enlace desplace el encabezado en pantallas pequeñas.
-        $("physicalModel").focus({preventScroll:true});$("modal").scrollTop=0;
-      }
-      /** Valida el conjunto antes de mutar; un error conserva formulario, estado y CLI anteriores. */
-      function savePhysicalProfile(id,vendor) {
-        return safe(()=>{
-          const n=node(id),p={model:$("physicalModel").value.trim(),version:$("physicalVersion").value.trim(),source:$("physicalSource").value.trim(),confirmed:$("physicalConfirm").checked,
-            ports:connected(n).map((l,i)=>({linkId:l.id,name:$("physicalName"+i).value.trim(),role:$("physicalRole"+i).value,binding:physicalBinding(l,n)}))};
-          if (!p.confirmed) fail(t("Confirme los puertos del inventario antes de guardar."));
-          validatePhysicalProfile(n,vendor,p);
-          n.interfaceProfiles={...n.interfaceProfiles,[vendor]:p};
-          // Solo cambia el adaptador de este equipo; las restantes CLI siguen siendo válidas.
-          delete state.configs[id+"-"+vendor];state.revision++;
-          Object.values(state.configs).forEach(item=>item.revision=state.revision);
-          closeModal();render();return true;
-        });
-      }
+      /** Resuelve los puertos del enlace por marca; no exige modelo ni confirmación manual.
+       * Los nombres históricos de perfiles se usan solo para verificar archivos antiguos, nunca para CLI nueva. */
       function endpoint(l, n, vendor) {
         const side = l.a === n.id ? "a" : "b",
           r = row(l.network);
         return {
-          iface: n.interfaceProfiles?.[vendor]?.ports.find(p=>p.linkId===l.id)?.name || l[side + (vendor === "MikroTik" ? "m" : vendor === "Fortinet" ? "f" : vendor === "Cisco" ? "c" : "h")],
+          iface: (archivedPhysicalNames ? n.interfaceProfiles?.[vendor]?.ports.find(p=>p.linkId===l.id)?.name : "") || l[side + (vendor === "MikroTik" ? "m" : vendor === "Fortinet" ? "f" : vendor === "Cisco" ? "c" : "h")],
           ip: r ? (side === "a" ? r.first : r.last) : "",
           r,
           peer: node(l.a === n.id ? l.b : l.a),
@@ -4142,7 +4112,7 @@
           fail(t("Interfaces de switching requieren crear VLAN."));
       } // Bloqueos técnicos concretos, sin afirmar funcionalidad incompleta.
       function generate(n, vendor) {
-        requirePhysicalProfile(n,vendor);
+        excludeAccessPoint(n);
         if (vendor === "MikroTik") return generateMikroTik(n);
         if (vendor === "Fortinet") return generateFortinet(n);
         if (!["Cisco", "Huawei"].includes(vendor) || fortinetNode(n) || mikrotikNode(n))
@@ -4526,7 +4496,7 @@
        * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
        */
       function generateFortinet(n) {
-        requirePhysicalProfile(n,"Fortinet");
+        excludeAccessPoint(n);
         if (!fortinetNode(n)) fail(t("FortiOS solo admite nodos Firewall de fabricante Fortinet."));
         requireConfirmedPlan();
         hostname(n.name);
@@ -4764,7 +4734,7 @@
        * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
        */
       function generateMikroTik(n) {
-        requirePhysicalProfile(n,"MikroTik");
+        excludeAccessPoint(n);
         if (!mikrotikNode(n)) fail(t("RouterOS solo admite nodos Router de fabricante MikroTik."));
         requireConfirmedPlan();
         hostname(n.name);
@@ -4968,10 +4938,8 @@
       } // Génération atomique de la marque entière.
       function configBlock(n, v) {
         const item = state.configs[n.id + "-" + v];
-        const profile=n.interfaceProfiles?.[v];
-        const controls=`<div class="actions"><strong>${esc(n.name)} · ${v}</strong><button onclick="editPhysicalProfile('${n.id}','${v}')">${t("Confirmar interfaces físicas")}</button><span class="badge ${profile?.confirmed?'':'warn'}">${t(profile?.confirmed?"Declaradas por el usuario; sin validación física":"Interfaces físicas sin confirmar")}</span></div>`;
-        if (!item) return controls;
-        return controls+`<div style="margin-top:24px"><div class="headingrow"><h3>${esc(n.name)} · ${v}</h3><div class="actions"><button class="small" onclick="copyConfig('${n.id}','${v}')">${t("Copier configuration")}</button><button class="small" onclick="downloadConfig('${n.id}','${v}')">${t("Télécharger")}</button></div></div><pre class="console">${esc(item.text)}</pre></div>`;
+        if (!item) return "";
+        return `<div style="margin-top:24px"><div class="headingrow"><h3>${esc(n.name)} · ${v}</h3><div class="actions"><button class="small" onclick="copyConfig('${n.id}','${v}')">${t("Copier configuration")}</button><button class="small" onclick="downloadConfig('${n.id}','${v}')">${t("Télécharger")}</button></div></div><pre class="console">${esc(item.text)}</pre></div>`;
       } // Les sorties CLI sont affichées comme texte, jamais interprétées en HTML.
       function compareView() {
         const ns = state.nodes.filter(configurable);
@@ -5753,12 +5721,17 @@
                 val.revision !== out.revision
               )
                 continue;
-              const generated = generate(n, m[2]);
+              let generated = generate(n, m[2]);
+              if (generated !== val.text && n.interfaceProfiles?.[m[2]]) {
+                // No se pierde texto histórico válido ni se acepta CLI arbitraria del JSON.
+                archivedPhysicalNames=true;
+                try { generated=generate(n,m[2]); } finally { archivedPhysicalNames=false; }
+              }
               if (generated === val.text)
                 out.configs[key] = { text: generated, revision: out.revision };
             }
         } finally {
-          checkingArchive=false;
+          checkingArchive=false;archivedPhysicalNames=false;
           state = previous; vlanEditing=previousEditing; previousPending.forEach(id=>sitePending.add(id));
         }
         let img = data.imageData || "";
