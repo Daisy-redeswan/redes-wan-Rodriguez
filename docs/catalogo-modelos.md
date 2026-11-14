@@ -4,12 +4,16 @@ Verificación documental: **14 de noviembre de 2026**. Base de código: `6466c94
 
 ## Uso y distribución sin internet
 
-1. Abra `WAN_v4.html` conservando junto al HTML la carpeta `data/`. La ejecución se verificó mediante HTTP local y el servicio SSH opcional; la apertura file:// está diseñada sin fetch, pero su prueba fue bloqueada por política del navegador de este entorno.
-2. En Topología, abra **Editar fabricante y equipo**, elija fabricante y modelo filtrado por tipo, y confirme el equipo. En las vistas de configuración puede seleccionar directamente el modelo del fabricante actual.
+1. Abra `WAN_v4.html`: las doce fichas están embebidas antes de inicializar la aplicación; no necesita copiar la carpeta `data/`. La ejecución se verificó mediante HTTP local y el servicio SSH opcional; la apertura file:// está diseñada sin fetch, pero su prueba fue bloqueada por política del navegador de este entorno.
+2. En Topología, abra **Editar fabricante y equipo**, elija fabricante y modelo filtrado por tipo, y confirme el equipo. Las vistas de configuración recuperan el modelo ya guardado y no muestran otro selector.
 3. La vista previa muestra nombres, medio, velocidades documentadas, restricciones y fuentes. Los enlaces reciben puertos automáticamente; no se escriben modelo, versión, URL ni cada puerto en un formulario obligatorio.
 4. Revise la asignación por enlace y genere la propuesta. Si falta capacidad, compatibilidad de medio/velocidad o respaldo para una función activa, se muestra un error específico; no se añaden puertos ficticios ni se guarda una transacción parcial.
 
-La aplicación lee **solo datos locales**: [JSON canónico](../data/catalogo-interfaces.json) y [script de datos empaquetado](../data/catalogo-interfaces.js). El script permite carga clásica también desde `file://`, sin `fetch`, CORS ni scraping. `python tools/build_catalogo.py` regenera el script tras editar el JSON; `python tools/build_catalogo.py --check` detecta diferencias. No requiere paquetes nuevos. Distribuir únicamente el HTML pierde el catálogo: el modo genérico heredado continúa con advertencia, pero un proyecto que declara un modelo desconocido se rechaza en vez de degradarlo silenciosamente.
+La aplicación lee **solo datos embebidos en su HTML**, generados desde el [JSON canónico](../data/catalogo-interfaces.json) y [script de datos empaquetado](../data/catalogo-interfaces.js). El script permite carga clásica también desde `file://`, sin `fetch`, CORS ni scraping. `python tools/build_catalogo.py` regenera el script tras editar el JSON; `python tools/build_catalogo.py --check` detecta diferencias tanto en el script distribuible como en la copia embebida del HTML. No requiere paquetes nuevos. Distribuir únicamente el HTML conserva el catálogo. El modo genérico heredado continúa con advertencia cuando el proyecto no declara modelo; un ID de modelo desconocido se rechaza en vez de degradarlo silenciosamente. El test de carga file:// real puede quedar bloqueado por políticas del entorno: no se interpreta como una ejecución superada.
+
+## Causa reproducida de catálogo no disponible
+
+La revisión anterior cargaba `data/catalogo-interfaces.js` mediante una ruta relativa antes del script principal. Si ese recurso faltaba o no podía cargarse, `WAN_INTERFACE_CATALOG` quedaba ausente y `interfaceCatalog` se inicializaba como lista vacía. Ese fallo seguro se reproduce de forma controlada en K22. El repositorio completo por HTTP sí disponía de las doce fichas: no se atribuye el fallo a modelos borrados ni se afirma haber inspeccionado la ruta/dispositivo local del usuario. La solución elimina esa dependencia de distribución al empaquetar los datos dentro del HTML. F05 comprueba la aplicación aislada con data/ inaccesible y sin internet; FILE01 deja registrada por separado la restricción administrativa para file:// de este entorno.
 
 ## Modelos exactos incluidos
 

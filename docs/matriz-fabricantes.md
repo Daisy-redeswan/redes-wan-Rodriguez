@@ -1,5 +1,13 @@
 # Matriz de fabricantes de WAN Architect
 
+## Flujo vigente del PR #11: selección y comparación
+
+Fabricante/modelo se seleccionan **exclusivamente en Topología/editor de equipo**. Los cuatro módulos CLI recuperan modelos y puertos guardados; no piden otra selección ni confirmación física. Las doce fichas oficiales no cambian. El HTML contiene su copia generada y no depende de archivos data/ durante ejecución; JSON/JS se mantienen como fuente y paquete de datos verificable.
+
+La comparación incorpora interfaces IPv4, VLAN/LAN, OSPF, DHCP/relay y administración para las cuatro marcas, usando extractos de adaptadores/equipos reales. Si falta un equipo/función compatible muestra el motivo, sin convertir roles ni fabricar comandos. Se conserva la equivalencia IOS/VRP adicional cuando es válida. La simulación usa listas de lectura propias por marca y no ejecuta CLI. AP sigue excluido de los cuatro generadores genéricos. Resultados y límite file://: [pruebas vigentes](pruebas.md); comportamiento: [manual](manual.md).
+
+Las secciones siguientes conservan el historial del primer catálogo y adaptadores; esta sección gobierna la ubicación actual de selección/modelos y comparación. La validación de hardware sigue pendiente.
+
 ## Catálogo local de interfaces: estado vigente
 
 Base `6466c9494cefdb5423d95e1bc04175304a4e248d`, rama `feature/catalogo-interfaces-fabricantes`. Verificación documental y pruebas: **14 de noviembre de 2026**. Se incorporan doce fichas, tres por fabricante, contrastadas con fuentes oficiales y límites explícitos en [catálogo de modelos](catalogo-modelos.md). No es certificación física.

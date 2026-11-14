@@ -1,5 +1,18 @@
 # Documentación del código — revisión integral WAN Architect
 
+## Correcciones funcionales del PR #11: dependencias y contratos
+
+Base `89a5a2a948c965129ca28f40cb57f5f303f587b2`; [flujo de usuario](manual.md). Se añaden dos booleanos opcionales v4, `project.confirmed` y `sites[].vendorsConfirmed`, validados estrictamente por `validateImport()` y conservados por JSON/localStorage; archivos antiguos sin ellos no se interpretan como confirmados. `projectEditing`/`vendorsEditing` son presentación temporal, reiniciada al importar/cargar/crear proyecto.
+
+- `saveProject()` valida un candidato y bloquea campos solo tras éxito. Igualdad conserva estado/derivados; estructura/segmentación/WAN mantienen invalidación vigente. El nombre cambia cabeceras CLI y solo retira esos textos, sin borrar redes. `editProject()` no invalida nada. `resizeSites()` conserva identificación pendiente tras cambiar la cantidad; aplicar la misma cantidad no invalida.
+- `saveVendorProfiles()` valida perfiles y copia el proyecto. Cambios de marca actualizan nodos automáticos sin override, validan su modelo y conservan plan/aprobación. Marcas incompatibles con un modelo fallan atómicamente. Nuevos roles físicos reservan /30 adicionales conservando filas anteriores; el candidato se adopta al final. Se retiran cachés de nodos/vecinos afectados sin cambiar la revisión global y obsoletar otras sedes. `editVendorProfiles()` solo abre campos.
+- `tools/build_catalogo.py` ahora sincroniza JSON→JS y JSON→script embebido en `WAN_v4.html`. La carga es síncrona y precede a `interfaceCatalog`; no hay fetch ni archivo externo obligatorio. Los datos oficiales permanecen idénticos; `--check` comprueba ambas copias.
+- `catalogControls()` queda en Topología; `catalogSavedSummary()` muestra únicamente inventario guardado en Configuración. La asignación y el importador conservan sus validadores nativos de modelo/enlaces; no se reintroduce un formulario físico obligatorio.
+- `compareFourEntries()` filtra equipos reales por rol/función y usa adaptadores existentes sin guardar resultados ni cambiar marcas/opciones. `compareFourView()` muestra extractos por cuatro fabricantes, diferencias y bloqueos. `generateCompare()` conserva la equivalencia adicional IOS/VRP, claramente separada.
+- `sshRunSimulation()` normaliza únicamente comandos de lectura simulados, selecciona una lista cerrada por marca y muestra CLI vigente o la genera en memoria sin cachearla. Interfaces virtuales de core se derivan del plan; no se inventa estado operativo. `showSSHManual()` muestra un diálogo local escapado/bilingüe. No se modifican funciones de conexión, credenciales, transporte ni controles SSH reales.
+
+Pruebas y límites: [pruebas](pruebas.md), [catálogo](catalogo-modelos.md) y [manual SSH](manual-ssh.md). La navegación file:// puede ser bloqueada por política del entorno; no se elude ni se cuenta como superada.
+
 ## Cómo estudiar esta aplicación
 
 La aplicación sigue siendo un solo archivo autónomo, `WAN_v4.html`. HTML define la estructura; CSS la presentación; JavaScript valida datos, calcula redes, renderiza vistas y genera propuestas de comandos. No hay backend obligatorio. El servicio SSH opcional permite únicamente la administración manual explícita; simulación y módulos tradicionales permanecen autónomos. El botón Generar produce texto para revisión humana: nunca configura equipos.

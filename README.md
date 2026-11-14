@@ -24,18 +24,18 @@ WAN Architect permite diseñar una WAN por sedes, calcular y planificar IPv4/IPv
 
 ## Cómo ejecutarla
 
-1. Descargar/clonar el repositorio completo, conservar la carpeta `data/` junto a `WAN_v4.html` y abrirlo en un navegador actualizado. No requiere backend, cuentas ni paquetes para usar la aplicación.
+1. Descargar/clonar el repositorio completo, abrir `WAN_v4.html` (el catálogo está embebido; no exige copiar `data/`) en un navegador actualizado. No requiere backend, cuentas ni paquetes para usar la aplicación.
 2. Para reproducir pruebas y capturas, desde la raíz ejecutar `python -m http.server 8000 --bind 127.0.0.1` y abrir `http://127.0.0.1:8000/WAN_v4.html`. Detener con Ctrl+C; no exponer ese servidor a Internet.
 3. Seguir proyecto → sede → estimación → VLAN/IPv4 → IPv6 opcional → topología → fabricante → revisión y exportación. Confirmar fichas e inventario: guardar valores idénticos conserva el diseño; los cambios reales invalidan únicamente dependencias afectadas. Elegir fabricantes por sede/función antes de generar topología.
 4. Cambiar **Idioma / Language** entre Español y English. La preferencia no modifica el proyecto ni sus configuraciones. Guardar/exportar un respaldo JSON; localStorage depende del origen y no cifra los datos.
 
-En Topología o Configuración, seleccione modelo en la lista de su fabricante y tipo; los puertos se muestran y asignan automáticamente. Sin modelo, los proyectos v2/v3/v4 conservan interfaces genéricas con advertencia. El catálogo opera localmente y se amplía editando JSON y ejecutando `python tools/build_catalogo.py`; no consulta internet durante uso. Huawei publica un banco RJ45 parcial y Fortinet reserva switch interno/FortiLink. Son propuestas verificadas documentalmente, sin certificación física; los AP siguen excluidos de CLI genérica.
+Exclusivamente en Topología, seleccione fabricante y modelo en la lista filtrada por tipo; los puertos se muestran y asignan automáticamente. Sin modelo, los proyectos v2/v3/v4 conservan interfaces genéricas con advertencia. El catálogo está embebido en el HTML y se amplía editando JSON y ejecutando `python tools/build_catalogo.py`; no consulta internet ni carga archivos de catálogo durante uso. Los cuatro módulos CLI solo leen la selección de Topología. Comparación muestra cinco funciones para cuatro marcas reales, con diferencias y limitaciones. La simulación SSH reconoce espacios/mayúsculas en comandos de lectura y su manual se abre integrado sin Python. Huawei publica un banco RJ45 parcial y Fortinet reserva switch interno/FortiLink. Son propuestas verificadas documentalmente, sin certificación física; los AP siguen excluidos de CLI genérica.
 
 El [manual](docs/manual.md) explica controles, idiomas, escenarios y limitaciones. Los cuatro generadores siguen siendo IPv4; las configuraciones IPv6 requieren aclaración del alcance docente.
 
 ## Pruebas y % de confianza (Corte 3)
 
-**Pruebas actuales: 96/96 aplicación + 26/26 SSH local = 122/122 ejecutadas (100%).** Conserva los 99 casos anteriores y añade 23 del catálogo: fabricante/rol/modelo, nombres oficiales, capacidad, medios, asignación determinista, JSON, AP, cuatro marcas, ES/EN y modo sin internet. Cero fallidas/bloqueadas/no ejecutadas en las matrices. Una exploración `file://` fue bloqueada por política del navegador; HTTP local sin internet sí fue comprobado. Windows y hardware no ejecutados. Los hashes históricos de cuatro CLI no se sustituyen.
+**Pruebas actuales: 109/109 aplicación + 26/26 SSH local = 135/135 ejecutadas (100%).** Conserva los 122 casos previos y añade F01–F13: confirmaciones/persistencia, fabricantes sin pérdida de VLSM, HTML autónomo, doce modelos, selección única, comparación de cuatro marcas, 19 comandos SSH simulados, manual integrado y revisión visual. Cero fallidas en las matrices. **FILE01 adicional bloqueada** por política del navegador (`ERR_BLOCKED_BY_ADMINISTRATOR`), no contabilizada como superada; puede reproducirse con `python tests/check_file_catalogo.py`. HTTP local con data/ bloqueada y sin internet sí fue comprobado. Windows y equipos físicos no ejecutados. Los hashes CLI históricos no se sustituyen.
 
 ```bash
 python -m pip install -r tests/requirements.txt
@@ -43,7 +43,7 @@ python -m playwright install chromium
 python tests/test_corte3.py
 ```
 
-El runner inicia/cierra HTTP local, crea contextos limpios y devuelve un código no cero ante fallos. El reporte normal es temporal y su ruta se imprime; [casos, resultados, hashes y entorno](docs/pruebas.md), [reporte UI actual](tests/reporte-catalogo.html), [resultado SSH actual](tests/reporte-catalogo-ssh.json) y [pruebas SSH](docs/pruebas-ssh.md). El porcentaje no certifica toda la aplicación ni hardware, conectividad o seguridad integral.
+El runner inicia/cierra HTTP local, crea contextos limpios y devuelve un código no cero ante fallos. El reporte normal es temporal y su ruta se imprime; [casos, resultados, hashes y entorno](docs/pruebas.md), [reporte UI actual](tests/reporte-pr11-funcional.html), [resultado SSH actual](tests/reporte-pr11-ssh.json) y [pruebas SSH](docs/pruebas-ssh.md). El porcentaje no certifica toda la aplicación ni hardware, conectividad o seguridad integral.
 
 ## Documentos
 
@@ -56,7 +56,7 @@ El runner inicia/cierra HTTP local, crea contextos limpios y devuelve un código
 
 ## Capturas (evidencias)
 
-Las capturas 01–10 y los PDF se conservan intactos como evidencia histórica de main 1956d18 (31 casos); no muestran el rediseño actual. El resultado actual 122/122 está en los reportes enlazados arriba; las capturas no se presentan como evidencia de esta ampliación del catálogo. Se retiró la pantalla de evidencias de la app, no estos archivos.
+Las capturas 01–10 y los PDF se conservan intactos como evidencia histórica de main 1956d18 (31 casos); no muestran el rediseño actual. El resultado actual 135/135 está en los reportes enlazados arriba; las capturas no se presentan como evidencia de esta ampliación del catálogo. Se retiró la pantalla de evidencias de la app, no estos archivos.
 
 Las capturas de la aplicación se obtuvieron por HTTP local con Playwright, contexto limpio y datos ficticios. Las propuestas nunca se ejecutaron en infraestructura real.
 
@@ -86,7 +86,7 @@ La 05 procede de [Commits en GitHub](https://github.com/Daisy-redeswan/redes-wan
 | Config Cisco y Huawei | Sí | Capturas 03/04; C12/C13/C26: generación y texto exacto |
 | Config Fortinet y MikroTik (C3) | Sí | Capturas 06/07; C14/C15/C26; validación textual |
 | Ciberdefensa (`politicas-ia.md`) | Sí | Captura 08; C08/C10/C17; `.gitignore` y políticas documentadas |
-| Pruebas con % de confianza (C3) | Sí | Captura 09 histórica (31/31); suite/reporte actual y `docs/pruebas.md`: 122/122 ejecutadas |
+| Pruebas con % de confianza (C3) | Sí | Captura 09 histórica (31/31); suite/reporte actual y `docs/pruebas.md`: 135/135 ejecutadas |
 | Documento y manual finales | Sí | Informe PDF revisado, capturas insertadas y manual de controles/idioma |
 | Repositorio y versiones | Sí | Repositorio público, ramas e historial; capturas 05 y 10 |
 | Sustentación en vivo realizada | No | Debe demostrarse ante evaluación; esta entrega no la simula |

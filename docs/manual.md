@@ -1,5 +1,16 @@
 # Manual de usuario — WAN Architect, Corte 3
 
+## Correcciones funcionales del PR #11
+
+Base `89a5a2a948c965129ca28f40cb57f5f303f587b2`. Esta sección sustituye los comportamientos históricos que se describen más adelante.
+
+1. **Datos del proyecto:** confirmar valida y guarda, muestra Datos confirmados y bloquea campos; Editar datos recupera la edición. `project.confirmed` opcional v4 se conserva al guardar/importar, sin inferirlo en v2/v3/v4 antiguos. Confirmar igualdad conserva cálculos, topología y configuraciones. Cambios de metadatos no borran redes; cambiar el nombre retira textos CLI que incluyen ese nombre. Estructura/segmentación/interconexión conservan su invalidación vigente. Aplicar número de sedes es una acción explícita previa.
+2. **Fabricantes:** confirmar permanece en Topología y bloquea el resumen con Editar fabricantes. `sites[].vendorsConfirmed` opcional conserva la confirmación. Un cambio solo de marca no reasigna ni desconfirma VLAN/VLSM/IPv6; actualiza equipos automáticos sin override individual y retira únicamente cachés dependientes, incluyendo vecinos afectados. Modelos incompatibles se rechazan sin borrar su selección; cámbielos mediante el editor normal del equipo. Activar una función física nueva puede requerir nuevas /30: se agregan con validación atómica y sin modificar redes previas.
+3. **Catálogo autónomo:** el HTML anterior dependía de `data/catalogo-interfaces.js`; copiar/abrir solo el HTML dejaba el catálogo vacío. El empaquetador ahora inserta las doce fichas verificadas en un script local del propio HTML, antes de la inicialización. `--check` comprueba JSON, JS distribuible y copia embebida. Sin fetch ni carpeta data durante ejecución; no se cambiaron datos ni fuentes oficiales. El modo HTTP con recursos data bloqueados y red desactivada está probado; la comprobación file:// se informa por separado si la política del navegador la bloquea.
+4. **Selección única:** fabricante/modelo se eligen exclusivamente en Topología/editor de equipo. Cisco/Huawei/Fortinet/MikroTik muestran inventario guardado de solo lectura y consumen los mismos enlaces. Un rol sin ficha explica su ausencia; no ofrece modelos de otro tipo para forzar compatibilidad. Los AP siguen sin CLI genérica.
+5. **Comparación:** cinco funciones (interfaces IPv4, VLAN/LAN, OSPF, DHCP/relay y administración) × cuatro marcas. Se extraen líneas de los adaptadores de equipos reales compatibles; no se fabrican equipos ni se cambia state/configuraciones. Cada tarjeta explica diferencias o ausencia/limitación. Los extractos no son configuraciones completas. Se conserva adicionalmente la comparación IOS/VRP por rol lógico cuando es válida, con advertencia de interfaces genéricas para la marca alternativa.
+6. **Simulación y manual SSH:** comandos de lectura normalizados en espacios/capitalización, listas cerradas por marca y 19 comandos anunciados probados. `show running-config` y equivalentes muestran CLI vigente guardada o una propuesta actual generada sin guardarla, nunca running-config remoto. Las consultas no abren red ni modifican el proyecto. Interfaces/VLAN/rutas son del plan, no estado operativo; comandos desconocidos/de otra marca/escritura/inyección se rechazan. El manual es un diálogo integrado, consultable sin Python, archivos Markdown externos ni internet. La conexión SSH real y sus límites de seguridad permanecen sin cambios.
+
 ## Ajuste vigente del PR #10: generación automática y menú
 
 - **VLAN/VLSM sigue requiriendo un plan válido y confirmado** antes de Topología, fabricantes o Comparación. Revertir borradores reconoce la aprobación anterior. Subnetting, Ciberdefensa, IPv6 y SSH manual conservan su acceso independiente y sus validaciones.
@@ -28,7 +39,7 @@ Abrir `http://127.0.0.1:8000/WAN_v4.html`. Cerrar con Ctrl+C. No publicar el ser
 
 ## 2. Proyecto, sedes e inventario
 
-1. En **Datos del proyecto**, introducir nombre, empresa ficticia, actividad, infraestructura, segmentación y número de sedes. Confirmar datos del proyecto y aplicar el número de sedes.
+1. En **Datos del proyecto**, introducir nombre, empresa ficticia, actividad, infraestructura, segmentación y número de sedes. Aplicar el número de sedes y confirmar datos del proyecto; se muestra Datos confirmados y Editar datos.
 2. Seleccionar cada sede, registrar pisos, usuarios, áreas, servicios y redundancia; confirmar su ficha. El bloque IPv4 de sede es opcional y debe estar alineado, ser privado, poder ser independiente del predeterminado y no solaparse con otras sedes/tránsito.
 3. Revisar **Estimación e infraestructura**. Las cantidades son estimaciones preliminares; no sustituyen estudios RF, inventarios físicos ni dimensionamiento profesional.
 4. Confirmar fichas e inventario. Una confirmación idéntica conserva el diseño; un cambio real invalida dependencias locales y vecinos WAN afectados. El inventario confirmado muestra resumen y **Editar inventario**; restaurar estimación solicita confirmación.

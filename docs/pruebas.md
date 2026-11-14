@@ -1,6 +1,46 @@
 # Pruebas reproducibles de WAN Architect — Corte 3 y revisión integral
 
-## Catálogo local de interfaces: estado vigente
+## Verificación vigente: correcciones funcionales del PR #11
+
+Base `89a5a2a948c965129ca28f40cb57f5f303f587b2`; rama `feature/catalogo-interfaces-fabricantes`. Aplicación: `2026-11-14T14:10:45-05:00`; Python 3.12.14, Playwright 1.62.0, Chromium 154.0.8037.57, Linux-6.18.57-x86_64-with-glibc2.41. HTTP local y un contexto limpio por caso; 164.9 s. SSH real exclusivamente loopback: 2026-11-14T19:01:54.471527+00:00, AsyncSSH 2.24.1, aiohttp 3.14.5; 11.4 s. No se ejecutó CLI en equipos físicos.
+
+**109/109 aplicación + 26/26 SSH = 135/135 ejecutadas (100%)**, 0 fallidas/no ejecutadas dentro de las matrices. Se conservan los 122 casos previos y se añaden F01–F13. Una comprobación adicional **FILE01 está bloqueada** por política administrativa del navegador; no se suma como superada ni entra en el denominador de pruebas ejecutadas. No hay certificación file://, Windows, compatibilidad física ni conectividad WAN.
+
+Reportes reales: [aplicación completa](../tests/reporte-pr11-funcional.html), [SSH](../tests/reporte-pr11-ssh.json) y [bloqueo file://](../tests/reporte-pr11-file.json). Registran HEAD base del árbol de trabajo antes de los commits y sus hashes; no representan una ejecución en un commit posterior. SHA-256 aplicación: `4d55b8577acc108febfbf3aec8973f416e156dbe8184516246df109cd12a424c`; runner: `8cfda82faf1d70f611c033eb5415f3f542aabb5ad719c7960dc97b0c49dd6ca7`; casos F: `8de95b34b6e5bccc13dc77a517644cb047302d20bb8ee760379d5f51068c5a74`. Catálogo oficial inalterado: `0d1a18afbf51c5a5eb7be79d8d85d1a1b5182fee68d87867d423f4ab535ab050`.
+
+```bash
+python tools/build_catalogo.py --check
+python tests/test_corte3.py --report tests/reporte-pr11-funcional.html
+python tests/test_ssh_service.py
+# En un navegador que permita archivos locales; nunca desactivar políticas de seguridad:
+python tests/check_file_catalogo.py --report /tmp/wan-file.json
+```
+
+No se agregan dependencias. `check_file_catalogo.py` copia únicamente el HTML a un directorio temporal y utiliza file:// real, sin servidor ni data/. Devuelve 0 si pasa, 1 si falla y 2 si una política administrativa bloquea la navegación. En este entorno produjo `ERR_BLOCKED_BY_ADMINISTRATOR` antes de cargar la app. La ausencia de fetch, orden del script embebido, doce fichas y selección/CLI sí se verificaron mediante HTTP aislado, bloqueando data/ y desactivando internet (F05). No se convierte ese resultado en una supuesta prueba file:// superada.
+
+Los cuerpos de los 73 casos C/N/P/Q siguen intactos; se mantienen sus identificadores y los 26 SSH sin cambios. K04/K09/K18 ahora seleccionan en Topología, conforme a la nueva exigencia de selección única. K22 retira deliberadamente la copia embebida en una respuesta HTTP controlada para seguir comprobando el fallo seguro de un paquete incompleto; no exige un recurso externo que ahora es innecesario. Fixtures CLI históricas y las doce fichas oficiales no se modificaron.
+
+| Caso | Esperado | Obtenido | Estado |
+| --- | --- | --- | --- |
+| F01 · Datos confirmados y persistencia | Confirmar bloquea campos; editar igualdad no invalida; JSON y localStorage conservan confirmación. | Datos bloqueados/Editar; igualdad conserva plan y CLI; confirmación v4 restaurada desde JSON y almacenamiento. | Superada |
+| F02 · Proyecto: validación atómica y metadatos | Entrada inválida conserva formulario/estado; editar texto informativo conserva redes; cambios estructurales invalidan. | Error atómico, metadatos sin pérdida de redes; misma cantidad no invalida; cambio de sedes conserva identificación pendiente; tipo de bandera inválido rechazado. | Superada |
+| F03 · Fabricantes sin perder VLAN/VLSM | Cambiar una marca permanece en Topología; conserva plan/IPv6, confirma y borra solo CLI dependientes. | Topología permanece accesible y aprobada; plan/IPv6 intactos; marcas automáticas y cachés dependientes actualizadas; JSON conserva estado. | Superada |
+| F04 · Funciones opcionales y nuevas /30 | Añadir firewall/backup conserva redes previas y agrega solo /30 necesarias; igualdad no llama allocate. | Nuevas funciones reservan /30 libres sin cambiar redes anteriores; misma selección no reasigna ni desconfirma. | Superada |
+| F05 · HTML autónomo sin carpeta data | HTML solo sirve doce fichas embebidas; no solicita JS/JSON externos ni internet. | Doce fichas disponibles con data/ bloqueada y sin internet; cero solicitudes de catálogo; CLI Catalyst usa nombres guardados. | Superada |
+| F06 · Selección efectiva de doce modelos | Las doce fichas pueden elegirse en equipos/roles compatibles y generar CLI con sus puertos oficiales. | 12/12 modelos seleccionados por UI Topología/editor y usados por su adaptador; puertos coinciden con fichas sin alterar datos oficiales. | Superada |
+| F07 · Modelo único en Topología | Cuatro módulos reutilizan selección; no muestran ni exigen selectores de modelo/puerto. | Cisco/Huawei/Fortinet/MikroTik sin selectores repetidos: leen modelos/enlaces guardados en Topología. | Superada |
+| F08 · Comparación real de cuatro marcas | Función seleccionada muestra cuatro adaptadores, diferencias y sintaxis de equipos reales; comparación no muta state. | Cinco funciones × cuatro fabricantes; extractos reales/diferencias y límites; estado/CLI guardada intactos. | Superada |
+| F09 · Comparación sin equivalencias falsas | Marca ausente/función desactivada produce aviso, no un router/firewall ficticio; mantiene IOS/VRP válido. | Sin equipo/función: avisos sin CLI ficticia; equivalencia adicional IOS/VRP existente conservada. | Superada |
+| F10 · Comandos simulados por fabricante | Todos los comandos anunciados responden con datos del proyecto; espacios/mayúsculas razonables se normalizan. | 19 comandos anunciados (4 fabricantes) respondieron, con espacios/mayúsculas; cero conexiones reales. | Superada |
+| F11 · Simulación rechaza comandos ajenos | CLI de otra marca/comandos de escritura no se ejecutan ni producen respuestas operativas ficticias. | Comandos ajenos, escritura e inyección rechazados; solo buffer simulado cambia; proyecto y servicio real intactos. | Superada |
+| F12 · Manual integrado offline ES/EN | Manual abre sin Python/popup/red y muestra comandos de cuatro marcas y seguridad real en ambos idiomas. | Manual en diálogo local ES/EN con comandos y límites de las cuatro marcas; sin Python, solicitudes ni ventanas externas. | Superada |
+| F13 · Revisión visual de flujos | Proyecto/fabricantes confirmados, Topología, cuatro configuraciones, comparación y manual accesibles a 1440/390 px. | 16 vistas (8 × 2 anchos) sin desbordes; capturas reales de Topología, comparación y manual en /tmp/wan-pr11-visual. | Superada |
+
+**Revisión visual y límites:** capturas temporales reales de Topología, comparación y manual a 1440/390 px, inspeccionadas visualmente; no se reemplazaron capturas académicas históricas. Compilación JS/Python, parser HTML5 sin errores, catálogo sincronizado, diff-check, enlaces y escaneo de secretos/temporales satisfactorios. Los comandos simulados nunca salen por SSH; las 26 pruebas reales solo usan servidor de eco local. Validación de configuraciones sigue siendo textual, no física. Durante desarrollo la suite detectó y permitió corregir una clave de idioma, un desbordamiento de extractos CLI y el aviso del modo genérico sin catálogo; el resultado anterior de desarrollo no se presenta como ejecución final.
+
+Los apartados siguientes conservan resultados históricos; el resultado vigente es el de esta sección.
+
+## Registro anterior: primera versión del catálogo local
 
 Base `6466c9494cefdb5423d95e1bc04175304a4e248d`, rama `feature/catalogo-interfaces-fabricantes`. Verificación documental y pruebas: **14 de noviembre de 2026**. Se incorporan doce fichas, tres por fabricante, contrastadas con fuentes oficiales y límites explícitos en [catálogo de modelos](catalogo-modelos.md). No es certificación física.
 

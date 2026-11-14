@@ -1,6 +1,12 @@
 # Estado de WAN Architect
 
-## Catálogo local de interfaces: estado vigente
+## Correcciones funcionales vigentes del PR #11
+
+Base `89a5a2a948c965129ca28f40cb57f5f303f587b2`. Datos del proyecto y fabricantes muestran confirmación persistida/Editar; confirmar igualdad no destruye diseños. Cambiar solo una marca conserva VLAN/VLSM/IPv6 y retira CLI dependientes; nuevas funciones agregan únicamente /30 necesarias sin mover redes previas. El catálogo de doce fichas está embebido en el HTML y se selecciona exclusivamente en Topología. Las cuatro vistas CLI muestran datos guardados, sin selectores repetidos.
+
+Comparación incorpora cinco funciones × cuatro marcas reales, con extractos y límites; conserva adicionalmente IOS/VRP cuando corresponde. La simulación normaliza comandos de lectura de cada marca, muestra propuestas/plan y abre un manual integrado sin Python. SSH real, exclusión CLI de AP y JSON v2/v3/v4 se conservan. Detalle operativo: [manual](manual.md); contrato: [documentación del código](documentacion-codigo.md); resultados reales y limitación file://: [pruebas](pruebas.md). **Prueba vigente:** 109/109 aplicación + 26/26 SSH = 135/135 ejecutadas, 100%; FILE01 adicional bloqueada por política del navegador, sin certificar apertura file://. Doce modelos y 19 comandos de lectura comprobados mediante HTTP; revisión visual 1440/390 px. Los registros siguientes son históricos.
+
+## Registro anterior: primera versión del catálogo local
 
 Base `6466c9494cefdb5423d95e1bc04175304a4e248d`, rama `feature/catalogo-interfaces-fabricantes`. Verificación documental y pruebas: **14 de noviembre de 2026**. Se incorporan doce fichas, tres por fabricante, contrastadas con fuentes oficiales y límites explícitos en [catálogo de modelos](catalogo-modelos.md). No es certificación física.
 
