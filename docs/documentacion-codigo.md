@@ -23,6 +23,22 @@ flowchart TD
   Propuestas --> Persistencia[JSON / localStorage]
 ```
 
+## Catálogo de interfaces: extensión opcional v4 (14 de noviembre de 2026)
+
+El contrato IPv4/IPv6 y sus migraciones no cambian. `nodes[].modelId` opcional identifica una ficha local; ausencia conserva modo genérico. Fuente de datos: `data/catalogo-interfaces.json`; `tools/build_catalogo.py` genera un script de datos estático para HTTP/file://. No se usa internet en tiempo de ejecución. La ruta fija del servidor SSH opcional sirve únicamente ese recurso; no añade directorios ni cambia autenticación/SSH.
+
+- `modelsFor()` filtra fabricante y rol; `validateNodeModel()` rechaza modelos desconocidos/incompatibles y AP.
+- `modelOptions()`, `catalogControls()` y `catalogInventory()` muestran selección e inventario escapado, restricciones y fuentes; `previewNodeModel()`/`updateNodeModels()` modifican solo el editor, sin mutar proyecto.
+- `catalogPurpose()` deriva prioridad WAN/LAN/uplink/access desde el enlace. `catalogPair()` comprueba medio y velocidad común; el par genérico se considera solo cobre.
+- `assignCatalogInterfaces(data)` recibe nodos/enlaces, crea una copia y devuelve enlaces asignados. Reserva asociaciones válidas anteriores, detecta capacidad y modos, ordena por restricciones/ID estable y retrocede por clases equivalentes, con límite de 30.000 pasos. No inventa puertos ni cambia planes.
+- `validateCatalogBindings(data)` comprueba nombres incluidos/asignables, modos, duplicados y pareja; importa sin reasignar. `requireCatalogReady()` usa la matriz de capacidades para bloquear funciones activas no respaldadas antes de las plantillas CLI.
+- `setNodeModel()` realiza validación/asignación completa antes de adoptar estado e invalidar configuraciones derivadas; mantiene redes, IDs y topología. `saveNode()` integra el mismo contrato con edición normal de fabricante; `buildTopology()` conserva `modelId` y puertos previos válidos al regenerar.
+- `saveLink()` asigna antes de guardar. `lockCatalogLinkFields()` deja los nombres nativos del modelo como lectura, sin pedirlos al usuario; las referencias genéricas históricas conservan su edición existente.
+- `endpoint()` sigue siendo la entrada común de nombres para los cuatro adaptadores, cuyas plantillas no se duplican. Perfiles archivados no sustituyen los nombres del catálogo cuando hay modelo explícito. Comparación advierte que una sintaxis alternativa usa puertos genéricos, sin atribuir un segundo hardware al mismo nodo.
+- `validateImport()` valida `modelId` cerrado y enlaces antes de adoptar proyecto; exportación y localStorage lo conservan automáticamente con el resto de nodos. v2/v3/v4 sin ese campo siguen funcionando. No se almacena inventario duplicado en cada proyecto.
+
+Las funciones nuevas y modificadas incluyen comentarios en español. Roles, variantes, fuentes y límites conservadores: [catálogo de modelos](catalogo-modelos.md). No se certifican equipos físicos ni se ejecutan comandos.
+
 ## Estado confirmado y presentación temporal
 
 `state` es el proyecto confirmado. `state.version` sigue siendo 4; los contratos v2/v3 migran a v4 sin reasignar redes. `project.base` es el **fallback**, no un contenedor obligatorio de todas las sedes. `sites[].ipv4Base` es un pool privado independiente. `project.transitBase`, si existe, separa los enlaces /30. Si una sede no define bloque usa el fallback libre; si no hay tránsito explícito usa ese mismo espacio libre excluyendo todas las LAN y reservas.

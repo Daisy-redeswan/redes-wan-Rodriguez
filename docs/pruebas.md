@@ -1,6 +1,76 @@
 # Pruebas reproducibles de WAN Architect — Corte 3 y revisión integral
 
-## Ajuste vigente del PR #10: interfaces automáticas y orden del menú
+## Catálogo local de interfaces: estado vigente
+
+Base `6466c9494cefdb5423d95e1bc04175304a4e248d`, rama `feature/catalogo-interfaces-fabricantes`. Verificación documental y pruebas: **14 de noviembre de 2026**. Se incorporan doce fichas, tres por fabricante, contrastadas con fuentes oficiales y límites explícitos en [catálogo de modelos](catalogo-modelos.md). No es certificación física.
+
+**Implementado:** selección fabricante/modelo filtrada por tipo en el editor normal y selección de modelo en Topología/configuración; inventario local, asignación determinista de puertos por enlace/medio/velocidad, conservación de nombres válidos, bloqueo de capacidad/roles/funciones incompatibles y validación de importaciones. No se pide escribir interfaces, versión ni URL. Los cuatro adaptadores leen nombres reales de los enlaces para el modelo elegido. Huawei LI incluye solo banco RJ45 verificado; Fortinet reserva switch interno y FortiLink. No hay consultas de red durante uso normal.
+
+**Confirmado por pruebas:** 73 casos anteriores + 23 casos K01–K23 = **96/96 aplicación**; **26/26 SSH local**, total **122/122 = 100%** del conjunto ejecutado, 0 fallidas/bloqueadas/no ejecutadas dentro de las matrices. Reportes reales: [aplicación](../tests/reporte-catalogo.html) y [SSH](../tests/reporte-catalogo-ssh.json). Se conservan las ocho comparaciones exactas de CLI (cuatro marcas × ES/EN) para proyectos sin modelo, los 99 casos previos, IPv4/IPv6, JSON v2/v3/v4 y exclusión CLI de AP. Datos ficticios, contextos limpios, HTTP local y SSH real exclusivamente loopback; no se aplica CLI.
+
+**Persistencia:** `nodes[].modelId` es una extensión opcional de v4; ausencia conserva comportamiento genérico y aviso de modelo no especificado. Las interfaces permanecen en campos de enlaces existentes. La carga valida sin reasignar; no cambia versión, migración, claves locales, planes, IP ni configuración SSH. La ruta fija del servicio SSH opcional sirve solo el script local del catálogo.
+
+**Pendiente/límites:** comprobar equipos reales, firmware/licencias, transceptores, puertos renombrados y configuración previa. SFP Huawei excluidos hasta completar nomenclatura por variante. No se amplían los adaptadores a roles/funciones no respaldados, IPv6 CLI ni pools/reservas editables. Revisión visual 1440/390 px satisfactoria; `file://` fue bloqueado por política del navegador del entorno y se declara como una exploración bloqueada aparte, no como caso superado. El modo sin internet se verificó mediante HTTP local con la red del contexto desactivada. Los apartados siguientes conservan evidencia histórica, no sustituyen este resultado.
+
+### Reproducción y entorno del catálogo
+
+```bash
+python -m pip install -r tests/requirements.txt
+python -m playwright install chromium
+python tools/build_catalogo.py --check
+python tests/test_corte3.py --report tests/reporte-catalogo.html
+# Solo los casos nuevos, cuando se necesita aislar un diagnóstico:
+python tests/test_catalogo.py
+# Entorno SSH opcional, separado de la app estática:
+python -m pip install -r ssh_service/requirements.txt
+python tests/test_ssh_service.py
+```
+
+No hay dependencias nuevas. El runner inicia/cierra servidor y contextos, imprime casos y porcentaje y devuelve fallo si un caso falla. `test_corte3.py` registra los 73 casos originales sin modificar sus cuerpos y añade K01–K23. Las fichas de contraste en `tests/fixtures/catalogo-verificado.json` contienen conteos/rangos/velocidades y fuentes oficiales; no se cambiaron fixtures CLI históricas para hacer pasar el catálogo.
+
+Ejecución final de aplicación: `2026-11-14T13:28:08-05:00`; Linux-6.18.57-x86_64-with-glibc2.41; Python 3.12.14, Playwright 1.62.0, Chromium 154.0.8037.57; 126.5 s. SSH: 2026-11-14T18:25:55.304550+00:00, AsyncSSH 2.24.1, aiohttp 3.14.5; 10.4 s. Los reportes registran el HEAD base y los hashes del árbol de trabajo probado **antes de los commits de publicación**; no se atribuye a otro commit una ejecución que no ocurrió.
+
+- SHA-256 aplicación: `e915447fa14dfbcf82bcb36d85b3567b291793c47603854c83ed1811f44ca400`.
+- SHA-256 catálogo: `0d1a18afbf51c5a5eb7be79d8d85d1a1b5182fee68d87867d423f4ab535ab050`.
+- SHA-256 runner: `9d43744efb4cb7920be2f3987c5afcc3df2cb1c7938b281067b2d28a1d2c7335`.
+- SHA-256 casos nuevos: `7a99e7e78767331cddb328b0db7d0ae6ee99077cee7c61fbbbecead88df06ea2`.
+- SHA-256 servidor SSH: `81eff1af1894668d980d172346648b1d2ea0ab68f5432226c8cdf3690f182dba`.
+
+### Casos nuevos: esperado, obtenido y estado
+
+| Caso | Esperado | Obtenido | Estado |
+| --- | --- | --- | --- |
+| K01 · Catálogo contra fichas oficiales | Doce modelos; cantidades, nombres, velocidades y fuentes contrastan con fichas verificadas. | 12 fichas (3 por marca), conteos/rangos/velocidades y fuentes oficiales; JSON y JS empaquetado coinciden. | Superada |
+| K02 · Fabricante y modelos filtrados | Editor filtra fabricante/tipo, sin modelo para AP; cancelación no cambia datos. | Listas por marca/rol; AP y roles no soportados sin modelos; cancelación intacta. | Superada |
+| K03 · Carga automática de inventario | Seleccionar modelo muestra interfaces documentadas, sin escribir nombres ni guardar datos preliminares. | 28 puertos de ficha visibles inmediatamente; guardar equipo asigna enlaces; sin entrada manual de puertos. | Superada |
+| K04 · Cisco con modelo | Catalyst seleccionado usa nombres reales en toda la CLI física, conservando IPv4/HSRP. | Catalyst: 8 puertos de ficha en CLI, HSRP/IP conservados; cero nombres físicos genéricos. | Superada |
+| K05 · Huawei con modelo | Switch L2 seleccionado usa banco RJ45 de la variante, sin atribuirle L3 ni SFP no verificados. | Huawei L2: nombres del banco RJ45 de ficha; sin SFP no verificados ni routing de core. | Superada |
+| K06 · Fortinet con modelos | 60F/61F/70F usan wan1/wan2/dmz y excluyen puertos de switch interno/FortiLink. | Tres modelos FortiGate: puertos exactos de tablas oficiales; internal1–5 y a/b no asignados automáticamente. | Superada |
+| K07 · MikroTik con modelos | hEX, hEX S y CCR2004 usan puertos de sus fichas con sintaxis RouterOS 7. | Tres routers RouterOS 7: nombres en guardas Ethernet, bridge e interfaces OSPF; sin sintaxis ajena. | Superada |
+| K08 · Asignación determinista | Orden de filas/ejecuciones no cambia la asociación puerto–enlace; sin duplicados. | Mismas asociaciones al repetir/invertir nodos y enlaces; puertos físicos únicos. | Superada |
+| K09 · Puertos insuficientes y atomicidad | ISR4321 de dos GE rechaza tres enlaces sin inventar puertos ni perder proyecto/DOM. | Tres enlaces frente a dos GE reales: rechazo atómico, sin puerto ficticio ni pérdida de plan, CLI, DOM o localStorage. | Superada |
+| K10 · Duplicados y referencias importadas | Importador rechaza puertos repetidos/no existentes del modelo sin reasignar ni sustituir estado. | Puerto duplicado y puerto 99 inexistente rechazados sin asignación automática durante importación. | Superada |
+| K11 · Cambio de modelo | Cambiar 24T por 48T conserva puertos válidos, enlaces, VLAN, direcciones y otras sedes. | 24T→48T mantiene puertos válidos y todo el direccionamiento/identidad; cambia únicamente modelo e invalida CLI derivada. | Superada |
+| K12 · Regeneración con modelos | Reconstruir topología conserva modelo, IDs y puertos válidos de nodos automáticos. | Modelo, identificadores, puertos y plan conservados al reconstruir desde el mismo plan. | Superada |
+| K13 · JSON v4 y almacenamiento | Guardar/cargar/importar conserva modelId y puertos; cero llamadas a asignadores IPv4/IPv6. | v4/CLI/modelId/enlaces exactos en JSON y localStorage; no se reasignan redes al cargar. | Superada |
+| K14 · Proyectos antiguos y advertencia | v2/v3/v4 sin modelo preservan datos y generación genérica, con advertencia visual. | v2/v3 migran a v4 sin modelo inferido; CLI genérica permanece y aviso exacto visible; referencias históricas en C26. | Superada |
+| K15 · Fabricantes mixtos con catálogo | Cuatro marcas reales usan modelos compatibles de la misma topología y plan común. | Cisco core, Huawei acceso, Fortinet firewall y MikroTik router con modelos documentados; cuatro CLI y plan común intacto. | Superada |
+| K16 · AP excluidos con vecinos modelados | AP mantiene IP/VLAN/enlaces; ningún adaptador ni modelo ofrece CLI genérica para AP. | AP sin modelos/CLI genéricos; nodos/IP/VLAN/enlaces siguen intactos al seleccionar modelos vecinos. | Superada |
+| K17 · Funcionamiento sin internet | Catálogo cargado localmente; seleccionar, asignar, generar y exportar funciona desconectado. | Selección, VLSM, topología, asignación, CLI y JSON operan con red desactivada tras cargar activos locales; cero consultas externas. | Superada |
+| K18 · Catálogo ES/EN y responsive | Controles, mensajes e inventario traducidos; modelo y CLI intactos a 1440/390 px. | Catálogo y avisos en ES/EN, 1440/390 sin desborde nuevo; modelo, redes y CLI conservados. | Superada |
+| K19 · Entradas inseguras y modelos incompatibles | Modelo desconocido/inyección/tipo incorrecto rechazados atómicamente en selección e importación. | Selección de ID desconocido, inyección y fabricante/tipo incompatible bloqueados; JSON inválido conserva estado. | Superada |
+| K20 · ISR4321 y función no respaldada | Dos GE físicos generan en router compatible; funciones fuera del perfil se bloquean con causa específica. | ISR4321 usa sus dos GE sin switchport; LACP no respaldado en perfil Huawei bloquea generación con mensaje concreto. | Superada |
+| K21 · Medios y velocidades compatibles | Uplink óptico entre modelos conocidos usa puertos/velocidad común; medio incompatible se rechaza al importar. | SFP1↔uplink SFP Catalyst con 1G común; fibra↔RJ45 incoherente rechazada sin inventar transceptor ni cambiar estado. | Superada |
+| K22 · Catálogo ausente y modo legado | Sin archivo de catálogo los proyectos sin modelo siguen funcionando con aviso; no se consulta internet. | Sin catálogo: flujo genérico y CLI permanecen; aviso local visible, sin descarga ni consulta externa. | Superada |
+| K23 · Crear enlaces sin escribir puertos | Enlaces nuevos reciben puertos del modelo; las asociaciones válidas previas quedan reservadas. | Enlace Fortinet↔Catalyst añadido sin escribir puertos; conserva enlaces anteriores y no duplica interfaces. | Superada |
+
+El reporte HTML contiene también los 73 casos conservados, tiempos y evidencia observable; el JSON SSH conserva los 26 resultados individuales. Durante desarrollo se detectaron y corrigieron un sombreado de nombre en el editor y la validación indebida de la columna alternativa de un enlace con modelo; el conjunto final se ejecutó completo tras esas correcciones. Un ID erróneo en un caso nuevo se corrigió sin rebajar la validación de producción. No se cuentan repeticiones como casos nuevos.
+
+**Comprobaciones complementarias:** `node --check` para script principal y catálogo, compilación Python en memoria, parser HTML5 sin errores, `git diff --check`, enlaces locales y escaneo de secretos/temporales. Revisión visual de selector/inventario a 1440 px ES y 390 px EN, sin desbordes nuevos. Las imágenes de revisión son scratch, no reemplazan las capturas académicas históricas. No se ejecutaron pruebas Windows ni validación física; la exploración `file://` bloqueada se informa aparte. La seguridad/conectividad real no se deduce del 100% local.
+
+Para sustentación: ejecutar el comando completo; abrir la app por HTTP, generar plan/topología, elegir fabricante/modelo y revisar puertos; demostrar mensaje atómico al elegir un modelo insuficiente y guardar/exportar/importar v4. Mostrar los límites por modelo y que AP permanece sin CLI. Toda propuesta se revisa manualmente; nunca ejecutarla desde la prueba.
+
+## Registro anterior del PR #10: interfaces automáticas y orden del menú
 
 Base de trabajo `9675ce7f1c553e1225609772cbb6a500822fa2f0`; main conservado en `1956d1872363c88399f5e8240abb1d7a13bca340`. Ejecución 2026-11-11T13:02:18-05:00: **73/73 aplicación + 26/26 SSH local = 99/99 (100%)**, 0 fallidas/bloqueadas/no ejecutadas dentro de las matrices. Se mantienen los 58 casos C/N/P y los 26 SSH; Q04–Q13 cambian sus expectativas porque se retiró expresamente el formulario físico, y Q15 verifica el nuevo menú. No se alteraron fixtures ni hashes CLI de referencia. [Resultados y límites](pruebas-interfaces.md), [reporte real](../tests/reporte-interfaces.html).
 
