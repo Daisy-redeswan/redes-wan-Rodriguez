@@ -560,6 +560,10 @@
           background: white;
         }
       }
+      /* Grupos de equipos con puertos completos; el contenedor existente permite desplazamiento horizontal en móvil. */
+      .physical-inventory { min-width:740px; }
+      .physical-inventory tbody + tbody { border-top:2px solid var(--line); }
+      .physical-inventory th[scope="rowgroup"] { vertical-align:top; text-transform:none; }
       .card, .field, .two > *, .grid > * { min-width:0; }
       .sitehead { flex-wrap:wrap; }
       .sitehead .actions, .sitecount { max-width:100%; }
@@ -1492,6 +1496,7 @@ globalThis.WAN_INTERFACE_CATALOG = {"schemaVersion":1,"verifiedOn":"2026-11-14",
       Object.assign(I18N.en, {"Aplique el número de sedes antes de confirmar los datos.":"Apply the site count before confirming project details.","Complete los datos del proyecto antes de confirmarlos.":"Complete project details before confirming them."});
       Object.assign(I18N.en, {"Cisco | Huawei | Fortinet | MikroTik":"Cisco | Huawei | Fortinet | MikroTik"});
       Object.assign(I18N.en, {"Número de sedes sin cambios.":"Site count unchanged."});
+      Object.assign(I18N.en, {"Inventario físico de interfaces": "Physical interface inventory", "Equipo": "Device", "Función": "Function", "Conectado a": "Connected to", "Modo genérico": "Generic mode", "Modelo no disponible": "Model unavailable", "Sin conectar": "Not connected", "Tránsito LAN": "LAN transit", "Trunk / uplink": "Trunk / uplink", "Access": "Access", "Sin enlace": "No link", "El laboratorio no superó una validación; se conservó el proyecto anterior.": "The laboratory failed validation; the previous project was preserved.", "El laboratorio requiere un servidor con dirección privada del plan.": "The laboratory requires a server with a private address from the plan.", "Equipo {0}: no hay un modelo del catálogo con puertos suficientes para este laboratorio.": "Device {0}: no catalogue model has enough ports for this laboratory.", "Laboratorio completo validado: dos sedes, cuatro fabricantes y configuraciones listas para revisión.": "Complete laboratory validated: two sites, four vendors and configurations ready for review."});
       const steps = [
         "Resumen",
         "Datos del proyecto",
@@ -4141,7 +4146,19 @@ globalThis.WAN_INTERFACE_CATALOG = {"schemaVersion":1,"verifiedOn":"2026-11-14",
       }
       /** Solo lectura: los cuatro adaptadores reutilizan la selección y enlaces de Topología. */
       function catalogSavedSummary(vendor) {
-        return `<div class="card">${!interfaceCatalog.length?`<p class="notice warn">${t("Catálogo local no disponible. Los proyectos sin modelo conservan el modo genérico.")}</p>`:""}<h2>${t("Modelos guardados en Topología")}</h2><p>${t("Seleccione o cambie fabricante y modelo únicamente en Topología.")}</p>${configNodes(vendor).map(n=>`<h3>${esc(n.name)}</h3>${catalogInventory(n)}`).join('')}</div>`;
+        const nodes=configNodes(vendor),generic=nodes.some(n=>!n.modelId);
+        // Cada fila representa un puerto asignado de un enlace real; no repite formularios ni todos los puertos libres.
+        const groups=nodes.map(n=>{
+          const model=n.modelId&&modelById(n.modelId),links=connected(n).slice().sort((a,b)=>a.id.localeCompare(b.id,'en',{numeric:true}));
+          const rows=links.length?links:[null];
+          return `<tbody data-device="${esc(n.id)}">${rows.map((l,i)=>{
+            const end=l&&endpoint(l,n,vendor),peer=end?.peer;
+            let role=l?l.type==='routed'?(peer?.site!==n.site?'WAN':'Tránsito LAN'):l.type==='trunk'?'Trunk / uplink':'Access':'Sin enlace';
+            if(l?.type==='access'&&state.plan.some(r=>r.site===n.site&&r.kind==='vlan'&&r.id===l.vlan&&r.role==='Gestión'))role='Gestión';
+            return `<tr data-link="${esc(l?.id||'')}">${i===0?`<th scope="rowgroup" rowspan="${rows.length}">${esc(n.name)}</th><td rowspan="${rows.length}">${esc(t(n.type))}</td><td rowspan="${rows.length}">${esc(vendor)}</td><td rowspan="${rows.length}">${esc(model?.model||t(n.modelId?'Modelo no disponible':'Modo genérico'))}</td>`:''}<td class="mono">${esc(end?.iface||'—')}</td><td>${esc(t(role))}</td><td>${esc(peer?.name||t('Sin conectar'))}</td></tr>`;
+          }).join('')}</tbody>`;
+        }).join('');
+        return `<div class="card"><h2>${t("Inventario físico de interfaces")}</h2><p>${t("Seleccione o cambie fabricante y modelo únicamente en Topología.")}</p>${!interfaceCatalog.length?`<p class="notice warn">${t("Catálogo local no disponible. Los proyectos sin modelo conservan el modo genérico.")}</p>`:''}${generic?`<p class="notice warn">${t("Modelo no especificado. Los nombres de interfaces son genéricos y deben verificarse antes de aplicar la configuración")}</p>`:''}<div class="tablewrap"><table class="physical-inventory" aria-label="${t("Inventario físico de interfaces")}"><thead><tr>${['Equipo','Tipo','Fabricante','Modelo','Interfaz','Función','Conectado a'].map(x=>`<th scope="col">${t(x)}</th>`).join('')}</tr></thead>${groups||`<tbody><tr><td colspan="7">${t("Sin equipo compatible")}</td></tr></tbody>`}</table></div></div>`;
       }
       /** Transacción de cambio de modelo: sin campos manuales de puertos ni asignación parcial. */
       function setNodeModel(id,modelId) {
@@ -6049,18 +6066,24 @@ globalThis.WAN_INTERFACE_CATALOG = {"schemaVersion":1,"verifiedOn":"2026-11-14",
        * No sobrescribe localStorage ni preferencias de idioma.
        */
       function demo() {
-        if (
-          !confirm(
-            t("¿Reemplazar el proyecto por un ejemplo ficticio de laboratorio de dos sedes?"),
-          )
-        )
-          return;
-        state = fresh();
-        // Un laboratorio nuevo no hereda borradores del proyecto sustituido.
-        projectEditing=false;vendorsEditing=false;inventoryEditing.clear(); formDrafts.clear(); siteEditing.clear(); sitePending.clear(); siteSnapshots.clear(); vlanEditing=false; sshHistory=""; sshDevice="";
+        if(!confirm(t("¿Reemplazar el proyecto por un ejemplo ficticio de laboratorio de dos sedes?")))return;
+        // La sustitución es transaccional: un catálogo incompleto o cualquier validación fallida restaura proyecto y borradores.
+        captureDraft();
+        const backup={state,selectedSite,selectedNode,page,imageData,imageMode,projectEditing,vendorsEditing,vlanEditing,sshHistory,sshDevice,
+          formDrafts:structuredClone(formDrafts),inventoryEditing:new Set(inventoryEditing),siteEditing:new Set(siteEditing),sitePending:new Set(sitePending),siteSnapshots:new Map(siteSnapshots)};
+        const step=(action,valid)=>{
+          $("toast").classList.remove('error');action();
+          if($("toast").classList.contains('error'))fail($("toast").textContent);
+          if(!valid())fail(t("El laboratorio no superó una validación; se conservó el proyecto anterior."));
+        };
+        return safe(()=>{try {
+          state=fresh();projectEditing=false;vendorsEditing=false;vlanEditing=false;
+          inventoryEditing.clear();formDrafts.clear();siteEditing.clear();sitePending.clear();siteSnapshots.clear();sshHistory="";sshDevice="";
         state.project = {
           ...state.project,
-          name: "WAN · Laboratorio Corte 2",
+          name: "WAN · Laboratorio de cuatro fabricantes",
+          transitBase: "10.250.0.0/24",
+          dns: "192.168.32.10",
           company: "Empresa de ejemplo",
           activity: "Clínica ambulatoria (laboratorio)",
           type: "Varias sedes",
@@ -6069,6 +6092,7 @@ globalThis.WAN_INTERFACE_CATALOG = {"schemaVersion":1,"verifiedOn":"2026-11-14",
           {
             ...siteDefault(1),
             name: "Sede asistencial",
+            ipv4Base: "192.168.32.0/21",
             floors: 3,
             users: 100,
             busy: "1,2",
@@ -6081,6 +6105,7 @@ globalThis.WAN_INTERFACE_CATALOG = {"schemaVersion":1,"verifiedOn":"2026-11-14",
           {
             ...siteDefault(2),
             name: "Sede administrativa",
+            ipv4Base: "172.16.64.0/21",
             floors: 2,
             users: 45,
             busy: "1",
@@ -6089,11 +6114,43 @@ globalThis.WAN_INTERFACE_CATALOG = {"schemaVersion":1,"verifiedOn":"2026-11-14",
             cctv: true,
           },
         ];
-        selectedSite = 0;
-        imageData = "";
-        render();
-        toast(t("Ejemplo cargado; datos ficticios, editables."));
-      } // Nunca presenta valores de laboratorio como datos de la organización real.
+          for(const site of state.sites)site.vendorProfile={router:'MikroTik',core:'Cisco',distribution:'Huawei',access:'Huawei',firewall:'Fortinet',backupRouter:''};
+          selectedSite=0;selectedNode="";imageData="";imageMode=false;page=1;render();
+          // Las banderas de confirmación proceden de los mismos validadores usados por los botones reales.
+          step(()=>saveProject(),()=>state.project.confirmed===true);
+          for(let i=0;i<state.sites.length;i++){selectedSite=i;render();step(()=>saveSite(),()=>state.sites[i].confirmed===true);}
+          page=2;render();for(let i=0;i<state.sites.length;i++)step(()=>saveCounts(i),()=>state.sites[i].counts!==null);
+          step(()=>proposeVlans(),()=>state.vlans.length>0);
+          step(()=>confirmVlans(),()=>confirmedPlan());
+          page=5;render();step(()=>saveVendorProfiles(),()=>state.sites.every(site=>site.vendorsConfirmed));
+          step(()=>buildTopology(),()=>state.nodes.length>0&&state.links.length>0);
+          // DNS privado del servidor realmente asignado: se confirma sin mover redes ni inventar una dirección operativa.
+          const server=state.nodes.find(n=>n.type==='Servidor'&&n.ip);
+          if(!server)fail(t("El laboratorio requiere un servidor con dirección privada del plan."));
+          page=3;render();$("dns").value=server.ip;step(()=>confirmVlans(),()=>confirmedPlan()&&state.project.dns===server.ip);
+          // Elegir el menor inventario documentado que cubra rol y enlaces; el asignador valida medios, velocidades y unicidad.
+          for(const n of state.nodes.filter(n=>configurable(n)||fortinetNode(n)||mikrotikNode(n))){
+            const links=connected(n),options=modelsFor(n.vendor,n.type).filter(m=>m.ports.filter(p=>p.assignable).length>=links.length&&links.every(l=>m.ports.some(p=>p.assignable&&p.modes.includes(l.type))))
+              .sort((a,b)=>a.ports.filter(p=>p.assignable).length-b.ports.filter(p=>p.assignable).length||a.id.localeCompare(b.id));
+            if(!options.length)fail(t("Equipo {0}: no hay un modelo del catálogo con puertos suficientes para este laboratorio.",[n.name]));
+            n.modelId=options[0].id;validateNodeModel(n);
+            for(const l of links)l[(l.a===n.id?'a':'b')+vendorPortKey(n.vendor)]='';
+          }
+          state.links=assignCatalogInterfaces(state);validateCatalogBindings(state);
+          // Generación real de las cuatro marcas; ninguna plantilla ni confirmación se sustituye con texto simulado.
+          for(const [vendor,index] of [['Cisco',6],['Huawei',7],['Fortinet',8],['MikroTik',9]]){
+            page=index;render();step(()=>generateAll(vendor),()=>configNodes(vendor).length>0&&configNodes(vendor).every(n=>state.configs[n.id+'-'+vendor]?.revision===state.revision));
+          }
+          validateImport({state,imageData:""}); // Verificar también que el laboratorio completo se pueda guardar y recuperar.
+          selectedSite=0;page=1;render();toast(t("Laboratorio completo validado: dos sedes, cuatro fabricantes y configuraciones listas para revisión."));
+        }catch(error){
+          state=backup.state;selectedSite=backup.selectedSite;selectedNode=backup.selectedNode;page=backup.page;imageData=backup.imageData;imageMode=backup.imageMode;
+          projectEditing=backup.projectEditing;vendorsEditing=backup.vendorsEditing;vlanEditing=backup.vlanEditing;sshHistory=backup.sshHistory;sshDevice=backup.sshDevice;
+          for(const [target,source] of [[formDrafts,backup.formDrafts],[siteSnapshots,backup.siteSnapshots]]){target.clear();for(const [k,v] of source)target.set(k,v);}
+          for(const [target,source] of [[inventoryEditing,backup.inventoryEditing],[siteEditing,backup.siteEditing],[sitePending,backup.sitePending]]){target.clear();for(const value of source)target.add(value);}
+          render();throw error;
+        }});
+      } // No modifica localStorage ni redes de otros proyectos; cancelar no toca estado ni DOM.
       function downloadPlan() {
         const head = [
           "Sede",
