@@ -618,6 +618,7 @@
     <!-- Un único diálogo sirve para editar equipos, enlaces y confirmar datos. -->
     <dialog id="modal"><div id="modalbody"></div></dialog>
     <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+    <script src="data/catalogo-interfaces.js"></script>
     <script>
       "use strict"; // Impide variables globales accidentales y mantiene errores visibles durante desarrollo.
       /* UI localization only. Project values, CLI and JSON never enter this catalog. */
@@ -1480,6 +1481,9 @@
         ); // Evita inyectar HTML desde nombres y JSON importados.
       Object.assign(I18N.en, {"Perfil físico inválido.": "Invalid physical profile.", "Nombre de interfaz física inválido.": "Invalid physical interface name.", "Nomenclatura física no soportada por este adaptador.": "Physical naming is not supported by this adapter.", "Indique documentación oficial del modelo y versión.": "Provide official documentation for the model and version.", "Referencia física de enlace inválida.": "Invalid physical link reference.", "Interfaz física duplicada.": "Duplicate physical interface.", "Perfil archivado no coincide con los enlaces.": "Archived profile does not match the links.", "Perfil archivado incompleto.": "Incomplete archived profile.", "AP excluido de CLI genérica: requiere modelo, firmware y administración específicos.": "AP excluded from generic CLI: specific model, firmware and management are required.", "Modelo": "Model", "Versión": "Version", "URL oficial del modelo y versión": "Official URL for the model and version"});
       Object.assign(I18N.en, {"Gestión AP":"AP management","Los nombres de interfaces son propuestas automáticas. Verifique puertos, modelo y versión antes de aplicar configuraciones a equipos físicos.":"Interface names are automatic proposals. Verify ports, model and version before applying configurations to physical devices."});
+      Object.assign(I18N.en, {"Equipo {0}: modelo desconocido o incompatible con fabricante/tipo.": "Device {0}: unknown model or incompatible vendor/type.", "Equipo {0}, modelo {1}: puertos insuficientes o tipo de enlace no soportado.": "Device {0}, model {1}: insufficient ports or unsupported link type.", "Asignación de puertos demasiado compleja; revise modelos y enlaces. No se modificó el proyecto.": "Port assignment is too complex; review models and links. The project was not changed.", "No hay asignación compatible de puertos para los modelos y enlaces seleccionados. No se modificó el proyecto.": "No compatible port assignment for the selected models and links. The project was not changed.", "Equipo {0}: puerto inexistente, reservado, duplicado o incompatible con el enlace.": "Device {0}: nonexistent, reserved, duplicate or incompatible link port.", "Equipo {0}: medio o velocidad de puertos incompatible con el otro extremo.": "Device {0}: port media or speed is incompatible with the peer.", "Modelo {0}: función {1} no respaldada por este perfil. Desactive la opción o elija otro modelo.": "Model {0}: feature {1} is not supported by this profile. Disable the option or choose another model.", "Sin modelo (modo genérico)": "No model (generic mode)", "Modelo no especificado. Los nombres de interfaces son genéricos y deben verificarse antes de aplicar la configuración": "Model not specified. Interface names are generic and must be verified before applying the configuration", "puertos catalogados": "catalogued ports", "Verificación documental": "Documentation verified", "Velocidad (Mbps)": "Speed (Mbps)", "Enlace / restricción": "Link / restriction", "Fuente oficial": "Official source", "Inventario documental; no descubre hardware, licencias, ópticas ni configuración existente.": "Documented inventory; hardware, licenses, optics and existing configurations are not discovered.", "Fabricante y modelo · catálogo local": "Vendor and model · local catalogue", "Catálogo local no disponible. Los proyectos sin modelo conservan el modo genérico.": "Local catalogue unavailable. Projects without a model keep generic mode.", "Editar fabricante y equipo": "Edit vendor and device", "Modelo e interfaces asignados automáticamente.": "Model and interfaces assigned automatically."});
+      Object.assign(I18N.en, {"Comparación: el modelo solo se aplica a su fabricante real. La otra sintaxis usa interfaces genéricas; no certifica un equipo equivalente.": "Comparison: the model only applies to its actual vendor. The other syntax uses generic interfaces; it does not certify equivalent hardware.", "Sin stack: miembro 1. No incluye módulos, consolas ni gestión OOB en los puertos asignables.": "Standalone member 1. Modules, console and out-of-band management are not included among assignable ports.", "Network Advantage es referencia declarada; la aplicación no verifica licencia, firmware ni óptica. No PoE en variante T.": "Network Advantage is the stated reference; licenses, firmware and optics are not detected. T variants do not provide PoE.", "Solo dos enlaces GE integrados, independientemente del conector combo. No se añaden NIM ni gestión OOB.": "Only two built-in GE links regardless of the combo connector. NIM and out-of-band ports are not added.", "El adaptador no implementa ROAS en este perfil: puertos usados solo para routed; no switchport en un router.": "This profile does not implement ROAS: ports are used for routed links only; no switchport commands on a router.", "Perfil de acceso L2 conservador, no disponible como core L3. No se certifican OSPF/VRRP/LACP/DHCP de este modelo con el adaptador.": "Conservative Layer 2 access profile, not offered as a Layer 3 core. OSPF/VRRP/LACP/DHCP for this model are not certified by this adapter.", "Inventario parcial: banco RJ45 numerado. Los cuatro SFP documentados se excluyen hasta completar evidencia inequívoca de nomenclatura CLI por variante.": "Partial inventory: numbered RJ45 bank. The four documented SFP ports are excluded pending unambiguous CLI naming evidence for each variant.", "Referencia sin apilamiento. No se extrapolan variantes -X, -24S ni otros sufijos.": "Standalone reference. No assumptions are extended to -X, -24S or other variants.", "4 SFP GE: hardware confirmado; nomenclatura CLI pendiente, no asignables.": "4 GE SFP ports: hardware documented; CLI naming pending, not assignable.", "Se catalogan diez puertos físicos; se asignan automáticamente solo wan1, wan2 y dmz.": "Ten physical ports are catalogued; only wan1, wan2 and dmz are assigned automatically.", "No se desmontan switches por defecto/FortiLink ni referencias existentes. Requiere revisión de configuración/puertos antes de aplicar.": "Default switches, FortiLink and existing references are not removed. Review configuration and ports before applying.", "Sin NAT/Internet/políticas permisivas implícitas; sin HA/LACP en el adaptador.": "No implicit NAT, Internet or permissive policies; no HA/LACP in this adapter.", "Miembro del switch interno por defecto: fuera del perfil autónomo conservador.": "Default internal switch member: excluded from the conservative standalone profile.", "Puerto FortiLink: no se desconfigura automáticamente.": "FortiLink port: not deconfigured automatically.", "Solo Router con el adaptador actual; no se certifica switch/SwOS aunque haya hardware de switching.": "Router only with the current adapter; switch/SwOS is not certified even when switching hardware is present.", "Nombres de fábrica: si se renombraron, debe contrastarse la propuesta con el equipo. Sin VRRP/LACP/VRF/CAPsMAN/IPv6 CLI.": "Factory names: renamed interfaces must be checked against the device. No VRRP/LACP/VRF/CAPsMAN/IPv6 CLI.", "Medio/velocidad representan compatibilidad del catálogo, no negociación física ni disponibilidad de transceptores.": "Media and speed represent catalogue compatibility, not physical negotiation or transceiver availability."});
+      Object.assign(I18N.en, {"Interfaz":"Interface","Disponible":"Available","V200, sin apilamiento (slot 0, subcard 0)":"V200, standalone (slot 0, subcard 0)","7.4.x; sin multi-VDOM":"7.4.x; no multi-VDOM","7.x; sin VRF/CAPsMAN":"7.x; no VRF/CAPsMAN","16.3.1; interfaces integradas sin NIM":"16.3.1; built-in interfaces, no NIM"});
       const steps = [
         "Resumen",
         "Datos del proyecto",
@@ -3187,6 +3191,7 @@
               autoKey,
               name: previous?.nameOverride ? previous.name : hostname(prefix+"-"+siteCode(siteData)+"-"+String(ordinal+(role==="backupRouter"?1:0)).padStart(2,"0")),
               ...(previous?.interfaceProfiles ? {interfaceProfiles:structuredClone(previous.interfaceProfiles)}:{}),
+              ...(previous?.modelId ? {modelId:previous.modelId}:{}),
               ...(previous?.nameOverride ? {nameOverride:true}:{}),
               ...(previous?.vendorOverride ? {vendorOverride:true}:{}),
               type,
@@ -3205,6 +3210,7 @@
             const ia =
                 links.filter((l) => l.a === a.id || l.b === a.id).length + 1,
               ib = links.filter((l) => l.a === b.id || l.b === b.id).length + 1;
+            const former=oldLinks.find(l=>l.a===a.id&&l.b===b.id&&l.type===type&&l.network===key);
             links.push({
               id: oldLinks.find(l=>l.a===a.id && l.b===b.id && l.type===type && l.network===key)?.id || "l" + lid++,
               a: a.id,
@@ -3213,12 +3219,12 @@
               network: key,
               vlan,
               bundle: 0,
-              ac: "GigabitEthernet0/" + ia,
-              bc: "GigabitEthernet0/" + ib,
-              ah: "GigabitEthernet0/0/" + ia,
-              bh: "GigabitEthernet0/0/" + ib,
-              af: a.vendor==="Fortinet" ? "port"+ia : "", bf: b.vendor==="Fortinet" ? "port"+ib : "",
-              am: a.vendor==="MikroTik" ? "ether"+ia : "", bm: b.vendor==="MikroTik" ? "ether"+ib : "",
+              ac: a.modelId&&former?.ac || "GigabitEthernet0/" + ia,
+              bc: b.modelId&&former?.bc || "GigabitEthernet0/" + ib,
+              ah: a.modelId&&former?.ah || "GigabitEthernet0/0/" + ia,
+              bh: b.modelId&&former?.bh || "GigabitEthernet0/0/" + ib,
+              af: a.modelId&&former?.af || (a.vendor==="Fortinet" ? "port"+ia : ""), bf: b.modelId&&former?.bf || (b.vendor==="Fortinet" ? "port"+ib : ""),
+              am: a.modelId&&former?.am || (a.vendor==="MikroTik" ? "ether"+ia : ""), bm: b.modelId&&former?.bm || (b.vendor==="MikroTik" ? "ether"+ib : ""),
             });
           };
           const routers = [];
@@ -3365,6 +3371,7 @@
           const previous=state;
           // Validación transaccional del conjunto, incluyendo equipos manuales.
           try {
+            candidate.links=assignCatalogInterfaces(candidate);validateCatalogBindings(candidate);
             state=candidate; arrangeTopology(false);
             const blocking=topologyIssues().find(x=>x.block);
             if (blocking) fail(t(blocking.msg));
@@ -3387,7 +3394,7 @@
             t("Topología de red"),
             "El gráfico muestra sedes, equipos, VLAN y redes del plan. Arrastre un equipo para moverlo; haga clic para editarlo. Los enlaces WAN representan un laboratorio enrutado.",
           ) +
-          vendorProfilesView() + `<div class="card"><div class="actions"><button onclick="arrangeTopology()">${t("Reorganizar diagrama")}</button><button onclick="zoomTopology(1.2)">${t("Acercar")}</button><button onclick="zoomTopology(0.833333)">${t("Alejar")}</button><button class="primary" onclick="buildTopology()">${t("Generar desde el plan")}</button><button onclick="editNode()">${t("Agregar equipo")}</button><button onclick="editLink()">${t("Crear enlace")}</button><button onclick="downloadSVG()">${t("Descargar topología SVG")}</button><button ${!imageMode ? "disabled" : ""} onclick="imageMode=false;render()">${t("Vista automática")}</button><label class="filebtn" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.querySelector('input').click()}">${t("Cargar imagen")}<input type="file" class="hidden" accept="image/png,image/jpeg,image/webp" onchange="loadImage(this)"></label>${imageData ? `<button onclick="imageMode=!imageMode;render()">${t("Ver / ocultar imagen")}</button>` : ""}</div><div class="notice warn">${t("Diseño preliminar: se recomiendan")} ${state.sites.length} ${t("firewalls recomendados. El perfil permite añadirlos con enlaces de tránsito explícitos; no crea Internet, NAT ni VPN. Los terminales son representativos. La configuración de AP se completa en su controlador.")}</div>${imageData && imageMode ? `<div class="notice">${t("Interpretación asistida manual: marque equipos y enlaces con los editores usando esta imagen como referencia. El HTML local no incluye un modelo de visión ni OCR y no afirma haber reconocido dispositivos automáticamente. La imagen no se transmite a ningún servidor.")}</div><div class="imageframe"><img src="${imageData}" alt="${t("Topología importada como referencia")}"></div>` : ""}<p class="hint">${t("WAN: violeta · ROUTED: turquesa · TRUNK: naranja · ACCESS: verde discontinuo. Pase el cursor sobre un enlace para consultar su red; los detalles completos están en las tablas.")}</p><div class="diagram">${state.nodes.length ? svgTopology() : `<div class="empty">${t("Confirme el VLSM y pulse «Generar desde el plan», o agregue equipos manualmente.")}</div>`}</div></div><div class="two"><div class="card"><h2>${t("Equipos ·")} ${state.nodes.length}</h2><div class="tablewrap"><table><thead><tr><th>${t("Nombre / sede")}</th><th>${t("Tipo")}</th><th>${t("Fabricante / IP")}</th><th>${t("Acción")}</th></tr></thead><tbody>${state.nodes
+          vendorProfilesView() + catalogControls() + `<div class="card"><div class="actions"><button onclick="arrangeTopology()">${t("Reorganizar diagrama")}</button><button onclick="zoomTopology(1.2)">${t("Acercar")}</button><button onclick="zoomTopology(0.833333)">${t("Alejar")}</button><button class="primary" onclick="buildTopology()">${t("Generar desde el plan")}</button><button onclick="editNode()">${t("Agregar equipo")}</button><button onclick="editLink()">${t("Crear enlace")}</button><button onclick="downloadSVG()">${t("Descargar topología SVG")}</button><button ${!imageMode ? "disabled" : ""} onclick="imageMode=false;render()">${t("Vista automática")}</button><label class="filebtn" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.querySelector('input').click()}">${t("Cargar imagen")}<input type="file" class="hidden" accept="image/png,image/jpeg,image/webp" onchange="loadImage(this)"></label>${imageData ? `<button onclick="imageMode=!imageMode;render()">${t("Ver / ocultar imagen")}</button>` : ""}</div><div class="notice warn">${t("Diseño preliminar: se recomiendan")} ${state.sites.length} ${t("firewalls recomendados. El perfil permite añadirlos con enlaces de tránsito explícitos; no crea Internet, NAT ni VPN. Los terminales son representativos. La configuración de AP se completa en su controlador.")}</div>${imageData && imageMode ? `<div class="notice">${t("Interpretación asistida manual: marque equipos y enlaces con los editores usando esta imagen como referencia. El HTML local no incluye un modelo de visión ni OCR y no afirma haber reconocido dispositivos automáticamente. La imagen no se transmite a ningún servidor.")}</div><div class="imageframe"><img src="${imageData}" alt="${t("Topología importada como referencia")}"></div>` : ""}<p class="hint">${t("WAN: violeta · ROUTED: turquesa · TRUNK: naranja · ACCESS: verde discontinuo. Pase el cursor sobre un enlace para consultar su red; los detalles completos están en las tablas.")}</p><div class="diagram">${state.nodes.length ? svgTopology() : `<div class="empty">${t("Confirme el VLSM y pulse «Generar desde el plan», o agregue equipos manualmente.")}</div>`}</div></div><div class="two"><div class="card"><h2>${t("Equipos ·")} ${state.nodes.length}</h2><div class="tablewrap"><table><thead><tr><th>${t("Nombre / sede")}</th><th>${t("Tipo")}</th><th>${t("Fabricante / IP")}</th><th>${t("Acción")}</th></tr></thead><tbody>${state.nodes
             .map(
               (n) =>
                 `<tr><td>${esc(n.name)}<br><small>${esc(siteName(n.site))}</small></td><td>${t(n.type)}</td><td>${esc(t(n.vendor))}<br><span class="mono">${esc(
@@ -3557,7 +3564,7 @@
               y: 100,
             };
         modal(
-          `<h2>${t(id ? "Editar" : "Agregar")} ${t("equipo")}</h2><div class="grid">${field(t("Hostname *"), "nname", n.name)}<div class="field"><label>${t("Tipo")}</label><select id="ntype">${optsHTML(kinds, n.type)}</select></div><div class="field"><label>${t("Fabricante")}</label><select id="nvendor">${optsHTML(["", "Cisco", "Huawei", "Fortinet", "MikroTik", "Genérico"], n.vendor)}</select></div><div class="field"><label>${t("Sede")}</label><select id="nsite">${state.sites.map((s) => `<option value="${s.id}" ${s.id === n.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></div>${field(t("IP de gestión / endpoint (opcional)"), "nip", n.ip)}<div class="field"><label>${t("VLAN de gestión / endpoint")}</label><select id="nnetwork"><option value="">${t("Sin asignar")}</option>${state.plan
+          `<h2>${t(id ? "Editar" : "Agregar")} ${t("equipo")}</h2><div class="grid">${field(t("Hostname *"), "nname", n.name)}<div class="field"><label>${t("Tipo")}</label><select id="ntype" onchange="updateNodeModels('${id}')">${optsHTML(kinds, n.type)}</select></div><div class="field"><label>${t("Fabricante")}</label><select id="nvendor" onchange="updateNodeModels('${id}')">${optsHTML(["", "Cisco", "Huawei", "Fortinet", "MikroTik", "Genérico"], n.vendor)}</select></div><div class="field"><label for="nmodel">${t("Modelo")}</label><select id="nmodel" onchange="previewNodeModel('${id}')">${modelOptions(n.vendor,n.type,n.modelId)}</select></div><div class="field"><label>${t("Sede")}</label><select id="nsite">${state.sites.map((s) => `<option value="${s.id}" ${s.id === n.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></div>${field(t("IP de gestión / endpoint (opcional)"), "nip", n.ip)}<div class="field"><label>${t("VLAN de gestión / endpoint")}</label><select id="nnetwork"><option value="">${t("Sin asignar")}</option>${state.plan
             .filter((r) => r.kind === "vlan")
             .map(
               (r) =>
@@ -3565,7 +3572,7 @@
             )
             .join(
               "",
-            )}</select></div></div>${accessPoint(n)&&row(n.network)?`<p class="notice">${t("Gestión AP")}: ${esc(n.ip)} · ${t("Máscara")}: ${esc(row(n.network).mask)} · Gateway: ${esc(row(n.network).gateway)}. ${t("AP excluido de CLI genérica: requiere modelo, firmware y administración específicos.")}</p>`:""}<p>${t("Las IP de interfaces enrutadas y SVI se toman del plan. Para los equipos manuales, asigne una VLAN e IP si requieren administración. Los nombres no pueden contener comandos.")}</p><div class="actions"><button class="primary" onclick="saveNode('${id}')">${t("Confirmar equipo")}</button><button onclick="closeModal()">${t("Cancelar")}</button></div>`,
+            )}</select></div></div><div id="nodeModelInventory">${!accessPoint(n)?catalogInventory(n):''}</div>${accessPoint(n)&&row(n.network)?`<p class="notice">${t("Gestión AP")}: ${esc(n.ip)} · ${t("Máscara")}: ${esc(row(n.network).mask)} · Gateway: ${esc(row(n.network).gateway)}. ${t("AP excluido de CLI genérica: requiere modelo, firmware y administración específicos.")}</p>`:""}<p>${t("Las IP de interfaces enrutadas y SVI se toman del plan. Para los equipos manuales, asigne una VLAN e IP si requieren administración. Los nombres no pueden contener comandos.")}</p><div class="actions"><button class="primary" onclick="saveNode('${id}')">${t("Confirmar equipo")}</button><button onclick="closeModal()">${t("Cancelar")}</button></div>`,
         );
       } // Editor permite los siete atributos solicitados.
       /**
@@ -3591,12 +3598,16 @@
               if (node(id).name!==n.name) n.nameOverride=true;
             }
           }
-          validateNodeVendor(n);
+          if ($("nmodel").value) n.modelId=$("nmodel").value; else delete n.modelId;
+          validateNodeVendor(n);validateNodeModel(n);
+          const candidate={...state,nodes:id?state.nodes.map(x=>x.id===id?n:x):[...state.nodes,n],links:state.links.map(l=>({...l}))};
+          if(n.modelId&&!node(id)?.modelId)candidate.links.forEach(l=>{const side=l.a===id?'a':l.b===id?'b':'';if(side)l[side+vendorPortKey(n.vendor)]='';});
+          candidate.links=assignCatalogInterfaces(candidate);validateCatalogBindings(candidate);
           if (id && (node(id).vendor!==n.vendor || node(id).type!==n.type)) delete n.interfaceProfiles;
           if (id && node(id).vendor !== n.vendor && connected(node(id)).length) {
             // Los nombres de puerto de la marca destino deben estar completos antes del cambio.
-            for (const link of connected(node(id))) {
-              const iface=endpoint(link,n,n.vendor).iface;
+            for (const link of candidate.links.filter(l=>l.a===id||l.b===id)) {
+              const side=link.a===id?'a':'b',iface=link[side+vendorPortKey(n.vendor)];
               if (n.vendor==="Fortinet") fortinetInterfaceName(iface);
               else if (n.vendor==="MikroTik") mikrotikInterfaceName(iface);
               else interfaceName(iface);
@@ -3629,8 +3640,8 @@
           }
           if (r && r.site !== n.site)
             fail(t("VLAN y equipo deben pertenecer a la misma sede."));
-          const connected = state.links.filter((l) => l.a === id || l.b === id);
-          for (const l of connected) {
+          const nodeLinks = state.links.filter((l) => l.a === id || l.b === id);
+          for (const l of nodeLinks) {
             if (l.type === "routed" && !routed(n))
               fail(t("Quite los enlaces enrutados antes de cambiar este tipo."));
             if (
@@ -3652,8 +3663,7 @@
             ).length >= 2
           )
             fail(t("Máximo dos cores por sede."));
-          if (id) state.nodes[state.nodes.findIndex((x) => x.id === id)] = n;
-          else state.nodes.push(n);
+          state=candidate;
           invalidate("topology");
           closeModal();
           render();
@@ -3692,7 +3702,7 @@
             )
             .join("");
         modal(
-          `<h2>${t(id ? "Editar" : "Crear")} ${t("enlace")}</h2><p class="notice warn">${t("Los nombres de interfaces son propuestas automáticas. Verifique puertos, modelo y versión antes de aplicar configuraciones a equipos físicos.")}</p><div class="grid"><div class="field"><label>${t("Equipo A")}</label><select id="la">${ns(l.a)}</select></div><div class="field"><label>${t("Equipo B")}</label><select id="lb">${ns(l.b)}</select></div><div class="field"><label>${t("Tipo")}</label><select id="ltype">${optsHTML(["trunk", "access", "routed"], l.type)}</select></div><div class="field"><label>${t("Red de tránsito (routed)")}</label><select id="lnet"><option value="">${t("Asignar nueva /30 desde VLSM")}</option>${state.plan
+          `<h2>${t(id ? "Editar" : "Crear")} ${t("enlace")}</h2><p class="notice warn">${t("Los nombres de interfaces son propuestas automáticas. Verifique puertos, modelo y versión antes de aplicar configuraciones a equipos físicos.")}</p><div class="grid"><div class="field"><label>${t("Equipo A")}</label><select id="la" onchange="lockCatalogLinkFields()">${ns(l.a)}</select></div><div class="field"><label>${t("Equipo B")}</label><select id="lb" onchange="lockCatalogLinkFields()">${ns(l.b)}</select></div><div class="field"><label>${t("Tipo")}</label><select id="ltype">${optsHTML(["trunk", "access", "routed"], l.type)}</select></div><div class="field"><label>${t("Red de tránsito (routed)")}</label><select id="lnet"><option value="">${t("Asignar nueva /30 desde VLSM")}</option>${state.plan
             .filter((r) => r.kind !== "vlan")
             .map(
               (r) =>
@@ -3702,6 +3712,7 @@
               "",
             )}</select></div>${field(t("VLAN (solo access)"), "lvlan", l.vlan, "number")}${field(t("Grupo LACP (0 = sin agrupación)"), "lbundle", l.bundle, "number")}${field(t("Interfaz A · Cisco"), "lac", l.ac)}${field(t("Interfaz B · Cisco"), "lbc", l.bc)}${field(t("Interfaz A · Huawei"), "lah", l.ah)}${field(t("Interfaz B · Huawei"), "lbh", l.bh)}${field(t("Interfaz A · Fortinet (solo Firewall)"), "laf", l.af || "", "text", 'placeholder="port1"')}${field(t("Interfaz B · Fortinet (solo Firewall)"), "lbf", l.bf || "", "text", 'placeholder="port2"')}${field(t("Interfaz A · MikroTik (solo Router)"), "lam", l.am || "", "text", 'placeholder="ether1"')}${field(t("Interfaz B · MikroTik (solo Router)"), "lbm", l.bm || "", "text", 'placeholder="ether2"')}</div><div class="notice">${t("Trunk transporta las VLAN de la sede (hacia AP: gestión, WiFi e invitados). Access conecta un terminal a una VLAN. Routed utiliza /30 y OSPF. LACP requiere dos enlaces físicos entre los mismos switches con el mismo número de grupo; se usa modo activo en ambos extremos.")}</div><div class="actions"><button class="primary" onclick="saveLink('${id}')">${t("Confirmar enlace")}</button><button onclick="closeModal()">${t("Cancelar")}</button></div>`,
         );
+        lockCatalogLinkFields();
       } // Interfaces de cada fabricante se editan separadamente.
       function interfaceName(v) {
         if (
@@ -3716,7 +3727,7 @@
       } // No admite saltos de línea ni nombres de comandos.
       function saveLink(id) {
         safe(() => {
-          const l = {
+          let l = {
             id: id || "l" + Date.now(),
             a: $("la").value,
             b: $("lb").value,
@@ -3734,20 +3745,20 @@
           };
           for (const side of ["a", "b"]) {
             const value = $("l" + side + "f").value.trim();
-            if (value || fortinetNode(node(l[side]))) l[side + "f"] = fortinetInterfaceName(value);
+            if (value || (fortinetNode(node(l[side])) && !node(l[side]).modelId)) l[side + "f"] = fortinetInterfaceName(value);
           }
           for (const side of ["a", "b"]) {
             const value = $("l" + side + "m").value.trim();
-            if (value || mikrotikNode(node(l[side]))) l[side + "m"] = mikrotikInterfaceName(value);
+            if (value || (mikrotikNode(node(l[side])) && !node(l[side]).modelId)) l[side + "m"] = mikrotikInterfaceName(value);
           }
           if (l.type === "routed" && !l.network && (mikrotikNode(node(l.a)) || mikrotikNode(node(l.b))))
             fail(t("MikroTik: seleccione una /30 existente del plan; no se asigna tránsito fuera de sus pools."));
           if (l.type === "routed" && !l.network && (fortinetNode(node(l.a)) || fortinetNode(node(l.b))))
             fail(t("Fortinet: seleccione una /30 existente del plan; no se asigna tránsito fuera de sus pools."));
-          validateLink(
-            l,
-            state.links.filter((x) => x.id !== id),
-          );
+          const candidateLinks=assignCatalogInterfaces({...state,links:id?state.links.map(x=>x.id===id?l:x):[...state.links,l]});
+          l=candidateLinks.find(x=>x.id===l.id);
+          validateCatalogBindings({...state,links:candidateLinks});
+          validateLink(l,candidateLinks.filter(x=>x.id!==l.id));
           let plan = state.plan;
           if (l.type === "routed" && !l.network) {
             const base = subnet(state.project.base),
@@ -3784,8 +3795,7 @@
             });
           }
           state.plan = plan;
-          if (id) state.links[state.links.findIndex((x) => x.id === id)] = l;
-          else state.links.push(l);
+          state.links=candidateLinks;
           invalidate("topology");
           closeModal();
           render();
@@ -3841,7 +3851,8 @@
           }
         }
         for (const side of ["a", "b"])
-          for (const vendor of (mikrotikNode(node(l[side])) ? ["m"] : fortinetNode(node(l[side])) ? ["f"] : ["c", "h"])) {
+          // Con modelo solo el nombre nativo es físico; las columnas alternativas son comparación genérica.
+          for (const vendor of (node(l[side])?.modelId ? [vendorPortKey(node(l[side]).vendor)] : mikrotikNode(node(l[side])) ? ["m"] : fortinetNode(node(l[side])) ? ["f"] : ["c", "h"])) {
             const name = vendor === "m" ? mikrotikInterfaceName(l[side + vendor]) : vendor === "f" ? fortinetInterfaceName(l[side + vendor]) : l[side + vendor];
             for (const x of others) {
               if (
@@ -3966,11 +3977,167 @@
       }
       /** Resuelve los puertos del enlace por marca; no exige modelo ni confirmación manual.
        * Los nombres históricos de perfiles se usan solo para verificar archivos antiguos, nunca para CLI nueva. */
+      /* Catálogo local: no fetch, no scraping y ninguna dependencia de internet.
+       * El JSON se empaqueta como script de datos para permitir también apertura file://. */
+      const interfaceCatalog = globalThis.WAN_INTERFACE_CATALOG?.schemaVersion===1 ? globalThis.WAN_INTERFACE_CATALOG.models : [];
+      const modelById = id => interfaceCatalog.find(m=>m.id===id);
+      const vendorPortKey = vendor => ({Cisco:'c',Huawei:'h',Fortinet:'f',MikroTik:'m'})[vendor];
+      /** Filtra únicamente modelos de la marca y rol reales; AP no tiene plantilla genérica. */
+      function modelsFor(vendor,type) { return interfaceCatalog.filter(m=>m.vendor===vendor && m.types.includes(type) && type!=="Access Point"); }
+      function validateNodeModel(n) {
+        if (!n.modelId) return null;
+        const model=modelById(n.modelId);
+        if (!model || !modelsFor(n.vendor,n.type).includes(model)) fail(t("Equipo {0}: modelo desconocido o incompatible con fabricante/tipo.",[n.name]));
+        return model;
+      }
+      /** Papel derivado del enlace: no pide al usuario que declare cada puerto. */
+      function catalogPurpose(l,n,data) {
+        const peer=data.nodes.find(x=>x.id===(l.a===n.id?l.b:l.a));
+        if (l.type==='access') return 'access';
+        if (peer?.site!==n.site || (n.type==='Firewall' && l.type==='routed')) return 'wan';
+        if (l.type==='trunk') return 'uplink';
+        return n.type==='Switch capa 3'?'uplink':'lan';
+      }
+      /** Comprueba medio y velocidad común del catálogo, no negociación física.
+       * Ante un extremo genérico se elige cobre conservador; no se presupone una óptica. */
+      function catalogPair(a,b) {
+        if (!a && !b) return true;
+        if (!a || !b) return (a||b).media==='copper';
+        return a.media===b.media && a.speedsMbps.some(s=>b.speedsMbps.includes(s));
+      }
+      /** Resuelve el grafo de puertos en una copia antes de modificar el proyecto.
+       * Preserva nombres válidos, busca primero enlaces restrictivos y retrocede por
+       * clases de puerto equivalentes (evita permutar 48 puertos idénticos).
+       * Sin solución/capacidad conserva estado, DOM, planes y configuraciones previos. */
+      function assignCatalogInterfaces(data) {
+        const models=new Map(data.nodes.filter(n=>n.modelId).map(n=>[n.id,validateNodeModel(n)]));
+        if (!models.size) return data.links;
+        const links=data.links.map(l=>({...l})), used=new Map([...models.keys()].map(id=>[id,new Set()]));
+        const ends=l=>['a','b'].map(side=>({side,n:data.nodes.find(n=>n.id===l[side]),model:models.get(l[side])}));
+        const available=(l,e)=>e.model ? e.model.ports.filter(p=>p.assignable && p.modes.includes(l.type)) : [null];
+        // Fallo de capacidad rápido; nunca se inventa un índice de puerto para completar el diseño.
+        for (const [id,model] of models) {
+          const n=data.nodes.find(n=>n.id===id), attached=links.filter(l=>l.a===id||l.b===id);
+          if (attached.length>model.ports.filter(p=>p.assignable).length || attached.some(l=>!model.ports.some(p=>p.assignable&&p.modes.includes(l.type))))
+            fail(t("Equipo {0}, modelo {1}: puertos insuficientes o tipo de enlace no soportado.",[n.name,model.model]));
+        }
+        // Una asociación previa válida pertenece a su enlace: un enlace nuevo no roba ese puerto.
+        const retained=new Map([...models.keys()].map(id=>[id,new Map()]));
+        for(const l of links)for(const e of ends(l))if(e.model) {
+          const name=l[e.side+vendorPortKey(e.n.vendor)],p=available(l,e).find(p=>p.name===name);
+          const peer=ends(l).find(x=>x.side!==e.side),q=peer.model?.ports.find(p=>p.name===l[peer.side+vendorPortKey(peer.n.vendor)]);
+          if(p&&catalogPair(p,q)&&!retained.get(e.n.id).has(name))retained.get(e.n.id).set(name,l.id);
+        }
+        const options=l=>{
+          const [a,b]=ends(l), A=available(l,a),B=available(l,b);
+          return A.reduce((count,p)=>count+B.filter(q=>catalogPair(p,q)).length,0);
+        };
+        const ordered=links.filter(l=>models.has(l.a)||models.has(l.b)).sort((a,b)=>options(a)-options(b)||a.id.localeCompare(b.id,'en',{numeric:true}));
+        let attempts=0;
+        const score=(l,e,p)=>{
+          if (!p) return 0;
+          const current=l[e.side+vendorPortKey(e.n.vendor)], purpose=catalogPurpose(l,e.n,data);
+          return (p.name===current?-1000:0)+(p.preferred===purpose?-100:0)+(purpose==='uplink'&&p.media==='fiber'?-50:0);
+        };
+        const candidates=(l,e)=>{
+          if (!e.model) return [null];
+          const ports=available(l,e).filter(p=>!used.get(e.n.id).has(p.name)&&(!retained.get(e.n.id).has(p.name)||retained.get(e.n.id).get(p.name)===l.id)).sort((a,b)=>score(l,e,a)-score(l,e,b)||e.model.ports.indexOf(a)-e.model.ports.indexOf(b));
+          const classes=new Set();
+          return ports.filter(p=>{const key=JSON.stringify([p.media,p.speedsMbps,p.modes,p.preferred]);if(classes.has(key))return false;classes.add(key);return true;});
+        };
+        function solve(index) {
+          if (index===ordered.length) return true;
+          if (++attempts>30000) fail(t("Asignación de puertos demasiado compleja; revise modelos y enlaces. No se modificó el proyecto."));
+          const l=ordered[index],[a,b]=ends(l);
+          const pairs=[];
+          for(const p of candidates(l,a))for(const q of candidates(l,b))if(catalogPair(p,q))pairs.push([p,q]);
+          pairs.sort((x,y)=>score(l,a,x[0])+score(l,b,x[1])-score(l,a,y[0])-score(l,b,y[1]));
+          for (const pair of pairs) {
+            [a,b].forEach((e,i)=>{if(e.model){used.get(e.n.id).add(pair[i].name);l[e.side+vendorPortKey(e.n.vendor)]=pair[i].name;}});
+            if(solve(index+1))return true;
+            [a,b].forEach((e,i)=>{if(e.model)used.get(e.n.id).delete(pair[i].name);});
+          }
+          return false;
+        }
+        if (!solve(0)) fail(t("No hay asignación compatible de puertos para los modelos y enlaces seleccionados. No se modificó el proyecto."));
+        return links;
+      }
+      /** Valida la asignación recibida; importar no reasigna ni corrige puertos silenciosamente. */
+      function validateCatalogBindings(data) {
+        for (const n of data.nodes) {
+          const model=validateNodeModel(n);if(!model)continue;
+          const names=new Set();
+          for(const l of data.links.filter(l=>l.a===n.id||l.b===n.id)) {
+            const side=l.a===n.id?'a':'b',name=l[side+vendorPortKey(n.vendor)],p=model.ports.find(p=>p.name===name);
+            if (!p?.assignable || !p.modes.includes(l.type) || names.has(name)) fail(t("Equipo {0}: puerto inexistente, reservado, duplicado o incompatible con el enlace.",[n.name]));
+            names.add(name);
+            const peer=data.nodes.find(x=>x.id===l[side==='a'?'b':'a']),other=peer&&validateNodeModel(peer),otherName=l[(side==='a'?'b':'a')+vendorPortKey(peer?.vendor)],q=other?.ports.find(p=>p.name===otherName);
+            if(!catalogPair(p,q))fail(t("Equipo {0}: medio o velocidad de puertos incompatible con el otro extremo.",[n.name]));
+          }
+        }
+      }
+      /** No cambia las plantillas genéricas: limita las funciones para un modelo explícito.
+       * Si falta respaldo para una función activa se bloquea con causa concreta, nunca se emite CLI incorrecta. */
+      function requireCatalogReady(n,vendor) {
+        const model=n.modelId&&validateNodeModel(n);
+        if (!model || vendor!==n.vendor) return; // Comparación alternativa sigue siendo explícitamente genérica.
+        validateCatalogBindings(state);
+        const o=state.opts, isRouted=routed(n),needs={ssh:o.ssh,interfaces:o.interfaces,vlans:o.vlans&&switching(n),ospf:o.ospf&&isRouted,dhcp:o.dhcp&&isRouted,relay:o.relay&&isRouted,static:o.static&&isRouted,lacp:connected(n).some(l=>l.bundle),ha:n.type==='Switch capa 3'&&state.sites.find(s=>s.id===n.site)?.redundant};
+        for(const [feature,active] of Object.entries(needs))if(active&&!model.features[feature])fail(t("Modelo {0}: función {1} no respaldada por este perfil. Desactive la opción o elija otro modelo.",[model.model,feature]));
+      }
+      /** Opciones escapadas; un proyecto antiguo mantiene la opción genérica sin cambiar sus datos. */
+      function modelOptions(vendor,type,id='') {
+        return `<option value="">${t("Sin modelo (modo genérico)")}</option>`+modelsFor(vendor,type).map(m=>`<option value="${esc(m.id)}" ${m.id===id?'selected':''}>${esc(m.model)}</option>`).join('');
+      }
+      function catalogInventory(n) {
+        const model=n.modelId&&modelById(n.modelId);
+        if(!model)return `<p class="notice warn">${t("Modelo no especificado. Los nombres de interfaces son genéricos y deben verificarse antes de aplicar la configuración")}</p>`;
+        return `<details class="card"><summary>${esc(model.model)} · ${model.ports.length} ${t("puertos catalogados")}</summary><p>${esc(model.os)} · ${esc(t(model.referenceVersion))} · ${t("Verificación documental")}: ${esc(model.verifiedOn)}</p><p>${model.limitations.map(x=>esc(t(x))).join('<br>')}</p><div class="tablewrap"><table><thead><tr><th>${t("Interfaz")}</th><th>${t("Tipo")}</th><th>${t("Velocidad (Mbps)")}</th><th>${t("Enlace / restricción")}</th></tr></thead><tbody>${model.ports.map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.connector)}</td><td>${p.speedsMbps.join(' / ')}</td><td>${esc(p.assignable?connected(n).find(l=>endpoint(l,n,n.vendor).iface===p.name)?.id||t("Disponible"):t(p.restriction))}</td></tr>`).join('')}</tbody></table></div><ul>${model.sources.map(s=>`<li><a target="_blank" rel="noopener" href="${esc(s.url)}">${t("Fuente oficial")}</a></li>`).join('')}</ul>${model.excludedHardware.map(x=>`<p class="notice warn">${esc(t(x))}</p>`).join('')}<p>${t("Inventario documental; no descubre hardware, licencias, ópticas ni configuración existente.")}</p></details>`;
+      }
+      /** Controles comunes en Topología y cuatro vistas; fabricante se edita con el editor normal. */
+      function catalogControls(vendor='') {
+        const nodes=vendor?configNodes(vendor):state.nodes.filter(n=>!accessPoint(n)&&['Cisco','Huawei','Fortinet','MikroTik'].includes(n.vendor)&&(configurable(n)||fortinetNode(n)||mikrotikNode(n)));
+        return `<div class="card"><h2>${t("Fabricante y modelo · catálogo local")}</h2>${!interfaceCatalog.length?`<p class="notice warn">${t("Catálogo local no disponible. Los proyectos sin modelo conservan el modo genérico.")}</p>`:''}${nodes.map(n=>`<div class="card"><strong>${esc(n.name)} · ${esc(n.vendor)} · ${t(n.type)}</strong><div class="actions"><label for="model-${n.id}">${t("Modelo")}</label><select id="model-${n.id}" onchange="setNodeModel('${n.id}',this.value)">${modelOptions(n.vendor,n.type,n.modelId)}</select><button onclick="editNode('${n.id}')">${t("Editar fabricante y equipo")}</button></div>${catalogInventory(n)}</div>`).join('')}</div>`;
+      }
+      /** Transacción de cambio de modelo: sin campos manuales de puertos ni asignación parcial. */
+      function setNodeModel(id,modelId) {
+        return safe(()=>{
+          const current=node(id);if(!current)fail(t("Extremo inexistente."));
+          const candidate={...state,nodes:state.nodes.map(n=>({...n})),links:state.links.map(l=>({...l}))},n=candidate.nodes.find(n=>n.id===id);
+          if(modelId)n.modelId=modelId;else delete n.modelId;
+          validateNodeModel(n);
+          // Los nombres genéricos no son asignaciones confirmadas del catálogo; al primer modelo se priorizan funciones.
+          if(modelId&&!current.modelId)candidate.links.forEach(l=>{const side=l.a===id?'a':l.b===id?'b':'';if(side)l[side+vendorPortKey(n.vendor)]='';});
+          candidate.links=assignCatalogInterfaces(candidate);validateCatalogBindings(candidate);
+          state=candidate;invalidate('topology');render();toast(t("Modelo e interfaces asignados automáticamente."));return true;
+        });
+      }
+      /** Vista previa sin mutación ni confirmación de puertos; sus nombres provienen del catálogo. */
+      function previewNodeModel(id) {
+        const n={...(node(id)||{id:'',name:''}),vendor:$('nvendor').value,type:$('ntype').value,modelId:$('nmodel').value};
+        $('nodeModelInventory').innerHTML=accessPoint(n)?'':catalogInventory(n);
+        // Al elegir modelo se muestra su inventario; la vista previa nunca guarda puertos.
+        const details=$('nodeModelInventory').querySelector('details');if(details)details.open=true;
+      }
+      /** Los puertos de un modelo se asignan; los de proyectos genéricos siguen siendo editables. */
+      function lockCatalogLinkFields() {
+        for(const side of ['a','b'])for(const suffix of ['c','h','f','m']) {
+          const el=$('l'+side+suffix),n=node($('l'+side).value);
+          if(el)el.readOnly=Boolean(n?.modelId&&vendorPortKey(n.vendor)===suffix);
+        }
+      }
+      /** Actualiza solo el selector del editor; confirmar equipo realiza la transacción completa. */
+      function updateNodeModels(id='') {
+        const vendor=$('nvendor').value,type=$('ntype').value,current=$('nmodel').value;
+        $('nmodel').innerHTML=modelOptions(vendor,type,modelsFor(vendor,type).some(m=>m.id===current)?current:'');
+        previewNodeModel(id);
+      }
+
       function endpoint(l, n, vendor) {
         const side = l.a === n.id ? "a" : "b",
           r = row(l.network);
         return {
-          iface: (archivedPhysicalNames ? n.interfaceProfiles?.[vendor]?.ports.find(p=>p.linkId===l.id)?.name : "") || l[side + (vendor === "MikroTik" ? "m" : vendor === "Fortinet" ? "f" : vendor === "Cisco" ? "c" : "h")],
+          iface: (archivedPhysicalNames && !n.modelId ? n.interfaceProfiles?.[vendor]?.ports.find(p=>p.linkId===l.id)?.name : "") || l[side + (vendor === "MikroTik" ? "m" : vendor === "Fortinet" ? "f" : vendor === "Cisco" ? "c" : "h")],
           ip: r ? (side === "a" ? r.first : r.last) : "",
           r,
           peer: node(l.a === n.id ? l.b : l.a),
@@ -4015,7 +4182,7 @@
               ? t("Propuestas para IOS / IOS XE con VLAN, SVI, OSPF y SSH. Elija equipo o genere toda la marca.")
               : t("Propuestas VRP para los equipos Huawei seleccionados. Use Comparación para equivalencias explícitas con Cisco."),
           ) +
-          configControls() +
+          configControls() + catalogControls(vendor) +
           `<div class="card"><div class="actions"><select id="confNode" aria-label="${t("Equipo a configurar")}">${nodes.map((n) => `<option value="${n.id}">${esc(n.name)} · ${esc(siteName(n.site))}</option>`).join("")}</select><button class="primary" onclick="generateSelected('${vendor}')">${t("Generar equipo")}</button><button onclick="generateAll('${vendor}')">${t("Generar todos los")} ${vendor}</button><button onclick="downloadAll('${vendor}')">${t("Descargar todos")}</button></div><div class="notice warn">${t("Configuración preliminar; ajuste interfaces y sintaxis al modelo/versión del equipo. &lt;CAMBIAR_EN_PRODUCCION&gt; exige reemplazo externo antes de aplicar. Los prompts interactivos de claves y guardado se atienden en el equipo. No se genera configuración genérica para firewall, AP, ISP, PC o servidor.")}</div>${nodes.length ? nodes.map((n) => configBlock(n, vendor)).join("") : `<div class="empty">${t("Genere una topología y asigne equipos a esta marca. Para evaluar el mismo equipo con ambas sintaxis use Comparación.")}</div>`}</div>`
         );
       }
@@ -4112,7 +4279,7 @@
           fail(t("Interfaces de switching requieren crear VLAN."));
       } // Bloqueos técnicos concretos, sin afirmar funcionalidad incompleta.
       function generate(n, vendor) {
-        excludeAccessPoint(n);
+        excludeAccessPoint(n);requireCatalogReady(n,vendor);
         if (vendor === "MikroTik") return generateMikroTik(n);
         if (vendor === "Fortinet") return generateFortinet(n);
         if (!["Cisco", "Huawei"].includes(vendor) || fortinetNode(n) || mikrotikNode(n))
@@ -4496,7 +4663,7 @@
        * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
        */
       function generateFortinet(n) {
-        excludeAccessPoint(n);
+        excludeAccessPoint(n);requireCatalogReady(n,"Fortinet");
         if (!fortinetNode(n)) fail(t("FortiOS solo admite nodos Firewall de fabricante Fortinet."));
         requireConfirmedPlan();
         hostname(n.name);
@@ -4651,7 +4818,7 @@
             ["https://docs.fortinet.com/document/fortigate/7.4.0/cli-reference/526620/config-router-ospf", "OSPF"],
             ["https://docs.fortinet.com/document/fortigate/7.4.2/cli-reference/297620", t("Restricción local-in de administración")],
           ].map(([url,label]) => `<li><a target="_blank" rel="noopener" href="${url}">${t(label)}</a></li>`).join("")}</ul></details>` +
-          `<div class="notice warn">${t("Mapee interfaces Fortinet reales en Topología y deje vacíos IP/red del nodo: se derivan del plan y de sus enlaces. Hostname e interfaces son obligatorios; rutas estáticas proceden de enlaces reales. No se crean VDOM ni se habilita multi-VDOM; las VLAN usan el contexto interno root. No se generan HA, LACP, NAT ni permisos de tránsito implícitos. OSPF usa área 0 y LAN pasivas; verifique adyacencias y rutas de retorno. Un firewall no puede reclamar gateways ya usados por cores. Las opciones compartidas de OSPF/DHCP/relay/ruta afectan a todas las marcas.")}</div>` + fortinetControls() +
+          `<div class="notice warn">${t("Mapee interfaces Fortinet reales en Topología y deje vacíos IP/red del nodo: se derivan del plan y de sus enlaces. Hostname e interfaces son obligatorios; rutas estáticas proceden de enlaces reales. No se crean VDOM ni se habilita multi-VDOM; las VLAN usan el contexto interno root. No se generan HA, LACP, NAT ni permisos de tránsito implícitos. OSPF usa área 0 y LAN pasivas; verifique adyacencias y rutas de retorno. Un firewall no puede reclamar gateways ya usados por cores. Las opciones compartidas de OSPF/DHCP/relay/ruta afectan a todas las marcas.")}</div>` + fortinetControls() + catalogControls("Fortinet") +
           `<div class="card"><div class="actions"><select id="confNode" aria-label="${t("Equipo a configurar")}">${nodes.map((n) => `<option value="${n.id}">${esc(n.name)}</option>`).join("")}</select><button class="primary" onclick="generateSelected('Fortinet')">${t("Generar equipo")}</button><button onclick="generateAll('Fortinet')">${t("Generar todos los Fortinet")}</button><button onclick="downloadAll('Fortinet')">${t("Descargar todos")}</button></div>${nodes.length ? nodes.map((n) => configBlock(n, "Fortinet")).join("") : `<div class="empty">${t("Añada un Firewall Fortinet y sus enlaces explícitos en Topología.")}</div>`}</div>`;
       }
       /* RouterOS 7.x: router de laboratorio, sin VRF/CAPsMAN ni ejecución remota. */
@@ -4734,7 +4901,7 @@
        * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
        */
       function generateMikroTik(n) {
-        excludeAccessPoint(n);
+        excludeAccessPoint(n);requireCatalogReady(n,"MikroTik");
         if (!mikrotikNode(n)) fail(t("RouterOS solo admite nodos Router de fabricante MikroTik."));
         requireConfirmedPlan();
         hostname(n.name);
@@ -4885,7 +5052,7 @@
             ["https://help.mikrotik.com/docs/spaces/ROS/pages/328513/Building+Advanced+Firewall", t("Filtrado de entrada y tránsito")],
             ["https://help.mikrotik.com/docs/spaces/ROS/pages/47579229/Scripting", t("Controles previos y sintaxis")],
           ].map(([url,label]) => `<li><a target="_blank" rel="noopener" href="${url}">${t(label)}</a></li>`).join("")}</ul></details>` +
-          `<div class="notice warn">${t("Mapee puertos MikroTik reales en Topología y deje IP/red del nodo vacíos. Solo Router; bridge/VLAN filtering para LAN, /30 para enlaces enrutados. No se modelan VRRP, LACP, VRF, CAPsMAN, IPv6 ni NAT. No reclame gateways de cores u otros routers/firewalls. SSH solo desde Gestión; MAC y servicios innecesarios deshabilitados. Sin permisos de tráfico explícitos se bloquea forward: revise políticas antes de uso. Cuentas/claves y configuración existente requieren revisión externa. Las opciones de OSPF/DHCP/relay/ruta son compartidas entre fabricantes.")}</div>` + mikrotikControls() +
+          `<div class="notice warn">${t("Mapee puertos MikroTik reales en Topología y deje IP/red del nodo vacíos. Solo Router; bridge/VLAN filtering para LAN, /30 para enlaces enrutados. No se modelan VRRP, LACP, VRF, CAPsMAN, IPv6 ni NAT. No reclame gateways de cores u otros routers/firewalls. SSH solo desde Gestión; MAC y servicios innecesarios deshabilitados. Sin permisos de tráfico explícitos se bloquea forward: revise políticas antes de uso. Cuentas/claves y configuración existente requieren revisión externa. Las opciones de OSPF/DHCP/relay/ruta son compartidas entre fabricantes.")}</div>` + mikrotikControls() + catalogControls("MikroTik") +
           `<div class="card"><div class="actions"><select id="confNode" aria-label="${t("Equipo a configurar")}">${nodes.map((n) => `<option value="${n.id}">${esc(n.name)}</option>`).join("")}</select><button class="primary" onclick="generateSelected('MikroTik')">${t("Generar equipo")}</button><button onclick="generateAll('MikroTik')">${t("Generar todos los MikroTik")}</button><button onclick="downloadAll('MikroTik')">${t("Descargar todos")}</button></div>${nodes.length ? nodes.map((n) => configBlock(n, "MikroTik")).join("") : `<div class="empty">${t("Añada un Router MikroTik y sus enlaces explícitos en Topología.")}</div>`}</div>`;
       }
 
@@ -4949,7 +5116,7 @@
             t("Cisco IOS | Huawei VRP"),
             t("Comparez le même rôle logique et le même adressage. Le choix du fabricant dans la topologie limite uniquement les exports par marque."),
           ) +
-          configControls() +
+          configControls() + `<p class="notice warn">${t("Comparación: el modelo solo se aplica a su fabricante real. La otra sintaxis usa interfaces genéricas; no certifica un equipo equivalente.")}</p>` +
           `<div class="card"><div class="actions"><select aria-label="${t("Équipe pour comparaison")}" onchange="selectedNode=this.value;render()">${ns.map((x) => `<option value="${x.id}" ${n?.id === x.id ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select><button class="primary" onclick="generateCompare('${n?.id || ""}')">${t("Générer les deux syntaxes")}</button></div></div>${n ? `<div class="two"><div>${configBlock(n, "Cisco") || `<div class="card empty">${t("Cisco · en attente de génération")}</div>`}</div><div>${configBlock(n, "Huawei") || `<div class="card empty">${t("Huawei · en attente de génération")}</div>`}</div></div>` : `<div class="card empty">${t("Une topologie est requise.")}</div>`}`
         );
       } // Comparaison sans changer le fabricant du dispositif réel.
@@ -5613,6 +5780,7 @@
               ...(n.vendorOverride === undefined ? {} : {vendorOverride: bool(n.vendorOverride)}),
               ...(n.nameOverride === undefined ? {} : {nameOverride: bool(n.nameOverride)}),
               ...(n.interfaceProfiles===undefined?{}:{interfaceProfiles:structuredClone(n.interfaceProfiles)}),
+              ...(n.modelId===undefined?{}:{modelId:idVal(n.modelId)}),
               name: hostname(n.name),
               type: enumVal(n.type, kinds, "Tipo de equipo"),
               vendor: enumVal(n.vendor, ["Cisco", "Huawei", "Fortinet", "MikroTik", "Genérico"], "Fabricante"),
@@ -5622,7 +5790,7 @@
               x: num(n.x, 0, 100000, "X", false),
               y: num(n.y, 0, 100000, "Y", false),
             };
-          validateNodeVendor(o);
+          validateNodeVendor(o);validateNodeModel(o);
           if (o.vendor === "MikroTik" && !mikrotikNode(o)) fail(t("MikroTik requiere tipo Router."));
           if (o.vendor === "Fortinet" && !fortinetNode(o)) fail(t("Fortinet requiere tipo Firewall."));
           if (o.network && (!r || r.site !== o.site || r.kind !== "vlan"))
@@ -5701,6 +5869,7 @@
             if (!n.interfaceProfiles || typeof n.interfaceProfiles!=="object" || Array.isArray(n.interfaceProfiles)) fail(t("Perfil físico inválido."));
             for (const [vendor,profile] of Object.entries(n.interfaceProfiles)) validatePhysicalProfile(n,vendor,profile);
           }
+          validateCatalogBindings(out);
           checkingArchive=true;
           for (const l of out.links)
             validateLink(
