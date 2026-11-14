@@ -70,8 +70,8 @@ def register(case,check):
 
     @case('K04','Cisco con modelo','Catalyst seleccionado usa nombres reales en toda la CLI física, conservando IPv4/HSRP.')
     def cisco(lab):
-        lab.lab();lab.topology();identifier=target(lab);before=lab.snapshot()['state']['plan'];lab.go(6)
-        lab.page.locator('#model-'+identifier).select_option('cisco-c9200l-24t-4g');lab.valid()
+        lab.lab();lab.topology();identifier=target(lab);before=lab.snapshot()['state']['plan'];lab.go(5)
+        lab.page.locator('#model-'+identifier).select_option('cisco-c9200l-24t-4g');lab.valid();lab.go(6)
         cli=lab.evaluate('id=>generate(node(id),"Cisco")',identifier);names=native(lab,identifier,'Cisco')
         check(names and all('interface '+name in cli for name in names),'Cisco omitió puerto del catálogo')
         check(all(x.startswith('GigabitEthernet1/') for x in names) and 'interface GigabitEthernet0/' not in cli,'Cisco sigue genérico')
@@ -116,7 +116,7 @@ def register(case,check):
 
     @case('K09','Puertos insuficientes y atomicidad','ISR4321 de dos GE rechaza tres enlaces sin inventar puertos ni perder proyecto/DOM.')
     def capacity(lab):
-        lab.lab();lab.topology();lab.configs('Cisco');lab.go(6);identifier=target(lab,'Router')
+        lab.lab();lab.topology();lab.configs('Cisco');lab.go(5);identifier=target(lab,'Router')
         check(lab.evaluate('id=>connected(node(id)).length',identifier)>2,'Laboratorio sin demanda de capacidad')
         message=lab.atomic_error(lambda:lab.evaluate('id=>setNodeModel(id,"cisco-isr4321-k9")',identifier),'#model-'+identifier)
         check('ISR4321' in message and 'insuficientes' in message,'Error no identifica modelo/capacidad')
@@ -204,7 +204,7 @@ def register(case,check):
         for width in [1440,390]:
             lab.page.set_viewport_size({'width':width,'height':900})
             for lang in ['es','en']:
-                lab.evaluate('lang=>setLanguage(lang)',lang);lab.go(6)
+                lab.evaluate('lang=>setLanguage(lang)',lang);lab.go(5)
                 label='Fabricante y modelo · catálogo local' if lang=='es' else 'Vendor and model · local catalogue'
                 check(label in lab.page.locator('#view').inner_text(),'Título no traducido')
                 lab.page.locator('#model-'+identifier).select_option('cisco-c9200l-24t-4g');lab.valid()
@@ -245,6 +245,10 @@ def register(case,check):
 
     @case('K22','Catálogo ausente y modo legado','Sin archivo de catálogo los proyectos sin modelo siguen funcionando con aviso; no se consulta internet.')
     def missing(lab):
+        # Ausencia controlada del paquete embebido, no del recurso externo ya innecesario.
+        import re
+        missing_html=re.sub(r'<script id="wanCatalogData">.*?</script>','<script id="wanCatalogData">/*ausente*/</script>',(ROOT/'WAN_v4.html').read_text(),flags=re.S)
+        lab.context.route('**/WAN_v4.html',lambda route:route.fulfill(status=200,content_type='text/html',body=missing_html))
         lab.context.route('**/data/catalogo-interfaces.js',lambda route:route.fulfill(status=200,content_type='text/javascript',body='// Catálogo no distribuido en este laboratorio de fallo controlado.'))
         lab.page.reload(wait_until='load');check(lab.evaluate('interfaceCatalog.length')==0,'No reprodujo catálogo ausente')
         lab.lab();lab.topology();outputs=lab.configs('Cisco');check(outputs,'Bloqueó proyecto antiguo sin modelos')

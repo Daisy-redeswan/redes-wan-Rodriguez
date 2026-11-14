@@ -1459,6 +1459,10 @@ def main():
     if not any(identifier.startswith("K") for identifier,*_ in CASES):
         from test_catalogo import register
         register(case,check)
+    if not any(identifier.startswith("F") for identifier,*_ in CASES):
+        from test_pr11 import register as register_pr11
+        register_pr11(case,check)
+    environment["pr11_tests_sha256"]=hashlib.sha256((ROOT/"tests/test_pr11.py").read_bytes()).hexdigest()
     environment["catalogue_sha256"]=hashlib.sha256((ROOT/"data/catalogo-interfaces.json").read_bytes()).hexdigest()
     environment["catalogue_tests_sha256"]=hashlib.sha256((ROOT/"tests/test_catalogo.py").read_bytes()).hexdigest()
     records = []
