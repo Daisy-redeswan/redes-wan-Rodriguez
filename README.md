@@ -16,6 +16,7 @@ WAN Architect permite diseñar una WAN por sedes, calcular y planificar IPv4/IPv
 
 - **Subnetting / IP Planning:** calculadora IPv4 pública/privada e IPv6; VLSM con fallback y bloques privados independientes por sede/tránsito y subred CIDR manual por VLAN. IPv6 se planifica separadamente con ULA /48, /56 por sede y /64 por VLAN; no tiene broadcast.
 - **Topología:** generación desde el plan, edición de dispositivos/enlaces e interfaces y exportación SVG. El [catálogo local](docs/catalogo-modelos.md) permite elegir fabricante/modelo y asignar puertos documentados sin escribir sus nombres; doce modelos, tres por marca, con restricciones explícitas. Una imagen importada es referencia manual, no reconocimiento automático.
+- **Laboratorio completo:** el botón del módulo 01 valida dos sedes con LAN 192.168/172.16 y tránsito 10.250, elige modelos del catálogo con puertos suficientes y deja listas las cuatro marcas. Las configuraciones muestran una tabla física agrupada con interfaces, función y vecino reales; [flujo y capacidades](docs/manual.md).
 - **Cuatro fabricantes:** Cisco, Huawei, Fortinet y MikroTik consumen el mismo modelo validado. FortiOS 7.4 y RouterOS 7.x son supuestos genéricos de laboratorio; ninguna marca está certificada físicamente.
 - **Ciberdefensa y uso de IA:** validación de entradas, importación atómica, contenido escapado, administración restringida y marcadores de secretos; [políticas](docs/politicas-ia.md) y [límites](docs/seguridad.md). `.env` y sus variantes quedan excluidos por [.gitignore](.gitignore).
 - **Español/English:** español inicial, selector de idioma y preferencia independiente. Traduce la interfaz; conserva nombres introducidos, claves internas, JSON y CLI.
@@ -35,7 +36,7 @@ El [manual](docs/manual.md) explica controles, idiomas, escenarios y limitacione
 
 ## Pruebas y % de confianza (Corte 3)
 
-**Pruebas actuales: 109/109 aplicación + 26/26 SSH local = 135/135 ejecutadas (100%).** Conserva los 122 casos previos y añade F01–F13: confirmaciones/persistencia, fabricantes sin pérdida de VLSM, HTML autónomo, doce modelos, selección única, comparación de cuatro marcas, 19 comandos SSH simulados, manual integrado y revisión visual. Cero fallidas en las matrices. **FILE01 adicional bloqueada** por política del navegador (`ERR_BLOCKED_BY_ADMINISTRATOR`), no contabilizada como superada; puede reproducirse con `python tests/check_file_catalogo.py`. HTTP local con data/ bloqueada y sin internet sí fue comprobado. Windows y equipos físicos no ejecutados. Los hashes CLI históricos no se sustituyen.
+**Pruebas actuales: 114/114 aplicación + 26/26 SSH local = 140/140 ejecutadas (100%).** Se conservan los 135 escenarios previos y se añaden L01–L05: laboratorio real de quince pasos, rangos privados distintos, capacidades/modelos, cuatro CLI, inventario físico, comparación, simulación SSH, JSON/localStorage, rollback y funcionamiento offline. Cero fallidas en las matrices. La limitación histórica FILE01 por política de navegador se informa separadamente; no se repitió ni se cuenta como superada. Validación textual/local; Windows y hardware no ejecutados. Las referencias CLI históricas no se sustituyen.
 
 ```bash
 python -m pip install -r tests/requirements.txt
@@ -43,7 +44,7 @@ python -m playwright install chromium
 python tests/test_corte3.py
 ```
 
-El runner inicia/cierra HTTP local, crea contextos limpios y devuelve un código no cero ante fallos. El reporte normal es temporal y su ruta se imprime; [casos, resultados, hashes y entorno](docs/pruebas.md), [reporte UI actual](tests/reporte-pr11-funcional.html), [resultado SSH actual](tests/reporte-pr11-ssh.json) y [pruebas SSH](docs/pruebas-ssh.md). El porcentaje no certifica toda la aplicación ni hardware, conectividad o seguridad integral.
+El runner inicia/cierra HTTP local, crea contextos limpios y devuelve un código no cero ante fallos. El reporte normal es temporal y su ruta se imprime; [casos, resultados, hashes y entorno](docs/pruebas.md), [reporte UI actual](tests/reporte-laboratorio.html), [resultado SSH actual](tests/reporte-laboratorio-ssh.json) y [pruebas SSH](docs/pruebas-ssh.md). El porcentaje no certifica toda la aplicación ni hardware, conectividad o seguridad integral.
 
 ## Documentos
 
@@ -56,7 +57,7 @@ El runner inicia/cierra HTTP local, crea contextos limpios y devuelve un código
 
 ## Capturas (evidencias)
 
-Las capturas 01–10 y los PDF se conservan intactos como evidencia histórica de main 1956d18 (31 casos); no muestran el rediseño actual. El resultado actual 135/135 está en los reportes enlazados arriba; las capturas no se presentan como evidencia de esta ampliación del catálogo. Se retiró la pantalla de evidencias de la app, no estos archivos.
+Las capturas 01–10 y los PDF se conservan intactos como evidencia histórica de main 1956d18 (31 casos); no muestran el rediseño actual. El resultado actual 140/140 está en los reportes enlazados arriba; las capturas no se presentan como evidencia de esta ampliación del catálogo. Se retiró la pantalla de evidencias de la app, no estos archivos.
 
 Las capturas de la aplicación se obtuvieron por HTTP local con Playwright, contexto limpio y datos ficticios. Las propuestas nunca se ejecutaron en infraestructura real.
 
@@ -86,7 +87,7 @@ La 05 procede de [Commits en GitHub](https://github.com/Daisy-redeswan/redes-wan
 | Config Cisco y Huawei | Sí | Capturas 03/04; C12/C13/C26: generación y texto exacto |
 | Config Fortinet y MikroTik (C3) | Sí | Capturas 06/07; C14/C15/C26; validación textual |
 | Ciberdefensa (`politicas-ia.md`) | Sí | Captura 08; C08/C10/C17; `.gitignore` y políticas documentadas |
-| Pruebas con % de confianza (C3) | Sí | Captura 09 histórica (31/31); suite/reporte actual y `docs/pruebas.md`: 135/135 ejecutadas |
+| Pruebas con % de confianza (C3) | Sí | Captura 09 histórica (31/31); suite/reporte actual y `docs/pruebas.md`: 140/140 ejecutadas |
 | Documento y manual finales | Sí | Informe PDF revisado, capturas insertadas y manual de controles/idioma |
 | Repositorio y versiones | Sí | Repositorio público, ramas e historial; capturas 05 y 10 |
 | Sustentación en vivo realizada | No | Debe demostrarse ante evaluación; esta entrega no la simula |

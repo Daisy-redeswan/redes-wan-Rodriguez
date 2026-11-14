@@ -1,5 +1,11 @@
 # Estado de WAN Architect
 
+## Laboratorio e inventario físico vigentes
+
+Base `09279698084fa166b937ae7d5450fedf4827017e`; rama del PR #11. El botón público construye un laboratorio completo mediante validaciones reales, con LAN `192.168.32.0/21` y `172.16.64.0/21`, tránsito `10.250.0.0/24` y DNS privado obtenido del servidor del plan. Selecciona modelos compatibles del catálogo existente: C9200L-24T-4G, S5700-28P-LI-AC, FortiGate 60F y RB750Gr3. Resultado: 21 redes, 42 nodos, 48 enlaces, 16 CLI nativas y AP conservados sin CLI genérica.
+
+Los cuatro módulos muestran tabla de interfaces agrupada por dispositivo, con marca/modelo, puerto, función y vecino reales; las configuraciones permanecen debajo. Proyectos sin modelo se identifican como Modo genérico. Datos detallados/capacidad: [manual](manual.md); funciones: [documentación del código](documentacion-codigo.md); evidencia real y límites: [pruebas](pruebas.md). **Prueba vigente:** 114/114 aplicación + 26/26 SSH = 140/140, 100% del conjunto ejecutado; L01 recorre quince pasos y L02–L05 cubren tabla ES/EN, rollback, compatibilidad y determinismo. Verificación estática/local, sin certificar equipos físicos. Los apartados siguientes son antecedentes, no sustituyen la ejecución actual.
+
 ## Correcciones funcionales vigentes del PR #11
 
 Base `89a5a2a948c965129ca28f40cb57f5f303f587b2`. Datos del proyecto y fabricantes muestran confirmación persistida/Editar; confirmar igualdad no destruye diseños. Cambiar solo una marca conserva VLAN/VLSM/IPv6 y retira CLI dependientes; nuevas funciones agregan únicamente /30 necesarias sin mover redes previas. El catálogo de doce fichas está embebido en el HTML y se selecciona exclusivamente en Topología. Las cuatro vistas CLI muestran datos guardados, sin selectores repetidos.

@@ -1,5 +1,17 @@
 # Documentación del código — revisión integral WAN Architect
 
+## Laboratorio y tabla física: actualización del PR #11
+
+- `demo()` reemplaza únicamente tras confirmación explícita. Captura proyecto, imagen, selección, estado de edición y copias de mapas/sets de borradores. Construye el ejemplo en una transacción síncrona; cualquier fallo restaura el contexto anterior y comunica el error. Nunca llama a `saveLocal()` ni modifica datos durante importación normal.
+- Su helper local `step(action, valid)` ejecuta las acciones públicas de confirmación y comprueba tanto el error observable como su condición de éxito. Se recorren proyecto, fichas, inventario, VLAN/VLSM, fabricantes y generación de topología. No se asigna `approved=true` ni confirmaciones artificiales dentro del constructor.
+- Los bloques de sedes y tránsito son entradas exclusivas del ejemplo. Se conserva el cálculo existente de capacidad, crecimiento, reservas y gateways. El servidor DNS se obtiene de un nodo Servidor con IP del plan y se confirma mediante `confirmVlans()` antes de emitir CLI.
+- La selección filtra `modelsFor(vendor,type)`, número de puertos asignables y modos de todos los enlaces; ordena por menor inventario suficiente y clave estable. `assignCatalogInterfaces()`, `validateCatalogBindings()` y las guardas de los cuatro adaptadores comprueban los nombres y capacidades reales. Se rechaza un catálogo insuficiente, sin modificarlo ni inventar interfaces.
+- `generateAll()` genera cada marca desde el estado común; `validateImport()` comprueba que ese estado completo podrá recuperarse sin redistribuir. No cambian las plantillas de generadores, `allocate()`, esquema v4 ni migraciones.
+- `catalogSavedSummary(vendor)` ahora devuelve una tabla física de solo lectura: agrupa `configNodes(vendor)` con tbody por dispositivo; resuelve puertos/vecinos mediante `connected()` y `endpoint()`. La función se deriva de tipo de enlace, sedes y VLAN de Gestión; no confunde un nombre físico wan1 con Internet. Sin modelo muestra Modo genérico. Rowspans agrupan metadatos; CSS limita la transformación a encabezados y preserva exactamente el hostname de datos.
+- La tabla usa el contenedor horizontal responsive existente y mantiene la CLI debajo, sin selectores repetidos. AP no entra en `configNodes()` ni recibe comandos genéricos; su enlace sí aparece como vecino del switch.
+
+Datos del ejemplo y límites: [manual](manual.md). Prueba pública L01 de quince pasos y L02–L05: [pruebas](pruebas.md). La semilla histórica de regresión se guarda como fixture de pruebas, no como función alternativa escondida de la aplicación.
+
 ## Correcciones funcionales del PR #11: dependencias y contratos
 
 Base `89a5a2a948c965129ca28f40cb57f5f303f587b2`; [flujo de usuario](manual.md). Se añaden dos booleanos opcionales v4, `project.confirmed` y `sites[].vendorsConfirmed`, validados estrictamente por `validateImport()` y conservados por JSON/localStorage; archivos antiguos sin ellos no se interpretan como confirmados. `projectEditing`/`vendorsEditing` son presentación temporal, reiniciada al importar/cargar/crear proyecto.

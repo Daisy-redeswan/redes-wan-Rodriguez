@@ -1,5 +1,11 @@
 # Matriz de fabricantes de WAN Architect
 
+## Laboratorio mixto e inventario de configuración
+
+El ejemplo público usa Cisco C9200L-24T-4G como core L3, Huawei S5700-28P-LI-AC como acceso L2, FortiGate 60F como firewall y MikroTik RB750Gr3 como router. Su número de enlaces cabe en puertos catalogados; Huawei no se convierte en core ni se utilizan sus SFP no verificados. El constructor prueba las propuestas con los cuatro adaptadores existentes y revierte si algo no es compatible. Capacidad y entradas privadas: [manual](manual.md).
+
+Cada vista de configuración presenta una tabla única de equipos/modelos/interfaces/funciones/vecinos desde el estado guardado en Topología, antes de la CLI. Los proyectos sin modelo conservan Modo genérico. No se investigan ni añaden nuevos puertos/modelos en esta tarea; las doce fichas y fuentes oficiales permanecen intactas. Validación textual y de proyecto, nunca certificación física. Resultados actuales: [pruebas](pruebas.md).
+
 ## Flujo vigente del PR #11: selección y comparación
 
 Fabricante/modelo se seleccionan **exclusivamente en Topología/editor de equipo**. Los cuatro módulos CLI recuperan modelos y puertos guardados; no piden otra selección ni confirmación física. Las doce fichas oficiales no cambian. El HTML contiene su copia generada y no depende de archivos data/ durante ejecución; JSON/JS se mantienen como fuente y paquete de datos verificable.

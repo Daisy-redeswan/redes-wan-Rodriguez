@@ -1,5 +1,50 @@
 # Pruebas reproducibles de WAN Architect — Corte 3 y revisión integral
 
+## Laboratorio e inventario físico: ejecución vigente
+
+Base `09279698084fa166b937ae7d5450fedf4827017e`, rama `feature/catalogo-interfaces-fabricantes`. Fecha de aplicación: `2026-11-14T15:30:12-05:00`; Linux-6.18.57-x86_64-with-glibc2.41; Python 3.12.14, Playwright 1.62.0, Chromium 154.0.8037.57. Duración 185.8 s; HTTP local, contexto limpio y datos ficticios. SSH exclusivamente loopback: `2026-11-14T20:26:44.932703+00:00`, AsyncSSH 2.24.1, aiohttp 3.14.5; 10.8 s.
+
+**114/114 aplicación + 26/26 SSH = 140/140 ejecutadas = 100%.** Cero fallidas, bloqueadas o no ejecutadas dentro de estas matrices. Se conservan los 135 escenarios previos y se añaden L01–L05. FILE01, bloqueada por política en la tarea anterior, no se repitió ni se cuenta aquí como superada; esta tarea verifica explícitamente HTTP con la red desactivada, no una apertura file:// satisfactoria. No se ejecutó CLI en fabricantes físicos ni se certifica forwarding/conectividad.
+
+Reportes reales: [aplicación](../tests/reporte-laboratorio.html) y [SSH](../tests/reporte-laboratorio-ssh.json). El HEAD registrado es la base del árbol de trabajo probado antes de crear commits; los hashes identifican los archivos ejecutados:
+
+- Aplicación: `0f81e95a6380a5cf04087e0df3f02a9a70b7bd3c8ee65bdacb12ef69d1eba0a5`.
+- Runner: `ebb5b610b49ec05e8f3c96769246a3520e08df89228f4fe9729f463067b11ba9`.
+- Casos L: `c2acac67b387c3b161cb3d90d69f811e2ab702eaa0a14b4c02c8d57dd416978d`.
+- Semilla anterior: `3d38eea37ff718ac6f00a641c998ec9894ed1663492ad395876d1b023ed524c0`.
+
+```bash
+python tools/build_catalogo.py --check
+python tests/test_corte3.py --report tests/reporte-laboratorio.html
+python tests/test_ssh_service.py
+```
+
+No se añaden dependencias. Las funciones principales y sus efectos se explican en [documentación del código](documentacion-codigo.md); el ejemplo y la tabla se describen en [manual](manual.md).
+
+### Preservación de regresiones
+
+El ejemplo público antes solo inicializaba datos, sin modelos ni plan; ahora produce un proyecto completo confirmado. Para no cambiar las entradas/hashes de las regresiones, `Lab.legacy_seed()` usa `tests/fixtures/semilla-regresion-v4.json`, capturado **del botón anterior sin modificar**, en el commit base indicado, antes de proponer VLAN. No es un modo alternativo de producción ni modifica expectativas de redes, CLI o validadores. Las ocho referencias CLI y los fixtures históricos restantes permanecen intactos. Los 135 casos siguen registrados y ejecutados.
+
+N17 conserva sus aserciones de aislamiento de borradores; añade la comprobación de sede confirmada/bloqueada y pulsa Editar sede antes de escribir el nuevo borrador. Esto corresponde al flujo real del ejemplo completo, sin forzar campos deshabilitados ni ocultar un fallo. Los otros 72 cuerpos C/N/P/Q y los 26 SSH no cambian. K y F mantienen sus casos y aserciones; la nueva carga pública se prueba directamente en L01, sin sustituirla con la semilla.
+
+### Casos nuevos y evidencias
+
+| Caso | Esperado | Obtenido | Estado |
+| --- | --- | --- | --- |
+| L01 · Laboratorio público: 15 pasos integrales | Cargar el botón real offline y verificar proyecto/sedes/RFC1918/VLSM/redes/topología/modelos/puertos/marcas/CLI/tabla/comparación/SSH/JSON/offline. | 15/15 pasos: proyecto, dos sedes, RFC1918 distintos, VLAN/VLSM/capacidad/gateway, sin solapamientos, topología, modelos compatibles, interfaces suficientes, cuatro marcas, CLI y rutas del plan, tabla física exacta, comparación, SSH simulado, JSON v4 exacto, offline; 21 redes, 42 nodos, 48 enlaces y 16 configuraciones nativas; AP conservados. | Superada |
+| L02 · Inventario físico ES/EN responsive | Tabla agrupada en cuatro módulos; columnas traducidas, CLI debajo, anchos 1440/390 sin desborde nuevo. | 16 combinaciones marca/idioma/ancho; tablas agrupadas y CLI debajo; capturas reales en /tmp/wan-laboratorio-visual; proyecto intacto. | Superada |
+| L03 · Modo genérico y datos reales | Proyectos anteriores sin modelo mantienen generación y tabla en Modo genérico con interfaces/vecinos reales. | Modo genérico visible ES/EN, nombres/puertos/enlaces del proyecto anterior; generación y datos preservados. | Superada |
+| L04 · Carga cancelada y fallo atómico | Cancelar o catálogo sin candidatos conserva proyecto, borradores y localStorage; no sobrescribe proyectos importados. | Cancelar sin mutación; catálogo sin candidatos revierte el reemplazo y conserva borrador/localStorage; guardar/cargar laboratorio e importar usuario preservan redes. | Superada |
+| L05 · Laboratorio determinista y regenerable | Dos cargas/regeneración conservan redes, marcas, modelos y asignaciones; capacidad real sin puertos inventados. | Dos cargas y regeneración: redes/orden, IDs, modelos, enlaces/puertos y configuraciones estables; validación de capacidad y exclusión AP vigentes. | Superada |
+
+L01 comprueba quince puntos: proyecto válido, dos fichas/inventarios confirmados, bloques RFC1918 distintos, capacidad/crecimiento/gateways y VLSM aprobado, ausencia de solapamiento, topología, modelos/roles, puertos suficientes/únicos, cuatro marcas, CLI con IP/máscaras/SVI/OSPF del plan, inventario físico exacto, comparación, simulación SSH, JSON exacto y funcionamiento offline. Instrumenta llamadas a los validadores reales para impedir una aprobación artificial. Resultado: 21 redes, 42 nodos, 48 enlaces y 16 configuraciones nativas. DNS privado del servidor asignado: 192.168.34.20.
+
+L02 verifica cuatro marcas × dos idiomas × dos anchos (1440/390), agrupación por equipo y CLI debajo. Capturas temporales reales revisadas visualmente en `/tmp/wan-laboratorio-visual`; la tabla móvil se consulta con desplazamiento horizontal, sin desbordamiento de página. No se sustituyeron capturas académicas históricas.
+
+L03 conserva Modo genérico; L04 verifica cancelación, rollback ante catálogo insuficiente, borradores/localStorage y recuperación de otros proyectos sin cambiar sus redes; L05 repite cargas y regeneración para comprobar IDs, redes, modelos y puertos estables. Se comprobó sintaxis JS/Python, HTML5, catálogo sincronizado, enlaces, diff-check y secretos/temporales. Los datos oficiales del catálogo, asignadores, cuatro adaptadores, importación y transporte SSH real permanecen sin cambios. La validación de configuraciones es textual y de proyecto; no sustituye hardware, firmware/licencias/ópticas ni una auditoría de seguridad.
+
+Los resultados siguientes son registros anteriores.
+
 ## Verificación vigente: correcciones funcionales del PR #11
 
 Base `89a5a2a948c965129ca28f40cb57f5f303f587b2`; rama `feature/catalogo-interfaces-fabricantes`. Aplicación: `2026-11-14T14:10:45-05:00`; Python 3.12.14, Playwright 1.62.0, Chromium 154.0.8037.57, Linux-6.18.57-x86_64-with-glibc2.41. HTTP local y un contexto limpio por caso; 164.9 s. SSH real exclusivamente loopback: 2026-11-14T19:01:54.471527+00:00, AsyncSSH 2.24.1, aiohttp 3.14.5; 11.4 s. No se ejecutó CLI en equipos físicos.

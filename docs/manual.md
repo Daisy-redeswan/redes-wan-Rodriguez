@@ -1,5 +1,29 @@
 # Manual de usuario — WAN Architect, Corte 3
 
+## Laboratorio completo compatible con el catálogo
+
+En Datos del proyecto, **Cargar ejemplo de laboratorio** solicita autorización para sustituir el proyecto abierto. Construye y valida un escenario ficticio completo, sin sobrescribir automáticamente localStorage. Cancelar no cambia estado/DOM; si falla una validación, se restauran proyecto y borradores. No se usa al importar archivos de otros usuarios.
+
+El flujo ejecuta `saveProject()`, `saveSite()`, `saveCounts()`, `proposeVlans()`, `confirmVlans()`, `saveVendorProfiles()` y `buildTopology()`, selecciona modelos y genera con los cuatro adaptadores. Las confirmaciones proceden de validadores reales, no de asignar banderas true. El resultado vuelve a Datos del proyecto con campos confirmados/Editar; puede recorrer Estimación, VLAN/VLSM, Topología, Configuración, Comparación y Consola SSH sin nuevas confirmaciones artificiales.
+
+| Elemento | Configuración del ejemplo | Capacidad documentada / uso |
+| --- | --- | --- |
+| Sede asistencial | `192.168.32.0/21`, 100 usuarios, tres pisos y cores redundantes | LAN dentro de su pool, crecimiento 20% y reservas de gateway/cores |
+| Sede administrativa | `172.16.64.0/21`, 45 usuarios y dos pisos | Pool propio RFC1918; no pertenece al fallback ni se exige esa contención |
+| Tránsito | `10.250.0.0/24` | Seis /30 independientes para router/core, firewall y WAN; sin solapamiento con LAN |
+| Core Cisco | Tres C9200L-24T-4G | 28 puertos catalogados por equipo; hasta ocho enlaces en este ejemplo |
+| Acceso Huawei | Nueve S5700-28P-LI-AC | Banco RJ45 de 24 puertos; hasta cinco enlaces por switch; sin usar SFP no verificados |
+| Firewall Fortinet | Dos FortiGate 60F | Tres puertos asignables conservadores; un enlace por firewall, sin desmontar switch interno/FortiLink |
+| Router MikroTik | Dos RB750Gr3 (hEX), RouterOS 7 | Cinco puertos físicos por equipo; cuatro y tres enlaces respectivamente |
+
+Se elige de forma determinista el menor inventario documentado que admite el rol y los enlaces. La asignación comprueba medio/velocidad, modos y unicidad; los generadores vuelven a validar capacidades del adaptador. Si no hay modelo suficiente, se explica el error y no se inventan puertos. No se cambian fichas ni fuentes oficiales para ajustar el ejemplo.
+
+Resultado de laboratorio: **21 redes (15 VLAN y seis tránsitos), 42 nodos, 48 enlaces y 16 configuraciones nativas**. Los AP permanecen con inventario, gestión, VLAN/IP y enlaces, excluidos de CLI genérica. El DNS se toma de un servidor realmente direccionado en el proyecto (`192.168.34.20` en esta ejecución determinista), no de un DNS público. Los bloques son RFC1918 alineados y se validan capacidad, crecimiento, gateway y solapamientos. OSPF IPv4 usa las interfaces de tránsito efectivas; no se inventa Internet, NAT ni una ruta por defecto. Esto no demuestra forwarding, conectividad ni compatibilidad física.
+
+En las cuatro configuraciones, **Inventario físico de interfaces** muestra Equipo, Tipo, Fabricante, Modelo, Interfaz, Función y Conectado a. Agrupa por dispositivo y muestra cada enlace real, con nombres nativos del catálogo y pares reales. No repite selectores ni formularios; la CLI queda debajo. Modo genérico identifica proyectos sin modelo. En móvil, deslice horizontalmente la tabla para consultar las siete columnas; no se ocultan puertos asignados. Los puertos libres/reservados completos siguen consultables en la vista previa de modelo de Topología.
+
+JSON v2/v3/v4, localStorage, IPv4/IPv6, ES/EN y SSH real conservan su contrato. La planificación IPv6 continúa opcional e independiente; los generadores permanecen IPv4. La consola simulada consulta solo propuestas/datos del proyecto. No se ejecutan las configuraciones.
+
 ## Correcciones funcionales del PR #11
 
 Base `89a5a2a948c965129ca28f40cb57f5f303f587b2`. Esta sección sustituye los comportamientos históricos que se describen más adelante.
