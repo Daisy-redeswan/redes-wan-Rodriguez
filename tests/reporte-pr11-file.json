@@ -1,0 +1,10 @@
+{
+  "case": "FILE01",
+  "date": "2026-11-14T19:11:01.838292+00:00",
+  "expected": "HTML aislado en file://: 12 fichas, topología y CLI con puertos del catálogo, sin data/ ni Python",
+  "status": "bloqueada",
+  "commit": "89a5a2a948c965129ca28f40cb57f5f303f587b2",
+  "application_sha256": "4d55b8577acc108febfbf3aec8973f416e156dbe8184516246df109cd12a424c",
+  "browser": "154.0.8037.57",
+  "actual": "Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///tmp/wan-file-catalogo-2re3y5xh/WAN_v4.html\nCall log:\n  - navigating to \"file:///tmp/wan-file-catalogo-2re3y5xh/WAN_v4.html\", waiting until \"load\"\n"
+}

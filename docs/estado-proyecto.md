@@ -1,6 +1,30 @@
 # Estado de WAN Architect
 
-## Ajuste vigente del PR #10: interfaces automáticas y orden del menú
+## Laboratorio e inventario físico vigentes
+
+Base `09279698084fa166b937ae7d5450fedf4827017e`; rama del PR #11. El botón público construye un laboratorio completo mediante validaciones reales, con LAN `192.168.32.0/21` y `172.16.64.0/21`, tránsito `10.250.0.0/24` y DNS privado obtenido del servidor del plan. Selecciona modelos compatibles del catálogo existente: C9200L-24T-4G, S5700-28P-LI-AC, FortiGate 60F y RB750Gr3. Resultado: 21 redes, 42 nodos, 48 enlaces, 16 CLI nativas y AP conservados sin CLI genérica.
+
+Los cuatro módulos muestran tabla de interfaces agrupada por dispositivo, con marca/modelo, puerto, función y vecino reales; las configuraciones permanecen debajo. Proyectos sin modelo se identifican como Modo genérico. Datos detallados/capacidad: [manual](manual.md); funciones: [documentación del código](documentacion-codigo.md); evidencia real y límites: [pruebas](pruebas.md). **Prueba vigente:** 114/114 aplicación + 26/26 SSH = 140/140, 100% del conjunto ejecutado; L01 recorre quince pasos y L02–L05 cubren tabla ES/EN, rollback, compatibilidad y determinismo. Verificación estática/local, sin certificar equipos físicos. Los apartados siguientes son antecedentes, no sustituyen la ejecución actual.
+
+## Correcciones funcionales vigentes del PR #11
+
+Base `89a5a2a948c965129ca28f40cb57f5f303f587b2`. Datos del proyecto y fabricantes muestran confirmación persistida/Editar; confirmar igualdad no destruye diseños. Cambiar solo una marca conserva VLAN/VLSM/IPv6 y retira CLI dependientes; nuevas funciones agregan únicamente /30 necesarias sin mover redes previas. El catálogo de doce fichas está embebido en el HTML y se selecciona exclusivamente en Topología. Las cuatro vistas CLI muestran datos guardados, sin selectores repetidos.
+
+Comparación incorpora cinco funciones × cuatro marcas reales, con extractos y límites; conserva adicionalmente IOS/VRP cuando corresponde. La simulación normaliza comandos de lectura de cada marca, muestra propuestas/plan y abre un manual integrado sin Python. SSH real, exclusión CLI de AP y JSON v2/v3/v4 se conservan. Detalle operativo: [manual](manual.md); contrato: [documentación del código](documentacion-codigo.md); resultados reales y limitación file://: [pruebas](pruebas.md). **Prueba vigente:** 109/109 aplicación + 26/26 SSH = 135/135 ejecutadas, 100%; FILE01 adicional bloqueada por política del navegador, sin certificar apertura file://. Doce modelos y 19 comandos de lectura comprobados mediante HTTP; revisión visual 1440/390 px. Los registros siguientes son históricos.
+
+## Registro anterior: primera versión del catálogo local
+
+Base `6466c9494cefdb5423d95e1bc04175304a4e248d`, rama `feature/catalogo-interfaces-fabricantes`. Verificación documental y pruebas: **14 de noviembre de 2026**. Se incorporan doce fichas, tres por fabricante, contrastadas con fuentes oficiales y límites explícitos en [catálogo de modelos](catalogo-modelos.md). No es certificación física.
+
+**Implementado:** selección fabricante/modelo filtrada por tipo en el editor normal y selección de modelo en Topología/configuración; inventario local, asignación determinista de puertos por enlace/medio/velocidad, conservación de nombres válidos, bloqueo de capacidad/roles/funciones incompatibles y validación de importaciones. No se pide escribir interfaces, versión ni URL. Los cuatro adaptadores leen nombres reales de los enlaces para el modelo elegido. Huawei LI incluye solo banco RJ45 verificado; Fortinet reserva switch interno y FortiLink. No hay consultas de red durante uso normal.
+
+**Confirmado por pruebas:** 73 casos anteriores + 23 casos K01–K23 = **96/96 aplicación**; **26/26 SSH local**, total **122/122 = 100%** del conjunto ejecutado, 0 fallidas/bloqueadas/no ejecutadas dentro de las matrices. Reportes reales: [aplicación](../tests/reporte-catalogo.html) y [SSH](../tests/reporte-catalogo-ssh.json). Se conservan las ocho comparaciones exactas de CLI (cuatro marcas × ES/EN) para proyectos sin modelo, los 99 casos previos, IPv4/IPv6, JSON v2/v3/v4 y exclusión CLI de AP. Datos ficticios, contextos limpios, HTTP local y SSH real exclusivamente loopback; no se aplica CLI.
+
+**Persistencia:** `nodes[].modelId` es una extensión opcional de v4; ausencia conserva comportamiento genérico y aviso de modelo no especificado. Las interfaces permanecen en campos de enlaces existentes. La carga valida sin reasignar; no cambia versión, migración, claves locales, planes, IP ni configuración SSH. La ruta fija del servicio SSH opcional sirve solo el script local del catálogo.
+
+**Pendiente/límites:** comprobar equipos reales, firmware/licencias, transceptores, puertos renombrados y configuración previa. SFP Huawei excluidos hasta completar nomenclatura por variante. No se amplían los adaptadores a roles/funciones no respaldados, IPv6 CLI ni pools/reservas editables. Revisión visual 1440/390 px satisfactoria; `file://` fue bloqueado por política del navegador del entorno y se declara como una exploración bloqueada aparte, no como caso superado. El modo sin internet se verificó mediante HTTP local con la red del contexto desactivada. Los apartados siguientes conservan evidencia histórica, no sustituyen este resultado.
+
+## Registro anterior del PR #10: interfaces automáticas y orden del menú
 
 Base de trabajo `9675ce7f1c553e1225609772cbb6a500822fa2f0`; main conservado en `1956d1872363c88399f5e8240abb1d7a13bca340`. Ejecución 2026-11-11T13:02:18-05:00: **73/73 aplicación + 26/26 SSH local = 99/99 (100%)**, 0 fallidas/bloqueadas/no ejecutadas dentro de las matrices. Se mantienen los 58 casos C/N/P y los 26 SSH; Q04–Q13 cambian sus expectativas porque se retiró expresamente el formulario físico, y Q15 verifica el nuevo menú. No se alteraron fixtures ni hashes CLI de referencia. [Resultados y límites](pruebas-interfaces.md), [reporte real](../tests/reporte-interfaces.html).
 

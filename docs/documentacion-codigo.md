@@ -1,5 +1,30 @@
 # Documentación del código — revisión integral WAN Architect
 
+## Laboratorio y tabla física: actualización del PR #11
+
+- `demo()` reemplaza únicamente tras confirmación explícita. Captura proyecto, imagen, selección, estado de edición y copias de mapas/sets de borradores. Construye el ejemplo en una transacción síncrona; cualquier fallo restaura el contexto anterior y comunica el error. Nunca llama a `saveLocal()` ni modifica datos durante importación normal.
+- Su helper local `step(action, valid)` ejecuta las acciones públicas de confirmación y comprueba tanto el error observable como su condición de éxito. Se recorren proyecto, fichas, inventario, VLAN/VLSM, fabricantes y generación de topología. No se asigna `approved=true` ni confirmaciones artificiales dentro del constructor.
+- Los bloques de sedes y tránsito son entradas exclusivas del ejemplo. Se conserva el cálculo existente de capacidad, crecimiento, reservas y gateways. El servidor DNS se obtiene de un nodo Servidor con IP del plan y se confirma mediante `confirmVlans()` antes de emitir CLI.
+- La selección filtra `modelsFor(vendor,type)`, número de puertos asignables y modos de todos los enlaces; ordena por menor inventario suficiente y clave estable. `assignCatalogInterfaces()`, `validateCatalogBindings()` y las guardas de los cuatro adaptadores comprueban los nombres y capacidades reales. Se rechaza un catálogo insuficiente, sin modificarlo ni inventar interfaces.
+- `generateAll()` genera cada marca desde el estado común; `validateImport()` comprueba que ese estado completo podrá recuperarse sin redistribuir. No cambian las plantillas de generadores, `allocate()`, esquema v4 ni migraciones.
+- `catalogSavedSummary(vendor)` ahora devuelve una tabla física de solo lectura: agrupa `configNodes(vendor)` con tbody por dispositivo; resuelve puertos/vecinos mediante `connected()` y `endpoint()`. La función se deriva de tipo de enlace, sedes y VLAN de Gestión; no confunde un nombre físico wan1 con Internet. Sin modelo muestra Modo genérico. Rowspans agrupan metadatos; CSS limita la transformación a encabezados y preserva exactamente el hostname de datos.
+- La tabla usa el contenedor horizontal responsive existente y mantiene la CLI debajo, sin selectores repetidos. AP no entra en `configNodes()` ni recibe comandos genéricos; su enlace sí aparece como vecino del switch.
+
+Datos del ejemplo y límites: [manual](manual.md). Prueba pública L01 de quince pasos y L02–L05: [pruebas](pruebas.md). La semilla histórica de regresión se guarda como fixture de pruebas, no como función alternativa escondida de la aplicación.
+
+## Correcciones funcionales del PR #11: dependencias y contratos
+
+Base `89a5a2a948c965129ca28f40cb57f5f303f587b2`; [flujo de usuario](manual.md). Se añaden dos booleanos opcionales v4, `project.confirmed` y `sites[].vendorsConfirmed`, validados estrictamente por `validateImport()` y conservados por JSON/localStorage; archivos antiguos sin ellos no se interpretan como confirmados. `projectEditing`/`vendorsEditing` son presentación temporal, reiniciada al importar/cargar/crear proyecto.
+
+- `saveProject()` valida un candidato y bloquea campos solo tras éxito. Igualdad conserva estado/derivados; estructura/segmentación/WAN mantienen invalidación vigente. El nombre cambia cabeceras CLI y solo retira esos textos, sin borrar redes. `editProject()` no invalida nada. `resizeSites()` conserva identificación pendiente tras cambiar la cantidad; aplicar la misma cantidad no invalida.
+- `saveVendorProfiles()` valida perfiles y copia el proyecto. Cambios de marca actualizan nodos automáticos sin override, validan su modelo y conservan plan/aprobación. Marcas incompatibles con un modelo fallan atómicamente. Nuevos roles físicos reservan /30 adicionales conservando filas anteriores; el candidato se adopta al final. Se retiran cachés de nodos/vecinos afectados sin cambiar la revisión global y obsoletar otras sedes. `editVendorProfiles()` solo abre campos.
+- `tools/build_catalogo.py` ahora sincroniza JSON→JS y JSON→script embebido en `WAN_v4.html`. La carga es síncrona y precede a `interfaceCatalog`; no hay fetch ni archivo externo obligatorio. Los datos oficiales permanecen idénticos; `--check` comprueba ambas copias.
+- `catalogControls()` queda en Topología; `catalogSavedSummary()` muestra únicamente inventario guardado en Configuración. La asignación y el importador conservan sus validadores nativos de modelo/enlaces; no se reintroduce un formulario físico obligatorio.
+- `compareFourEntries()` filtra equipos reales por rol/función y usa adaptadores existentes sin guardar resultados ni cambiar marcas/opciones. `compareFourView()` muestra extractos por cuatro fabricantes, diferencias y bloqueos. `generateCompare()` conserva la equivalencia adicional IOS/VRP, claramente separada.
+- `sshRunSimulation()` normaliza únicamente comandos de lectura simulados, selecciona una lista cerrada por marca y muestra CLI vigente o la genera en memoria sin cachearla. Interfaces virtuales de core se derivan del plan; no se inventa estado operativo. `showSSHManual()` muestra un diálogo local escapado/bilingüe. No se modifican funciones de conexión, credenciales, transporte ni controles SSH reales.
+
+Pruebas y límites: [pruebas](pruebas.md), [catálogo](catalogo-modelos.md) y [manual SSH](manual-ssh.md). La navegación file:// puede ser bloqueada por política del entorno; no se elude ni se cuenta como superada.
+
 ## Cómo estudiar esta aplicación
 
 La aplicación sigue siendo un solo archivo autónomo, `WAN_v4.html`. HTML define la estructura; CSS la presentación; JavaScript valida datos, calcula redes, renderiza vistas y genera propuestas de comandos. No hay backend obligatorio. El servicio SSH opcional permite únicamente la administración manual explícita; simulación y módulos tradicionales permanecen autónomos. El botón Generar produce texto para revisión humana: nunca configura equipos.
@@ -22,6 +47,22 @@ flowchart TD
   Adaptadores --> Propuestas[Texto CLI para revisión]
   Propuestas --> Persistencia[JSON / localStorage]
 ```
+
+## Catálogo de interfaces: extensión opcional v4 (14 de noviembre de 2026)
+
+El contrato IPv4/IPv6 y sus migraciones no cambian. `nodes[].modelId` opcional identifica una ficha local; ausencia conserva modo genérico. Fuente de datos: `data/catalogo-interfaces.json`; `tools/build_catalogo.py` genera un script de datos estático para HTTP/file://. No se usa internet en tiempo de ejecución. La ruta fija del servidor SSH opcional sirve únicamente ese recurso; no añade directorios ni cambia autenticación/SSH.
+
+- `modelsFor()` filtra fabricante y rol; `validateNodeModel()` rechaza modelos desconocidos/incompatibles y AP.
+- `modelOptions()`, `catalogControls()` y `catalogInventory()` muestran selección e inventario escapado, restricciones y fuentes; `previewNodeModel()`/`updateNodeModels()` modifican solo el editor, sin mutar proyecto.
+- `catalogPurpose()` deriva prioridad WAN/LAN/uplink/access desde el enlace. `catalogPair()` comprueba medio y velocidad común; el par genérico se considera solo cobre.
+- `assignCatalogInterfaces(data)` recibe nodos/enlaces, crea una copia y devuelve enlaces asignados. Reserva asociaciones válidas anteriores, detecta capacidad y modos, ordena por restricciones/ID estable y retrocede por clases equivalentes, con límite de 30.000 pasos. No inventa puertos ni cambia planes.
+- `validateCatalogBindings(data)` comprueba nombres incluidos/asignables, modos, duplicados y pareja; importa sin reasignar. `requireCatalogReady()` usa la matriz de capacidades para bloquear funciones activas no respaldadas antes de las plantillas CLI.
+- `setNodeModel()` realiza validación/asignación completa antes de adoptar estado e invalidar configuraciones derivadas; mantiene redes, IDs y topología. `saveNode()` integra el mismo contrato con edición normal de fabricante; `buildTopology()` conserva `modelId` y puertos previos válidos al regenerar.
+- `saveLink()` asigna antes de guardar. `lockCatalogLinkFields()` deja los nombres nativos del modelo como lectura, sin pedirlos al usuario; las referencias genéricas históricas conservan su edición existente.
+- `endpoint()` sigue siendo la entrada común de nombres para los cuatro adaptadores, cuyas plantillas no se duplican. Perfiles archivados no sustituyen los nombres del catálogo cuando hay modelo explícito. Comparación advierte que una sintaxis alternativa usa puertos genéricos, sin atribuir un segundo hardware al mismo nodo.
+- `validateImport()` valida `modelId` cerrado y enlaces antes de adoptar proyecto; exportación y localStorage lo conservan automáticamente con el resto de nodos. v2/v3/v4 sin ese campo siguen funcionando. No se almacena inventario duplicado en cada proyecto.
+
+Las funciones nuevas y modificadas incluyen comentarios en español. Roles, variantes, fuentes y límites conservadores: [catálogo de modelos](catalogo-modelos.md). No se certifican equipos físicos ni se ejecutan comandos.
 
 ## Estado confirmado y presentación temporal
 

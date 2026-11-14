@@ -1,6 +1,161 @@
 # Pruebas reproducibles de WAN Architect — Corte 3 y revisión integral
 
-## Ajuste vigente del PR #10: interfaces automáticas y orden del menú
+## Laboratorio e inventario físico: ejecución vigente
+
+Base `09279698084fa166b937ae7d5450fedf4827017e`, rama `feature/catalogo-interfaces-fabricantes`. Fecha de aplicación: `2026-11-14T15:30:12-05:00`; Linux-6.18.57-x86_64-with-glibc2.41; Python 3.12.14, Playwright 1.62.0, Chromium 154.0.8037.57. Duración 185.8 s; HTTP local, contexto limpio y datos ficticios. SSH exclusivamente loopback: `2026-11-14T20:26:44.932703+00:00`, AsyncSSH 2.24.1, aiohttp 3.14.5; 10.8 s.
+
+**114/114 aplicación + 26/26 SSH = 140/140 ejecutadas = 100%.** Cero fallidas, bloqueadas o no ejecutadas dentro de estas matrices. Se conservan los 135 escenarios previos y se añaden L01–L05. FILE01, bloqueada por política en la tarea anterior, no se repitió ni se cuenta aquí como superada; esta tarea verifica explícitamente HTTP con la red desactivada, no una apertura file:// satisfactoria. No se ejecutó CLI en fabricantes físicos ni se certifica forwarding/conectividad.
+
+Reportes reales: [aplicación](../tests/reporte-laboratorio.html) y [SSH](../tests/reporte-laboratorio-ssh.json). El HEAD registrado es la base del árbol de trabajo probado antes de crear commits; los hashes identifican los archivos ejecutados:
+
+- Aplicación: `0f81e95a6380a5cf04087e0df3f02a9a70b7bd3c8ee65bdacb12ef69d1eba0a5`.
+- Runner: `ebb5b610b49ec05e8f3c96769246a3520e08df89228f4fe9729f463067b11ba9`.
+- Casos L: `c2acac67b387c3b161cb3d90d69f811e2ab702eaa0a14b4c02c8d57dd416978d`.
+- Semilla anterior: `3d38eea37ff718ac6f00a641c998ec9894ed1663492ad395876d1b023ed524c0`.
+
+```bash
+python tools/build_catalogo.py --check
+python tests/test_corte3.py --report tests/reporte-laboratorio.html
+python tests/test_ssh_service.py
+```
+
+No se añaden dependencias. Las funciones principales y sus efectos se explican en [documentación del código](documentacion-codigo.md); el ejemplo y la tabla se describen en [manual](manual.md).
+
+### Preservación de regresiones
+
+El ejemplo público antes solo inicializaba datos, sin modelos ni plan; ahora produce un proyecto completo confirmado. Para no cambiar las entradas/hashes de las regresiones, `Lab.legacy_seed()` usa `tests/fixtures/semilla-regresion-v4.json`, capturado **del botón anterior sin modificar**, en el commit base indicado, antes de proponer VLAN. No es un modo alternativo de producción ni modifica expectativas de redes, CLI o validadores. Las ocho referencias CLI y los fixtures históricos restantes permanecen intactos. Los 135 casos siguen registrados y ejecutados.
+
+N17 conserva sus aserciones de aislamiento de borradores; añade la comprobación de sede confirmada/bloqueada y pulsa Editar sede antes de escribir el nuevo borrador. Esto corresponde al flujo real del ejemplo completo, sin forzar campos deshabilitados ni ocultar un fallo. Los otros 72 cuerpos C/N/P/Q y los 26 SSH no cambian. K y F mantienen sus casos y aserciones; la nueva carga pública se prueba directamente en L01, sin sustituirla con la semilla.
+
+### Casos nuevos y evidencias
+
+| Caso | Esperado | Obtenido | Estado |
+| --- | --- | --- | --- |
+| L01 · Laboratorio público: 15 pasos integrales | Cargar el botón real offline y verificar proyecto/sedes/RFC1918/VLSM/redes/topología/modelos/puertos/marcas/CLI/tabla/comparación/SSH/JSON/offline. | 15/15 pasos: proyecto, dos sedes, RFC1918 distintos, VLAN/VLSM/capacidad/gateway, sin solapamientos, topología, modelos compatibles, interfaces suficientes, cuatro marcas, CLI y rutas del plan, tabla física exacta, comparación, SSH simulado, JSON v4 exacto, offline; 21 redes, 42 nodos, 48 enlaces y 16 configuraciones nativas; AP conservados. | Superada |
+| L02 · Inventario físico ES/EN responsive | Tabla agrupada en cuatro módulos; columnas traducidas, CLI debajo, anchos 1440/390 sin desborde nuevo. | 16 combinaciones marca/idioma/ancho; tablas agrupadas y CLI debajo; capturas reales en /tmp/wan-laboratorio-visual; proyecto intacto. | Superada |
+| L03 · Modo genérico y datos reales | Proyectos anteriores sin modelo mantienen generación y tabla en Modo genérico con interfaces/vecinos reales. | Modo genérico visible ES/EN, nombres/puertos/enlaces del proyecto anterior; generación y datos preservados. | Superada |
+| L04 · Carga cancelada y fallo atómico | Cancelar o catálogo sin candidatos conserva proyecto, borradores y localStorage; no sobrescribe proyectos importados. | Cancelar sin mutación; catálogo sin candidatos revierte el reemplazo y conserva borrador/localStorage; guardar/cargar laboratorio e importar usuario preservan redes. | Superada |
+| L05 · Laboratorio determinista y regenerable | Dos cargas/regeneración conservan redes, marcas, modelos y asignaciones; capacidad real sin puertos inventados. | Dos cargas y regeneración: redes/orden, IDs, modelos, enlaces/puertos y configuraciones estables; validación de capacidad y exclusión AP vigentes. | Superada |
+
+L01 comprueba quince puntos: proyecto válido, dos fichas/inventarios confirmados, bloques RFC1918 distintos, capacidad/crecimiento/gateways y VLSM aprobado, ausencia de solapamiento, topología, modelos/roles, puertos suficientes/únicos, cuatro marcas, CLI con IP/máscaras/SVI/OSPF del plan, inventario físico exacto, comparación, simulación SSH, JSON exacto y funcionamiento offline. Instrumenta llamadas a los validadores reales para impedir una aprobación artificial. Resultado: 21 redes, 42 nodos, 48 enlaces y 16 configuraciones nativas. DNS privado del servidor asignado: 192.168.34.20.
+
+L02 verifica cuatro marcas × dos idiomas × dos anchos (1440/390), agrupación por equipo y CLI debajo. Capturas temporales reales revisadas visualmente en `/tmp/wan-laboratorio-visual`; la tabla móvil se consulta con desplazamiento horizontal, sin desbordamiento de página. No se sustituyeron capturas académicas históricas.
+
+L03 conserva Modo genérico; L04 verifica cancelación, rollback ante catálogo insuficiente, borradores/localStorage y recuperación de otros proyectos sin cambiar sus redes; L05 repite cargas y regeneración para comprobar IDs, redes, modelos y puertos estables. Se comprobó sintaxis JS/Python, HTML5, catálogo sincronizado, enlaces, diff-check y secretos/temporales. Los datos oficiales del catálogo, asignadores, cuatro adaptadores, importación y transporte SSH real permanecen sin cambios. La validación de configuraciones es textual y de proyecto; no sustituye hardware, firmware/licencias/ópticas ni una auditoría de seguridad.
+
+Los resultados siguientes son registros anteriores.
+
+## Verificación vigente: correcciones funcionales del PR #11
+
+Base `89a5a2a948c965129ca28f40cb57f5f303f587b2`; rama `feature/catalogo-interfaces-fabricantes`. Aplicación: `2026-11-14T14:10:45-05:00`; Python 3.12.14, Playwright 1.62.0, Chromium 154.0.8037.57, Linux-6.18.57-x86_64-with-glibc2.41. HTTP local y un contexto limpio por caso; 164.9 s. SSH real exclusivamente loopback: 2026-11-14T19:01:54.471527+00:00, AsyncSSH 2.24.1, aiohttp 3.14.5; 11.4 s. No se ejecutó CLI en equipos físicos.
+
+**109/109 aplicación + 26/26 SSH = 135/135 ejecutadas (100%)**, 0 fallidas/no ejecutadas dentro de las matrices. Se conservan los 122 casos previos y se añaden F01–F13. Una comprobación adicional **FILE01 está bloqueada** por política administrativa del navegador; no se suma como superada ni entra en el denominador de pruebas ejecutadas. No hay certificación file://, Windows, compatibilidad física ni conectividad WAN.
+
+Reportes reales: [aplicación completa](../tests/reporte-pr11-funcional.html), [SSH](../tests/reporte-pr11-ssh.json) y [bloqueo file://](../tests/reporte-pr11-file.json). Registran HEAD base del árbol de trabajo antes de los commits y sus hashes; no representan una ejecución en un commit posterior. SHA-256 aplicación: `4d55b8577acc108febfbf3aec8973f416e156dbe8184516246df109cd12a424c`; runner: `8cfda82faf1d70f611c033eb5415f3f542aabb5ad719c7960dc97b0c49dd6ca7`; casos F: `8de95b34b6e5bccc13dc77a517644cb047302d20bb8ee760379d5f51068c5a74`. Catálogo oficial inalterado: `0d1a18afbf51c5a5eb7be79d8d85d1a1b5182fee68d87867d423f4ab535ab050`.
+
+```bash
+python tools/build_catalogo.py --check
+python tests/test_corte3.py --report tests/reporte-pr11-funcional.html
+python tests/test_ssh_service.py
+# En un navegador que permita archivos locales; nunca desactivar políticas de seguridad:
+python tests/check_file_catalogo.py --report /tmp/wan-file.json
+```
+
+No se agregan dependencias. `check_file_catalogo.py` copia únicamente el HTML a un directorio temporal y utiliza file:// real, sin servidor ni data/. Devuelve 0 si pasa, 1 si falla y 2 si una política administrativa bloquea la navegación. En este entorno produjo `ERR_BLOCKED_BY_ADMINISTRATOR` antes de cargar la app. La ausencia de fetch, orden del script embebido, doce fichas y selección/CLI sí se verificaron mediante HTTP aislado, bloqueando data/ y desactivando internet (F05). No se convierte ese resultado en una supuesta prueba file:// superada.
+
+Los cuerpos de los 73 casos C/N/P/Q siguen intactos; se mantienen sus identificadores y los 26 SSH sin cambios. K04/K09/K18 ahora seleccionan en Topología, conforme a la nueva exigencia de selección única. K22 retira deliberadamente la copia embebida en una respuesta HTTP controlada para seguir comprobando el fallo seguro de un paquete incompleto; no exige un recurso externo que ahora es innecesario. Fixtures CLI históricas y las doce fichas oficiales no se modificaron.
+
+| Caso | Esperado | Obtenido | Estado |
+| --- | --- | --- | --- |
+| F01 · Datos confirmados y persistencia | Confirmar bloquea campos; editar igualdad no invalida; JSON y localStorage conservan confirmación. | Datos bloqueados/Editar; igualdad conserva plan y CLI; confirmación v4 restaurada desde JSON y almacenamiento. | Superada |
+| F02 · Proyecto: validación atómica y metadatos | Entrada inválida conserva formulario/estado; editar texto informativo conserva redes; cambios estructurales invalidan. | Error atómico, metadatos sin pérdida de redes; misma cantidad no invalida; cambio de sedes conserva identificación pendiente; tipo de bandera inválido rechazado. | Superada |
+| F03 · Fabricantes sin perder VLAN/VLSM | Cambiar una marca permanece en Topología; conserva plan/IPv6, confirma y borra solo CLI dependientes. | Topología permanece accesible y aprobada; plan/IPv6 intactos; marcas automáticas y cachés dependientes actualizadas; JSON conserva estado. | Superada |
+| F04 · Funciones opcionales y nuevas /30 | Añadir firewall/backup conserva redes previas y agrega solo /30 necesarias; igualdad no llama allocate. | Nuevas funciones reservan /30 libres sin cambiar redes anteriores; misma selección no reasigna ni desconfirma. | Superada |
+| F05 · HTML autónomo sin carpeta data | HTML solo sirve doce fichas embebidas; no solicita JS/JSON externos ni internet. | Doce fichas disponibles con data/ bloqueada y sin internet; cero solicitudes de catálogo; CLI Catalyst usa nombres guardados. | Superada |
+| F06 · Selección efectiva de doce modelos | Las doce fichas pueden elegirse en equipos/roles compatibles y generar CLI con sus puertos oficiales. | 12/12 modelos seleccionados por UI Topología/editor y usados por su adaptador; puertos coinciden con fichas sin alterar datos oficiales. | Superada |
+| F07 · Modelo único en Topología | Cuatro módulos reutilizan selección; no muestran ni exigen selectores de modelo/puerto. | Cisco/Huawei/Fortinet/MikroTik sin selectores repetidos: leen modelos/enlaces guardados en Topología. | Superada |
+| F08 · Comparación real de cuatro marcas | Función seleccionada muestra cuatro adaptadores, diferencias y sintaxis de equipos reales; comparación no muta state. | Cinco funciones × cuatro fabricantes; extractos reales/diferencias y límites; estado/CLI guardada intactos. | Superada |
+| F09 · Comparación sin equivalencias falsas | Marca ausente/función desactivada produce aviso, no un router/firewall ficticio; mantiene IOS/VRP válido. | Sin equipo/función: avisos sin CLI ficticia; equivalencia adicional IOS/VRP existente conservada. | Superada |
+| F10 · Comandos simulados por fabricante | Todos los comandos anunciados responden con datos del proyecto; espacios/mayúsculas razonables se normalizan. | 19 comandos anunciados (4 fabricantes) respondieron, con espacios/mayúsculas; cero conexiones reales. | Superada |
+| F11 · Simulación rechaza comandos ajenos | CLI de otra marca/comandos de escritura no se ejecutan ni producen respuestas operativas ficticias. | Comandos ajenos, escritura e inyección rechazados; solo buffer simulado cambia; proyecto y servicio real intactos. | Superada |
+| F12 · Manual integrado offline ES/EN | Manual abre sin Python/popup/red y muestra comandos de cuatro marcas y seguridad real en ambos idiomas. | Manual en diálogo local ES/EN con comandos y límites de las cuatro marcas; sin Python, solicitudes ni ventanas externas. | Superada |
+| F13 · Revisión visual de flujos | Proyecto/fabricantes confirmados, Topología, cuatro configuraciones, comparación y manual accesibles a 1440/390 px. | 16 vistas (8 × 2 anchos) sin desbordes; capturas reales de Topología, comparación y manual en /tmp/wan-pr11-visual. | Superada |
+
+**Revisión visual y límites:** capturas temporales reales de Topología, comparación y manual a 1440/390 px, inspeccionadas visualmente; no se reemplazaron capturas académicas históricas. Compilación JS/Python, parser HTML5 sin errores, catálogo sincronizado, diff-check, enlaces y escaneo de secretos/temporales satisfactorios. Los comandos simulados nunca salen por SSH; las 26 pruebas reales solo usan servidor de eco local. Validación de configuraciones sigue siendo textual, no física. Durante desarrollo la suite detectó y permitió corregir una clave de idioma, un desbordamiento de extractos CLI y el aviso del modo genérico sin catálogo; el resultado anterior de desarrollo no se presenta como ejecución final.
+
+Los apartados siguientes conservan resultados históricos; el resultado vigente es el de esta sección.
+
+## Registro anterior: primera versión del catálogo local
+
+Base `6466c9494cefdb5423d95e1bc04175304a4e248d`, rama `feature/catalogo-interfaces-fabricantes`. Verificación documental y pruebas: **14 de noviembre de 2026**. Se incorporan doce fichas, tres por fabricante, contrastadas con fuentes oficiales y límites explícitos en [catálogo de modelos](catalogo-modelos.md). No es certificación física.
+
+**Implementado:** selección fabricante/modelo filtrada por tipo en el editor normal y selección de modelo en Topología/configuración; inventario local, asignación determinista de puertos por enlace/medio/velocidad, conservación de nombres válidos, bloqueo de capacidad/roles/funciones incompatibles y validación de importaciones. No se pide escribir interfaces, versión ni URL. Los cuatro adaptadores leen nombres reales de los enlaces para el modelo elegido. Huawei LI incluye solo banco RJ45 verificado; Fortinet reserva switch interno y FortiLink. No hay consultas de red durante uso normal.
+
+**Confirmado por pruebas:** 73 casos anteriores + 23 casos K01–K23 = **96/96 aplicación**; **26/26 SSH local**, total **122/122 = 100%** del conjunto ejecutado, 0 fallidas/bloqueadas/no ejecutadas dentro de las matrices. Reportes reales: [aplicación](../tests/reporte-catalogo.html) y [SSH](../tests/reporte-catalogo-ssh.json). Se conservan las ocho comparaciones exactas de CLI (cuatro marcas × ES/EN) para proyectos sin modelo, los 99 casos previos, IPv4/IPv6, JSON v2/v3/v4 y exclusión CLI de AP. Datos ficticios, contextos limpios, HTTP local y SSH real exclusivamente loopback; no se aplica CLI.
+
+**Persistencia:** `nodes[].modelId` es una extensión opcional de v4; ausencia conserva comportamiento genérico y aviso de modelo no especificado. Las interfaces permanecen en campos de enlaces existentes. La carga valida sin reasignar; no cambia versión, migración, claves locales, planes, IP ni configuración SSH. La ruta fija del servicio SSH opcional sirve solo el script local del catálogo.
+
+**Pendiente/límites:** comprobar equipos reales, firmware/licencias, transceptores, puertos renombrados y configuración previa. SFP Huawei excluidos hasta completar nomenclatura por variante. No se amplían los adaptadores a roles/funciones no respaldados, IPv6 CLI ni pools/reservas editables. Revisión visual 1440/390 px satisfactoria; `file://` fue bloqueado por política del navegador del entorno y se declara como una exploración bloqueada aparte, no como caso superado. El modo sin internet se verificó mediante HTTP local con la red del contexto desactivada. Los apartados siguientes conservan evidencia histórica, no sustituyen este resultado.
+
+### Reproducción y entorno del catálogo
+
+```bash
+python -m pip install -r tests/requirements.txt
+python -m playwright install chromium
+python tools/build_catalogo.py --check
+python tests/test_corte3.py --report tests/reporte-catalogo.html
+# Solo los casos nuevos, cuando se necesita aislar un diagnóstico:
+python tests/test_catalogo.py
+# Entorno SSH opcional, separado de la app estática:
+python -m pip install -r ssh_service/requirements.txt
+python tests/test_ssh_service.py
+```
+
+No hay dependencias nuevas. El runner inicia/cierra servidor y contextos, imprime casos y porcentaje y devuelve fallo si un caso falla. `test_corte3.py` registra los 73 casos originales sin modificar sus cuerpos y añade K01–K23. Las fichas de contraste en `tests/fixtures/catalogo-verificado.json` contienen conteos/rangos/velocidades y fuentes oficiales; no se cambiaron fixtures CLI históricas para hacer pasar el catálogo.
+
+Ejecución final de aplicación: `2026-11-14T13:28:08-05:00`; Linux-6.18.57-x86_64-with-glibc2.41; Python 3.12.14, Playwright 1.62.0, Chromium 154.0.8037.57; 126.5 s. SSH: 2026-11-14T18:25:55.304550+00:00, AsyncSSH 2.24.1, aiohttp 3.14.5; 10.4 s. Los reportes registran el HEAD base y los hashes del árbol de trabajo probado **antes de los commits de publicación**; no se atribuye a otro commit una ejecución que no ocurrió.
+
+- SHA-256 aplicación: `e915447fa14dfbcf82bcb36d85b3567b291793c47603854c83ed1811f44ca400`.
+- SHA-256 catálogo: `0d1a18afbf51c5a5eb7be79d8d85d1a1b5182fee68d87867d423f4ab535ab050`.
+- SHA-256 runner: `9d43744efb4cb7920be2f3987c5afcc3df2cb1c7938b281067b2d28a1d2c7335`.
+- SHA-256 casos nuevos: `7a99e7e78767331cddb328b0db7d0ae6ee99077cee7c61fbbbecead88df06ea2`.
+- SHA-256 servidor SSH: `81eff1af1894668d980d172346648b1d2ea0ab68f5432226c8cdf3690f182dba`.
+
+### Casos nuevos: esperado, obtenido y estado
+
+| Caso | Esperado | Obtenido | Estado |
+| --- | --- | --- | --- |
+| K01 · Catálogo contra fichas oficiales | Doce modelos; cantidades, nombres, velocidades y fuentes contrastan con fichas verificadas. | 12 fichas (3 por marca), conteos/rangos/velocidades y fuentes oficiales; JSON y JS empaquetado coinciden. | Superada |
+| K02 · Fabricante y modelos filtrados | Editor filtra fabricante/tipo, sin modelo para AP; cancelación no cambia datos. | Listas por marca/rol; AP y roles no soportados sin modelos; cancelación intacta. | Superada |
+| K03 · Carga automática de inventario | Seleccionar modelo muestra interfaces documentadas, sin escribir nombres ni guardar datos preliminares. | 28 puertos de ficha visibles inmediatamente; guardar equipo asigna enlaces; sin entrada manual de puertos. | Superada |
+| K04 · Cisco con modelo | Catalyst seleccionado usa nombres reales en toda la CLI física, conservando IPv4/HSRP. | Catalyst: 8 puertos de ficha en CLI, HSRP/IP conservados; cero nombres físicos genéricos. | Superada |
+| K05 · Huawei con modelo | Switch L2 seleccionado usa banco RJ45 de la variante, sin atribuirle L3 ni SFP no verificados. | Huawei L2: nombres del banco RJ45 de ficha; sin SFP no verificados ni routing de core. | Superada |
+| K06 · Fortinet con modelos | 60F/61F/70F usan wan1/wan2/dmz y excluyen puertos de switch interno/FortiLink. | Tres modelos FortiGate: puertos exactos de tablas oficiales; internal1–5 y a/b no asignados automáticamente. | Superada |
+| K07 · MikroTik con modelos | hEX, hEX S y CCR2004 usan puertos de sus fichas con sintaxis RouterOS 7. | Tres routers RouterOS 7: nombres en guardas Ethernet, bridge e interfaces OSPF; sin sintaxis ajena. | Superada |
+| K08 · Asignación determinista | Orden de filas/ejecuciones no cambia la asociación puerto–enlace; sin duplicados. | Mismas asociaciones al repetir/invertir nodos y enlaces; puertos físicos únicos. | Superada |
+| K09 · Puertos insuficientes y atomicidad | ISR4321 de dos GE rechaza tres enlaces sin inventar puertos ni perder proyecto/DOM. | Tres enlaces frente a dos GE reales: rechazo atómico, sin puerto ficticio ni pérdida de plan, CLI, DOM o localStorage. | Superada |
+| K10 · Duplicados y referencias importadas | Importador rechaza puertos repetidos/no existentes del modelo sin reasignar ni sustituir estado. | Puerto duplicado y puerto 99 inexistente rechazados sin asignación automática durante importación. | Superada |
+| K11 · Cambio de modelo | Cambiar 24T por 48T conserva puertos válidos, enlaces, VLAN, direcciones y otras sedes. | 24T→48T mantiene puertos válidos y todo el direccionamiento/identidad; cambia únicamente modelo e invalida CLI derivada. | Superada |
+| K12 · Regeneración con modelos | Reconstruir topología conserva modelo, IDs y puertos válidos de nodos automáticos. | Modelo, identificadores, puertos y plan conservados al reconstruir desde el mismo plan. | Superada |
+| K13 · JSON v4 y almacenamiento | Guardar/cargar/importar conserva modelId y puertos; cero llamadas a asignadores IPv4/IPv6. | v4/CLI/modelId/enlaces exactos en JSON y localStorage; no se reasignan redes al cargar. | Superada |
+| K14 · Proyectos antiguos y advertencia | v2/v3/v4 sin modelo preservan datos y generación genérica, con advertencia visual. | v2/v3 migran a v4 sin modelo inferido; CLI genérica permanece y aviso exacto visible; referencias históricas en C26. | Superada |
+| K15 · Fabricantes mixtos con catálogo | Cuatro marcas reales usan modelos compatibles de la misma topología y plan común. | Cisco core, Huawei acceso, Fortinet firewall y MikroTik router con modelos documentados; cuatro CLI y plan común intacto. | Superada |
+| K16 · AP excluidos con vecinos modelados | AP mantiene IP/VLAN/enlaces; ningún adaptador ni modelo ofrece CLI genérica para AP. | AP sin modelos/CLI genéricos; nodos/IP/VLAN/enlaces siguen intactos al seleccionar modelos vecinos. | Superada |
+| K17 · Funcionamiento sin internet | Catálogo cargado localmente; seleccionar, asignar, generar y exportar funciona desconectado. | Selección, VLSM, topología, asignación, CLI y JSON operan con red desactivada tras cargar activos locales; cero consultas externas. | Superada |
+| K18 · Catálogo ES/EN y responsive | Controles, mensajes e inventario traducidos; modelo y CLI intactos a 1440/390 px. | Catálogo y avisos en ES/EN, 1440/390 sin desborde nuevo; modelo, redes y CLI conservados. | Superada |
+| K19 · Entradas inseguras y modelos incompatibles | Modelo desconocido/inyección/tipo incorrecto rechazados atómicamente en selección e importación. | Selección de ID desconocido, inyección y fabricante/tipo incompatible bloqueados; JSON inválido conserva estado. | Superada |
+| K20 · ISR4321 y función no respaldada | Dos GE físicos generan en router compatible; funciones fuera del perfil se bloquean con causa específica. | ISR4321 usa sus dos GE sin switchport; LACP no respaldado en perfil Huawei bloquea generación con mensaje concreto. | Superada |
+| K21 · Medios y velocidades compatibles | Uplink óptico entre modelos conocidos usa puertos/velocidad común; medio incompatible se rechaza al importar. | SFP1↔uplink SFP Catalyst con 1G común; fibra↔RJ45 incoherente rechazada sin inventar transceptor ni cambiar estado. | Superada |
+| K22 · Catálogo ausente y modo legado | Sin archivo de catálogo los proyectos sin modelo siguen funcionando con aviso; no se consulta internet. | Sin catálogo: flujo genérico y CLI permanecen; aviso local visible, sin descarga ni consulta externa. | Superada |
+| K23 · Crear enlaces sin escribir puertos | Enlaces nuevos reciben puertos del modelo; las asociaciones válidas previas quedan reservadas. | Enlace Fortinet↔Catalyst añadido sin escribir puertos; conserva enlaces anteriores y no duplica interfaces. | Superada |
+
+El reporte HTML contiene también los 73 casos conservados, tiempos y evidencia observable; el JSON SSH conserva los 26 resultados individuales. Durante desarrollo se detectaron y corrigieron un sombreado de nombre en el editor y la validación indebida de la columna alternativa de un enlace con modelo; el conjunto final se ejecutó completo tras esas correcciones. Un ID erróneo en un caso nuevo se corrigió sin rebajar la validación de producción. No se cuentan repeticiones como casos nuevos.
+
+**Comprobaciones complementarias:** `node --check` para script principal y catálogo, compilación Python en memoria, parser HTML5 sin errores, `git diff --check`, enlaces locales y escaneo de secretos/temporales. Revisión visual de selector/inventario a 1440 px ES y 390 px EN, sin desbordes nuevos. Las imágenes de revisión son scratch, no reemplazan las capturas académicas históricas. No se ejecutaron pruebas Windows ni validación física; la exploración `file://` bloqueada se informa aparte. La seguridad/conectividad real no se deduce del 100% local.
+
+Para sustentación: ejecutar el comando completo; abrir la app por HTTP, generar plan/topología, elegir fabricante/modelo y revisar puertos; demostrar mensaje atómico al elegir un modelo insuficiente y guardar/exportar/importar v4. Mostrar los límites por modelo y que AP permanece sin CLI. Toda propuesta se revisa manualmente; nunca ejecutarla desde la prueba.
+
+## Registro anterior del PR #10: interfaces automáticas y orden del menú
 
 Base de trabajo `9675ce7f1c553e1225609772cbb6a500822fa2f0`; main conservado en `1956d1872363c88399f5e8240abb1d7a13bca340`. Ejecución 2026-11-11T13:02:18-05:00: **73/73 aplicación + 26/26 SSH local = 99/99 (100%)**, 0 fallidas/bloqueadas/no ejecutadas dentro de las matrices. Se mantienen los 58 casos C/N/P y los 26 SSH; Q04–Q13 cambian sus expectativas porque se retiró expresamente el formulario físico, y Q15 verifica el nuevo menú. No se alteraron fixtures ni hashes CLI de referencia. [Resultados y límites](pruebas-interfaces.md), [reporte real](../tests/reporte-interfaces.html).
 

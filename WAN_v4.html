@@ -560,6 +560,10 @@
           background: white;
         }
       }
+      /* Grupos de equipos con puertos completos; el contenedor existente permite desplazamiento horizontal en móvil. */
+      .physical-inventory { min-width:740px; }
+      .physical-inventory tbody + tbody { border-top:2px solid var(--line); }
+      .physical-inventory th[scope="rowgroup"] { vertical-align:top; text-transform:none; }
       .card, .field, .two > *, .grid > * { min-width:0; }
       .sitehead { flex-wrap:wrap; }
       .sitehead .actions, .sitecount { max-width:100%; }
@@ -618,6 +622,11 @@
     <!-- Un único diálogo sirve para editar equipos, enlaces y confirmar datos. -->
     <dialog id="modal"><div id="modalbody"></div></dialog>
     <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+    <!-- CATÁLOGO_LOCAL_INICIO -->
+    <script id="wanCatalogData">// Generado por python tools/build_catalogo.py; editar el JSON, no este archivo.
+globalThis.WAN_INTERFACE_CATALOG = {"schemaVersion":1,"verifiedOn":"2026-11-14","models":[{"id":"cisco-c9200l-24t-4g","vendor":"Cisco","model":"C9200L-24T-4G","variant":"C9200L-24T-4G","types":["Switch","Switch capa 3"],"os":"Cisco IOS XE","referenceVersion":"17.11.x; Network Advantage; standalone switch 1","verifiedOn":"2026-11-14","ports":[{"name":"GigabitEthernet1/0/1","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/2","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/3","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/4","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/5","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/6","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/7","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/8","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/9","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/10","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/11","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/12","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/13","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/14","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/15","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/16","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/17","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/18","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/19","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/20","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/21","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/22","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/23","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/24","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/1/1","connector":"SFP/SFP+","media":"fiber","speedsMbps":[1000],"modes":["routed","trunk","access"],"preferred":"uplink","assignable":true,"restriction":""},{"name":"GigabitEthernet1/1/2","connector":"SFP/SFP+","media":"fiber","speedsMbps":[1000],"modes":["routed","trunk","access"],"preferred":"uplink","assignable":true,"restriction":""},{"name":"GigabitEthernet1/1/3","connector":"SFP/SFP+","media":"fiber","speedsMbps":[1000],"modes":["routed","trunk","access"],"preferred":"uplink","assignable":true,"restriction":""},{"name":"GigabitEthernet1/1/4","connector":"SFP/SFP+","media":"fiber","speedsMbps":[1000],"modes":["routed","trunk","access"],"preferred":"uplink","assignable":true,"restriction":""}],"features":{"ssh":true,"vlans":true,"interfaces":true,"ospf":true,"dhcp":true,"relay":true,"static":true,"lacp":true,"ha":true},"sources":[{"url":"https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9200/hardware/install/b-c9200-hig/product_overview.html","verifiedOn":"2026-11-14","evidence":"C9200L-24T-4G y -48T-4G: puertos de acceso GE y cuatro uplinks SFP GE fijos."},{"url":"https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9200/software/release/17-11/configuration_guide/int_hw/b_1711_int_and_hw_9200_cg/configuring_interface_characteristics.html","verifiedOn":"2026-11-14","evidence":"Standalone 1; downlinks módulo 0, uplinks módulo 1; nombres y switching/routed de IOS XE."},{"url":"https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9200/software/release/17-11/configuration_guide/ip/b_1711_ip_9200_cg.html","verifiedOn":"2026-11-14","evidence":"DHCP, relay y HSRP; verificar licencia/versión antes de aplicar."},{"url":"https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9200/software/release/17-11/configuration_guide/rtng/b_1711_rtng_9200_cg.pdf","verifiedOn":"2026-11-14","evidence":"Familia de comandos IPv4/OSPF; referencia con Network Advantage."}],"limitations":["Sin stack: miembro 1. No incluye módulos, consolas ni gestión OOB en los puertos asignables.","Network Advantage es referencia declarada; la aplicación no verifica licencia, firmware ni óptica. No PoE en variante T."],"excludedHardware":[]},{"id":"cisco-c9200l-48t-4g","vendor":"Cisco","model":"C9200L-48T-4G","variant":"C9200L-48T-4G","types":["Switch","Switch capa 3"],"os":"Cisco IOS XE","referenceVersion":"17.11.x; Network Advantage; standalone switch 1","verifiedOn":"2026-11-14","ports":[{"name":"GigabitEthernet1/0/1","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/2","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/3","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/4","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/5","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/6","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/7","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/8","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/9","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/10","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/11","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/12","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/13","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/14","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/15","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/16","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/17","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/18","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/19","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/20","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/21","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/22","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/23","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/24","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/25","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/26","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/27","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/28","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/29","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/30","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/31","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/32","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/33","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/34","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/35","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/36","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/37","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/38","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/39","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/40","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/41","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/42","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/43","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/44","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/45","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/46","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/47","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/0/48","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet1/1/1","connector":"SFP/SFP+","media":"fiber","speedsMbps":[1000],"modes":["routed","trunk","access"],"preferred":"uplink","assignable":true,"restriction":""},{"name":"GigabitEthernet1/1/2","connector":"SFP/SFP+","media":"fiber","speedsMbps":[1000],"modes":["routed","trunk","access"],"preferred":"uplink","assignable":true,"restriction":""},{"name":"GigabitEthernet1/1/3","connector":"SFP/SFP+","media":"fiber","speedsMbps":[1000],"modes":["routed","trunk","access"],"preferred":"uplink","assignable":true,"restriction":""},{"name":"GigabitEthernet1/1/4","connector":"SFP/SFP+","media":"fiber","speedsMbps":[1000],"modes":["routed","trunk","access"],"preferred":"uplink","assignable":true,"restriction":""}],"features":{"ssh":true,"vlans":true,"interfaces":true,"ospf":true,"dhcp":true,"relay":true,"static":true,"lacp":true,"ha":true},"sources":[{"url":"https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9200/hardware/install/b-c9200-hig/product_overview.html","verifiedOn":"2026-11-14","evidence":"C9200L-24T-4G y -48T-4G: puertos de acceso GE y cuatro uplinks SFP GE fijos."},{"url":"https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9200/software/release/17-11/configuration_guide/int_hw/b_1711_int_and_hw_9200_cg/configuring_interface_characteristics.html","verifiedOn":"2026-11-14","evidence":"Standalone 1; downlinks módulo 0, uplinks módulo 1; nombres y switching/routed de IOS XE."},{"url":"https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9200/software/release/17-11/configuration_guide/ip/b_1711_ip_9200_cg.html","verifiedOn":"2026-11-14","evidence":"DHCP, relay y HSRP; verificar licencia/versión antes de aplicar."},{"url":"https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9200/software/release/17-11/configuration_guide/rtng/b_1711_rtng_9200_cg.pdf","verifiedOn":"2026-11-14","evidence":"Familia de comandos IPv4/OSPF; referencia con Network Advantage."}],"limitations":["Sin stack: miembro 1. No incluye módulos, consolas ni gestión OOB en los puertos asignables.","Network Advantage es referencia declarada; la aplicación no verifica licencia, firmware ni óptica. No PoE en variante T."],"excludedHardware":[]},{"id":"cisco-isr4321-k9","vendor":"Cisco","model":"ISR4321/K9","variant":"ISR4321/K9","types":["Router"],"os":"Cisco IOS XE","referenceVersion":"16.3.1; interfaces integradas sin NIM","verifiedOn":"2026-11-14","ports":[{"name":"GigabitEthernet0/0/0","connector":"RJ45/SFP combo","media":"copper","speedsMbps":[10,100,1000],"modes":["routed"],"preferred":"wan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/1","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed"],"preferred":"lan","assignable":true,"restriction":""}],"features":{"ssh":true,"vlans":false,"interfaces":true,"ospf":true,"dhcp":true,"relay":true,"static":true,"lacp":false,"ha":false},"sources":[{"url":"https://www.cisco.com/c/en/us/products/collateral/routers/4000-series-integrated-services-routers-isr/data_sheet-c78-732542.html","verifiedOn":"2026-11-14","evidence":"ISR4321: dos interfaces GE integradas; un conector SFP comparte interfaz con cobre, no añade un tercer enlace."},{"url":"https://www.cisco.com/c/dam/en/us/solutions/collateral/enterprise/interoperability-portal/fusion-connect-sip-trunking.pdf","verifiedOn":"2026-11-14","evidence":"ISR4321 / IOS XE 16.3.1: GigabitEthernet0/0/0 y GigabitEthernet0/0/1."},{"url":"https://www.cisco.com/c/ja_jp/td/docs/rt/branchrt/4451-xisr/ig/001/c4400-isr/overview.html","verifiedOn":"2026-11-14","evidence":"ISR4321: GE0/0/0 RJ45 y SFP comparten nombre y capacidad; GE0/0/1 es cobre dedicado. Perfil conservador usa el combo por cobre."}],"limitations":["Solo dos enlaces GE integrados, independientemente del conector combo. No se añaden NIM ni gestión OOB.","El adaptador no implementa ROAS en este perfil: puertos usados solo para routed; no switchport en un router."],"excludedHardware":[]},{"id":"huawei-s5700-28p-li-ac","vendor":"Huawei","model":"S5700-28P-LI-AC","variant":"S5700-28P-LI-AC","types":["Switch"],"os":"Huawei VRP","referenceVersion":"V200; standalone/slot 0, subcard 0","verifiedOn":"2026-11-14","ports":[{"name":"GigabitEthernet0/0/1","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/2","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/3","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/4","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/5","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/6","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/7","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/8","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/9","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/10","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/11","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/12","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/13","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/14","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/15","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/16","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/17","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/18","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/19","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/20","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/21","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/22","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/23","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/24","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""}],"features":{"ssh":true,"vlans":true,"interfaces":true,"ospf":false,"dhcp":false,"relay":false,"static":true,"lacp":false,"ha":false},"sources":[{"url":"https://enterprise.huawei.com/nla/products/network/switch/campus-switch/hw-143233.htm","verifiedOn":"2026-11-14","evidence":"S5700-28P-LI AC/DC: 24 RJ45 GE y cuatro SFP; S5700-52P-LI AC: 48 RJ45 GE y cuatro SFP. VLAN/MSTP/SSH; LI sin OSPF avanzado."},{"url":"https://enterprise.huawei.com/ucmf/groups/public/documents/enterprise_webasset/hw_331882.pdf","verifiedOn":"2026-11-14","evidence":"Ficha oficial S5700-LI: inventario y separación de variantes AC/DC; familia VRP. No extrapolar a variantes -X o -24S."},{"url":"https://info.support.huawei.com/network/ptmngsys/Web/tsrev_s/en/content/s/16_edesk_stp_failure/edesk_stp_failure_edesk003.html","verifiedOn":"2026-11-14","evidence":"Nomenclatura GigabitEthernet0/0/N y MSTP de S5700 standalone. Solo se incorpora el banco RJ45; los SFP quedan fuera hasta completar evidencia de nombres."}],"limitations":["Perfil de acceso L2 conservador, no disponible como core L3. No se certifican OSPF/VRRP/LACP/DHCP de este modelo con el adaptador.","Inventario parcial: banco RJ45 numerado. Los cuatro SFP documentados se excluyen hasta completar evidencia inequívoca de nomenclatura CLI por variante.","Referencia sin apilamiento. No se extrapolan variantes -X, -24S ni otros sufijos."],"excludedHardware":["4 SFP GE: hardware confirmado; nomenclatura CLI pendiente, no asignables."]},{"id":"huawei-s5700-28p-li-dc","vendor":"Huawei","model":"S5700-28P-LI-DC","variant":"S5700-28P-LI-DC","types":["Switch"],"os":"Huawei VRP","referenceVersion":"V200; standalone/slot 0, subcard 0","verifiedOn":"2026-11-14","ports":[{"name":"GigabitEthernet0/0/1","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/2","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/3","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/4","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/5","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/6","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/7","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/8","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/9","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/10","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/11","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/12","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/13","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/14","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/15","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/16","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/17","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/18","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/19","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/20","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/21","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/22","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/23","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/24","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""}],"features":{"ssh":true,"vlans":true,"interfaces":true,"ospf":false,"dhcp":false,"relay":false,"static":true,"lacp":false,"ha":false},"sources":[{"url":"https://enterprise.huawei.com/nla/products/network/switch/campus-switch/hw-143233.htm","verifiedOn":"2026-11-14","evidence":"S5700-28P-LI AC/DC: 24 RJ45 GE y cuatro SFP; S5700-52P-LI AC: 48 RJ45 GE y cuatro SFP. VLAN/MSTP/SSH; LI sin OSPF avanzado."},{"url":"https://enterprise.huawei.com/ucmf/groups/public/documents/enterprise_webasset/hw_331882.pdf","verifiedOn":"2026-11-14","evidence":"Ficha oficial S5700-LI: inventario y separación de variantes AC/DC; familia VRP. No extrapolar a variantes -X o -24S."},{"url":"https://info.support.huawei.com/network/ptmngsys/Web/tsrev_s/en/content/s/16_edesk_stp_failure/edesk_stp_failure_edesk003.html","verifiedOn":"2026-11-14","evidence":"Nomenclatura GigabitEthernet0/0/N y MSTP de S5700 standalone. Solo se incorpora el banco RJ45; los SFP quedan fuera hasta completar evidencia de nombres."}],"limitations":["Perfil de acceso L2 conservador, no disponible como core L3. No se certifican OSPF/VRRP/LACP/DHCP de este modelo con el adaptador.","Inventario parcial: banco RJ45 numerado. Los cuatro SFP documentados se excluyen hasta completar evidencia inequívoca de nomenclatura CLI por variante.","Referencia sin apilamiento. No se extrapolan variantes -X, -24S ni otros sufijos."],"excludedHardware":["4 SFP GE: hardware confirmado; nomenclatura CLI pendiente, no asignables."]},{"id":"huawei-s5700-52p-li-ac","vendor":"Huawei","model":"S5700-52P-LI-AC","variant":"S5700-52P-LI-AC","types":["Switch"],"os":"Huawei VRP","referenceVersion":"V200; standalone/slot 0, subcard 0","verifiedOn":"2026-11-14","ports":[{"name":"GigabitEthernet0/0/1","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/2","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/3","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/4","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/5","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/6","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/7","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/8","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/9","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/10","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/11","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/12","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/13","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/14","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/15","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/16","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/17","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/18","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/19","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/20","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/21","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/22","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/23","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/24","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/25","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/26","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/27","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/28","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/29","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/30","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/31","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/32","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/33","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/34","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/35","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/36","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/37","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/38","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/39","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/40","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/41","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/42","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/43","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/44","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/45","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/46","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/47","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"GigabitEthernet0/0/48","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["trunk","access"],"preferred":"lan","assignable":true,"restriction":""}],"features":{"ssh":true,"vlans":true,"interfaces":true,"ospf":false,"dhcp":false,"relay":false,"static":true,"lacp":false,"ha":false},"sources":[{"url":"https://enterprise.huawei.com/nla/products/network/switch/campus-switch/hw-143233.htm","verifiedOn":"2026-11-14","evidence":"S5700-28P-LI AC/DC: 24 RJ45 GE y cuatro SFP; S5700-52P-LI AC: 48 RJ45 GE y cuatro SFP. VLAN/MSTP/SSH; LI sin OSPF avanzado."},{"url":"https://enterprise.huawei.com/ucmf/groups/public/documents/enterprise_webasset/hw_331882.pdf","verifiedOn":"2026-11-14","evidence":"Ficha oficial S5700-LI: inventario y separación de variantes AC/DC; familia VRP. No extrapolar a variantes -X o -24S."},{"url":"https://info.support.huawei.com/network/ptmngsys/Web/tsrev_s/en/content/s/16_edesk_stp_failure/edesk_stp_failure_edesk003.html","verifiedOn":"2026-11-14","evidence":"Nomenclatura GigabitEthernet0/0/N y MSTP de S5700 standalone. Solo se incorpora el banco RJ45; los SFP quedan fuera hasta completar evidencia de nombres."}],"limitations":["Perfil de acceso L2 conservador, no disponible como core L3. No se certifican OSPF/VRRP/LACP/DHCP de este modelo con el adaptador.","Inventario parcial: banco RJ45 numerado. Los cuatro SFP documentados se excluyen hasta completar evidencia inequívoca de nomenclatura CLI por variante.","Referencia sin apilamiento. No se extrapolan variantes -X, -24S ni otros sufijos."],"excludedHardware":["4 SFP GE: hardware confirmado; nomenclatura CLI pendiente, no asignables."]},{"id":"fortinet-60f","vendor":"Fortinet","model":"FortiGate 60F","variant":"FortiGate 60F","types":["Firewall"],"os":"Fortinet FortiOS","referenceVersion":"7.4.x; sin multi-VDOM","verifiedOn":"2026-11-14","ports":[{"name":"wan1","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"wan","assignable":true,"restriction":""},{"name":"wan2","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"wan","assignable":true,"restriction":""},{"name":"dmz","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"internal1","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":false,"restriction":"Miembro del switch interno por defecto: fuera del perfil autónomo conservador."},{"name":"internal2","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":false,"restriction":"Miembro del switch interno por defecto: fuera del perfil autónomo conservador."},{"name":"internal3","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":false,"restriction":"Miembro del switch interno por defecto: fuera del perfil autónomo conservador."},{"name":"internal4","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":false,"restriction":"Miembro del switch interno por defecto: fuera del perfil autónomo conservador."},{"name":"internal5","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":false,"restriction":"Miembro del switch interno por defecto: fuera del perfil autónomo conservador."},{"name":"a","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":false,"restriction":"Puerto FortiLink: no se desconfigura automáticamente."},{"name":"b","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":false,"restriction":"Puerto FortiLink: no se desconfigura automáticamente."}],"features":{"ssh":true,"vlans":true,"interfaces":true,"ospf":true,"dhcp":true,"relay":true,"static":true,"lacp":false,"ha":false},"sources":[{"url":"https://docs.fortinet.com/document/fortigate/7.4.0/hardware-acceleration/758378/fortigate-60f-and-61f-fast-path-architecture","verifiedOn":"2026-11-14","evidence":"Tabla diagnose npu: wan1, wan2, dmz, internal1..5, a, b; diez puertos GE. a/b FortiLink se excluyen de asignación."},{"url":"https://docs.fortinet.com/document/fortigate/7.4.0/cli-reference/8620/config-system-interface","verifiedOn":"2026-11-14","evidence":"Familia FortiOS 7.4: IPv4/VLAN/relay. Requiere interfaces libres de referencias/configuración previa; no se eliminan switches ni FortiLink automáticamente."}],"limitations":["Se catalogan diez puertos físicos; se asignan automáticamente solo wan1, wan2 y dmz.","No se desmontan switches por defecto/FortiLink ni referencias existentes. Requiere revisión de configuración/puertos antes de aplicar.","Sin NAT/Internet/políticas permisivas implícitas; sin HA/LACP en el adaptador."],"excludedHardware":[]},{"id":"fortinet-61f","vendor":"Fortinet","model":"FortiGate 61F","variant":"FortiGate 61F","types":["Firewall"],"os":"Fortinet FortiOS","referenceVersion":"7.4.x; sin multi-VDOM","verifiedOn":"2026-11-14","ports":[{"name":"wan1","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"wan","assignable":true,"restriction":""},{"name":"wan2","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"wan","assignable":true,"restriction":""},{"name":"dmz","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"internal1","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":false,"restriction":"Miembro del switch interno por defecto: fuera del perfil autónomo conservador."},{"name":"internal2","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":false,"restriction":"Miembro del switch interno por defecto: fuera del perfil autónomo conservador."},{"name":"internal3","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":false,"restriction":"Miembro del switch interno por defecto: fuera del perfil autónomo conservador."},{"name":"internal4","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":false,"restriction":"Miembro del switch interno por defecto: fuera del perfil autónomo conservador."},{"name":"internal5","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":false,"restriction":"Miembro del switch interno por defecto: fuera del perfil autónomo conservador."},{"name":"a","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":false,"restriction":"Puerto FortiLink: no se desconfigura automáticamente."},{"name":"b","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":false,"restriction":"Puerto FortiLink: no se desconfigura automáticamente."}],"features":{"ssh":true,"vlans":true,"interfaces":true,"ospf":true,"dhcp":true,"relay":true,"static":true,"lacp":false,"ha":false},"sources":[{"url":"https://docs.fortinet.com/document/fortigate/7.4.0/hardware-acceleration/758378/fortigate-60f-and-61f-fast-path-architecture","verifiedOn":"2026-11-14","evidence":"Tabla diagnose npu: wan1, wan2, dmz, internal1..5, a, b; diez puertos GE. a/b FortiLink se excluyen de asignación."},{"url":"https://docs.fortinet.com/document/fortigate/7.4.0/cli-reference/8620/config-system-interface","verifiedOn":"2026-11-14","evidence":"Familia FortiOS 7.4: IPv4/VLAN/relay. Requiere interfaces libres de referencias/configuración previa; no se eliminan switches ni FortiLink automáticamente."}],"limitations":["Se catalogan diez puertos físicos; se asignan automáticamente solo wan1, wan2 y dmz.","No se desmontan switches por defecto/FortiLink ni referencias existentes. Requiere revisión de configuración/puertos antes de aplicar.","Sin NAT/Internet/políticas permisivas implícitas; sin HA/LACP en el adaptador."],"excludedHardware":[]},{"id":"fortinet-70f","vendor":"Fortinet","model":"FortiGate 70F","variant":"FortiGate 70F","types":["Firewall"],"os":"Fortinet FortiOS","referenceVersion":"7.4.x; sin multi-VDOM","verifiedOn":"2026-11-14","ports":[{"name":"wan1","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"wan","assignable":true,"restriction":""},{"name":"wan2","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"wan","assignable":true,"restriction":""},{"name":"dmz","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"internal1","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":false,"restriction":"Miembro del switch interno por defecto: fuera del perfil autónomo conservador."},{"name":"internal2","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":false,"restriction":"Miembro del switch interno por defecto: fuera del perfil autónomo conservador."},{"name":"internal3","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":false,"restriction":"Miembro del switch interno por defecto: fuera del perfil autónomo conservador."},{"name":"internal4","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":false,"restriction":"Miembro del switch interno por defecto: fuera del perfil autónomo conservador."},{"name":"internal5","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":false,"restriction":"Miembro del switch interno por defecto: fuera del perfil autónomo conservador."},{"name":"a","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":false,"restriction":"Puerto FortiLink: no se desconfigura automáticamente."},{"name":"b","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":false,"restriction":"Puerto FortiLink: no se desconfigura automáticamente."}],"features":{"ssh":true,"vlans":true,"interfaces":true,"ospf":true,"dhcp":true,"relay":true,"static":true,"lacp":false,"ha":false},"sources":[{"url":"https://docs.fortinet.com/document/fortigate/7.4.0/hardware-acceleration/749156/fortigate-70f-and-71f-fast-path-architecture","verifiedOn":"2026-11-14","evidence":"Tabla oficial para 70F/71F: wan1, wan2, dmz, internal1..5, a, b, todos GE."},{"url":"https://docs.fortinet.com/document/fortigate/7.4.0/cli-reference/8620/config-system-interface","verifiedOn":"2026-11-14","evidence":"Familia FortiOS 7.4: IPv4/VLAN/relay. Requiere interfaces libres de referencias/configuración previa; no se eliminan switches ni FortiLink automáticamente."}],"limitations":["Se catalogan diez puertos físicos; se asignan automáticamente solo wan1, wan2 y dmz.","No se desmontan switches por defecto/FortiLink ni referencias existentes. Requiere revisión de configuración/puertos antes de aplicar.","Sin NAT/Internet/políticas permisivas implícitas; sin HA/LACP en el adaptador."],"excludedHardware":[]},{"id":"mikrotik-rb750gr3","vendor":"MikroTik","model":"RB750Gr3 (hEX)","variant":"RB750Gr3 (hEX)","types":["Router"],"os":"MikroTik RouterOS","referenceVersion":"7.x; sin VRF/CAPsMAN","verifiedOn":"2026-11-14","ports":[{"name":"ether1","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"wan","assignable":true,"restriction":""},{"name":"ether2","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"ether3","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"ether4","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"ether5","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""}],"features":{"ssh":true,"vlans":true,"interfaces":true,"ospf":true,"dhcp":true,"relay":true,"static":true,"lacp":false,"ha":false},"sources":[{"url":"https://mikrotik.com/product/RB750Gr3","verifiedOn":"2026-11-14","evidence":"RB750Gr3: cinco puertos Ethernet Gigabit."},{"url":"https://help.mikrotik.com/docs/spaces/ROS/pages/21725296/MTU%20in%20RouterOS","verifiedOn":"2026-11-14","evidence":"Tabla de modelos/nombres: RB750Gr3 ether1..5; RB760iGS ether1..5 y sfp1; CCR2004-16G-2S+ ether1..16 y sfp-sfpplus1..2."},{"url":"https://help.mikrotik.com/docs/spaces/ROS/pages/331612216/routing+ospf","verifiedOn":"2026-11-14","evidence":"Sintaxis RouterOS 7. El adaptador conserva sus restricciones: sin VRRP, LACP, VRF ni CAPsMAN."}],"limitations":["Solo Router con el adaptador actual; no se certifica switch/SwOS aunque haya hardware de switching.","Nombres de fábrica: si se renombraron, debe contrastarse la propuesta con el equipo. Sin VRRP/LACP/VRF/CAPsMAN/IPv6 CLI.","Medio/velocidad representan compatibilidad del catálogo, no negociación física ni disponibilidad de transceptores."],"excludedHardware":[]},{"id":"mikrotik-rb760igs","vendor":"MikroTik","model":"RB760iGS (hEX S)","variant":"RB760iGS (hEX S)","types":["Router"],"os":"MikroTik RouterOS","referenceVersion":"7.x; sin VRF/CAPsMAN","verifiedOn":"2026-11-14","ports":[{"name":"ether1","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"wan","assignable":true,"restriction":""},{"name":"ether2","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"ether3","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"ether4","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"ether5","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"sfp1","connector":"SFP/SFP+","media":"fiber","speedsMbps":[1000],"modes":["routed","trunk","access"],"preferred":"uplink","assignable":true,"restriction":""}],"features":{"ssh":true,"vlans":true,"interfaces":true,"ospf":true,"dhcp":true,"relay":true,"static":true,"lacp":false,"ha":false},"sources":[{"url":"https://mikrotik.com/product/hex_s","verifiedOn":"2026-11-14","evidence":"RB760iGS: cinco puertos Ethernet Gigabit y un SFP 1G; no confundir con hEX S 2025."},{"url":"https://help.mikrotik.com/docs/spaces/ROS/pages/21725296/MTU%20in%20RouterOS","verifiedOn":"2026-11-14","evidence":"Tabla de modelos/nombres: RB750Gr3 ether1..5; RB760iGS ether1..5 y sfp1; CCR2004-16G-2S+ ether1..16 y sfp-sfpplus1..2."},{"url":"https://help.mikrotik.com/docs/spaces/ROS/pages/331612216/routing+ospf","verifiedOn":"2026-11-14","evidence":"Sintaxis RouterOS 7. El adaptador conserva sus restricciones: sin VRRP, LACP, VRF ni CAPsMAN."}],"limitations":["Solo Router con el adaptador actual; no se certifica switch/SwOS aunque haya hardware de switching.","Nombres de fábrica: si se renombraron, debe contrastarse la propuesta con el equipo. Sin VRRP/LACP/VRF/CAPsMAN/IPv6 CLI.","Medio/velocidad representan compatibilidad del catálogo, no negociación física ni disponibilidad de transceptores."],"excludedHardware":[]},{"id":"mikrotik-ccr2004-16g-2splus","vendor":"MikroTik","model":"CCR2004-16G-2S+","variant":"CCR2004-16G-2S+","types":["Router"],"os":"MikroTik RouterOS","referenceVersion":"7.x; sin VRF/CAPsMAN","verifiedOn":"2026-11-14","ports":[{"name":"ether1","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"wan","assignable":true,"restriction":""},{"name":"ether2","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"ether3","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"ether4","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"ether5","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"ether6","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"ether7","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"ether8","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"ether9","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"ether10","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"ether11","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"ether12","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"ether13","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"ether14","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"ether15","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"ether16","connector":"RJ45","media":"copper","speedsMbps":[10,100,1000],"modes":["routed","trunk","access"],"preferred":"lan","assignable":true,"restriction":""},{"name":"sfp-sfpplus1","connector":"SFP/SFP+","media":"fiber","speedsMbps":[1000,10000],"modes":["routed","trunk","access"],"preferred":"uplink","assignable":true,"restriction":""},{"name":"sfp-sfpplus2","connector":"SFP/SFP+","media":"fiber","speedsMbps":[1000,10000],"modes":["routed","trunk","access"],"preferred":"uplink","assignable":true,"restriction":""}],"features":{"ssh":true,"vlans":true,"interfaces":true,"ospf":true,"dhcp":true,"relay":true,"static":true,"lacp":false,"ha":false},"sources":[{"url":"https://help.mikrotik.com/docs/spaces/UM/pages/78086248/CCR2004-16G-2S","verifiedOn":"2026-11-14","evidence":"CCR2004-16G-2S+: dieciséis RJ45 GE y dos SFP+ 10G; no variante PC."},{"url":"https://help.mikrotik.com/docs/spaces/ROS/pages/220233794/MikroTik%20wired%20interface%20compatibility","verifiedOn":"2026-11-14","evidence":"CCR2004-16G-2S+: los SFP+ pueden trabajar a 1G con óptica apropiada; transceptor no descubierto por la app."},{"url":"https://help.mikrotik.com/docs/spaces/ROS/pages/21725296/MTU%20in%20RouterOS","verifiedOn":"2026-11-14","evidence":"Tabla de modelos/nombres: RB750Gr3 ether1..5; RB760iGS ether1..5 y sfp1; CCR2004-16G-2S+ ether1..16 y sfp-sfpplus1..2."},{"url":"https://help.mikrotik.com/docs/spaces/ROS/pages/331612216/routing+ospf","verifiedOn":"2026-11-14","evidence":"Sintaxis RouterOS 7. El adaptador conserva sus restricciones: sin VRRP, LACP, VRF ni CAPsMAN."}],"limitations":["Solo Router con el adaptador actual; no se certifica switch/SwOS aunque haya hardware de switching.","Nombres de fábrica: si se renombraron, debe contrastarse la propuesta con el equipo. Sin VRRP/LACP/VRF/CAPsMAN/IPv6 CLI.","Medio/velocidad representan compatibilidad del catálogo, no negociación física ni disponibilidad de transceptores."],"excludedHardware":[]}]};
+</script>
+    <!-- CATÁLOGO_LOCAL_FIN -->
     <script>
       "use strict"; // Impide variables globales accidentales y mantiene errores visibles durante desarrollo.
       /* UI localization only. Project values, CLI and JSON never enter this catalog. */
@@ -1480,6 +1489,14 @@
         ); // Evita inyectar HTML desde nombres y JSON importados.
       Object.assign(I18N.en, {"Perfil físico inválido.": "Invalid physical profile.", "Nombre de interfaz física inválido.": "Invalid physical interface name.", "Nomenclatura física no soportada por este adaptador.": "Physical naming is not supported by this adapter.", "Indique documentación oficial del modelo y versión.": "Provide official documentation for the model and version.", "Referencia física de enlace inválida.": "Invalid physical link reference.", "Interfaz física duplicada.": "Duplicate physical interface.", "Perfil archivado no coincide con los enlaces.": "Archived profile does not match the links.", "Perfil archivado incompleto.": "Incomplete archived profile.", "AP excluido de CLI genérica: requiere modelo, firmware y administración específicos.": "AP excluded from generic CLI: specific model, firmware and management are required.", "Modelo": "Model", "Versión": "Version", "URL oficial del modelo y versión": "Official URL for the model and version"});
       Object.assign(I18N.en, {"Gestión AP":"AP management","Los nombres de interfaces son propuestas automáticas. Verifique puertos, modelo y versión antes de aplicar configuraciones a equipos físicos.":"Interface names are automatic proposals. Verify ports, model and version before applying configurations to physical devices."});
+      Object.assign(I18N.en, {"Equipo {0}: modelo desconocido o incompatible con fabricante/tipo.": "Device {0}: unknown model or incompatible vendor/type.", "Equipo {0}, modelo {1}: puertos insuficientes o tipo de enlace no soportado.": "Device {0}, model {1}: insufficient ports or unsupported link type.", "Asignación de puertos demasiado compleja; revise modelos y enlaces. No se modificó el proyecto.": "Port assignment is too complex; review models and links. The project was not changed.", "No hay asignación compatible de puertos para los modelos y enlaces seleccionados. No se modificó el proyecto.": "No compatible port assignment for the selected models and links. The project was not changed.", "Equipo {0}: puerto inexistente, reservado, duplicado o incompatible con el enlace.": "Device {0}: nonexistent, reserved, duplicate or incompatible link port.", "Equipo {0}: medio o velocidad de puertos incompatible con el otro extremo.": "Device {0}: port media or speed is incompatible with the peer.", "Modelo {0}: función {1} no respaldada por este perfil. Desactive la opción o elija otro modelo.": "Model {0}: feature {1} is not supported by this profile. Disable the option or choose another model.", "Sin modelo (modo genérico)": "No model (generic mode)", "Modelo no especificado. Los nombres de interfaces son genéricos y deben verificarse antes de aplicar la configuración": "Model not specified. Interface names are generic and must be verified before applying the configuration", "puertos catalogados": "catalogued ports", "Verificación documental": "Documentation verified", "Velocidad (Mbps)": "Speed (Mbps)", "Enlace / restricción": "Link / restriction", "Fuente oficial": "Official source", "Inventario documental; no descubre hardware, licencias, ópticas ni configuración existente.": "Documented inventory; hardware, licenses, optics and existing configurations are not discovered.", "Fabricante y modelo · catálogo local": "Vendor and model · local catalogue", "Catálogo local no disponible. Los proyectos sin modelo conservan el modo genérico.": "Local catalogue unavailable. Projects without a model keep generic mode.", "Editar fabricante y equipo": "Edit vendor and device", "Modelo e interfaces asignados automáticamente.": "Model and interfaces assigned automatically."});
+      Object.assign(I18N.en, {"Comparación: el modelo solo se aplica a su fabricante real. La otra sintaxis usa interfaces genéricas; no certifica un equipo equivalente.": "Comparison: the model only applies to its actual vendor. The other syntax uses generic interfaces; it does not certify equivalent hardware.", "Sin stack: miembro 1. No incluye módulos, consolas ni gestión OOB en los puertos asignables.": "Standalone member 1. Modules, console and out-of-band management are not included among assignable ports.", "Network Advantage es referencia declarada; la aplicación no verifica licencia, firmware ni óptica. No PoE en variante T.": "Network Advantage is the stated reference; licenses, firmware and optics are not detected. T variants do not provide PoE.", "Solo dos enlaces GE integrados, independientemente del conector combo. No se añaden NIM ni gestión OOB.": "Only two built-in GE links regardless of the combo connector. NIM and out-of-band ports are not added.", "El adaptador no implementa ROAS en este perfil: puertos usados solo para routed; no switchport en un router.": "This profile does not implement ROAS: ports are used for routed links only; no switchport commands on a router.", "Perfil de acceso L2 conservador, no disponible como core L3. No se certifican OSPF/VRRP/LACP/DHCP de este modelo con el adaptador.": "Conservative Layer 2 access profile, not offered as a Layer 3 core. OSPF/VRRP/LACP/DHCP for this model are not certified by this adapter.", "Inventario parcial: banco RJ45 numerado. Los cuatro SFP documentados se excluyen hasta completar evidencia inequívoca de nomenclatura CLI por variante.": "Partial inventory: numbered RJ45 bank. The four documented SFP ports are excluded pending unambiguous CLI naming evidence for each variant.", "Referencia sin apilamiento. No se extrapolan variantes -X, -24S ni otros sufijos.": "Standalone reference. No assumptions are extended to -X, -24S or other variants.", "4 SFP GE: hardware confirmado; nomenclatura CLI pendiente, no asignables.": "4 GE SFP ports: hardware documented; CLI naming pending, not assignable.", "Se catalogan diez puertos físicos; se asignan automáticamente solo wan1, wan2 y dmz.": "Ten physical ports are catalogued; only wan1, wan2 and dmz are assigned automatically.", "No se desmontan switches por defecto/FortiLink ni referencias existentes. Requiere revisión de configuración/puertos antes de aplicar.": "Default switches, FortiLink and existing references are not removed. Review configuration and ports before applying.", "Sin NAT/Internet/políticas permisivas implícitas; sin HA/LACP en el adaptador.": "No implicit NAT, Internet or permissive policies; no HA/LACP in this adapter.", "Miembro del switch interno por defecto: fuera del perfil autónomo conservador.": "Default internal switch member: excluded from the conservative standalone profile.", "Puerto FortiLink: no se desconfigura automáticamente.": "FortiLink port: not deconfigured automatically.", "Solo Router con el adaptador actual; no se certifica switch/SwOS aunque haya hardware de switching.": "Router only with the current adapter; switch/SwOS is not certified even when switching hardware is present.", "Nombres de fábrica: si se renombraron, debe contrastarse la propuesta con el equipo. Sin VRRP/LACP/VRF/CAPsMAN/IPv6 CLI.": "Factory names: renamed interfaces must be checked against the device. No VRRP/LACP/VRF/CAPsMAN/IPv6 CLI.", "Medio/velocidad representan compatibilidad del catálogo, no negociación física ni disponibilidad de transceptores.": "Media and speed represent catalogue compatibility, not physical negotiation or transceiver availability."});
+      Object.assign(I18N.en, {"Interfaz":"Interface","Disponible":"Available","V200, sin apilamiento (slot 0, subcard 0)":"V200, standalone (slot 0, subcard 0)","7.4.x; sin multi-VDOM":"7.4.x; no multi-VDOM","7.x; sin VRF/CAPsMAN":"7.x; no VRF/CAPsMAN","16.3.1; interfaces integradas sin NIM":"16.3.1; built-in interfaces, no NIM"});
+      Object.assign(I18N.en, {"Datos confirmados": "Details confirmed", "Datos pendientes": "Details pending", "Editar datos": "Edit details", "Fabricantes confirmados": "Manufacturers confirmed", "Fabricantes pendientes": "Manufacturers pending", "Editar fabricantes": "Edit manufacturers", "Modelos guardados en Topología": "Models saved in Topology", "Seleccione o cambie fabricante y modelo únicamente en Topología.": "Select or change vendor and model only in Topology.", "No hay ficha verificada para este fabricante y rol; cambie el rol solo si corresponde al equipo real.": "There is no verified profile for this vendor and role; only change the role when it matches the actual device.", "Comparación de cuatro fabricantes": "Four-vendor comparison", "Función de red": "Network function", "Interfaces IPv4": "IPv4 interfaces", "VLAN y enlaces LAN": "VLANs and LAN links", "Enrutamiento OSPF": "OSPF routing", "DHCP o relay": "DHCP or relay", "Administración segura": "Secure administration", "Las interfaces y máscaras proceden del modelo/enlaces; la nomenclatura no es intercambiable entre fabricantes.": "Interfaces and masks come from the model/links; vendor naming is not interchangeable.", "IOS/VRP usan switching y SVI/Vlanif; FortiOS usa interfaces VLAN y RouterOS bridge/VLAN. No son roles equivalentes.": "IOS/VRP use switching and SVI/Vlanif; FortiOS uses VLAN interfaces and RouterOS bridge/VLAN. These are not equivalent roles.", "Se compara OSPF IPv4 área 0. RouterOS 7 usa plantillas; no se afirma interoperabilidad de redundancia HSRP/VRRP.": "IPv4 OSPF area 0 is compared. RouterOS 7 uses templates; HSRP/VRRP redundancy interoperability is not claimed.", "Servidor DHCP y relay son opciones diferentes; no hay replicación de concesiones ni pools editables.": "DHCP server and relay are different options; lease replication and editable pools are not provided.", "Se compara acceso administrativo restringido. No equivale a segmentación completa ni auditoría de seguridad.": "Restricted administrative access is compared. This is not full segmentation or a security audit.", "No hay equipo real compatible de esta marca para la función seleccionada.": "No actual compatible device of this vendor is available for the selected function.", "Función desactivada en las opciones del proyecto.": "Feature disabled in project options.", "Extractos de propuestas IPv4 reales del proyecto. No son configuraciones completas para aplicar. Sin equipo o función compatible se explica la limitación.": "Excerpts from actual IPv4 project proposals. These are not complete configurations to apply. Missing devices or unsupported functions are explained.", "Sin equipo compatible": "No compatible device", "Equivalencia adicional Cisco/Huawei por rol lógico": "Additional Cisco/Huawei logical-role comparison", "Simulación: elija equipo, use help y consulte solo comandos anunciados. No existe conexión ni estado operativo real.": "Simulation: select a device, use help and run only listed commands. There is no connection or actual operational state.", "La conexión real requiere el servicio SSH local, destino autorizado y verificación de clave de host. Nunca aplica configuraciones automáticamente; credenciales solo en memoria.": "A real connection requires the local SSH service, an authorized target and host-key verification. Configurations are never applied automatically; credentials remain in memory.", "La consulta de configuración muestra una propuesta actual del proyecto, nunca el running-config de un equipo real. Interfaces, VLAN y rutas simuladas no prueban conectividad.": "The configuration query shows a current project proposal, never the running-config of an actual device. Simulated interfaces, VLANs and routes do not prove connectivity.", "Cerrar manual": "Close manual"});
+      Object.assign(I18N.en, {"Aplique el número de sedes antes de confirmar los datos.":"Apply the site count before confirming project details.","Complete los datos del proyecto antes de confirmarlos.":"Complete project details before confirming them."});
+      Object.assign(I18N.en, {"Cisco | Huawei | Fortinet | MikroTik":"Cisco | Huawei | Fortinet | MikroTik"});
+      Object.assign(I18N.en, {"Número de sedes sin cambios.":"Site count unchanged."});
+      Object.assign(I18N.en, {"Inventario físico de interfaces": "Physical interface inventory", "Equipo": "Device", "Función": "Function", "Conectado a": "Connected to", "Modo genérico": "Generic mode", "Modelo no disponible": "Model unavailable", "Sin conectar": "Not connected", "Tránsito LAN": "LAN transit", "Trunk / uplink": "Trunk / uplink", "Access": "Access", "Sin enlace": "No link", "El laboratorio no superó una validación; se conservó el proyecto anterior.": "The laboratory failed validation; the previous project was preserved.", "El laboratorio requiere un servidor con dirección privada del plan.": "The laboratory requires a server with a private address from the plan.", "Equipo {0}: no hay un modelo del catálogo con puertos suficientes para este laboratorio.": "Device {0}: no catalogue model has enough ports for this laboratory.", "Laboratorio completo validado: dos sedes, cuatro fabricantes y configuraciones listas para revisión.": "Complete laboratory validated: two sites, four vendors and configurations ready for review."});
       const steps = [
         "Resumen",
         "Datos del proyecto",
@@ -1542,6 +1559,7 @@
         selectedNode = "",
         imageData = "",
         imageMode = false; // Preferencias temporales de la interfaz.
+      let projectEditing=false, vendorsEditing=false; // Presentación temporal; confirmaciones opcionales se guardan en v4.
       let state = fresh(); // Se inicia vacío; los datos de demostración solo se cargan por acción explícita.
       function fresh() {
         return {
@@ -2045,7 +2063,7 @@
             t("Datos del proyecto"),
             t("Registre cada sede por separado. Confirme los cambios para que estimación, VLAN, direccionamiento y topología utilicen la misma información."),
           ) +
-          `<div class="notice">${t("Flujo: datos → estimación → confirmar VLAN → VLSM → topología → configuraciones. Cambiar datos confirmados invalida las etapas dependientes.")}</div><div class="card"><h2>${t("Identificación y alcance")}</h2><div class="grid">${field(t("Nombre del proyecto *"), "pname", state.project.name)}${field(t("Empresa *"), "pcompany", state.project.company)}${field(t("Actividad * (ej. clínica, educación, comercio)"), "pactivity", state.project.activity)}<div class="field"><label for="ptype">${t("Infraestructura")}</label><select id="ptype">${optsHTML(["Casa", "Oficina", "Edificio", "Campus", "Varias sedes"], state.project.type)}</select></div><div class="field"><label for="psegment">${t("Criterio de segmentación")}</label><select id="psegment">${optsHTML(["Servicios", "Departamentos"], state.project.segmentation)}</select></div>${field(t("Número de sedes (1–12)"), "sitecount", state.sites.length, "number", 'min="1" max="12"')}</div><label class="check"><input id="pinter" type="checkbox" ${state.project.interconnect ? "checked" : ""}>${t("Interconectar las sedes mediante enlaces WAN enrutados")}</label><div class="actions"><button class="primary" onclick="saveProject()">${t("Confirmar datos del proyecto")}</button><button onclick="resizeSites()">${t("Aplicar número de sedes")}</button><button onclick="demo()">${t("Cargar ejemplo de laboratorio")}</button></div></div><div class="card"><div class="sitehead"><h2>${t("Ficha individual de la sede")}</h2><div class="actions"><select class="sitecount" aria-label="${t("Sede activa")}" onchange="selectSite(+this.value)">${state.sites.map((x, i) => `<option value="${i}" ${i === selectedSite ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select><button class="danger" onclick="removeSite()">${t("Eliminar sede")}</button></div></div><div id="siteStatus" class="badge ${s.confirmed && !siteEditing.has(s.id) ? "" : "warn"}">${t(s.confirmed && !siteEditing.has(s.id) ? "Sede confirmada" : "Sede pendiente o en edición")}</div>${s.confirmed && !siteEditing.has(s.id) ? `<p>${esc(s.name)} · ${s.users} ${t("Usuarios")} · ${s.floors} ${t("Pisos")} · ${esc(s.ipv4Base || state.project.base)}</p>` : ""}<fieldset id="siteFields" ${s.confirmed && !siteEditing.has(s.id) ? "disabled" : ""}><div class="grid">${field(t("Nombre de sede *"), "sname", s.name)}${field(t("Bloque IPv4 de la sede (opcional)"), "sipv4Base", s.ipv4Base, "text", 'placeholder="10.10.0.0/16" aria-describedby="siteIpv4Help"')}${field(t("Número de pisos"), "sfloors", s.floors, "number", 'min="1" max="50"')}${field("Usuarios", "susers", s.users, "number", 'min="1" max="100000"')}${field(t("Dispositivos personales por usuario"), "sratio", s.ratio, "number", 'min="1" max="10" step="0.1"')}${field(t("Pisos más concurridos (separados por coma)"), "sbusy", s.busy)}${field(t("Áreas / departamentos (separados por coma)"), "sareas", s.areas)}${field(t("Ancho de banda Mbps (0 = sugerir)"), "sbw", s.bandwidth, "number", 'min="0" max="100000"')}</div><div class="grid" style="margin-top:16px">${[
+          `<div class="notice">${t("Flujo: datos → estimación → confirmar VLAN → VLSM → topología → configuraciones. Cambiar datos confirmados invalida las etapas dependientes.")}</div><div class="card"><h2>${t("Identificación y alcance")}</h2><p class="badge">${t(state.project.confirmed&&!projectEditing?"Datos confirmados":"Datos pendientes")}</p><fieldset id="projectFields" ${state.project.confirmed&&!projectEditing?"disabled":""}><div class="grid">${field(t("Nombre del proyecto *"), "pname", state.project.name)}${field(t("Empresa *"), "pcompany", state.project.company)}${field(t("Actividad * (ej. clínica, educación, comercio)"), "pactivity", state.project.activity)}<div class="field"><label for="ptype">${t("Infraestructura")}</label><select id="ptype">${optsHTML(["Casa", "Oficina", "Edificio", "Campus", "Varias sedes"], state.project.type)}</select></div><div class="field"><label for="psegment">${t("Criterio de segmentación")}</label><select id="psegment">${optsHTML(["Servicios", "Departamentos"], state.project.segmentation)}</select></div>${field(t("Número de sedes (1–12)"), "sitecount", state.sites.length, "number", 'min="1" max="12"')}</div><label class="check"><input id="pinter" type="checkbox" ${state.project.interconnect ? "checked" : ""}>${t("Interconectar las sedes mediante enlaces WAN enrutados")}</label></fieldset><div class="actions">${state.project.confirmed&&!projectEditing?`<button class="primary" onclick="editProject()">${t("Editar datos")}</button>`:`<button class="primary" onclick="saveProject()">${t("Confirmar datos del proyecto")}</button><button onclick="resizeSites()">${t("Aplicar número de sedes")}</button>`}<button onclick="demo()">${t("Cargar ejemplo de laboratorio")}</button></div></div><div class="card"><div class="sitehead"><h2>${t("Ficha individual de la sede")}</h2><div class="actions"><select class="sitecount" aria-label="${t("Sede activa")}" onchange="selectSite(+this.value)">${state.sites.map((x, i) => `<option value="${i}" ${i === selectedSite ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select><button class="danger" onclick="removeSite()">${t("Eliminar sede")}</button></div></div><div id="siteStatus" class="badge ${s.confirmed && !siteEditing.has(s.id) ? "" : "warn"}">${t(s.confirmed && !siteEditing.has(s.id) ? "Sede confirmada" : "Sede pendiente o en edición")}</div>${s.confirmed && !siteEditing.has(s.id) ? `<p>${esc(s.name)} · ${s.users} ${t("Usuarios")} · ${s.floors} ${t("Pisos")} · ${esc(s.ipv4Base || state.project.base)}</p>` : ""}<fieldset id="siteFields" ${s.confirmed && !siteEditing.has(s.id) ? "disabled" : ""}><div class="grid">${field(t("Nombre de sede *"), "sname", s.name)}${field(t("Bloque IPv4 de la sede (opcional)"), "sipv4Base", s.ipv4Base, "text", 'placeholder="10.10.0.0/16" aria-describedby="siteIpv4Help"')}${field(t("Número de pisos"), "sfloors", s.floors, "number", 'min="1" max="50"')}${field("Usuarios", "susers", s.users, "number", 'min="1" max="100000"')}${field(t("Dispositivos personales por usuario"), "sratio", s.ratio, "number", 'min="1" max="10" step="0.1"')}${field(t("Pisos más concurridos (separados por coma)"), "sbusy", s.busy)}${field(t("Áreas / departamentos (separados por coma)"), "sareas", s.areas)}${field(t("Ancho de banda Mbps (0 = sugerir)"), "sbw", s.bandwidth, "number", 'min="0" max="100000"')}</div><div class="grid" style="margin-top:16px">${[
             ["wifi", "WiFi"],
             ["voip", t("Telefonía IP")],
             ["cctv", t("Cámaras IP")],
@@ -2062,6 +2080,8 @@
             )}</div><div id="siteIpv4Help" class="hint">${t("Opcional: deje vacío para conservar el comportamiento heredado. Este bloque se valida y delimita la asignación VLSM automática de sus VLAN.")}</div><div class="hint">${t("La redundancia reserva un gateway virtual y dos IP físicas por VLAN. Los pisos concurridos se usan para identificar prioridad de cobertura; la cantidad de AP requiere luego un estudio RF.")}</div></fieldset><div class="actions" style="margin-top:16px">${s.confirmed && !siteEditing.has(s.id) ? `<button class="primary" onclick="editSite()">${t("Editar sede")}</button>` : `<button class="primary" onclick="saveSite()">${t("Confirmar esta sede")}</button>`}</div></div>`
         );
       }
+      /** Habilita edición sin invalidar el proyecto; confirmar valida el candidato completo. */
+      function editProject() { projectEditing=true;render(); }
       function saveProject() {
         safe(() => {
           const p = {
@@ -2069,12 +2089,19 @@
             name: text($("pname").value, "Proyecto"),
             company: text($("pcompany").value, "Empresa"),
             activity: text($("pactivity").value, "Actividad"),
-            type: $("ptype").value,
-            segmentation: $("psegment").value,
+            type: enumVal($("ptype").value,["Casa","Oficina","Edificio","Campus","Varias sedes"],"Infraestructura"),
+            segmentation: enumVal($("psegment").value,["Servicios","Departamentos"],"Segmentación"),
             interconnect: $("pinter").checked,
+            confirmed: true,
           };
-          state.project = p;
-          invalidate();
+          if(num($("sitecount").value,1,12,"Sedes")!==state.sites.length)fail(t("Aplique el número de sedes antes de confirmar los datos."));
+          // Solo estructura/segmentación/WAN afectan los cálculos; confirmar igualdad no destruye diseños.
+          const changed=["type","segmentation","interconnect"].some(k=>p[k]!==state.project[k]);
+          // El nombre aparece en cabeceras CLI; su edición no afecta redes, pero retira esos textos derivados.
+          if(p.name!==state.project.name)state.configs={};
+          state.project = p;projectEditing=false;
+          formDrafts.delete("site:"+state.sites[selectedSite]?.id);
+          if(changed)invalidate();
           render();
           toast(t("Datos confirmados. Continúe con las fichas de sede."));
         });
@@ -2082,6 +2109,9 @@
       function resizeSites() {
         safe(() => {
           const n = num($("sitecount").value, 1, 12, "Sedes");
+          if(n===state.sites.length)return toast(t("Número de sedes sin cambios.")); // Valida sin borrar el diseño y confirma el resultado al usuario.
+          // Conservar identificación pendiente al reconstruir las fichas tras un cambio real de cantidad.
+          const draft=[...$("projectFields").querySelectorAll("input,select")].map(el=>[el.id,el.value,el.checked]);
           if (
             n < state.sites.length &&
             !confirm(
@@ -2097,7 +2127,10 @@
           state.sites = state.sites.slice(0, n);
           selectedSite = 0;
           invalidate();
+          if(state.project.confirmed)state.project.confirmed=false;
           render();
+          for(const [id,value,checked] of draft){const el=$(id);if(el){el.value=value;el.checked=checked;}}
+          captureDraft();
         });
       } // Cantidad e identidad de sedes permanecen coherentes.
       function removeSite() {
@@ -3099,7 +3132,8 @@
        * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
        */
       function vendorProfilesView() {
-        return `<div class="card"><h2>${t("Fabricantes por sede y función")}</h2><p>${t("Elija cada función activa. Firewall y router secundario son opcionales y requieren recalcular tránsitos. No se inventan enlaces a Internet.")}</p>${state.sites.map((site,i) => `<h3>${esc(site.name)}</h3><div class="grid">${Object.entries(vendorRoles).map(([role,allowed]) => `<div class="field"><label for="vp${i}_${role}">${t(role)}</label><select id="vp${i}_${role}">${optsHTML(["",...allowed],vendorProfile(site)[role])}</select></div>`).join("")}</div>`).join("")}<button onclick="saveVendorProfiles()">${t("Confirmar fabricantes")}</button></div>`;
+        const locked=state.sites.every(s=>s.vendorsConfirmed)&&!vendorsEditing;
+        return `<div class="card"><h2>${t("Fabricantes por sede y función")}</h2><p class="badge">${t(locked?"Fabricantes confirmados":"Fabricantes pendientes")}</p><fieldset id="vendorFields" ${locked?"disabled":""}><p>${t("Elija cada función activa. Firewall y router secundario son opcionales y requieren recalcular tránsitos. No se inventan enlaces a Internet.")}</p>${state.sites.map((site,i) => `<h3>${esc(site.name)}</h3><div class="grid">${Object.entries(vendorRoles).map(([role,allowed]) => `<div class="field"><label for="vp${i}_${role}">${t(role)}</label><select id="vp${i}_${role}">${optsHTML(["",...allowed],vendorProfile(site)[role])}</select></div>`).join("")}</div>`).join("")}</fieldset>${locked?`<button onclick="editVendorProfiles()">${t("Editar fabricantes")}</button>`:`<button onclick="saveVendorProfiles()">${t("Confirmar fabricantes")}</button>`}</div>`;
       }
       // Validación de todas las fichas antes de guardar; cancela sin mutar.
       /**
@@ -3107,18 +3141,33 @@
        * Proceso / salida: Valida en conjunto, pide confirmación ante equipos existentes y exige recalcular si cambian tránsitos.
        * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
        */
+      /** Abrir los selectores no toca aprobación, redes ni cachés. */
+      function editVendorProfiles() { vendorsEditing=true;render(); }
       function saveVendorProfiles() {
         safe(() => {
-          const candidates=state.sites.map((site,i) => validateVendorProfile(Object.fromEntries(Object.keys(vendorRoles).map(role => [role,$(`vp${i}_${role}`).value]))));
-          const changed=state.sites.filter((site,i) => JSON.stringify(vendorProfile(site))!==JSON.stringify(candidates[i]));
-          if (changed.some(site => state.nodes.some(n => n.site===site.id)) && !confirm(t("Cambiar fabricantes invalida configuraciones afectadas. ¿Continuar?"))) return;
-          state.sites.forEach((site,i) => {
-            const old=vendorProfile(site), next=candidates[i];
-            if (old.firewall!==next.firewall || old.backupRouter!==next.backupRouter) state.approved=false;
-            site.vendorProfile=next;
-          });
-          // Las asignaciones de equipos existentes se cambian en su editor, no silenciosamente.
-          render(); toast(t("Fabricantes confirmados. Recalcule VLAN si cambió el tránsito y regenere los equipos automáticos."));
+          const candidates=state.sites.map((site,i)=>validateVendorProfile(Object.fromEntries(Object.keys(vendorRoles).map(role=>[role,$(`vp${i}_${role}`).value]))));
+          for(let i=0;i<candidates.length;i++)for(const role of ["router","core","access",...(proposal(state.sites[i]).distribution?["distribution"]:[])])if(!candidates[i][role])fail(t("Sede {0}: elija fabricante para {1}.",[state.sites[i].name,t(role)]));
+          const previous=state, candidate=structuredClone(state),affected=new Set();
+          candidate.sites.forEach((site,i)=>{site.vendorProfile=candidates[i];site.vendorsConfirmed=true;});
+          // Las marcas no son intenciones de direccionamiento: no se desconfirma VLSM por cambiarlas.
+          for(const n of candidate.nodes)if(n.autoKey&&!n.vendorOverride){
+            const role=n.autoKey.split(':')[1],brand=candidates[candidate.sites.findIndex(s=>s.id===n.site)]?.[role];
+            if(brand&&brand!==n.vendor){n.vendor=brand;validateNodeVendor(n);validateNodeModel(n);affected.add(n.id);}
+          }
+          candidate.links=assignCatalogInterfaces(candidate);validateCatalogBindings(candidate);
+          try {
+            state=candidate;
+            // Agregar una función física puede necesitar /30 nuevas; se reserva solo lo nuevo, conservando cada red anterior.
+            if(previous.approved&&initialTransits().some(r=>!candidate.plan.some(p=>p.key===r.key))){
+              const result=allocate(candidate.vlans,candidate.project.base,candidate.project.growth,initialTransits());
+              candidate.plan=[...candidate.plan,...result.filter(r=>!candidate.plan.some(old=>old.key===r.key))];
+            }
+          } finally {state=previous;}
+          if(affected.size&&!confirm(t("Cambiar fabricantes invalida configuraciones afectadas. ¿Continuar?")))return;
+          // También dependen de la marca los vecinos que referencian interfaces/roles del extremo cambiado.
+          const related=new Set(affected);candidate.links.forEach(l=>{if(affected.has(l.a)||affected.has(l.b)){related.add(l.a);related.add(l.b);}});
+          for(const key of Object.keys(candidate.configs))if([...related].some(id=>key.startsWith(id+'-')))delete candidate.configs[key];
+          state=candidate;vendorsEditing=false;render();toast(t("Fabricantes confirmados"));
         });
       }
       /**
@@ -3187,6 +3236,7 @@
               autoKey,
               name: previous?.nameOverride ? previous.name : hostname(prefix+"-"+siteCode(siteData)+"-"+String(ordinal+(role==="backupRouter"?1:0)).padStart(2,"0")),
               ...(previous?.interfaceProfiles ? {interfaceProfiles:structuredClone(previous.interfaceProfiles)}:{}),
+              ...(previous?.modelId ? {modelId:previous.modelId}:{}),
               ...(previous?.nameOverride ? {nameOverride:true}:{}),
               ...(previous?.vendorOverride ? {vendorOverride:true}:{}),
               type,
@@ -3205,6 +3255,7 @@
             const ia =
                 links.filter((l) => l.a === a.id || l.b === a.id).length + 1,
               ib = links.filter((l) => l.a === b.id || l.b === b.id).length + 1;
+            const former=oldLinks.find(l=>l.a===a.id&&l.b===b.id&&l.type===type&&l.network===key);
             links.push({
               id: oldLinks.find(l=>l.a===a.id && l.b===b.id && l.type===type && l.network===key)?.id || "l" + lid++,
               a: a.id,
@@ -3213,12 +3264,12 @@
               network: key,
               vlan,
               bundle: 0,
-              ac: "GigabitEthernet0/" + ia,
-              bc: "GigabitEthernet0/" + ib,
-              ah: "GigabitEthernet0/0/" + ia,
-              bh: "GigabitEthernet0/0/" + ib,
-              af: a.vendor==="Fortinet" ? "port"+ia : "", bf: b.vendor==="Fortinet" ? "port"+ib : "",
-              am: a.vendor==="MikroTik" ? "ether"+ia : "", bm: b.vendor==="MikroTik" ? "ether"+ib : "",
+              ac: a.modelId&&former?.ac || "GigabitEthernet0/" + ia,
+              bc: b.modelId&&former?.bc || "GigabitEthernet0/" + ib,
+              ah: a.modelId&&former?.ah || "GigabitEthernet0/0/" + ia,
+              bh: b.modelId&&former?.bh || "GigabitEthernet0/0/" + ib,
+              af: a.modelId&&former?.af || (a.vendor==="Fortinet" ? "port"+ia : ""), bf: b.modelId&&former?.bf || (b.vendor==="Fortinet" ? "port"+ib : ""),
+              am: a.modelId&&former?.am || (a.vendor==="MikroTik" ? "ether"+ia : ""), bm: b.modelId&&former?.bm || (b.vendor==="MikroTik" ? "ether"+ib : ""),
             });
           };
           const routers = [];
@@ -3365,6 +3416,7 @@
           const previous=state;
           // Validación transaccional del conjunto, incluyendo equipos manuales.
           try {
+            candidate.links=assignCatalogInterfaces(candidate);validateCatalogBindings(candidate);
             state=candidate; arrangeTopology(false);
             const blocking=topologyIssues().find(x=>x.block);
             if (blocking) fail(t(blocking.msg));
@@ -3387,7 +3439,7 @@
             t("Topología de red"),
             "El gráfico muestra sedes, equipos, VLAN y redes del plan. Arrastre un equipo para moverlo; haga clic para editarlo. Los enlaces WAN representan un laboratorio enrutado.",
           ) +
-          vendorProfilesView() + `<div class="card"><div class="actions"><button onclick="arrangeTopology()">${t("Reorganizar diagrama")}</button><button onclick="zoomTopology(1.2)">${t("Acercar")}</button><button onclick="zoomTopology(0.833333)">${t("Alejar")}</button><button class="primary" onclick="buildTopology()">${t("Generar desde el plan")}</button><button onclick="editNode()">${t("Agregar equipo")}</button><button onclick="editLink()">${t("Crear enlace")}</button><button onclick="downloadSVG()">${t("Descargar topología SVG")}</button><button ${!imageMode ? "disabled" : ""} onclick="imageMode=false;render()">${t("Vista automática")}</button><label class="filebtn" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.querySelector('input').click()}">${t("Cargar imagen")}<input type="file" class="hidden" accept="image/png,image/jpeg,image/webp" onchange="loadImage(this)"></label>${imageData ? `<button onclick="imageMode=!imageMode;render()">${t("Ver / ocultar imagen")}</button>` : ""}</div><div class="notice warn">${t("Diseño preliminar: se recomiendan")} ${state.sites.length} ${t("firewalls recomendados. El perfil permite añadirlos con enlaces de tránsito explícitos; no crea Internet, NAT ni VPN. Los terminales son representativos. La configuración de AP se completa en su controlador.")}</div>${imageData && imageMode ? `<div class="notice">${t("Interpretación asistida manual: marque equipos y enlaces con los editores usando esta imagen como referencia. El HTML local no incluye un modelo de visión ni OCR y no afirma haber reconocido dispositivos automáticamente. La imagen no se transmite a ningún servidor.")}</div><div class="imageframe"><img src="${imageData}" alt="${t("Topología importada como referencia")}"></div>` : ""}<p class="hint">${t("WAN: violeta · ROUTED: turquesa · TRUNK: naranja · ACCESS: verde discontinuo. Pase el cursor sobre un enlace para consultar su red; los detalles completos están en las tablas.")}</p><div class="diagram">${state.nodes.length ? svgTopology() : `<div class="empty">${t("Confirme el VLSM y pulse «Generar desde el plan», o agregue equipos manualmente.")}</div>`}</div></div><div class="two"><div class="card"><h2>${t("Equipos ·")} ${state.nodes.length}</h2><div class="tablewrap"><table><thead><tr><th>${t("Nombre / sede")}</th><th>${t("Tipo")}</th><th>${t("Fabricante / IP")}</th><th>${t("Acción")}</th></tr></thead><tbody>${state.nodes
+          vendorProfilesView() + catalogControls() + `<div class="card"><div class="actions"><button onclick="arrangeTopology()">${t("Reorganizar diagrama")}</button><button onclick="zoomTopology(1.2)">${t("Acercar")}</button><button onclick="zoomTopology(0.833333)">${t("Alejar")}</button><button class="primary" onclick="buildTopology()">${t("Generar desde el plan")}</button><button onclick="editNode()">${t("Agregar equipo")}</button><button onclick="editLink()">${t("Crear enlace")}</button><button onclick="downloadSVG()">${t("Descargar topología SVG")}</button><button ${!imageMode ? "disabled" : ""} onclick="imageMode=false;render()">${t("Vista automática")}</button><label class="filebtn" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.querySelector('input').click()}">${t("Cargar imagen")}<input type="file" class="hidden" accept="image/png,image/jpeg,image/webp" onchange="loadImage(this)"></label>${imageData ? `<button onclick="imageMode=!imageMode;render()">${t("Ver / ocultar imagen")}</button>` : ""}</div><div class="notice warn">${t("Diseño preliminar: se recomiendan")} ${state.sites.length} ${t("firewalls recomendados. El perfil permite añadirlos con enlaces de tránsito explícitos; no crea Internet, NAT ni VPN. Los terminales son representativos. La configuración de AP se completa en su controlador.")}</div>${imageData && imageMode ? `<div class="notice">${t("Interpretación asistida manual: marque equipos y enlaces con los editores usando esta imagen como referencia. El HTML local no incluye un modelo de visión ni OCR y no afirma haber reconocido dispositivos automáticamente. La imagen no se transmite a ningún servidor.")}</div><div class="imageframe"><img src="${imageData}" alt="${t("Topología importada como referencia")}"></div>` : ""}<p class="hint">${t("WAN: violeta · ROUTED: turquesa · TRUNK: naranja · ACCESS: verde discontinuo. Pase el cursor sobre un enlace para consultar su red; los detalles completos están en las tablas.")}</p><div class="diagram">${state.nodes.length ? svgTopology() : `<div class="empty">${t("Confirme el VLSM y pulse «Generar desde el plan», o agregue equipos manualmente.")}</div>`}</div></div><div class="two"><div class="card"><h2>${t("Equipos ·")} ${state.nodes.length}</h2><div class="tablewrap"><table><thead><tr><th>${t("Nombre / sede")}</th><th>${t("Tipo")}</th><th>${t("Fabricante / IP")}</th><th>${t("Acción")}</th></tr></thead><tbody>${state.nodes
             .map(
               (n) =>
                 `<tr><td>${esc(n.name)}<br><small>${esc(siteName(n.site))}</small></td><td>${t(n.type)}</td><td>${esc(t(n.vendor))}<br><span class="mono">${esc(
@@ -3557,7 +3609,7 @@
               y: 100,
             };
         modal(
-          `<h2>${t(id ? "Editar" : "Agregar")} ${t("equipo")}</h2><div class="grid">${field(t("Hostname *"), "nname", n.name)}<div class="field"><label>${t("Tipo")}</label><select id="ntype">${optsHTML(kinds, n.type)}</select></div><div class="field"><label>${t("Fabricante")}</label><select id="nvendor">${optsHTML(["", "Cisco", "Huawei", "Fortinet", "MikroTik", "Genérico"], n.vendor)}</select></div><div class="field"><label>${t("Sede")}</label><select id="nsite">${state.sites.map((s) => `<option value="${s.id}" ${s.id === n.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></div>${field(t("IP de gestión / endpoint (opcional)"), "nip", n.ip)}<div class="field"><label>${t("VLAN de gestión / endpoint")}</label><select id="nnetwork"><option value="">${t("Sin asignar")}</option>${state.plan
+          `<h2>${t(id ? "Editar" : "Agregar")} ${t("equipo")}</h2><div class="grid">${field(t("Hostname *"), "nname", n.name)}<div class="field"><label>${t("Tipo")}</label><select id="ntype" onchange="updateNodeModels('${id}')">${optsHTML(kinds, n.type)}</select></div><div class="field"><label>${t("Fabricante")}</label><select id="nvendor" onchange="updateNodeModels('${id}')">${optsHTML(["", "Cisco", "Huawei", "Fortinet", "MikroTik", "Genérico"], n.vendor)}</select></div><div class="field"><label for="nmodel">${t("Modelo")}</label><select id="nmodel" onchange="previewNodeModel('${id}')">${modelOptions(n.vendor,n.type,n.modelId)}</select></div><div class="field"><label>${t("Sede")}</label><select id="nsite">${state.sites.map((s) => `<option value="${s.id}" ${s.id === n.site ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></div>${field(t("IP de gestión / endpoint (opcional)"), "nip", n.ip)}<div class="field"><label>${t("VLAN de gestión / endpoint")}</label><select id="nnetwork"><option value="">${t("Sin asignar")}</option>${state.plan
             .filter((r) => r.kind === "vlan")
             .map(
               (r) =>
@@ -3565,7 +3617,7 @@
             )
             .join(
               "",
-            )}</select></div></div>${accessPoint(n)&&row(n.network)?`<p class="notice">${t("Gestión AP")}: ${esc(n.ip)} · ${t("Máscara")}: ${esc(row(n.network).mask)} · Gateway: ${esc(row(n.network).gateway)}. ${t("AP excluido de CLI genérica: requiere modelo, firmware y administración específicos.")}</p>`:""}<p>${t("Las IP de interfaces enrutadas y SVI se toman del plan. Para los equipos manuales, asigne una VLAN e IP si requieren administración. Los nombres no pueden contener comandos.")}</p><div class="actions"><button class="primary" onclick="saveNode('${id}')">${t("Confirmar equipo")}</button><button onclick="closeModal()">${t("Cancelar")}</button></div>`,
+            )}</select></div></div><div id="nodeModelInventory">${!accessPoint(n)?catalogInventory(n):''}</div>${accessPoint(n)&&row(n.network)?`<p class="notice">${t("Gestión AP")}: ${esc(n.ip)} · ${t("Máscara")}: ${esc(row(n.network).mask)} · Gateway: ${esc(row(n.network).gateway)}. ${t("AP excluido de CLI genérica: requiere modelo, firmware y administración específicos.")}</p>`:""}<p>${t("Las IP de interfaces enrutadas y SVI se toman del plan. Para los equipos manuales, asigne una VLAN e IP si requieren administración. Los nombres no pueden contener comandos.")}</p><div class="actions"><button class="primary" onclick="saveNode('${id}')">${t("Confirmar equipo")}</button><button onclick="closeModal()">${t("Cancelar")}</button></div>`,
         );
       } // Editor permite los siete atributos solicitados.
       /**
@@ -3591,12 +3643,16 @@
               if (node(id).name!==n.name) n.nameOverride=true;
             }
           }
-          validateNodeVendor(n);
+          if ($("nmodel").value) n.modelId=$("nmodel").value; else delete n.modelId;
+          validateNodeVendor(n);validateNodeModel(n);
+          const candidate={...state,nodes:id?state.nodes.map(x=>x.id===id?n:x):[...state.nodes,n],links:state.links.map(l=>({...l}))};
+          if(n.modelId&&!node(id)?.modelId)candidate.links.forEach(l=>{const side=l.a===id?'a':l.b===id?'b':'';if(side)l[side+vendorPortKey(n.vendor)]='';});
+          candidate.links=assignCatalogInterfaces(candidate);validateCatalogBindings(candidate);
           if (id && (node(id).vendor!==n.vendor || node(id).type!==n.type)) delete n.interfaceProfiles;
           if (id && node(id).vendor !== n.vendor && connected(node(id)).length) {
             // Los nombres de puerto de la marca destino deben estar completos antes del cambio.
-            for (const link of connected(node(id))) {
-              const iface=endpoint(link,n,n.vendor).iface;
+            for (const link of candidate.links.filter(l=>l.a===id||l.b===id)) {
+              const side=link.a===id?'a':'b',iface=link[side+vendorPortKey(n.vendor)];
               if (n.vendor==="Fortinet") fortinetInterfaceName(iface);
               else if (n.vendor==="MikroTik") mikrotikInterfaceName(iface);
               else interfaceName(iface);
@@ -3629,8 +3685,8 @@
           }
           if (r && r.site !== n.site)
             fail(t("VLAN y equipo deben pertenecer a la misma sede."));
-          const connected = state.links.filter((l) => l.a === id || l.b === id);
-          for (const l of connected) {
+          const nodeLinks = state.links.filter((l) => l.a === id || l.b === id);
+          for (const l of nodeLinks) {
             if (l.type === "routed" && !routed(n))
               fail(t("Quite los enlaces enrutados antes de cambiar este tipo."));
             if (
@@ -3652,8 +3708,7 @@
             ).length >= 2
           )
             fail(t("Máximo dos cores por sede."));
-          if (id) state.nodes[state.nodes.findIndex((x) => x.id === id)] = n;
-          else state.nodes.push(n);
+          state=candidate;
           invalidate("topology");
           closeModal();
           render();
@@ -3692,7 +3747,7 @@
             )
             .join("");
         modal(
-          `<h2>${t(id ? "Editar" : "Crear")} ${t("enlace")}</h2><p class="notice warn">${t("Los nombres de interfaces son propuestas automáticas. Verifique puertos, modelo y versión antes de aplicar configuraciones a equipos físicos.")}</p><div class="grid"><div class="field"><label>${t("Equipo A")}</label><select id="la">${ns(l.a)}</select></div><div class="field"><label>${t("Equipo B")}</label><select id="lb">${ns(l.b)}</select></div><div class="field"><label>${t("Tipo")}</label><select id="ltype">${optsHTML(["trunk", "access", "routed"], l.type)}</select></div><div class="field"><label>${t("Red de tránsito (routed)")}</label><select id="lnet"><option value="">${t("Asignar nueva /30 desde VLSM")}</option>${state.plan
+          `<h2>${t(id ? "Editar" : "Crear")} ${t("enlace")}</h2><p class="notice warn">${t("Los nombres de interfaces son propuestas automáticas. Verifique puertos, modelo y versión antes de aplicar configuraciones a equipos físicos.")}</p><div class="grid"><div class="field"><label>${t("Equipo A")}</label><select id="la" onchange="lockCatalogLinkFields()">${ns(l.a)}</select></div><div class="field"><label>${t("Equipo B")}</label><select id="lb" onchange="lockCatalogLinkFields()">${ns(l.b)}</select></div><div class="field"><label>${t("Tipo")}</label><select id="ltype">${optsHTML(["trunk", "access", "routed"], l.type)}</select></div><div class="field"><label>${t("Red de tránsito (routed)")}</label><select id="lnet"><option value="">${t("Asignar nueva /30 desde VLSM")}</option>${state.plan
             .filter((r) => r.kind !== "vlan")
             .map(
               (r) =>
@@ -3702,6 +3757,7 @@
               "",
             )}</select></div>${field(t("VLAN (solo access)"), "lvlan", l.vlan, "number")}${field(t("Grupo LACP (0 = sin agrupación)"), "lbundle", l.bundle, "number")}${field(t("Interfaz A · Cisco"), "lac", l.ac)}${field(t("Interfaz B · Cisco"), "lbc", l.bc)}${field(t("Interfaz A · Huawei"), "lah", l.ah)}${field(t("Interfaz B · Huawei"), "lbh", l.bh)}${field(t("Interfaz A · Fortinet (solo Firewall)"), "laf", l.af || "", "text", 'placeholder="port1"')}${field(t("Interfaz B · Fortinet (solo Firewall)"), "lbf", l.bf || "", "text", 'placeholder="port2"')}${field(t("Interfaz A · MikroTik (solo Router)"), "lam", l.am || "", "text", 'placeholder="ether1"')}${field(t("Interfaz B · MikroTik (solo Router)"), "lbm", l.bm || "", "text", 'placeholder="ether2"')}</div><div class="notice">${t("Trunk transporta las VLAN de la sede (hacia AP: gestión, WiFi e invitados). Access conecta un terminal a una VLAN. Routed utiliza /30 y OSPF. LACP requiere dos enlaces físicos entre los mismos switches con el mismo número de grupo; se usa modo activo en ambos extremos.")}</div><div class="actions"><button class="primary" onclick="saveLink('${id}')">${t("Confirmar enlace")}</button><button onclick="closeModal()">${t("Cancelar")}</button></div>`,
         );
+        lockCatalogLinkFields();
       } // Interfaces de cada fabricante se editan separadamente.
       function interfaceName(v) {
         if (
@@ -3716,7 +3772,7 @@
       } // No admite saltos de línea ni nombres de comandos.
       function saveLink(id) {
         safe(() => {
-          const l = {
+          let l = {
             id: id || "l" + Date.now(),
             a: $("la").value,
             b: $("lb").value,
@@ -3734,20 +3790,20 @@
           };
           for (const side of ["a", "b"]) {
             const value = $("l" + side + "f").value.trim();
-            if (value || fortinetNode(node(l[side]))) l[side + "f"] = fortinetInterfaceName(value);
+            if (value || (fortinetNode(node(l[side])) && !node(l[side]).modelId)) l[side + "f"] = fortinetInterfaceName(value);
           }
           for (const side of ["a", "b"]) {
             const value = $("l" + side + "m").value.trim();
-            if (value || mikrotikNode(node(l[side]))) l[side + "m"] = mikrotikInterfaceName(value);
+            if (value || (mikrotikNode(node(l[side])) && !node(l[side]).modelId)) l[side + "m"] = mikrotikInterfaceName(value);
           }
           if (l.type === "routed" && !l.network && (mikrotikNode(node(l.a)) || mikrotikNode(node(l.b))))
             fail(t("MikroTik: seleccione una /30 existente del plan; no se asigna tránsito fuera de sus pools."));
           if (l.type === "routed" && !l.network && (fortinetNode(node(l.a)) || fortinetNode(node(l.b))))
             fail(t("Fortinet: seleccione una /30 existente del plan; no se asigna tránsito fuera de sus pools."));
-          validateLink(
-            l,
-            state.links.filter((x) => x.id !== id),
-          );
+          const candidateLinks=assignCatalogInterfaces({...state,links:id?state.links.map(x=>x.id===id?l:x):[...state.links,l]});
+          l=candidateLinks.find(x=>x.id===l.id);
+          validateCatalogBindings({...state,links:candidateLinks});
+          validateLink(l,candidateLinks.filter(x=>x.id!==l.id));
           let plan = state.plan;
           if (l.type === "routed" && !l.network) {
             const base = subnet(state.project.base),
@@ -3784,8 +3840,7 @@
             });
           }
           state.plan = plan;
-          if (id) state.links[state.links.findIndex((x) => x.id === id)] = l;
-          else state.links.push(l);
+          state.links=candidateLinks;
           invalidate("topology");
           closeModal();
           render();
@@ -3841,7 +3896,8 @@
           }
         }
         for (const side of ["a", "b"])
-          for (const vendor of (mikrotikNode(node(l[side])) ? ["m"] : fortinetNode(node(l[side])) ? ["f"] : ["c", "h"])) {
+          // Con modelo solo el nombre nativo es físico; las columnas alternativas son comparación genérica.
+          for (const vendor of (node(l[side])?.modelId ? [vendorPortKey(node(l[side]).vendor)] : mikrotikNode(node(l[side])) ? ["m"] : fortinetNode(node(l[side])) ? ["f"] : ["c", "h"])) {
             const name = vendor === "m" ? mikrotikInterfaceName(l[side + vendor]) : vendor === "f" ? fortinetInterfaceName(l[side + vendor]) : l[side + vendor];
             for (const x of others) {
               if (
@@ -3966,11 +4022,183 @@
       }
       /** Resuelve los puertos del enlace por marca; no exige modelo ni confirmación manual.
        * Los nombres históricos de perfiles se usan solo para verificar archivos antiguos, nunca para CLI nueva. */
+      /* Catálogo local: no fetch, no scraping y ninguna dependencia de internet.
+       * El JSON se empaqueta como script de datos para permitir también apertura file://. */
+      const interfaceCatalog = globalThis.WAN_INTERFACE_CATALOG?.schemaVersion===1 ? globalThis.WAN_INTERFACE_CATALOG.models : [];
+      const modelById = id => interfaceCatalog.find(m=>m.id===id);
+      const vendorPortKey = vendor => ({Cisco:'c',Huawei:'h',Fortinet:'f',MikroTik:'m'})[vendor];
+      /** Filtra únicamente modelos de la marca y rol reales; AP no tiene plantilla genérica. */
+      function modelsFor(vendor,type) { return interfaceCatalog.filter(m=>m.vendor===vendor && m.types.includes(type) && type!=="Access Point"); }
+      function validateNodeModel(n) {
+        if (!n.modelId) return null;
+        const model=modelById(n.modelId);
+        if (!model || !modelsFor(n.vendor,n.type).includes(model)) fail(t("Equipo {0}: modelo desconocido o incompatible con fabricante/tipo.",[n.name]));
+        return model;
+      }
+      /** Papel derivado del enlace: no pide al usuario que declare cada puerto. */
+      function catalogPurpose(l,n,data) {
+        const peer=data.nodes.find(x=>x.id===(l.a===n.id?l.b:l.a));
+        if (l.type==='access') return 'access';
+        if (peer?.site!==n.site || (n.type==='Firewall' && l.type==='routed')) return 'wan';
+        if (l.type==='trunk') return 'uplink';
+        return n.type==='Switch capa 3'?'uplink':'lan';
+      }
+      /** Comprueba medio y velocidad común del catálogo, no negociación física.
+       * Ante un extremo genérico se elige cobre conservador; no se presupone una óptica. */
+      function catalogPair(a,b) {
+        if (!a && !b) return true;
+        if (!a || !b) return (a||b).media==='copper';
+        return a.media===b.media && a.speedsMbps.some(s=>b.speedsMbps.includes(s));
+      }
+      /** Resuelve el grafo de puertos en una copia antes de modificar el proyecto.
+       * Preserva nombres válidos, busca primero enlaces restrictivos y retrocede por
+       * clases de puerto equivalentes (evita permutar 48 puertos idénticos).
+       * Sin solución/capacidad conserva estado, DOM, planes y configuraciones previos. */
+      function assignCatalogInterfaces(data) {
+        const models=new Map(data.nodes.filter(n=>n.modelId).map(n=>[n.id,validateNodeModel(n)]));
+        if (!models.size) return data.links;
+        const links=data.links.map(l=>({...l})), used=new Map([...models.keys()].map(id=>[id,new Set()]));
+        const ends=l=>['a','b'].map(side=>({side,n:data.nodes.find(n=>n.id===l[side]),model:models.get(l[side])}));
+        const available=(l,e)=>e.model ? e.model.ports.filter(p=>p.assignable && p.modes.includes(l.type)) : [null];
+        // Fallo de capacidad rápido; nunca se inventa un índice de puerto para completar el diseño.
+        for (const [id,model] of models) {
+          const n=data.nodes.find(n=>n.id===id), attached=links.filter(l=>l.a===id||l.b===id);
+          if (attached.length>model.ports.filter(p=>p.assignable).length || attached.some(l=>!model.ports.some(p=>p.assignable&&p.modes.includes(l.type))))
+            fail(t("Equipo {0}, modelo {1}: puertos insuficientes o tipo de enlace no soportado.",[n.name,model.model]));
+        }
+        // Una asociación previa válida pertenece a su enlace: un enlace nuevo no roba ese puerto.
+        const retained=new Map([...models.keys()].map(id=>[id,new Map()]));
+        for(const l of links)for(const e of ends(l))if(e.model) {
+          const name=l[e.side+vendorPortKey(e.n.vendor)],p=available(l,e).find(p=>p.name===name);
+          const peer=ends(l).find(x=>x.side!==e.side),q=peer.model?.ports.find(p=>p.name===l[peer.side+vendorPortKey(peer.n.vendor)]);
+          if(p&&catalogPair(p,q)&&!retained.get(e.n.id).has(name))retained.get(e.n.id).set(name,l.id);
+        }
+        const options=l=>{
+          const [a,b]=ends(l), A=available(l,a),B=available(l,b);
+          return A.reduce((count,p)=>count+B.filter(q=>catalogPair(p,q)).length,0);
+        };
+        const ordered=links.filter(l=>models.has(l.a)||models.has(l.b)).sort((a,b)=>options(a)-options(b)||a.id.localeCompare(b.id,'en',{numeric:true}));
+        let attempts=0;
+        const score=(l,e,p)=>{
+          if (!p) return 0;
+          const current=l[e.side+vendorPortKey(e.n.vendor)], purpose=catalogPurpose(l,e.n,data);
+          return (p.name===current?-1000:0)+(p.preferred===purpose?-100:0)+(purpose==='uplink'&&p.media==='fiber'?-50:0);
+        };
+        const candidates=(l,e)=>{
+          if (!e.model) return [null];
+          const ports=available(l,e).filter(p=>!used.get(e.n.id).has(p.name)&&(!retained.get(e.n.id).has(p.name)||retained.get(e.n.id).get(p.name)===l.id)).sort((a,b)=>score(l,e,a)-score(l,e,b)||e.model.ports.indexOf(a)-e.model.ports.indexOf(b));
+          const classes=new Set();
+          return ports.filter(p=>{const key=JSON.stringify([p.media,p.speedsMbps,p.modes,p.preferred]);if(classes.has(key))return false;classes.add(key);return true;});
+        };
+        function solve(index) {
+          if (index===ordered.length) return true;
+          if (++attempts>30000) fail(t("Asignación de puertos demasiado compleja; revise modelos y enlaces. No se modificó el proyecto."));
+          const l=ordered[index],[a,b]=ends(l);
+          const pairs=[];
+          for(const p of candidates(l,a))for(const q of candidates(l,b))if(catalogPair(p,q))pairs.push([p,q]);
+          pairs.sort((x,y)=>score(l,a,x[0])+score(l,b,x[1])-score(l,a,y[0])-score(l,b,y[1]));
+          for (const pair of pairs) {
+            [a,b].forEach((e,i)=>{if(e.model){used.get(e.n.id).add(pair[i].name);l[e.side+vendorPortKey(e.n.vendor)]=pair[i].name;}});
+            if(solve(index+1))return true;
+            [a,b].forEach((e,i)=>{if(e.model)used.get(e.n.id).delete(pair[i].name);});
+          }
+          return false;
+        }
+        if (!solve(0)) fail(t("No hay asignación compatible de puertos para los modelos y enlaces seleccionados. No se modificó el proyecto."));
+        return links;
+      }
+      /** Valida la asignación recibida; importar no reasigna ni corrige puertos silenciosamente. */
+      function validateCatalogBindings(data) {
+        for (const n of data.nodes) {
+          const model=validateNodeModel(n);if(!model)continue;
+          const names=new Set();
+          for(const l of data.links.filter(l=>l.a===n.id||l.b===n.id)) {
+            const side=l.a===n.id?'a':'b',name=l[side+vendorPortKey(n.vendor)],p=model.ports.find(p=>p.name===name);
+            if (!p?.assignable || !p.modes.includes(l.type) || names.has(name)) fail(t("Equipo {0}: puerto inexistente, reservado, duplicado o incompatible con el enlace.",[n.name]));
+            names.add(name);
+            const peer=data.nodes.find(x=>x.id===l[side==='a'?'b':'a']),other=peer&&validateNodeModel(peer),otherName=l[(side==='a'?'b':'a')+vendorPortKey(peer?.vendor)],q=other?.ports.find(p=>p.name===otherName);
+            if(!catalogPair(p,q))fail(t("Equipo {0}: medio o velocidad de puertos incompatible con el otro extremo.",[n.name]));
+          }
+        }
+      }
+      /** No cambia las plantillas genéricas: limita las funciones para un modelo explícito.
+       * Si falta respaldo para una función activa se bloquea con causa concreta, nunca se emite CLI incorrecta. */
+      function requireCatalogReady(n,vendor) {
+        const model=n.modelId&&validateNodeModel(n);
+        if (!model || vendor!==n.vendor) return; // Comparación alternativa sigue siendo explícitamente genérica.
+        validateCatalogBindings(state);
+        const o=state.opts, isRouted=routed(n),needs={ssh:o.ssh,interfaces:o.interfaces,vlans:o.vlans&&switching(n),ospf:o.ospf&&isRouted,dhcp:o.dhcp&&isRouted,relay:o.relay&&isRouted,static:o.static&&isRouted,lacp:connected(n).some(l=>l.bundle),ha:n.type==='Switch capa 3'&&state.sites.find(s=>s.id===n.site)?.redundant};
+        for(const [feature,active] of Object.entries(needs))if(active&&!model.features[feature])fail(t("Modelo {0}: función {1} no respaldada por este perfil. Desactive la opción o elija otro modelo.",[model.model,feature]));
+      }
+      /** Opciones escapadas; un proyecto antiguo mantiene la opción genérica sin cambiar sus datos. */
+      function modelOptions(vendor,type,id='') {
+        return `<option value="">${t("Sin modelo (modo genérico)")}</option>`+modelsFor(vendor,type).map(m=>`<option value="${esc(m.id)}" ${m.id===id?'selected':''}>${esc(m.model)}</option>`).join('');
+      }
+      function catalogInventory(n) {
+        const model=n.modelId&&modelById(n.modelId);
+        if(!model)return `<p class="notice warn">${t("Modelo no especificado. Los nombres de interfaces son genéricos y deben verificarse antes de aplicar la configuración")}</p>`;
+        return `<details class="card"><summary>${esc(model.model)} · ${model.ports.length} ${t("puertos catalogados")}</summary><p>${esc(model.os)} · ${esc(t(model.referenceVersion))} · ${t("Verificación documental")}: ${esc(model.verifiedOn)}</p><p>${model.limitations.map(x=>esc(t(x))).join('<br>')}</p><div class="tablewrap"><table><thead><tr><th>${t("Interfaz")}</th><th>${t("Tipo")}</th><th>${t("Velocidad (Mbps)")}</th><th>${t("Enlace / restricción")}</th></tr></thead><tbody>${model.ports.map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.connector)}</td><td>${p.speedsMbps.join(' / ')}</td><td>${esc(p.assignable?connected(n).find(l=>endpoint(l,n,n.vendor).iface===p.name)?.id||t("Disponible"):t(p.restriction))}</td></tr>`).join('')}</tbody></table></div><ul>${model.sources.map(s=>`<li><a target="_blank" rel="noopener" href="${esc(s.url)}">${t("Fuente oficial")}</a></li>`).join('')}</ul>${model.excludedHardware.map(x=>`<p class="notice warn">${esc(t(x))}</p>`).join('')}<p>${t("Inventario documental; no descubre hardware, licencias, ópticas ni configuración existente.")}</p></details>`;
+      }
+      /** Controles comunes en Topología y cuatro vistas; fabricante se edita con el editor normal. */
+      function catalogControls(vendor='') {
+        const nodes=vendor?configNodes(vendor):state.nodes.filter(n=>!accessPoint(n)&&['Cisco','Huawei','Fortinet','MikroTik'].includes(n.vendor)&&(configurable(n)||fortinetNode(n)||mikrotikNode(n)));
+        return `<div class="card"><h2>${t("Fabricante y modelo · catálogo local")}</h2>${!interfaceCatalog.length?`<p class="notice warn">${t("Catálogo local no disponible. Los proyectos sin modelo conservan el modo genérico.")}</p>`:''}${nodes.map(n=>`<div class="card"><strong>${esc(n.name)} · ${esc(n.vendor)} · ${t(n.type)}</strong><div class="actions"><label for="model-${n.id}">${t("Modelo")}</label><select id="model-${n.id}" onchange="setNodeModel('${n.id}',this.value)">${modelOptions(n.vendor,n.type,n.modelId)}</select><button onclick="editNode('${n.id}')">${t("Editar fabricante y equipo")}</button></div>${modelsFor(n.vendor,n.type).length?"":`<p>${t("No hay ficha verificada para este fabricante y rol; cambie el rol solo si corresponde al equipo real.")}</p>`}${catalogInventory(n)}</div>`).join('')}</div>`;
+      }
+      /** Solo lectura: los cuatro adaptadores reutilizan la selección y enlaces de Topología. */
+      function catalogSavedSummary(vendor) {
+        const nodes=configNodes(vendor),generic=nodes.some(n=>!n.modelId);
+        // Cada fila representa un puerto asignado de un enlace real; no repite formularios ni todos los puertos libres.
+        const groups=nodes.map(n=>{
+          const model=n.modelId&&modelById(n.modelId),links=connected(n).slice().sort((a,b)=>a.id.localeCompare(b.id,'en',{numeric:true}));
+          const rows=links.length?links:[null];
+          return `<tbody data-device="${esc(n.id)}">${rows.map((l,i)=>{
+            const end=l&&endpoint(l,n,vendor),peer=end?.peer;
+            let role=l?l.type==='routed'?(peer?.site!==n.site?'WAN':'Tránsito LAN'):l.type==='trunk'?'Trunk / uplink':'Access':'Sin enlace';
+            if(l?.type==='access'&&state.plan.some(r=>r.site===n.site&&r.kind==='vlan'&&r.id===l.vlan&&r.role==='Gestión'))role='Gestión';
+            return `<tr data-link="${esc(l?.id||'')}">${i===0?`<th scope="rowgroup" rowspan="${rows.length}">${esc(n.name)}</th><td rowspan="${rows.length}">${esc(t(n.type))}</td><td rowspan="${rows.length}">${esc(vendor)}</td><td rowspan="${rows.length}">${esc(model?.model||t(n.modelId?'Modelo no disponible':'Modo genérico'))}</td>`:''}<td class="mono">${esc(end?.iface||'—')}</td><td>${esc(t(role))}</td><td>${esc(peer?.name||t('Sin conectar'))}</td></tr>`;
+          }).join('')}</tbody>`;
+        }).join('');
+        return `<div class="card"><h2>${t("Inventario físico de interfaces")}</h2><p>${t("Seleccione o cambie fabricante y modelo únicamente en Topología.")}</p>${!interfaceCatalog.length?`<p class="notice warn">${t("Catálogo local no disponible. Los proyectos sin modelo conservan el modo genérico.")}</p>`:''}${generic?`<p class="notice warn">${t("Modelo no especificado. Los nombres de interfaces son genéricos y deben verificarse antes de aplicar la configuración")}</p>`:''}<div class="tablewrap"><table class="physical-inventory" aria-label="${t("Inventario físico de interfaces")}"><thead><tr>${['Equipo','Tipo','Fabricante','Modelo','Interfaz','Función','Conectado a'].map(x=>`<th scope="col">${t(x)}</th>`).join('')}</tr></thead>${groups||`<tbody><tr><td colspan="7">${t("Sin equipo compatible")}</td></tr></tbody>`}</table></div></div>`;
+      }
+      /** Transacción de cambio de modelo: sin campos manuales de puertos ni asignación parcial. */
+      function setNodeModel(id,modelId) {
+        return safe(()=>{
+          const current=node(id);if(!current)fail(t("Extremo inexistente."));
+          const candidate={...state,nodes:state.nodes.map(n=>({...n})),links:state.links.map(l=>({...l}))},n=candidate.nodes.find(n=>n.id===id);
+          if(modelId)n.modelId=modelId;else delete n.modelId;
+          validateNodeModel(n);
+          // Los nombres genéricos no son asignaciones confirmadas del catálogo; al primer modelo se priorizan funciones.
+          if(modelId&&!current.modelId)candidate.links.forEach(l=>{const side=l.a===id?'a':l.b===id?'b':'';if(side)l[side+vendorPortKey(n.vendor)]='';});
+          candidate.links=assignCatalogInterfaces(candidate);validateCatalogBindings(candidate);
+          state=candidate;invalidate('topology');render();toast(t("Modelo e interfaces asignados automáticamente."));return true;
+        });
+      }
+      /** Vista previa sin mutación ni confirmación de puertos; sus nombres provienen del catálogo. */
+      function previewNodeModel(id) {
+        const n={...(node(id)||{id:'',name:''}),vendor:$('nvendor').value,type:$('ntype').value,modelId:$('nmodel').value};
+        $('nodeModelInventory').innerHTML=accessPoint(n)?'':catalogInventory(n);
+        // Al elegir modelo se muestra su inventario; la vista previa nunca guarda puertos.
+        const details=$('nodeModelInventory').querySelector('details');if(details)details.open=true;
+      }
+      /** Los puertos de un modelo se asignan; los de proyectos genéricos siguen siendo editables. */
+      function lockCatalogLinkFields() {
+        for(const side of ['a','b'])for(const suffix of ['c','h','f','m']) {
+          const el=$('l'+side+suffix),n=node($('l'+side).value);
+          if(el)el.readOnly=Boolean(n?.modelId&&vendorPortKey(n.vendor)===suffix);
+        }
+      }
+      /** Actualiza solo el selector del editor; confirmar equipo realiza la transacción completa. */
+      function updateNodeModels(id='') {
+        const vendor=$('nvendor').value,type=$('ntype').value,current=$('nmodel').value;
+        $('nmodel').innerHTML=modelOptions(vendor,type,modelsFor(vendor,type).some(m=>m.id===current)?current:'');
+        previewNodeModel(id);
+      }
+
       function endpoint(l, n, vendor) {
         const side = l.a === n.id ? "a" : "b",
           r = row(l.network);
         return {
-          iface: (archivedPhysicalNames ? n.interfaceProfiles?.[vendor]?.ports.find(p=>p.linkId===l.id)?.name : "") || l[side + (vendor === "MikroTik" ? "m" : vendor === "Fortinet" ? "f" : vendor === "Cisco" ? "c" : "h")],
+          iface: (archivedPhysicalNames && !n.modelId ? n.interfaceProfiles?.[vendor]?.ports.find(p=>p.linkId===l.id)?.name : "") || l[side + (vendor === "MikroTik" ? "m" : vendor === "Fortinet" ? "f" : vendor === "Cisco" ? "c" : "h")],
           ip: r ? (side === "a" ? r.first : r.last) : "",
           r,
           peer: node(l.a === n.id ? l.b : l.a),
@@ -4015,7 +4243,7 @@
               ? t("Propuestas para IOS / IOS XE con VLAN, SVI, OSPF y SSH. Elija equipo o genere toda la marca.")
               : t("Propuestas VRP para los equipos Huawei seleccionados. Use Comparación para equivalencias explícitas con Cisco."),
           ) +
-          configControls() +
+          configControls() + catalogSavedSummary(vendor) +
           `<div class="card"><div class="actions"><select id="confNode" aria-label="${t("Equipo a configurar")}">${nodes.map((n) => `<option value="${n.id}">${esc(n.name)} · ${esc(siteName(n.site))}</option>`).join("")}</select><button class="primary" onclick="generateSelected('${vendor}')">${t("Generar equipo")}</button><button onclick="generateAll('${vendor}')">${t("Generar todos los")} ${vendor}</button><button onclick="downloadAll('${vendor}')">${t("Descargar todos")}</button></div><div class="notice warn">${t("Configuración preliminar; ajuste interfaces y sintaxis al modelo/versión del equipo. &lt;CAMBIAR_EN_PRODUCCION&gt; exige reemplazo externo antes de aplicar. Los prompts interactivos de claves y guardado se atienden en el equipo. No se genera configuración genérica para firewall, AP, ISP, PC o servidor.")}</div>${nodes.length ? nodes.map((n) => configBlock(n, vendor)).join("") : `<div class="empty">${t("Genere una topología y asigne equipos a esta marca. Para evaluar el mismo equipo con ambas sintaxis use Comparación.")}</div>`}</div>`
         );
       }
@@ -4112,7 +4340,7 @@
           fail(t("Interfaces de switching requieren crear VLAN."));
       } // Bloqueos técnicos concretos, sin afirmar funcionalidad incompleta.
       function generate(n, vendor) {
-        excludeAccessPoint(n);
+        excludeAccessPoint(n);requireCatalogReady(n,vendor);
         if (vendor === "MikroTik") return generateMikroTik(n);
         if (vendor === "Fortinet") return generateFortinet(n);
         if (!["Cisco", "Huawei"].includes(vendor) || fortinetNode(n) || mikrotikNode(n))
@@ -4496,7 +4724,7 @@
        * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
        */
       function generateFortinet(n) {
-        excludeAccessPoint(n);
+        excludeAccessPoint(n);requireCatalogReady(n,"Fortinet");
         if (!fortinetNode(n)) fail(t("FortiOS solo admite nodos Firewall de fabricante Fortinet."));
         requireConfirmedPlan();
         hostname(n.name);
@@ -4651,7 +4879,7 @@
             ["https://docs.fortinet.com/document/fortigate/7.4.0/cli-reference/526620/config-router-ospf", "OSPF"],
             ["https://docs.fortinet.com/document/fortigate/7.4.2/cli-reference/297620", t("Restricción local-in de administración")],
           ].map(([url,label]) => `<li><a target="_blank" rel="noopener" href="${url}">${t(label)}</a></li>`).join("")}</ul></details>` +
-          `<div class="notice warn">${t("Mapee interfaces Fortinet reales en Topología y deje vacíos IP/red del nodo: se derivan del plan y de sus enlaces. Hostname e interfaces son obligatorios; rutas estáticas proceden de enlaces reales. No se crean VDOM ni se habilita multi-VDOM; las VLAN usan el contexto interno root. No se generan HA, LACP, NAT ni permisos de tránsito implícitos. OSPF usa área 0 y LAN pasivas; verifique adyacencias y rutas de retorno. Un firewall no puede reclamar gateways ya usados por cores. Las opciones compartidas de OSPF/DHCP/relay/ruta afectan a todas las marcas.")}</div>` + fortinetControls() +
+          `<div class="notice warn">${t("Mapee interfaces Fortinet reales en Topología y deje vacíos IP/red del nodo: se derivan del plan y de sus enlaces. Hostname e interfaces son obligatorios; rutas estáticas proceden de enlaces reales. No se crean VDOM ni se habilita multi-VDOM; las VLAN usan el contexto interno root. No se generan HA, LACP, NAT ni permisos de tránsito implícitos. OSPF usa área 0 y LAN pasivas; verifique adyacencias y rutas de retorno. Un firewall no puede reclamar gateways ya usados por cores. Las opciones compartidas de OSPF/DHCP/relay/ruta afectan a todas las marcas.")}</div>` + fortinetControls() + catalogSavedSummary("Fortinet") +
           `<div class="card"><div class="actions"><select id="confNode" aria-label="${t("Equipo a configurar")}">${nodes.map((n) => `<option value="${n.id}">${esc(n.name)}</option>`).join("")}</select><button class="primary" onclick="generateSelected('Fortinet')">${t("Generar equipo")}</button><button onclick="generateAll('Fortinet')">${t("Generar todos los Fortinet")}</button><button onclick="downloadAll('Fortinet')">${t("Descargar todos")}</button></div>${nodes.length ? nodes.map((n) => configBlock(n, "Fortinet")).join("") : `<div class="empty">${t("Añada un Firewall Fortinet y sus enlaces explícitos en Topología.")}</div>`}</div>`;
       }
       /* RouterOS 7.x: router de laboratorio, sin VRF/CAPsMAN ni ejecución remota. */
@@ -4734,7 +4962,7 @@
        * Seguridad: cadenas de usuario se validan o escapan; no se ejecutan CLI.
        */
       function generateMikroTik(n) {
-        excludeAccessPoint(n);
+        excludeAccessPoint(n);requireCatalogReady(n,"MikroTik");
         if (!mikrotikNode(n)) fail(t("RouterOS solo admite nodos Router de fabricante MikroTik."));
         requireConfirmedPlan();
         hostname(n.name);
@@ -4885,7 +5113,7 @@
             ["https://help.mikrotik.com/docs/spaces/ROS/pages/328513/Building+Advanced+Firewall", t("Filtrado de entrada y tránsito")],
             ["https://help.mikrotik.com/docs/spaces/ROS/pages/47579229/Scripting", t("Controles previos y sintaxis")],
           ].map(([url,label]) => `<li><a target="_blank" rel="noopener" href="${url}">${t(label)}</a></li>`).join("")}</ul></details>` +
-          `<div class="notice warn">${t("Mapee puertos MikroTik reales en Topología y deje IP/red del nodo vacíos. Solo Router; bridge/VLAN filtering para LAN, /30 para enlaces enrutados. No se modelan VRRP, LACP, VRF, CAPsMAN, IPv6 ni NAT. No reclame gateways de cores u otros routers/firewalls. SSH solo desde Gestión; MAC y servicios innecesarios deshabilitados. Sin permisos de tráfico explícitos se bloquea forward: revise políticas antes de uso. Cuentas/claves y configuración existente requieren revisión externa. Las opciones de OSPF/DHCP/relay/ruta son compartidas entre fabricantes.")}</div>` + mikrotikControls() +
+          `<div class="notice warn">${t("Mapee puertos MikroTik reales en Topología y deje IP/red del nodo vacíos. Solo Router; bridge/VLAN filtering para LAN, /30 para enlaces enrutados. No se modelan VRRP, LACP, VRF, CAPsMAN, IPv6 ni NAT. No reclame gateways de cores u otros routers/firewalls. SSH solo desde Gestión; MAC y servicios innecesarios deshabilitados. Sin permisos de tráfico explícitos se bloquea forward: revise políticas antes de uso. Cuentas/claves y configuración existente requieren revisión externa. Las opciones de OSPF/DHCP/relay/ruta son compartidas entre fabricantes.")}</div>` + mikrotikControls() + catalogSavedSummary("MikroTik") +
           `<div class="card"><div class="actions"><select id="confNode" aria-label="${t("Equipo a configurar")}">${nodes.map((n) => `<option value="${n.id}">${esc(n.name)}</option>`).join("")}</select><button class="primary" onclick="generateSelected('MikroTik')">${t("Generar equipo")}</button><button onclick="generateAll('MikroTik')">${t("Generar todos los MikroTik")}</button><button onclick="downloadAll('MikroTik')">${t("Descargar todos")}</button></div>${nodes.length ? nodes.map((n) => configBlock(n, "MikroTik")).join("") : `<div class="empty">${t("Añada un Router MikroTik y sus enlaces explícitos en Topología.")}</div>`}</div>`;
       }
 
@@ -4941,15 +5169,46 @@
         if (!item) return "";
         return `<div style="margin-top:24px"><div class="headingrow"><h3>${esc(n.name)} · ${v}</h3><div class="actions"><button class="small" onclick="copyConfig('${n.id}','${v}')">${t("Copier configuration")}</button><button class="small" onclick="downloadConfig('${n.id}','${v}')">${t("Télécharger")}</button></div></div><pre class="console">${esc(item.text)}</pre></div>`;
       } // Les sorties CLI sont affichées comme texte, jamais interprétées en HTML.
+      // Comparación didáctica: extractos de adaptadores reales, sin cambiar marca, opciones, modelos ni cachés.
+      let comparisonFunction='interfaces';
+      const comparisonFunctions={interfaces:'Interfaces IPv4',vlans:'VLAN y enlaces LAN',ospf:'Enrutamiento OSPF',dhcp:'DHCP o relay',ssh:'Administración segura'};
+      /** Recupera CLI solo de un equipo real compatible; ausencia/función desactivada no se sustituye con comandos inventados. */
+      function compareFourEntries(key) {
+        enumVal(key,Object.keys(comparisonFunctions),'Función de red');
+        const notes={
+          interfaces:'Las interfaces y máscaras proceden del modelo/enlaces; la nomenclatura no es intercambiable entre fabricantes.',
+          vlans:'IOS/VRP usan switching y SVI/Vlanif; FortiOS usa interfaces VLAN y RouterOS bridge/VLAN. No son roles equivalentes.',
+          ospf:'Se compara OSPF IPv4 área 0. RouterOS 7 usa plantillas; no se afirma interoperabilidad de redundancia HSRP/VRRP.',
+          dhcp:'Servidor DHCP y relay son opciones diferentes; no hay replicación de concesiones ni pools editables.',
+          ssh:'Se compara acceso administrativo restringido. No equivale a segmentación completa ni auditoría de seguridad.'
+        };
+        const pattern={interfaces:/interface|address|mask|switchport|portswitch/i,vlans:/vlan|bridge|switchport|trunk|pvid/i,ospf:/ospf|router-id|area|passive/i,dhcp:/dhcp|pool|excluded|relay|helper/i,ssh:/ssh|stelnet|aaa|access-class|access-list|service|trusted|local-in|input|src-address/i}[key];
+        return ['Cisco','Huawei','Fortinet','MikroTik'].map(vendor=>{
+          const nodes=configNodes(vendor).filter(n=>key==='vlans'?(switching(n)||fortinetNode(n)||mikrotikNode(n)):['ospf','dhcp'].includes(key)?routed(n):true);
+          let reason=t('No hay equipo real compatible de esta marca para la función seleccionada.');
+          const enabled=key==='dhcp'?(state.opts.dhcp||state.opts.relay):state.opts[key];
+          if(!enabled)return {vendor,reason:t('Función desactivada en las opciones del proyecto.'),text:'',note:t(notes[key])};
+          for(const n of nodes)try{
+            const cli=generate(n,vendor),text=cli.split('\n').filter(line=>pattern.test(line)).join('\n');
+            if(text)return {vendor,device:n.name,text,reason:'',note:t(notes[key])};
+          }catch(e){reason=e.message;}
+          return {vendor,reason,text:'',note:t(notes[key])};
+        });
+      }
+      /** Renderiza cuatro marcas sin fabricar un firewall equivalente a un switch ni cambiar el proyecto. */
+      function compareFourView() {
+        const rows=compareFourEntries(comparisonFunction);
+        return `<div class="card"><h2>${t('Comparación de cuatro fabricantes')}</h2><p>${t('Extractos de propuestas IPv4 reales del proyecto. No son configuraciones completas para aplicar. Sin equipo o función compatible se explica la limitación.')}</p><label for="compareFunction">${t('Función de red')}</label><select id="compareFunction" onchange="comparisonFunction=this.value;render()">${Object.entries(comparisonFunctions).map(([key,label])=>`<option value="${key}" ${key===comparisonFunction?'selected':''}>${t(label)}</option>`).join('')}</select><div class="two">${rows.map(r=>`<section class="card"><h3>${r.vendor}</h3><p>${esc(r.device||t('Sin equipo compatible'))}</p><p>${esc(r.note)}</p>${r.reason?`<p class="notice warn">${esc(r.reason)}</p>`:`<pre class="console">${esc(r.text)}</pre>`}</section>`).join('')}</div></div>`;
+      }
       function compareView() {
         const ns = state.nodes.filter(configurable);
         const n = node(selectedNode) || ns[0];
         return (
           title(
-            t("Cisco IOS | Huawei VRP"),
+            t("Cisco | Huawei | Fortinet | MikroTik"),
             t("Comparez le même rôle logique et le même adressage. Le choix du fabricant dans la topologie limite uniquement les exports par marque."),
           ) +
-          configControls() +
+          configControls() + compareFourView() + `<h2>${t("Equivalencia adicional Cisco/Huawei por rol lógico")}</h2><p class="notice warn">${t("Comparación: el modelo solo se aplica a su fabricante real. La otra sintaxis usa interfaces genéricas; no certifica un equipo equivalente.")}</p>` +
           `<div class="card"><div class="actions"><select aria-label="${t("Équipe pour comparaison")}" onchange="selectedNode=this.value;render()">${ns.map((x) => `<option value="${x.id}" ${n?.id === x.id ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select><button class="primary" onclick="generateCompare('${n?.id || ""}')">${t("Générer les deux syntaxes")}</button></div></div>${n ? `<div class="two"><div>${configBlock(n, "Cisco") || `<div class="card empty">${t("Cisco · en attente de génération")}</div>`}</div><div>${configBlock(n, "Huawei") || `<div class="card empty">${t("Huawei · en attente de génération")}</div>`}</div></div>` : `<div class="card empty">${t("Une topologie est requise.")}</div>`}`
         );
       } // Comparaison sans changer le fabricant du dispositif réel.
@@ -5423,6 +5682,8 @@
           growth: num(p.growth, 0, 100, "Crecimiento"),
           dns: ipStr(ipNum(p.dns)),
         };
+        if(p.confirmed!==undefined)out.project.confirmed=bool(p.confirmed);
+        if(out.project.confirmed&&[out.project.name,out.project.company,out.project.activity].some(x=>!x))fail(t("Complete los datos del proyecto antes de confirmarlos."));
         out.sites = src.sites.map((s) => {
           const o = {
             id: idVal(s.id),
@@ -5439,6 +5700,7 @@
           };
           // Validar tipo explícito sin inferir confirmación desde un proyecto antiguo.
           if (s.confirmed !== undefined) o.confirmed=bool(s.confirmed);
+          if(s.vendorsConfirmed!==undefined)o.vendorsConfirmed=bool(s.vendorsConfirmed);
           const profile=validateVendorProfile(s.vendorProfile);
           if (profile) o.vendorProfile=profile;
           o.busy.split(",").forEach((n) => num(n.trim(), 1, o.floors, "Piso"));
@@ -5613,6 +5875,7 @@
               ...(n.vendorOverride === undefined ? {} : {vendorOverride: bool(n.vendorOverride)}),
               ...(n.nameOverride === undefined ? {} : {nameOverride: bool(n.nameOverride)}),
               ...(n.interfaceProfiles===undefined?{}:{interfaceProfiles:structuredClone(n.interfaceProfiles)}),
+              ...(n.modelId===undefined?{}:{modelId:idVal(n.modelId)}),
               name: hostname(n.name),
               type: enumVal(n.type, kinds, "Tipo de equipo"),
               vendor: enumVal(n.vendor, ["Cisco", "Huawei", "Fortinet", "MikroTik", "Genérico"], "Fabricante"),
@@ -5622,7 +5885,7 @@
               x: num(n.x, 0, 100000, "X", false),
               y: num(n.y, 0, 100000, "Y", false),
             };
-          validateNodeVendor(o);
+          validateNodeVendor(o);validateNodeModel(o);
           if (o.vendor === "MikroTik" && !mikrotikNode(o)) fail(t("MikroTik requiere tipo Router."));
           if (o.vendor === "Fortinet" && !fortinetNode(o)) fail(t("Fortinet requiere tipo Firewall."));
           if (o.network && (!r || r.site !== o.site || r.kind !== "vlan"))
@@ -5701,6 +5964,7 @@
             if (!n.interfaceProfiles || typeof n.interfaceProfiles!=="object" || Array.isArray(n.interfaceProfiles)) fail(t("Perfil físico inválido."));
             for (const [vendor,profile] of Object.entries(n.interfaceProfiles)) validatePhysicalProfile(n,vendor,profile);
           }
+          validateCatalogBindings(out);
           checkingArchive=true;
           for (const l of out.links)
             validateLink(
@@ -5769,7 +6033,7 @@
        */
       function applyImport(data) {
         state = data.state;
-        inventoryEditing.clear(); formDrafts.clear(); siteEditing.clear(); sitePending.clear(); siteSnapshots.clear(); vlanEditing=false; sshHistory=""; sshDevice="";
+        projectEditing=false;vendorsEditing=false;inventoryEditing.clear(); formDrafts.clear(); siteEditing.clear(); sitePending.clear(); siteSnapshots.clear(); vlanEditing=false; sshHistory=""; sshDevice="";
         imageData = data.imageData;
         imageMode = false;
         selectedSite = 0;
@@ -5789,7 +6053,7 @@
           )
         ) {
           state = fresh();
-          inventoryEditing.clear(); formDrafts.clear(); siteEditing.clear(); sitePending.clear(); siteSnapshots.clear(); vlanEditing=false; sshHistory=""; sshDevice="";
+          projectEditing=false;vendorsEditing=false;inventoryEditing.clear(); formDrafts.clear(); siteEditing.clear(); sitePending.clear(); siteSnapshots.clear(); vlanEditing=false; sshHistory=""; sshDevice="";
           imageData = "";
           selectedSite = 0;
           page = 1;
@@ -5802,18 +6066,24 @@
        * No sobrescribe localStorage ni preferencias de idioma.
        */
       function demo() {
-        if (
-          !confirm(
-            t("¿Reemplazar el proyecto por un ejemplo ficticio de laboratorio de dos sedes?"),
-          )
-        )
-          return;
-        state = fresh();
-        // Un laboratorio nuevo no hereda borradores del proyecto sustituido.
-        inventoryEditing.clear(); formDrafts.clear(); siteEditing.clear(); sitePending.clear(); siteSnapshots.clear(); vlanEditing=false; sshHistory=""; sshDevice="";
+        if(!confirm(t("¿Reemplazar el proyecto por un ejemplo ficticio de laboratorio de dos sedes?")))return;
+        // La sustitución es transaccional: un catálogo incompleto o cualquier validación fallida restaura proyecto y borradores.
+        captureDraft();
+        const backup={state,selectedSite,selectedNode,page,imageData,imageMode,projectEditing,vendorsEditing,vlanEditing,sshHistory,sshDevice,
+          formDrafts:structuredClone(formDrafts),inventoryEditing:new Set(inventoryEditing),siteEditing:new Set(siteEditing),sitePending:new Set(sitePending),siteSnapshots:new Map(siteSnapshots)};
+        const step=(action,valid)=>{
+          $("toast").classList.remove('error');action();
+          if($("toast").classList.contains('error'))fail($("toast").textContent);
+          if(!valid())fail(t("El laboratorio no superó una validación; se conservó el proyecto anterior."));
+        };
+        return safe(()=>{try {
+          state=fresh();projectEditing=false;vendorsEditing=false;vlanEditing=false;
+          inventoryEditing.clear();formDrafts.clear();siteEditing.clear();sitePending.clear();siteSnapshots.clear();sshHistory="";sshDevice="";
         state.project = {
           ...state.project,
-          name: "WAN · Laboratorio Corte 2",
+          name: "WAN · Laboratorio de cuatro fabricantes",
+          transitBase: "10.250.0.0/24",
+          dns: "192.168.32.10",
           company: "Empresa de ejemplo",
           activity: "Clínica ambulatoria (laboratorio)",
           type: "Varias sedes",
@@ -5822,6 +6092,7 @@
           {
             ...siteDefault(1),
             name: "Sede asistencial",
+            ipv4Base: "192.168.32.0/21",
             floors: 3,
             users: 100,
             busy: "1,2",
@@ -5834,6 +6105,7 @@
           {
             ...siteDefault(2),
             name: "Sede administrativa",
+            ipv4Base: "172.16.64.0/21",
             floors: 2,
             users: 45,
             busy: "1",
@@ -5842,11 +6114,43 @@
             cctv: true,
           },
         ];
-        selectedSite = 0;
-        imageData = "";
-        render();
-        toast(t("Ejemplo cargado; datos ficticios, editables."));
-      } // Nunca presenta valores de laboratorio como datos de la organización real.
+          for(const site of state.sites)site.vendorProfile={router:'MikroTik',core:'Cisco',distribution:'Huawei',access:'Huawei',firewall:'Fortinet',backupRouter:''};
+          selectedSite=0;selectedNode="";imageData="";imageMode=false;page=1;render();
+          // Las banderas de confirmación proceden de los mismos validadores usados por los botones reales.
+          step(()=>saveProject(),()=>state.project.confirmed===true);
+          for(let i=0;i<state.sites.length;i++){selectedSite=i;render();step(()=>saveSite(),()=>state.sites[i].confirmed===true);}
+          page=2;render();for(let i=0;i<state.sites.length;i++)step(()=>saveCounts(i),()=>state.sites[i].counts!==null);
+          step(()=>proposeVlans(),()=>state.vlans.length>0);
+          step(()=>confirmVlans(),()=>confirmedPlan());
+          page=5;render();step(()=>saveVendorProfiles(),()=>state.sites.every(site=>site.vendorsConfirmed));
+          step(()=>buildTopology(),()=>state.nodes.length>0&&state.links.length>0);
+          // DNS privado del servidor realmente asignado: se confirma sin mover redes ni inventar una dirección operativa.
+          const server=state.nodes.find(n=>n.type==='Servidor'&&n.ip);
+          if(!server)fail(t("El laboratorio requiere un servidor con dirección privada del plan."));
+          page=3;render();$("dns").value=server.ip;step(()=>confirmVlans(),()=>confirmedPlan()&&state.project.dns===server.ip);
+          // Elegir el menor inventario documentado que cubra rol y enlaces; el asignador valida medios, velocidades y unicidad.
+          for(const n of state.nodes.filter(n=>configurable(n)||fortinetNode(n)||mikrotikNode(n))){
+            const links=connected(n),options=modelsFor(n.vendor,n.type).filter(m=>m.ports.filter(p=>p.assignable).length>=links.length&&links.every(l=>m.ports.some(p=>p.assignable&&p.modes.includes(l.type))))
+              .sort((a,b)=>a.ports.filter(p=>p.assignable).length-b.ports.filter(p=>p.assignable).length||a.id.localeCompare(b.id));
+            if(!options.length)fail(t("Equipo {0}: no hay un modelo del catálogo con puertos suficientes para este laboratorio.",[n.name]));
+            n.modelId=options[0].id;validateNodeModel(n);
+            for(const l of links)l[(l.a===n.id?'a':'b')+vendorPortKey(n.vendor)]='';
+          }
+          state.links=assignCatalogInterfaces(state);validateCatalogBindings(state);
+          // Generación real de las cuatro marcas; ninguna plantilla ni confirmación se sustituye con texto simulado.
+          for(const [vendor,index] of [['Cisco',6],['Huawei',7],['Fortinet',8],['MikroTik',9]]){
+            page=index;render();step(()=>generateAll(vendor),()=>configNodes(vendor).length>0&&configNodes(vendor).every(n=>state.configs[n.id+'-'+vendor]?.revision===state.revision));
+          }
+          validateImport({state,imageData:""}); // Verificar también que el laboratorio completo se pueda guardar y recuperar.
+          selectedSite=0;page=1;render();toast(t("Laboratorio completo validado: dos sedes, cuatro fabricantes y configuraciones listas para revisión."));
+        }catch(error){
+          state=backup.state;selectedSite=backup.selectedSite;selectedNode=backup.selectedNode;page=backup.page;imageData=backup.imageData;imageMode=backup.imageMode;
+          projectEditing=backup.projectEditing;vendorsEditing=backup.vendorsEditing;vlanEditing=backup.vlanEditing;sshHistory=backup.sshHistory;sshDevice=backup.sshDevice;
+          for(const [target,source] of [[formDrafts,backup.formDrafts],[siteSnapshots,backup.siteSnapshots]]){target.clear();for(const [k,v] of source)target.set(k,v);}
+          for(const [target,source] of [[inventoryEditing,backup.inventoryEditing],[siteEditing,backup.siteEditing],[sitePending,backup.sitePending]]){target.clear();for(const value of source)target.add(value);}
+          render();throw error;
+        }});
+      } // No modifica localStorage ni redes de otros proyectos; cancelar no toca estado ni DOM.
       function downloadPlan() {
         const head = [
           "Sede",
@@ -5935,10 +6239,14 @@
         const n=sshSelected(), real=sshMode==="real",
           service=location.hostname==="127.0.0.1" && location.protocol==="http:" && !!document.querySelector('meta[name="wan-ssh-service"]');
         const select=`<select id="sshDevice" onchange="sshChooseDevice(this.value)"><option value="">${t("Conexión manual / seleccione equipo")}</option>${state.nodes.map(n=>`<option value="${esc(n.id)}" ${n.id===sshDevice?"selected":""}>${esc(n.name)} · ${esc(n.vendor)}</option>`).join("")}</select>`;
-        return title(t("Consola SSH"),t("Simulación educativa y conexión real son independientes. Nunca se aplican configuraciones automáticamente."))+`<p><a href="docs/manual-ssh.md" target="_blank" rel="noopener">${t("Manual de consola SSH")}</a></p>`+
+        return title(t("Consola SSH"),t("Simulación educativa y conexión real son independientes. Nunca se aplican configuraciones automáticamente."))+`<p><button onclick="showSSHManual()">${t("Manual de consola SSH")}</button></p>`+
           `<div class="card"><div class="actions" role="tablist" aria-label="${t("Modalidad SSH")}"><button role="tab" aria-selected="${!real}" onclick="sshTab('simulation')">${t("Simulación")}</button><button role="tab" aria-selected="${real}" onclick="sshTab('real')">${t("Conexión real")}</button></div><div class="field"><label for="sshDevice">${t("Dispositivo de la topología")}</label>${select}</div>${n?`<p>${esc(n.name)} · ${esc(n.vendor)} · ${t(n.type)}</p><p class="mono">${esc(connected(n).map(l=>endpoint(l,n,n.vendor).iface||"—").join(" · "))}</p>`:""}
           ${real ? `<div class="notice">${t("La conexión manual no requiere VLSM. Use únicamente equipos autorizados. Cambiar idioma, pestaña o módulo cierra la sesión; no se guarda el historial real.")}</div><div id="sshService" class="notice ${service?"":"warn"}">${t(service?"Servicio local disponible":"Servicio no disponible: inicie Python y abra http://127.0.0.1:8765 (o el puerto configurado).")}</div><div class="grid">${field(t("IP o hostname autorizado"),"sshHost",sshManagementAddress(n))}${field(t("Puerto SSH"),"sshPort",22,"number",'min="1" max="65535"')}${field(t("Usuario SSH"),"sshUser","")}<div class="field"><label for="sshMethod">${t("Autenticación")}</label><select id="sshMethod" onchange="sshAuthMethod()"><option value="password">${t("Contraseña")}</option><option value="key">${t("Clave privada")}</option></select></div><div id="sshPasswordBox" class="field"><label for="sshPassword">${t("Contraseña")}</label><input id="sshPassword" type="password" maxlength="1024" autocomplete="off"></div><div id="sshKeyBox" class="field hidden"><label for="sshPrivateKey">${t("Clave privada (solo memoria)")}</label><textarea id="sshPrivateKey" maxlength="32768" autocomplete="off" spellcheck="false"></textarea><label for="sshPassphrase">${t("Frase de clave (opcional)")}</label><input id="sshPassphrase" type="password" maxlength="1024" autocomplete="off"></div></div><label class="check"><input type="checkbox" id="sshAuthorization">${t("Autorizo esta conexión al destino configurado en mi servicio local")}</label><p>${t("Si falta IP de gestión explícita, introdúzcala manualmente. No use una IP WAN o gateway como administración sin verificarla.")}</p><div class="actions"><button class="primary" id="sshConnect" ${service?"":"disabled"} onclick="sshConnect()">${t("Conectar")}</button><button id="sshDisconnect" disabled onclick="sshDisconnect()">${t("Desconectar")}</button><button id="sshRealClear" disabled onclick="sshClearReal()">${t("Limpiar consola")}</button></div><p id="sshConnectionStatus" role="status">${t(sshLabels[sshStatusCode]||sshLabels.disconnected)}</p><div id="sshTerminal" class="ssh-terminal" aria-label="${t("Terminal SSH real")}"></div>`
           : `<div class="notice warn">${t("SIMULACIÓN: no existe conexión SSH ni acceso a equipos. Respuestas derivadas del proyecto, no del sistema operativo del dispositivo.")}</div>${!confirmedPlan()?`<p class="notice warn">${t("Plan no confirmado: confirme VLAN/VLSM para consultar datos simulados.")}</p>`:""}<p>${t("Comandos soportados")}: ${esc(sshCommands(n).join(" · "))}</p><pre id="sshSimulation" class="ssh-terminal" role="log" aria-label="${t("Terminal simulada")}">${esc(sshHistory)}</pre><label for="sshCommand">${t("Comando simulado")}</label><div class="actions"><input id="sshCommand" class="mono" maxlength="500" onkeydown="if(event.key==='Enter'){event.preventDefault();sshRunSimulation()}"><button onclick="sshRunSimulation()">${t("Enviar comando")}</button><button id="sshSimClear" ${sshHistory?"":"disabled"} onclick="sshClearSimulation()">${t("Limpiar consola")}</button><button onclick="sshResetSimulation()">${t("Reiniciar simulación")}</button></div>`}</div>`;
+      }
+      /** Manual seguro embebido: no fetch, popup, Markdown remoto ni dependencia del servicio real. */
+      function showSSHManual() {
+        modal(`<h2>${t("Manual de consola SSH")}</h2><p>${t("Simulación: elija equipo, use help y consulte solo comandos anunciados. No existe conexión ni estado operativo real.")}</p><div class="tablewrap"><table><thead><tr><th>${t("Fabricante")}</th><th>${t("Comandos soportados")}</th></tr></thead><tbody>${['Cisco','Huawei','Fortinet','MikroTik'].map(v=>`<tr><td>${v}</td><td><code>${esc(sshCommands({vendor:v}).join(' · '))}</code></td></tr>`).join('')}</tbody></table></div><p>${t("La conexión real requiere el servicio SSH local, destino autorizado y verificación de clave de host. Nunca aplica configuraciones automáticamente; credenciales solo en memoria.")}</p><p>${t("La consulta de configuración muestra una propuesta actual del proyecto, nunca el running-config de un equipo real. Interfaces, VLAN y rutas simuladas no prueban conectividad.")}</p><button onclick="closeModal()">${t("Cerrar manual")}</button>`);
       }
       /** Selección no sensible; n.ip solo se considera administración si pertenece a Gestión. */
       function sshChooseDevice(id) { sshDevice=state.nodes.some(n=>n.id===id)?id:"";sshHistory="";render(); }
@@ -5951,7 +6259,8 @@
       }
       /** Resuelve una consulta de lectura: no interpreta programas ni envía red. */
       function sshRunSimulation() {
-        const command=$("sshCommand").value.trim(), n=sshSelected();$("sshCommand").value="";
+        // Normalizar solo lectura de simulación; nunca se cambia un comando enviado al SSH real.
+        const raw=$("sshCommand").value, n=sshSelected(), command=raw.trim().replace(/\s+/g,' ').toLowerCase();$("sshCommand").value="";
         let output;
         if (command==="help"||command==="?") output=sshCommands(n).join("\n");
         else if (!n) output=t("Seleccione un dispositivo para simular.");
@@ -5959,10 +6268,16 @@
         else if (!confirmedPlan()) output=t("Plan no confirmado: confirme VLAN/VLSM para consultar datos simulados.");
         else if (["show running-config","display current-configuration","show","/export"].includes(command)) {
           const item=state.configs[n.id+"-"+n.vendor];
-          output=item?.revision===state.revision?item.text:t("Genere primero la configuración de este equipo en su módulo.");
+          // Consulta de solo lectura: generar una propuesta actual no guarda caché ni ejecuta CLI remota.
+          try {output=item?.revision===state.revision?item.text:generate(n,n.vendor);}catch(e){output=e.message;}
         } else if (/vlan$|vlan brief$/.test(command)) output=state.plan.filter(r=>r.kind==="vlan"&&r.site===n.site).map(r=>`VLAN ${r.id} ${r.name} ${r.network}/${r.prefix}`).join("\n");
         else if (/route|routing-table/.test(command)) output=t("Inventario del plan; no es una tabla de rutas aprendidas.")+"\n"+state.plan.map(r=>`${r.network}/${r.prefix} ${r.name}`).join("\n");
-        else output=connected(n).map(l=>{const e=endpoint(l,n,n.vendor);return `${e.iface||"—"} ${e.ip||n.ip||"—"} ${l.type}`;}).join("\n");
+        else {
+          const lines=connected(n).map(l=>{const e=endpoint(l,n,n.vendor);return `${e.iface||"—"} ${e.ip||n.ip||"—"} ${l.type}`;});
+          // Los cores también poseen interfaces virtuales del plan, no solamente /30 físicas.
+          if(n.type==='Switch capa 3')for(const r of state.plan.filter(r=>r.kind==='vlan'&&r.site===n.site))lines.push(`${n.vendor==='Huawei'?'Vlanif':'Vlan'}${r.id} ${coreAddress(n,r)} /${r.prefix}`);
+          output=lines.join("\n");
+        }
         sshHistory=(sshHistory+"\n"+t("SIMULACIÓN")+" "+(n?.name||"WAN")+"> "+command+"\n"+output+"\n").slice(-40000);
         $("sshSimulation").textContent=sshHistory;$("sshSimClear").disabled=false;$("sshSimulation").scrollTop=$("sshSimulation").scrollHeight;
       }

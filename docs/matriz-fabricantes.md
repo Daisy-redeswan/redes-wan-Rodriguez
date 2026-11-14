@@ -1,5 +1,31 @@
 # Matriz de fabricantes de WAN Architect
 
+## Laboratorio mixto e inventario de configuración
+
+El ejemplo público usa Cisco C9200L-24T-4G como core L3, Huawei S5700-28P-LI-AC como acceso L2, FortiGate 60F como firewall y MikroTik RB750Gr3 como router. Su número de enlaces cabe en puertos catalogados; Huawei no se convierte en core ni se utilizan sus SFP no verificados. El constructor prueba las propuestas con los cuatro adaptadores existentes y revierte si algo no es compatible. Capacidad y entradas privadas: [manual](manual.md).
+
+Cada vista de configuración presenta una tabla única de equipos/modelos/interfaces/funciones/vecinos desde el estado guardado en Topología, antes de la CLI. Los proyectos sin modelo conservan Modo genérico. No se investigan ni añaden nuevos puertos/modelos en esta tarea; las doce fichas y fuentes oficiales permanecen intactas. Validación textual y de proyecto, nunca certificación física. Resultados actuales: [pruebas](pruebas.md).
+
+## Flujo vigente del PR #11: selección y comparación
+
+Fabricante/modelo se seleccionan **exclusivamente en Topología/editor de equipo**. Los cuatro módulos CLI recuperan modelos y puertos guardados; no piden otra selección ni confirmación física. Las doce fichas oficiales no cambian. El HTML contiene su copia generada y no depende de archivos data/ durante ejecución; JSON/JS se mantienen como fuente y paquete de datos verificable.
+
+La comparación incorpora interfaces IPv4, VLAN/LAN, OSPF, DHCP/relay y administración para las cuatro marcas, usando extractos de adaptadores/equipos reales. Si falta un equipo/función compatible muestra el motivo, sin convertir roles ni fabricar comandos. Se conserva la equivalencia IOS/VRP adicional cuando es válida. La simulación usa listas de lectura propias por marca y no ejecuta CLI. AP sigue excluido de los cuatro generadores genéricos. Resultados y límite file://: [pruebas vigentes](pruebas.md); comportamiento: [manual](manual.md).
+
+Las secciones siguientes conservan el historial del primer catálogo y adaptadores; esta sección gobierna la ubicación actual de selección/modelos y comparación. La validación de hardware sigue pendiente.
+
+## Catálogo local de interfaces: estado vigente
+
+Base `6466c9494cefdb5423d95e1bc04175304a4e248d`, rama `feature/catalogo-interfaces-fabricantes`. Verificación documental y pruebas: **14 de noviembre de 2026**. Se incorporan doce fichas, tres por fabricante, contrastadas con fuentes oficiales y límites explícitos en [catálogo de modelos](catalogo-modelos.md). No es certificación física.
+
+**Implementado:** selección fabricante/modelo filtrada por tipo en el editor normal y selección de modelo en Topología/configuración; inventario local, asignación determinista de puertos por enlace/medio/velocidad, conservación de nombres válidos, bloqueo de capacidad/roles/funciones incompatibles y validación de importaciones. No se pide escribir interfaces, versión ni URL. Los cuatro adaptadores leen nombres reales de los enlaces para el modelo elegido. Huawei LI incluye solo banco RJ45 verificado; Fortinet reserva switch interno y FortiLink. No hay consultas de red durante uso normal.
+
+**Confirmado por pruebas:** 73 casos anteriores + 23 casos K01–K23 = **96/96 aplicación**; **26/26 SSH local**, total **122/122 = 100%** del conjunto ejecutado, 0 fallidas/bloqueadas/no ejecutadas dentro de las matrices. Reportes reales: [aplicación](../tests/reporte-catalogo.html) y [SSH](../tests/reporte-catalogo-ssh.json). Se conservan las ocho comparaciones exactas de CLI (cuatro marcas × ES/EN) para proyectos sin modelo, los 99 casos previos, IPv4/IPv6, JSON v2/v3/v4 y exclusión CLI de AP. Datos ficticios, contextos limpios, HTTP local y SSH real exclusivamente loopback; no se aplica CLI.
+
+**Persistencia:** `nodes[].modelId` es una extensión opcional de v4; ausencia conserva comportamiento genérico y aviso de modelo no especificado. Las interfaces permanecen en campos de enlaces existentes. La carga valida sin reasignar; no cambia versión, migración, claves locales, planes, IP ni configuración SSH. La ruta fija del servicio SSH opcional sirve solo el script local del catálogo.
+
+**Pendiente/límites:** comprobar equipos reales, firmware/licencias, transceptores, puertos renombrados y configuración previa. SFP Huawei excluidos hasta completar nomenclatura por variante. No se amplían los adaptadores a roles/funciones no respaldados, IPv6 CLI ni pools/reservas editables. Revisión visual 1440/390 px satisfactoria; `file://` fue bloqueado por política del navegador del entorno y se declara como una exploración bloqueada aparte, no como caso superado. El modo sin internet se verificó mediante HTTP local con la red del contexto desactivada. Los apartados siguientes conservan evidencia histórica, no sustituyen este resultado.
+
 ## Actualización del PR #10: generación automática y AP
 
 La generación vuelve a usar automáticamente los puertos de enlaces `ac/bc/ah/bh/af/bf/am/bm`, seleccionados por fabricante a través de `endpoint()`. **No exige perfil, modelo, versión, URL ni confirmación física adicional.** La revisión de nombres/modelo/versión antes de aplicar configuraciones se mantiene como advertencia visual; no certifica inventario físico. Los perfiles v4 previos se preservan como metadatos y para restaurar CLI archivadas canónicas, sin dirigir la generación nueva.

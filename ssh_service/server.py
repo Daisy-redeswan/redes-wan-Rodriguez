@@ -335,6 +335,11 @@ def create_app(config, state_dir=DEFAULT_STATE):
         """Documento local explícito; no expone un directorio arbitrario."""
         return web.Response(text=(ROOT/"docs/manual-ssh.md").read_text(encoding="utf-8"), content_type="text/plain")
 
+    async def interface_catalog(request):
+        """Un único recurso de datos local; no admite rutas ni nombres suministrados por el cliente."""
+        return web.FileResponse(ROOT / "data" / "catalogo-interfaces.js")
+
+    app.router.add_get("/data/catalogo-interfaces.js", interface_catalog)
     app.router.add_get("/favicon.ico", favicon)
     app.router.add_get("/docs/manual-ssh.md", manual)
     app.router.add_get("/ssh_service/static/{name}", asset)

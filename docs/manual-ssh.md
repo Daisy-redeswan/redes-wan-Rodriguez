@@ -1,5 +1,11 @@
 # Manual de consola SSH
 
+## Manual integrado y consultas vigentes del PR #11
+
+El botón **Manual de consola SSH** abre un diálogo dentro de WAN Architect, disponible en ES/EN y sin iniciar Python, abrir Markdown ni consultar internet. Esta página conserva el detalle de instalación y seguridad de la conexión real.
+
+La simulación exige seleccionar un equipo; `help` funciona también sin selección y lista únicamente comandos de la marca. Se aceptan espacios repetidos y mayúsculas en comandos de lectura, sin cambiar las reglas del SSH real. Las consultas de configuración muestran el texto vigente guardado o una propuesta actual calculada sin guardarla; no solicitan generación previa en otro módulo. El rótulo SIMULACIÓN identifica siempre que no es una sesión ni un running-config real. Los cores muestran además interfaces Vlan/Vlanif del plan. Comandos ajenos o de escritura no se interpretan ni ejecutan.
+
 ## Dos modalidades sin confusión
 
 **Simulación** funciona en WAN_v4.html sin Python, internet o acceso a dispositivos. **Conexión real** requiere iniciar el [servicio opcional](../ssh_service/README.md) y abrir la aplicación por su HTTP local. Ninguna selección de equipo, simulación, generación, copia o limpieza aplica configuraciones.
@@ -18,7 +24,7 @@ Un error conserva el último estado/plan y lo escrito, muestra pendiente y enfoc
 
 1. Seleccionar un equipo de la topología y revisar nombre, marca, rol e interfaces.
 2. Escribir `help` y Enter para conocer **la lista cerrada soportada**.
-3. Consultar la configuración que ya se generó para ese equipo. Si falta o está obsoleta, se pide generarla en su módulo: no se inventa texto.
+3. Consultar la propuesta de configuración actual del proyecto. Se usa la CLI vigente guardada o el adaptador real en modo de solo lectura; si el proyecto/rol no es compatible se explica el bloqueo. No representa el running-config de un equipo físico.
 4. Consultar interfaces/VLAN del proyecto o inventario de redes. Este último no representa rutas aprendidas, ping, conectividad ni estado operativo real.
 5. **Limpiar consola** borra el buffer; **Reiniciar simulación** limpia entrada/buffer y confirma la acción. Reemplazar el proyecto limpia la selección y el historial educativo anterior.
 

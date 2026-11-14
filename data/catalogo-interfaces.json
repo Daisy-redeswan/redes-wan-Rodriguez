@@ -1,0 +1,4733 @@
+{
+  "schemaVersion": 1,
+  "verifiedOn": "2026-11-14",
+  "models": [
+    {
+      "id": "cisco-c9200l-24t-4g",
+      "vendor": "Cisco",
+      "model": "C9200L-24T-4G",
+      "variant": "C9200L-24T-4G",
+      "types": [
+        "Switch",
+        "Switch capa 3"
+      ],
+      "os": "Cisco IOS XE",
+      "referenceVersion": "17.11.x; Network Advantage; standalone switch 1",
+      "verifiedOn": "2026-11-14",
+      "ports": [
+        {
+          "name": "GigabitEthernet1/0/1",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/2",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/3",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/4",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/5",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/6",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/7",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/8",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/9",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/10",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/11",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/12",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/13",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/14",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/15",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/16",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/17",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/18",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/19",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/20",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/21",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/22",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/23",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/24",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/1/1",
+          "connector": "SFP/SFP+",
+          "media": "fiber",
+          "speedsMbps": [
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "uplink",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/1/2",
+          "connector": "SFP/SFP+",
+          "media": "fiber",
+          "speedsMbps": [
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "uplink",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/1/3",
+          "connector": "SFP/SFP+",
+          "media": "fiber",
+          "speedsMbps": [
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "uplink",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/1/4",
+          "connector": "SFP/SFP+",
+          "media": "fiber",
+          "speedsMbps": [
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "uplink",
+          "assignable": true,
+          "restriction": ""
+        }
+      ],
+      "features": {
+        "ssh": true,
+        "vlans": true,
+        "interfaces": true,
+        "ospf": true,
+        "dhcp": true,
+        "relay": true,
+        "static": true,
+        "lacp": true,
+        "ha": true
+      },
+      "sources": [
+        {
+          "url": "https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9200/hardware/install/b-c9200-hig/product_overview.html",
+          "verifiedOn": "2026-11-14",
+          "evidence": "C9200L-24T-4G y -48T-4G: puertos de acceso GE y cuatro uplinks SFP GE fijos."
+        },
+        {
+          "url": "https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9200/software/release/17-11/configuration_guide/int_hw/b_1711_int_and_hw_9200_cg/configuring_interface_characteristics.html",
+          "verifiedOn": "2026-11-14",
+          "evidence": "Standalone 1; downlinks módulo 0, uplinks módulo 1; nombres y switching/routed de IOS XE."
+        },
+        {
+          "url": "https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9200/software/release/17-11/configuration_guide/ip/b_1711_ip_9200_cg.html",
+          "verifiedOn": "2026-11-14",
+          "evidence": "DHCP, relay y HSRP; verificar licencia/versión antes de aplicar."
+        },
+        {
+          "url": "https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9200/software/release/17-11/configuration_guide/rtng/b_1711_rtng_9200_cg.pdf",
+          "verifiedOn": "2026-11-14",
+          "evidence": "Familia de comandos IPv4/OSPF; referencia con Network Advantage."
+        }
+      ],
+      "limitations": [
+        "Sin stack: miembro 1. No incluye módulos, consolas ni gestión OOB en los puertos asignables.",
+        "Network Advantage es referencia declarada; la aplicación no verifica licencia, firmware ni óptica. No PoE en variante T."
+      ],
+      "excludedHardware": []
+    },
+    {
+      "id": "cisco-c9200l-48t-4g",
+      "vendor": "Cisco",
+      "model": "C9200L-48T-4G",
+      "variant": "C9200L-48T-4G",
+      "types": [
+        "Switch",
+        "Switch capa 3"
+      ],
+      "os": "Cisco IOS XE",
+      "referenceVersion": "17.11.x; Network Advantage; standalone switch 1",
+      "verifiedOn": "2026-11-14",
+      "ports": [
+        {
+          "name": "GigabitEthernet1/0/1",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/2",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/3",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/4",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/5",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/6",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/7",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/8",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/9",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/10",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/11",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/12",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/13",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/14",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/15",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/16",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/17",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/18",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/19",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/20",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/21",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/22",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/23",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/24",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/25",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/26",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/27",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/28",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/29",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/30",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/31",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/32",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/33",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/34",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/35",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/36",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/37",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/38",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/39",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/40",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/41",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/42",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/43",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/44",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/45",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/46",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/47",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/0/48",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/1/1",
+          "connector": "SFP/SFP+",
+          "media": "fiber",
+          "speedsMbps": [
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "uplink",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/1/2",
+          "connector": "SFP/SFP+",
+          "media": "fiber",
+          "speedsMbps": [
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "uplink",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/1/3",
+          "connector": "SFP/SFP+",
+          "media": "fiber",
+          "speedsMbps": [
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "uplink",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet1/1/4",
+          "connector": "SFP/SFP+",
+          "media": "fiber",
+          "speedsMbps": [
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "uplink",
+          "assignable": true,
+          "restriction": ""
+        }
+      ],
+      "features": {
+        "ssh": true,
+        "vlans": true,
+        "interfaces": true,
+        "ospf": true,
+        "dhcp": true,
+        "relay": true,
+        "static": true,
+        "lacp": true,
+        "ha": true
+      },
+      "sources": [
+        {
+          "url": "https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9200/hardware/install/b-c9200-hig/product_overview.html",
+          "verifiedOn": "2026-11-14",
+          "evidence": "C9200L-24T-4G y -48T-4G: puertos de acceso GE y cuatro uplinks SFP GE fijos."
+        },
+        {
+          "url": "https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9200/software/release/17-11/configuration_guide/int_hw/b_1711_int_and_hw_9200_cg/configuring_interface_characteristics.html",
+          "verifiedOn": "2026-11-14",
+          "evidence": "Standalone 1; downlinks módulo 0, uplinks módulo 1; nombres y switching/routed de IOS XE."
+        },
+        {
+          "url": "https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9200/software/release/17-11/configuration_guide/ip/b_1711_ip_9200_cg.html",
+          "verifiedOn": "2026-11-14",
+          "evidence": "DHCP, relay y HSRP; verificar licencia/versión antes de aplicar."
+        },
+        {
+          "url": "https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9200/software/release/17-11/configuration_guide/rtng/b_1711_rtng_9200_cg.pdf",
+          "verifiedOn": "2026-11-14",
+          "evidence": "Familia de comandos IPv4/OSPF; referencia con Network Advantage."
+        }
+      ],
+      "limitations": [
+        "Sin stack: miembro 1. No incluye módulos, consolas ni gestión OOB en los puertos asignables.",
+        "Network Advantage es referencia declarada; la aplicación no verifica licencia, firmware ni óptica. No PoE en variante T."
+      ],
+      "excludedHardware": []
+    },
+    {
+      "id": "cisco-isr4321-k9",
+      "vendor": "Cisco",
+      "model": "ISR4321/K9",
+      "variant": "ISR4321/K9",
+      "types": [
+        "Router"
+      ],
+      "os": "Cisco IOS XE",
+      "referenceVersion": "16.3.1; interfaces integradas sin NIM",
+      "verifiedOn": "2026-11-14",
+      "ports": [
+        {
+          "name": "GigabitEthernet0/0/0",
+          "connector": "RJ45/SFP combo",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed"
+          ],
+          "preferred": "wan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/1",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        }
+      ],
+      "features": {
+        "ssh": true,
+        "vlans": false,
+        "interfaces": true,
+        "ospf": true,
+        "dhcp": true,
+        "relay": true,
+        "static": true,
+        "lacp": false,
+        "ha": false
+      },
+      "sources": [
+        {
+          "url": "https://www.cisco.com/c/en/us/products/collateral/routers/4000-series-integrated-services-routers-isr/data_sheet-c78-732542.html",
+          "verifiedOn": "2026-11-14",
+          "evidence": "ISR4321: dos interfaces GE integradas; un conector SFP comparte interfaz con cobre, no añade un tercer enlace."
+        },
+        {
+          "url": "https://www.cisco.com/c/dam/en/us/solutions/collateral/enterprise/interoperability-portal/fusion-connect-sip-trunking.pdf",
+          "verifiedOn": "2026-11-14",
+          "evidence": "ISR4321 / IOS XE 16.3.1: GigabitEthernet0/0/0 y GigabitEthernet0/0/1."
+        },
+        {
+          "url": "https://www.cisco.com/c/ja_jp/td/docs/rt/branchrt/4451-xisr/ig/001/c4400-isr/overview.html",
+          "verifiedOn": "2026-11-14",
+          "evidence": "ISR4321: GE0/0/0 RJ45 y SFP comparten nombre y capacidad; GE0/0/1 es cobre dedicado. Perfil conservador usa el combo por cobre."
+        }
+      ],
+      "limitations": [
+        "Solo dos enlaces GE integrados, independientemente del conector combo. No se añaden NIM ni gestión OOB.",
+        "El adaptador no implementa ROAS en este perfil: puertos usados solo para routed; no switchport en un router."
+      ],
+      "excludedHardware": []
+    },
+    {
+      "id": "huawei-s5700-28p-li-ac",
+      "vendor": "Huawei",
+      "model": "S5700-28P-LI-AC",
+      "variant": "S5700-28P-LI-AC",
+      "types": [
+        "Switch"
+      ],
+      "os": "Huawei VRP",
+      "referenceVersion": "V200; standalone/slot 0, subcard 0",
+      "verifiedOn": "2026-11-14",
+      "ports": [
+        {
+          "name": "GigabitEthernet0/0/1",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/2",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/3",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/4",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/5",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/6",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/7",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/8",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/9",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/10",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/11",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/12",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/13",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/14",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/15",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/16",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/17",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/18",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/19",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/20",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/21",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/22",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/23",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/24",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        }
+      ],
+      "features": {
+        "ssh": true,
+        "vlans": true,
+        "interfaces": true,
+        "ospf": false,
+        "dhcp": false,
+        "relay": false,
+        "static": true,
+        "lacp": false,
+        "ha": false
+      },
+      "sources": [
+        {
+          "url": "https://enterprise.huawei.com/nla/products/network/switch/campus-switch/hw-143233.htm",
+          "verifiedOn": "2026-11-14",
+          "evidence": "S5700-28P-LI AC/DC: 24 RJ45 GE y cuatro SFP; S5700-52P-LI AC: 48 RJ45 GE y cuatro SFP. VLAN/MSTP/SSH; LI sin OSPF avanzado."
+        },
+        {
+          "url": "https://enterprise.huawei.com/ucmf/groups/public/documents/enterprise_webasset/hw_331882.pdf",
+          "verifiedOn": "2026-11-14",
+          "evidence": "Ficha oficial S5700-LI: inventario y separación de variantes AC/DC; familia VRP. No extrapolar a variantes -X o -24S."
+        },
+        {
+          "url": "https://info.support.huawei.com/network/ptmngsys/Web/tsrev_s/en/content/s/16_edesk_stp_failure/edesk_stp_failure_edesk003.html",
+          "verifiedOn": "2026-11-14",
+          "evidence": "Nomenclatura GigabitEthernet0/0/N y MSTP de S5700 standalone. Solo se incorpora el banco RJ45; los SFP quedan fuera hasta completar evidencia de nombres."
+        }
+      ],
+      "limitations": [
+        "Perfil de acceso L2 conservador, no disponible como core L3. No se certifican OSPF/VRRP/LACP/DHCP de este modelo con el adaptador.",
+        "Inventario parcial: banco RJ45 numerado. Los cuatro SFP documentados se excluyen hasta completar evidencia inequívoca de nomenclatura CLI por variante.",
+        "Referencia sin apilamiento. No se extrapolan variantes -X, -24S ni otros sufijos."
+      ],
+      "excludedHardware": [
+        "4 SFP GE: hardware confirmado; nomenclatura CLI pendiente, no asignables."
+      ]
+    },
+    {
+      "id": "huawei-s5700-28p-li-dc",
+      "vendor": "Huawei",
+      "model": "S5700-28P-LI-DC",
+      "variant": "S5700-28P-LI-DC",
+      "types": [
+        "Switch"
+      ],
+      "os": "Huawei VRP",
+      "referenceVersion": "V200; standalone/slot 0, subcard 0",
+      "verifiedOn": "2026-11-14",
+      "ports": [
+        {
+          "name": "GigabitEthernet0/0/1",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/2",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/3",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/4",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/5",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/6",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/7",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/8",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/9",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/10",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/11",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/12",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/13",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/14",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/15",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/16",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/17",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/18",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/19",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/20",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/21",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/22",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/23",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/24",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        }
+      ],
+      "features": {
+        "ssh": true,
+        "vlans": true,
+        "interfaces": true,
+        "ospf": false,
+        "dhcp": false,
+        "relay": false,
+        "static": true,
+        "lacp": false,
+        "ha": false
+      },
+      "sources": [
+        {
+          "url": "https://enterprise.huawei.com/nla/products/network/switch/campus-switch/hw-143233.htm",
+          "verifiedOn": "2026-11-14",
+          "evidence": "S5700-28P-LI AC/DC: 24 RJ45 GE y cuatro SFP; S5700-52P-LI AC: 48 RJ45 GE y cuatro SFP. VLAN/MSTP/SSH; LI sin OSPF avanzado."
+        },
+        {
+          "url": "https://enterprise.huawei.com/ucmf/groups/public/documents/enterprise_webasset/hw_331882.pdf",
+          "verifiedOn": "2026-11-14",
+          "evidence": "Ficha oficial S5700-LI: inventario y separación de variantes AC/DC; familia VRP. No extrapolar a variantes -X o -24S."
+        },
+        {
+          "url": "https://info.support.huawei.com/network/ptmngsys/Web/tsrev_s/en/content/s/16_edesk_stp_failure/edesk_stp_failure_edesk003.html",
+          "verifiedOn": "2026-11-14",
+          "evidence": "Nomenclatura GigabitEthernet0/0/N y MSTP de S5700 standalone. Solo se incorpora el banco RJ45; los SFP quedan fuera hasta completar evidencia de nombres."
+        }
+      ],
+      "limitations": [
+        "Perfil de acceso L2 conservador, no disponible como core L3. No se certifican OSPF/VRRP/LACP/DHCP de este modelo con el adaptador.",
+        "Inventario parcial: banco RJ45 numerado. Los cuatro SFP documentados se excluyen hasta completar evidencia inequívoca de nomenclatura CLI por variante.",
+        "Referencia sin apilamiento. No se extrapolan variantes -X, -24S ni otros sufijos."
+      ],
+      "excludedHardware": [
+        "4 SFP GE: hardware confirmado; nomenclatura CLI pendiente, no asignables."
+      ]
+    },
+    {
+      "id": "huawei-s5700-52p-li-ac",
+      "vendor": "Huawei",
+      "model": "S5700-52P-LI-AC",
+      "variant": "S5700-52P-LI-AC",
+      "types": [
+        "Switch"
+      ],
+      "os": "Huawei VRP",
+      "referenceVersion": "V200; standalone/slot 0, subcard 0",
+      "verifiedOn": "2026-11-14",
+      "ports": [
+        {
+          "name": "GigabitEthernet0/0/1",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/2",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/3",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/4",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/5",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/6",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/7",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/8",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/9",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/10",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/11",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/12",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/13",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/14",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/15",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/16",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/17",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/18",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/19",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/20",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/21",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/22",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/23",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/24",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/25",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/26",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/27",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/28",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/29",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/30",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/31",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/32",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/33",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/34",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/35",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/36",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/37",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/38",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/39",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/40",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/41",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/42",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/43",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/44",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/45",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/46",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/47",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "GigabitEthernet0/0/48",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        }
+      ],
+      "features": {
+        "ssh": true,
+        "vlans": true,
+        "interfaces": true,
+        "ospf": false,
+        "dhcp": false,
+        "relay": false,
+        "static": true,
+        "lacp": false,
+        "ha": false
+      },
+      "sources": [
+        {
+          "url": "https://enterprise.huawei.com/nla/products/network/switch/campus-switch/hw-143233.htm",
+          "verifiedOn": "2026-11-14",
+          "evidence": "S5700-28P-LI AC/DC: 24 RJ45 GE y cuatro SFP; S5700-52P-LI AC: 48 RJ45 GE y cuatro SFP. VLAN/MSTP/SSH; LI sin OSPF avanzado."
+        },
+        {
+          "url": "https://enterprise.huawei.com/ucmf/groups/public/documents/enterprise_webasset/hw_331882.pdf",
+          "verifiedOn": "2026-11-14",
+          "evidence": "Ficha oficial S5700-LI: inventario y separación de variantes AC/DC; familia VRP. No extrapolar a variantes -X o -24S."
+        },
+        {
+          "url": "https://info.support.huawei.com/network/ptmngsys/Web/tsrev_s/en/content/s/16_edesk_stp_failure/edesk_stp_failure_edesk003.html",
+          "verifiedOn": "2026-11-14",
+          "evidence": "Nomenclatura GigabitEthernet0/0/N y MSTP de S5700 standalone. Solo se incorpora el banco RJ45; los SFP quedan fuera hasta completar evidencia de nombres."
+        }
+      ],
+      "limitations": [
+        "Perfil de acceso L2 conservador, no disponible como core L3. No se certifican OSPF/VRRP/LACP/DHCP de este modelo con el adaptador.",
+        "Inventario parcial: banco RJ45 numerado. Los cuatro SFP documentados se excluyen hasta completar evidencia inequívoca de nomenclatura CLI por variante.",
+        "Referencia sin apilamiento. No se extrapolan variantes -X, -24S ni otros sufijos."
+      ],
+      "excludedHardware": [
+        "4 SFP GE: hardware confirmado; nomenclatura CLI pendiente, no asignables."
+      ]
+    },
+    {
+      "id": "fortinet-60f",
+      "vendor": "Fortinet",
+      "model": "FortiGate 60F",
+      "variant": "FortiGate 60F",
+      "types": [
+        "Firewall"
+      ],
+      "os": "Fortinet FortiOS",
+      "referenceVersion": "7.4.x; sin multi-VDOM",
+      "verifiedOn": "2026-11-14",
+      "ports": [
+        {
+          "name": "wan1",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "wan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "wan2",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "wan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "dmz",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "internal1",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": false,
+          "restriction": "Miembro del switch interno por defecto: fuera del perfil autónomo conservador."
+        },
+        {
+          "name": "internal2",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": false,
+          "restriction": "Miembro del switch interno por defecto: fuera del perfil autónomo conservador."
+        },
+        {
+          "name": "internal3",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": false,
+          "restriction": "Miembro del switch interno por defecto: fuera del perfil autónomo conservador."
+        },
+        {
+          "name": "internal4",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": false,
+          "restriction": "Miembro del switch interno por defecto: fuera del perfil autónomo conservador."
+        },
+        {
+          "name": "internal5",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": false,
+          "restriction": "Miembro del switch interno por defecto: fuera del perfil autónomo conservador."
+        },
+        {
+          "name": "a",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": false,
+          "restriction": "Puerto FortiLink: no se desconfigura automáticamente."
+        },
+        {
+          "name": "b",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": false,
+          "restriction": "Puerto FortiLink: no se desconfigura automáticamente."
+        }
+      ],
+      "features": {
+        "ssh": true,
+        "vlans": true,
+        "interfaces": true,
+        "ospf": true,
+        "dhcp": true,
+        "relay": true,
+        "static": true,
+        "lacp": false,
+        "ha": false
+      },
+      "sources": [
+        {
+          "url": "https://docs.fortinet.com/document/fortigate/7.4.0/hardware-acceleration/758378/fortigate-60f-and-61f-fast-path-architecture",
+          "verifiedOn": "2026-11-14",
+          "evidence": "Tabla diagnose npu: wan1, wan2, dmz, internal1..5, a, b; diez puertos GE. a/b FortiLink se excluyen de asignación."
+        },
+        {
+          "url": "https://docs.fortinet.com/document/fortigate/7.4.0/cli-reference/8620/config-system-interface",
+          "verifiedOn": "2026-11-14",
+          "evidence": "Familia FortiOS 7.4: IPv4/VLAN/relay. Requiere interfaces libres de referencias/configuración previa; no se eliminan switches ni FortiLink automáticamente."
+        }
+      ],
+      "limitations": [
+        "Se catalogan diez puertos físicos; se asignan automáticamente solo wan1, wan2 y dmz.",
+        "No se desmontan switches por defecto/FortiLink ni referencias existentes. Requiere revisión de configuración/puertos antes de aplicar.",
+        "Sin NAT/Internet/políticas permisivas implícitas; sin HA/LACP en el adaptador."
+      ],
+      "excludedHardware": []
+    },
+    {
+      "id": "fortinet-61f",
+      "vendor": "Fortinet",
+      "model": "FortiGate 61F",
+      "variant": "FortiGate 61F",
+      "types": [
+        "Firewall"
+      ],
+      "os": "Fortinet FortiOS",
+      "referenceVersion": "7.4.x; sin multi-VDOM",
+      "verifiedOn": "2026-11-14",
+      "ports": [
+        {
+          "name": "wan1",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "wan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "wan2",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "wan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "dmz",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "internal1",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": false,
+          "restriction": "Miembro del switch interno por defecto: fuera del perfil autónomo conservador."
+        },
+        {
+          "name": "internal2",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": false,
+          "restriction": "Miembro del switch interno por defecto: fuera del perfil autónomo conservador."
+        },
+        {
+          "name": "internal3",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": false,
+          "restriction": "Miembro del switch interno por defecto: fuera del perfil autónomo conservador."
+        },
+        {
+          "name": "internal4",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": false,
+          "restriction": "Miembro del switch interno por defecto: fuera del perfil autónomo conservador."
+        },
+        {
+          "name": "internal5",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": false,
+          "restriction": "Miembro del switch interno por defecto: fuera del perfil autónomo conservador."
+        },
+        {
+          "name": "a",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": false,
+          "restriction": "Puerto FortiLink: no se desconfigura automáticamente."
+        },
+        {
+          "name": "b",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": false,
+          "restriction": "Puerto FortiLink: no se desconfigura automáticamente."
+        }
+      ],
+      "features": {
+        "ssh": true,
+        "vlans": true,
+        "interfaces": true,
+        "ospf": true,
+        "dhcp": true,
+        "relay": true,
+        "static": true,
+        "lacp": false,
+        "ha": false
+      },
+      "sources": [
+        {
+          "url": "https://docs.fortinet.com/document/fortigate/7.4.0/hardware-acceleration/758378/fortigate-60f-and-61f-fast-path-architecture",
+          "verifiedOn": "2026-11-14",
+          "evidence": "Tabla diagnose npu: wan1, wan2, dmz, internal1..5, a, b; diez puertos GE. a/b FortiLink se excluyen de asignación."
+        },
+        {
+          "url": "https://docs.fortinet.com/document/fortigate/7.4.0/cli-reference/8620/config-system-interface",
+          "verifiedOn": "2026-11-14",
+          "evidence": "Familia FortiOS 7.4: IPv4/VLAN/relay. Requiere interfaces libres de referencias/configuración previa; no se eliminan switches ni FortiLink automáticamente."
+        }
+      ],
+      "limitations": [
+        "Se catalogan diez puertos físicos; se asignan automáticamente solo wan1, wan2 y dmz.",
+        "No se desmontan switches por defecto/FortiLink ni referencias existentes. Requiere revisión de configuración/puertos antes de aplicar.",
+        "Sin NAT/Internet/políticas permisivas implícitas; sin HA/LACP en el adaptador."
+      ],
+      "excludedHardware": []
+    },
+    {
+      "id": "fortinet-70f",
+      "vendor": "Fortinet",
+      "model": "FortiGate 70F",
+      "variant": "FortiGate 70F",
+      "types": [
+        "Firewall"
+      ],
+      "os": "Fortinet FortiOS",
+      "referenceVersion": "7.4.x; sin multi-VDOM",
+      "verifiedOn": "2026-11-14",
+      "ports": [
+        {
+          "name": "wan1",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "wan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "wan2",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "wan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "dmz",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "internal1",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": false,
+          "restriction": "Miembro del switch interno por defecto: fuera del perfil autónomo conservador."
+        },
+        {
+          "name": "internal2",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": false,
+          "restriction": "Miembro del switch interno por defecto: fuera del perfil autónomo conservador."
+        },
+        {
+          "name": "internal3",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": false,
+          "restriction": "Miembro del switch interno por defecto: fuera del perfil autónomo conservador."
+        },
+        {
+          "name": "internal4",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": false,
+          "restriction": "Miembro del switch interno por defecto: fuera del perfil autónomo conservador."
+        },
+        {
+          "name": "internal5",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": false,
+          "restriction": "Miembro del switch interno por defecto: fuera del perfil autónomo conservador."
+        },
+        {
+          "name": "a",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": false,
+          "restriction": "Puerto FortiLink: no se desconfigura automáticamente."
+        },
+        {
+          "name": "b",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": false,
+          "restriction": "Puerto FortiLink: no se desconfigura automáticamente."
+        }
+      ],
+      "features": {
+        "ssh": true,
+        "vlans": true,
+        "interfaces": true,
+        "ospf": true,
+        "dhcp": true,
+        "relay": true,
+        "static": true,
+        "lacp": false,
+        "ha": false
+      },
+      "sources": [
+        {
+          "url": "https://docs.fortinet.com/document/fortigate/7.4.0/hardware-acceleration/749156/fortigate-70f-and-71f-fast-path-architecture",
+          "verifiedOn": "2026-11-14",
+          "evidence": "Tabla oficial para 70F/71F: wan1, wan2, dmz, internal1..5, a, b, todos GE."
+        },
+        {
+          "url": "https://docs.fortinet.com/document/fortigate/7.4.0/cli-reference/8620/config-system-interface",
+          "verifiedOn": "2026-11-14",
+          "evidence": "Familia FortiOS 7.4: IPv4/VLAN/relay. Requiere interfaces libres de referencias/configuración previa; no se eliminan switches ni FortiLink automáticamente."
+        }
+      ],
+      "limitations": [
+        "Se catalogan diez puertos físicos; se asignan automáticamente solo wan1, wan2 y dmz.",
+        "No se desmontan switches por defecto/FortiLink ni referencias existentes. Requiere revisión de configuración/puertos antes de aplicar.",
+        "Sin NAT/Internet/políticas permisivas implícitas; sin HA/LACP en el adaptador."
+      ],
+      "excludedHardware": []
+    },
+    {
+      "id": "mikrotik-rb750gr3",
+      "vendor": "MikroTik",
+      "model": "RB750Gr3 (hEX)",
+      "variant": "RB750Gr3 (hEX)",
+      "types": [
+        "Router"
+      ],
+      "os": "MikroTik RouterOS",
+      "referenceVersion": "7.x; sin VRF/CAPsMAN",
+      "verifiedOn": "2026-11-14",
+      "ports": [
+        {
+          "name": "ether1",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "wan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "ether2",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "ether3",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "ether4",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "ether5",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        }
+      ],
+      "features": {
+        "ssh": true,
+        "vlans": true,
+        "interfaces": true,
+        "ospf": true,
+        "dhcp": true,
+        "relay": true,
+        "static": true,
+        "lacp": false,
+        "ha": false
+      },
+      "sources": [
+        {
+          "url": "https://mikrotik.com/product/RB750Gr3",
+          "verifiedOn": "2026-11-14",
+          "evidence": "RB750Gr3: cinco puertos Ethernet Gigabit."
+        },
+        {
+          "url": "https://help.mikrotik.com/docs/spaces/ROS/pages/21725296/MTU%20in%20RouterOS",
+          "verifiedOn": "2026-11-14",
+          "evidence": "Tabla de modelos/nombres: RB750Gr3 ether1..5; RB760iGS ether1..5 y sfp1; CCR2004-16G-2S+ ether1..16 y sfp-sfpplus1..2."
+        },
+        {
+          "url": "https://help.mikrotik.com/docs/spaces/ROS/pages/331612216/routing+ospf",
+          "verifiedOn": "2026-11-14",
+          "evidence": "Sintaxis RouterOS 7. El adaptador conserva sus restricciones: sin VRRP, LACP, VRF ni CAPsMAN."
+        }
+      ],
+      "limitations": [
+        "Solo Router con el adaptador actual; no se certifica switch/SwOS aunque haya hardware de switching.",
+        "Nombres de fábrica: si se renombraron, debe contrastarse la propuesta con el equipo. Sin VRRP/LACP/VRF/CAPsMAN/IPv6 CLI.",
+        "Medio/velocidad representan compatibilidad del catálogo, no negociación física ni disponibilidad de transceptores."
+      ],
+      "excludedHardware": []
+    },
+    {
+      "id": "mikrotik-rb760igs",
+      "vendor": "MikroTik",
+      "model": "RB760iGS (hEX S)",
+      "variant": "RB760iGS (hEX S)",
+      "types": [
+        "Router"
+      ],
+      "os": "MikroTik RouterOS",
+      "referenceVersion": "7.x; sin VRF/CAPsMAN",
+      "verifiedOn": "2026-11-14",
+      "ports": [
+        {
+          "name": "ether1",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "wan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "ether2",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "ether3",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "ether4",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "ether5",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "sfp1",
+          "connector": "SFP/SFP+",
+          "media": "fiber",
+          "speedsMbps": [
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "uplink",
+          "assignable": true,
+          "restriction": ""
+        }
+      ],
+      "features": {
+        "ssh": true,
+        "vlans": true,
+        "interfaces": true,
+        "ospf": true,
+        "dhcp": true,
+        "relay": true,
+        "static": true,
+        "lacp": false,
+        "ha": false
+      },
+      "sources": [
+        {
+          "url": "https://mikrotik.com/product/hex_s",
+          "verifiedOn": "2026-11-14",
+          "evidence": "RB760iGS: cinco puertos Ethernet Gigabit y un SFP 1G; no confundir con hEX S 2025."
+        },
+        {
+          "url": "https://help.mikrotik.com/docs/spaces/ROS/pages/21725296/MTU%20in%20RouterOS",
+          "verifiedOn": "2026-11-14",
+          "evidence": "Tabla de modelos/nombres: RB750Gr3 ether1..5; RB760iGS ether1..5 y sfp1; CCR2004-16G-2S+ ether1..16 y sfp-sfpplus1..2."
+        },
+        {
+          "url": "https://help.mikrotik.com/docs/spaces/ROS/pages/331612216/routing+ospf",
+          "verifiedOn": "2026-11-14",
+          "evidence": "Sintaxis RouterOS 7. El adaptador conserva sus restricciones: sin VRRP, LACP, VRF ni CAPsMAN."
+        }
+      ],
+      "limitations": [
+        "Solo Router con el adaptador actual; no se certifica switch/SwOS aunque haya hardware de switching.",
+        "Nombres de fábrica: si se renombraron, debe contrastarse la propuesta con el equipo. Sin VRRP/LACP/VRF/CAPsMAN/IPv6 CLI.",
+        "Medio/velocidad representan compatibilidad del catálogo, no negociación física ni disponibilidad de transceptores."
+      ],
+      "excludedHardware": []
+    },
+    {
+      "id": "mikrotik-ccr2004-16g-2splus",
+      "vendor": "MikroTik",
+      "model": "CCR2004-16G-2S+",
+      "variant": "CCR2004-16G-2S+",
+      "types": [
+        "Router"
+      ],
+      "os": "MikroTik RouterOS",
+      "referenceVersion": "7.x; sin VRF/CAPsMAN",
+      "verifiedOn": "2026-11-14",
+      "ports": [
+        {
+          "name": "ether1",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "wan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "ether2",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "ether3",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "ether4",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "ether5",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "ether6",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "ether7",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "ether8",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "ether9",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "ether10",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "ether11",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "ether12",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "ether13",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "ether14",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "ether15",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "ether16",
+          "connector": "RJ45",
+          "media": "copper",
+          "speedsMbps": [
+            10,
+            100,
+            1000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "lan",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "sfp-sfpplus1",
+          "connector": "SFP/SFP+",
+          "media": "fiber",
+          "speedsMbps": [
+            1000,
+            10000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "uplink",
+          "assignable": true,
+          "restriction": ""
+        },
+        {
+          "name": "sfp-sfpplus2",
+          "connector": "SFP/SFP+",
+          "media": "fiber",
+          "speedsMbps": [
+            1000,
+            10000
+          ],
+          "modes": [
+            "routed",
+            "trunk",
+            "access"
+          ],
+          "preferred": "uplink",
+          "assignable": true,
+          "restriction": ""
+        }
+      ],
+      "features": {
+        "ssh": true,
+        "vlans": true,
+        "interfaces": true,
+        "ospf": true,
+        "dhcp": true,
+        "relay": true,
+        "static": true,
+        "lacp": false,
+        "ha": false
+      },
+      "sources": [
+        {
+          "url": "https://help.mikrotik.com/docs/spaces/UM/pages/78086248/CCR2004-16G-2S",
+          "verifiedOn": "2026-11-14",
+          "evidence": "CCR2004-16G-2S+: dieciséis RJ45 GE y dos SFP+ 10G; no variante PC."
+        },
+        {
+          "url": "https://help.mikrotik.com/docs/spaces/ROS/pages/220233794/MikroTik%20wired%20interface%20compatibility",
+          "verifiedOn": "2026-11-14",
+          "evidence": "CCR2004-16G-2S+: los SFP+ pueden trabajar a 1G con óptica apropiada; transceptor no descubierto por la app."
+        },
+        {
+          "url": "https://help.mikrotik.com/docs/spaces/ROS/pages/21725296/MTU%20in%20RouterOS",
+          "verifiedOn": "2026-11-14",
+          "evidence": "Tabla de modelos/nombres: RB750Gr3 ether1..5; RB760iGS ether1..5 y sfp1; CCR2004-16G-2S+ ether1..16 y sfp-sfpplus1..2."
+        },
+        {
+          "url": "https://help.mikrotik.com/docs/spaces/ROS/pages/331612216/routing+ospf",
+          "verifiedOn": "2026-11-14",
+          "evidence": "Sintaxis RouterOS 7. El adaptador conserva sus restricciones: sin VRRP, LACP, VRF ni CAPsMAN."
+        }
+      ],
+      "limitations": [
+        "Solo Router con el adaptador actual; no se certifica switch/SwOS aunque haya hardware de switching.",
+        "Nombres de fábrica: si se renombraron, debe contrastarse la propuesta con el equipo. Sin VRRP/LACP/VRF/CAPsMAN/IPv6 CLI.",
+        "Medio/velocidad representan compatibilidad del catálogo, no negociación física ni disponibilidad de transceptores."
+      ],
+      "excludedHardware": []
+    }
+  ]
+}
