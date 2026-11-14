@@ -1,0 +1,120 @@
+{
+  "verifiedOn": "2026-11-14",
+  "sources": {
+    "Cisco": [
+      "https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9200/software/release/17-11/configuration_guide/int_hw/b_1711_int_and_hw_9200_cg/configuring_interface_characteristics.html",
+      "https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9200/hardware/install/b-c9200-hig/product_overview.html",
+      "https://www.cisco.com/c/en/us/products/collateral/routers/4000-series-integrated-services-routers-isr/data_sheet-c78-732542.html"
+    ],
+    "Huawei": [
+      "https://enterprise.huawei.com/nla/products/network/switch/campus-switch/hw-143233.htm",
+      "https://info.support.huawei.com/network/ptmngsys/Web/tsrev_s/en/content/s/16_edesk_stp_failure/edesk_stp_failure_edesk003.html"
+    ],
+    "Fortinet": [
+      "https://docs.fortinet.com/document/fortigate/7.4.0/hardware-acceleration/758378/fortigate-60f-and-61f-fast-path-architecture",
+      "https://docs.fortinet.com/document/fortigate/7.4.0/hardware-acceleration/749156/fortigate-70f-and-71f-fast-path-architecture"
+    ],
+    "MikroTik": [
+      "https://help.mikrotik.com/docs/spaces/ROS/pages/21725296/MTU%20in%20RouterOS",
+      "https://help.mikrotik.com/docs/spaces/UM/pages/78086248/CCR2004-16G-2S"
+    ]
+  },
+  "models": [
+    {
+      "id": "cisco-c9200l-24t-4g",
+      "ports": 28,
+      "assignable": 28,
+      "first": "GigabitEthernet1/0/1",
+      "last": "GigabitEthernet1/1/4",
+      "maxMbps": 1000
+    },
+    {
+      "id": "cisco-c9200l-48t-4g",
+      "ports": 52,
+      "assignable": 52,
+      "first": "GigabitEthernet1/0/1",
+      "last": "GigabitEthernet1/1/4",
+      "maxMbps": 1000
+    },
+    {
+      "id": "cisco-isr4321-k9",
+      "ports": 2,
+      "assignable": 2,
+      "first": "GigabitEthernet0/0/0",
+      "last": "GigabitEthernet0/0/1",
+      "maxMbps": 1000
+    },
+    {
+      "id": "huawei-s5700-28p-li-ac",
+      "ports": 24,
+      "assignable": 24,
+      "first": "GigabitEthernet0/0/1",
+      "last": "GigabitEthernet0/0/24",
+      "maxMbps": 1000
+    },
+    {
+      "id": "huawei-s5700-28p-li-dc",
+      "ports": 24,
+      "assignable": 24,
+      "first": "GigabitEthernet0/0/1",
+      "last": "GigabitEthernet0/0/24",
+      "maxMbps": 1000
+    },
+    {
+      "id": "huawei-s5700-52p-li-ac",
+      "ports": 48,
+      "assignable": 48,
+      "first": "GigabitEthernet0/0/1",
+      "last": "GigabitEthernet0/0/48",
+      "maxMbps": 1000
+    },
+    {
+      "id": "fortinet-60f",
+      "ports": 10,
+      "assignable": 3,
+      "first": "wan1",
+      "last": "b",
+      "maxMbps": 1000
+    },
+    {
+      "id": "fortinet-61f",
+      "ports": 10,
+      "assignable": 3,
+      "first": "wan1",
+      "last": "b",
+      "maxMbps": 1000
+    },
+    {
+      "id": "fortinet-70f",
+      "ports": 10,
+      "assignable": 3,
+      "first": "wan1",
+      "last": "b",
+      "maxMbps": 1000
+    },
+    {
+      "id": "mikrotik-rb750gr3",
+      "ports": 5,
+      "assignable": 5,
+      "first": "ether1",
+      "last": "ether5",
+      "maxMbps": 1000
+    },
+    {
+      "id": "mikrotik-rb760igs",
+      "ports": 6,
+      "assignable": 6,
+      "first": "ether1",
+      "last": "sfp1",
+      "maxMbps": 1000
+    },
+    {
+      "id": "mikrotik-ccr2004-16g-2splus",
+      "ports": 18,
+      "assignable": 18,
+      "first": "ether1",
+      "last": "sfp-sfpplus2",
+      "maxMbps": 10000
+    }
+  ]
+}

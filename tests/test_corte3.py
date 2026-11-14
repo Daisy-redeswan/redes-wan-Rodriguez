@@ -683,7 +683,7 @@ h1{{margin:0 0 8px;font-size:29px}}.score{{font-size:38px;font-weight:800;color:
 .counts{{padding:14px 0;font-weight:700}}table{{width:100%;border-collapse:collapse;background:white}}th,td{{text-align:left;border:1px solid #d5dfe8;padding:10px;vertical-align:top}}th{{background:#dce8f2}}td:first-child{{width:55px}}td:last-child{{width:115px;font-size:12px;font-weight:800}}small{{display:block;color:#50677a;font-size:12px;margin-top:4px}}.superada{{color:#08744f}}.fallida,.bloqueada{{color:#a92626}}footer{{padding:15px;background:#fff7dd;border-radius:8px;margin-top:16px}}</style>
 <main><header><h1>WAN Architect · Regresión automatizada Corte 3</h1><div>{status} · Python / Playwright · HTTP local</div>{warning}
 <div class="score">{score}</div><div class="details">{escape(environment['date'])} · {escape(environment['python'])} · Playwright {escape(environment['playwright'])} · Chromium {escape(environment['browser'])}<br>
-Commit: {escape(environment['commit'])}<br>SHA-256 WAN_v4.html: {environment['application_sha256']}<br>Suite SHA-256: {environment['suite_sha256']} · Duración: {elapsed:.1f} s</div></header>
+Commit: {escape(environment['commit'])}<br>SHA-256 WAN_v4.html: {environment['application_sha256']}<br>Suite SHA-256: {environment['suite_sha256']}<br>Catálogo SHA-256: {environment.get('catalogue_sha256','no aplicable')}<br>Casos catálogo SHA-256: {environment.get('catalogue_tests_sha256','no aplicable')} · Duración: {elapsed:.1f} s</div></header>
 <div class="counts">Superadas: {counts['superada']} · Fallidas: {counts['fallida']} · Bloqueadas: {counts['bloqueada']} · No ejecutadas: {counts['no ejecutada']} · Total definido: {len(records)}</div>
 <table><thead><tr><th>Caso</th><th>Prueba / esperado</th><th>Obtenido / evidencia observable</th><th>Estado</th></tr></thead><tbody>{rows}</tbody></table>
 <footer>Porcentaje = superadas / ejecutadas × 100. Cada caso usa un contexto limpio. Validación local y textual: no se ejecuta CLI, no se demuestra conectividad ni compatibilidad física. Los cuatro generadores siguen siendo IPv4; IPv6 se calcula y planifica.</footer></main>
@@ -1455,6 +1455,12 @@ def main():
                    "os": platform.platform(), "playwright": "no disponible", "browser": "no disponible",
                    "application_sha256": initial_hash, "suite_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                    "fixture_sha256": hashlib.sha256(FIXTURE.read_bytes()).hexdigest()}
+    # Conservar los 73 casos anteriores e incorporar el catálogo sin dependencias nuevas.
+    if not any(identifier.startswith("K") for identifier,*_ in CASES):
+        from test_catalogo import register
+        register(case,check)
+    environment["catalogue_sha256"]=hashlib.sha256((ROOT/"data/catalogo-interfaces.json").read_bytes()).hexdigest()
+    environment["catalogue_tests_sha256"]=hashlib.sha256((ROOT/"tests/test_catalogo.py").read_bytes()).hexdigest()
     records = []
     started = time.perf_counter()
     server = None
