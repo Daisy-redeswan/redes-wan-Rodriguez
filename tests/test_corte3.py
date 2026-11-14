@@ -148,9 +148,20 @@ class Lab:
         check(not self.page.locator("#toast.error").count(),
               self.page.locator("#toast").inner_text())
 
+    def legacy_seed(self):
+        """Fixture inmutable del ejemplo anterior: conserva la entrada de las 135 regresiones.
+
+        El botón público demo() ahora carga el laboratorio completo y se prueba por separado,
+        de extremo a extremo. No se cambian expectativas, hashes ni validaciones históricas.
+        """
+        data=json.loads((ROOT/'tests/fixtures/semilla-regresion-v4.json').read_text())['state']
+        self.evaluate("""seed=>{state=structuredClone(seed);projectEditing=false;vendorsEditing=false;
+            inventoryEditing.clear();formDrafts.clear();siteEditing.clear();sitePending.clear();siteSnapshots.clear();
+            vlanEditing=false;sshHistory='';sshDevice='';selectedSite=0;selectedNode='';imageData='';imageMode=false;page=1;render()}""",data)
+
     def lab(self, scoped=False):
         self.go(1)
-        self.evaluate("demo();proposeVlans()")
+        self.legacy_seed();self.evaluate("proposeVlans()")
         if scoped:
             self.evaluate("""state.sites[0].ipv4Base='10.20.16.0/20';
                 state.sites[1].ipv4Base='10.20.32.0/20';
@@ -199,7 +210,7 @@ class Lab:
 
     def edge(self, vendor):
         self.go(1)
-        self.evaluate("demo();state.sites.forEach(s=>s.redundant=false);proposeVlans()")
+        self.legacy_seed();self.evaluate("state.sites.forEach(s=>s.redundant=false);proposeVlans()")
         self.page.locator('button[onclick="confirmVlans()"]').click()
         self.valid()
         self.evaluate("""vendor=>{
@@ -1138,6 +1149,8 @@ def draft_reset(lab):
     check(lab.page.locator('#sname').input_value()=='BORRADOR PREVIO','No conservó borrador inicial')
     lab.button('Cargar ejemplo de laboratorio').click();lab.valid()
     check(lab.page.locator('#sname').input_value()=='Sede asistencial','Demo heredó borrador')
+    check(lab.page.locator('#sname').is_disabled(),'Laboratorio completo sin confirmación de sede')
+    lab.button('Editar sede').click() # El ejemplo ahora confirma mediante validadores reales; editar respeta el bloqueo.
     lab.page.locator('#sname').fill('OTRO BORRADOR');lab.go(2);lab.go(1);lab.button('Nuevo').click()
     check(lab.page.locator('#sname').input_value()=='Sede 1','Proyecto nuevo heredó borrador')
     check(lab.page.locator('#languageSelect').input_value()=='es','Cambió idioma')
@@ -1462,6 +1475,11 @@ def main():
     if not any(identifier.startswith("F") for identifier,*_ in CASES):
         from test_pr11 import register as register_pr11
         register_pr11(case,check)
+    if not any(identifier.startswith("L") for identifier,*_ in CASES):
+        from test_laboratorio import register as register_lab
+        register_lab(case,check)
+    environment["laboratory_tests_sha256"]=hashlib.sha256((ROOT/"tests/test_laboratorio.py").read_bytes()).hexdigest()
+    environment["regression_seed_sha256"]=hashlib.sha256((ROOT/"tests/fixtures/semilla-regresion-v4.json").read_bytes()).hexdigest()
     environment["pr11_tests_sha256"]=hashlib.sha256((ROOT/"tests/test_pr11.py").read_bytes()).hexdigest()
     environment["catalogue_sha256"]=hashlib.sha256((ROOT/"data/catalogo-interfaces.json").read_bytes()).hexdigest()
     environment["catalogue_tests_sha256"]=hashlib.sha256((ROOT/"tests/test_catalogo.py").read_bytes()).hexdigest()

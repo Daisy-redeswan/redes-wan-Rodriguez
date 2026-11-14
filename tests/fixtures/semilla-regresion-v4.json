@@ -1,0 +1,81 @@
+{
+  "sourceCommit": "09279698084fa166b937ae7d5450fedf4827017e",
+  "description": "Estado real del ejemplo anterior, capturado antes de proponer VLAN; preserva los datos de las 135 regresiones sin alterar sus expectativas.",
+  "state": {
+    "version": 4,
+    "project": {
+      "name": "WAN · Laboratorio Corte 2",
+      "company": "Empresa de ejemplo",
+      "activity": "Clínica ambulatoria (laboratorio)",
+      "type": "Varias sedes",
+      "interconnect": true,
+      "segmentation": "Servicios",
+      "base": "10.20.0.0/16",
+      "transitBase": "",
+      "ipv6Base": "",
+      "growth": 20,
+      "dns": "1.1.1.1"
+    },
+    "sites": [
+      {
+        "id": "s1",
+        "name": "Sede asistencial",
+        "ipv4Base": "",
+        "ipv6Base": "",
+        "floors": 3,
+        "users": 100,
+        "ratio": 2,
+        "busy": "1,2",
+        "areas": "Admisiones, Enfermería, Consulta",
+        "wifi": true,
+        "voip": true,
+        "cctv": true,
+        "printing": true,
+        "server": true,
+        "redundant": true,
+        "bandwidth": 0,
+        "counts": null
+      },
+      {
+        "id": "s2",
+        "name": "Sede administrativa",
+        "ipv4Base": "",
+        "ipv6Base": "",
+        "floors": 2,
+        "users": 45,
+        "ratio": 2,
+        "busy": "1",
+        "areas": "Sistemas, Contabilidad, Compras",
+        "wifi": true,
+        "voip": true,
+        "cctv": true,
+        "printing": true,
+        "server": false,
+        "redundant": false,
+        "bandwidth": 0,
+        "counts": null
+      }
+    ],
+    "vlans": [],
+    "plan": [],
+    "ipv6Plan": [],
+    "nodes": [],
+    "links": [],
+    "approved": false,
+    "configs": {},
+    "opts": {
+      "basic": true,
+      "ssh": true,
+      "vlans": true,
+      "interfaces": true,
+      "ospf": true,
+      "dhcp": true,
+      "relay": false,
+      "static": false
+    },
+    "relay": "",
+    "staticNext": "",
+    "staticReason": "",
+    "revision": 0
+  }
+}

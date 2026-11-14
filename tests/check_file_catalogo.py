@@ -25,7 +25,7 @@ def main():
                 page.goto(path.as_uri(),wait_until='load')
                 assert page.evaluate('state.version===4&&interfaceCatalog.length===12')
                 page.on('dialog',lambda dialog:dialog.accept())
-                page.evaluate('demo();proposeVlans();confirmVlans();go(5);state.sites.forEach(s=>s.vendorProfile={router:"Cisco",core:"Cisco",distribution:"Cisco",access:"Cisco",firewall:"",backupRouter:""});buildTopology()')
+                page.evaluate('demo();go(5)')
                 assert page.evaluate('''()=>{const n=state.nodes.find(n=>n.type==='Switch capa 3');setNodeModel(n.id,'cisco-c9200l-24t-4g');return generate(node(n.id),'Cisco').includes('GigabitEthernet1/')}''')
                 assert not errors and not any(url.startswith(('http:','https:')) for url in requests)
                 result.update(status='superada',actual='12 fichas en HTML aislado; plan/topología/CLI y nombres Catalyst correctos; cero solicitudes HTTP y errores JS.')
