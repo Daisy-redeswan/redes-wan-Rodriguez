@@ -193,7 +193,7 @@ Los AP permanecen en inventario, topología, VLAN, IP/máscara/gateway de Gesti�
 
 La [consola SSH](manual-ssh.md) ofrece dos modalidades independientes. Simulación: seleccionar un equipo, `help`, consultar comandos de lectura y propuestas del proyecto, sin conexión real. Manual integrado accesible sin Python. Real: instalar el servicio opcional según su README, configurar destinos autorizados y huellas, abrir su HTTP local, autenticar expresamente y escribir comandos manualmente. Credenciales solo en memoria, no en JSON/localStorage. No hay envío automático de configuraciones.
 
-La sustentación sigue pendiente. Ensayar el recorrido público, explicar cálculos y adaptadores, ejecutar ambos runners ante el docente y registrar el resultado real. No declarar conectividad o certificación física. Los conteos históricos de botones que siguen se refieren a sus commits; el número de instancias dinámicas depende del proyecto y no constituye un inventario estático vigente.
+La sustentación, presentación, explicación y pruebas en vivo constan como realizadas según confirmación del estudiante; Codex no verificó independientemente la evaluación presencial. No se atribuyen fecha, nota ni porcentaje presencial. El recorrido público y ambos runners se conservan como procedimiento reproducible de consulta. No declarar conectividad o certificación física. Los conteos históricos de botones que siguen se refieren a sus commits; el número de instancias dinámicas depende del proyecto y no constituye un inventario estático vigente.
 
 ## Anexo histórico: 58 plantillas de la base main 1956d18
 
