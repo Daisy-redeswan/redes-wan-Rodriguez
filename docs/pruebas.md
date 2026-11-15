@@ -404,11 +404,4 @@ Validación local de navegador y texto; nunca se ejecutó CLI en equipos/simulad
 
 Los cuatro generadores siguen siendo IPv4; IPv6 es cálculo/planificación ULA, sin DHCPv6/SLAAC avanzado/NAT66 ni políticas IPv6. El alcance de comandos IPv6 requiere aclaración académica. Pools DHCP/reservas editables e invalidación histórica de saveSite() quedan fuera de alcance. C30 cubre 1440/390 px; no certifica todos los anchos/navegadores ni accesibilidad completa. Las matrices históricas M/S/A/C/V no se repitieron ni sumaron al 31/31.
 
-## Procedimiento de sustentación
 
-1. Abrir el repositorio/versión e identificar estado v4 y cuatro adaptadores; explicar que las CLI son propuestas.
-2. Mostrar español inicial, cambiar a English y comprobar que nombres, CIDR, planes y CLI no se traducen ni se pierden ediciones pendientes.
-3. Demostrar cálculo IPv4/IPv6, VLAN/pools y topología; generar propuestas por fabricante usando escenarios compatibles del manual.
-4. Ejecutar `python tests/test_corte3.py` en una terminal visible, esperar C01–C31 y explicar X/Y/porcentaje; ante fallo, exponer el diagnóstico y no reutilizar una imagen de éxito como resultado nuevo.
-5. Abrir el reporte recién generado y contrastar esperado/obtenido. La captura 09 es evidencia fechada de su ejecución identificada, no un resultado permanente.
-6. Mostrar informe/capturas y explicar límites físicos, políticas, marcadores y permisos. Esta preparación no equivale a una sustentación ya realizada.
