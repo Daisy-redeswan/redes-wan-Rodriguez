@@ -36,7 +36,7 @@ El [manual](docs/manual.md) explica controles, idiomas, escenarios y limitacione
 
 ## Pruebas y % de confianza (Corte 3)
 
-**Pruebas actuales: 114/114 aplicación + 26/26 SSH local = 140/140 ejecutadas (100%).** Se conservan los 135 escenarios previos y se añaden L01–L05: laboratorio real de quince pasos, rangos privados distintos, capacidades/modelos, cuatro CLI, inventario físico, comparación, simulación SSH, JSON/localStorage, rollback y funcionamiento offline. Cero fallidas en las matrices. La limitación histórica FILE01 por política de navegador se informa separadamente; no se repitió ni se cuenta como superada. Validación textual/local; Windows y hardware no ejecutados. Las referencias CLI históricas no se sustituyen.
+**Pruebas actuales: 114/114 aplicación + 26/26 SSH local = 140/140 ejecutadas (100%).** La [normalización final](docs/pruebas-normalizacion.md) repitió ambas suites y verificó estado/CLI idénticos y 56 pantallas sin cambios visuales. Se conservan los 135 escenarios previos y se añaden L01–L05: laboratorio real de quince pasos, rangos privados distintos, capacidades/modelos, cuatro CLI, inventario físico, comparación, simulación SSH, JSON/localStorage, rollback y funcionamiento offline. Cero fallidas en las matrices. La limitación histórica FILE01 por política de navegador se informa separadamente; no se repitió ni se cuenta como superada. Validación textual/local; Windows y hardware no ejecutados. Las referencias CLI históricas no se sustituyen.
 
 ```bash
 python -m pip install -r tests/requirements.txt
@@ -44,7 +44,7 @@ python -m playwright install chromium
 python tests/test_corte3.py
 ```
 
-Para las 26 pruebas SSH, instalar también `python -m pip install -r ssh_service/requirements.txt` y ejecutar `python tests/test_ssh_service.py`; el comando UI anterior ejecuta 114 casos, no 140 por sí solo. No se repitió ninguna suite en esta auditoría.
+Para las 26 pruebas SSH, instalar también `python -m pip install -r ssh_service/requirements.txt` y ejecutar `python tests/test_ssh_service.py`; el comando UI anterior ejecuta 114 casos, no 140 por sí solo. La auditoría documental anterior no repitió la suite; la normalización final sí ejecutó nuevamente los 140 casos.
 
 El runner inicia/cierra HTTP local, crea contextos limpios y devuelve un código no cero ante fallos. El reporte normal es temporal y su ruta se imprime; [casos, resultados, hashes y entorno](docs/pruebas.md), [reporte UI actual](tests/reporte-laboratorio.html), [resultado SSH actual](tests/reporte-laboratorio-ssh.json) y [pruebas SSH](docs/pruebas-ssh.md). El porcentaje no certifica toda la aplicación ni hardware, conectividad o seguridad integral.
 

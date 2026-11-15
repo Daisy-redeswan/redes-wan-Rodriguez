@@ -1,3 +1,375 @@
+# Documentación integral del código — WAN Architect
+
+## Edición final de normalización
+
+Base main `3e3ed118544be32e32aa7cd6f74ca61b3eb74665` tras el squash documental del PR #12. Rama `refactor/normalizacion-final-wan-architect`. **222 funciones declaradas JavaScript y 19 funciones Python documentadas: 241 contratos**. No se cuentan como funciones nuevas ni como pruebas adicionales. Los callbacks anónimos siguen dentro de sus operaciones propietarias; el índice cuenta declaraciones nombradas, incluido `solve` anidado.
+
+La normalización modifica presentación del código y comentarios, no algoritmos, contratos, CLI, catálogo ni interfaz. Se conserva el HTML autónomo, CSS en el mismo archivo y JavaScript sin framework. El servicio Python sigue siendo opcional. Se conservan nombres, IDs, eventos, atributos, valores CSS, orden de reglas, media queries y controles; no se renombra una clave que utilicen UI/JSON/tests.
+
+Prettier 3.6.2 se usa como herramienta temporal de edición, fuera del repositorio y sin añadir dependencia de ejecución. `htmlWhitespaceSensitivity: strict` y preservación de claves entrecomilladas evitan cambios de texto/contrato. El bloque `wanCatalogData` generado se restaura exactamente, sin editar sus fichas. `python tools/build_catalogo.py --check` comprueba su sincronización. JavaScript se compara por AST Acorn, CSS por forma canónica preservando reglas/valores y HTML por estructura canónica con scripts/estilos comparados aparte. En Python solo cambian docstrings: AST ejecutable idéntico al ignorarlos. Los números de línea no son contratos.
+
+### Cómo leer los contratos
+
+Cada función JavaScript incluye propósito, entradas reales, rutas de retorno explícitas, escrituras directas de estado (incluidas ramas/callbacks), validaciones relacionadas, dependencias locales y tratamiento de errores. Estos datos describen operaciones presentes en el cuerpo, no un análisis formal de todos los caminos: una llamada delegada puede añadir efectos o errores. `sin escritura directa` no significa pureza si se escribe DOM o se llama a otras funciones. Las funciones Python tienen docstrings específicos de parámetros, retorno, efectos, dependencias y errores públicos; credenciales siguen siendo efímeras.
+
+## Arquitectura y mapa de módulos actuales
+
+| Índice | Vista | Responsabilidad y dependencias |
+| --- | --- | --- |
+| 00 | Resumen | `dashboard`, datos/estados reales, exportación de resumen |
+| 01 | Datos del proyecto | `projectView`, `saveProject`, `saveSite`, fichas y confirmaciones |
+| 02 | Estimación | `estimateView`, `counts`, `proposal`, inventario confirmado |
+| 03 | VLAN y VLSM | `proposeVlans`, `readVlans`, `allocate`, `confirmVlans`, plan efectivo |
+| 04 | Subnetting | `calculate`, `addressCalculation`, IPv4/IPv6 independiente |
+| 05 | Topología | `buildTopology`, `svgTopology`, nodos/enlaces, modelos y puertos |
+| 06–09 | Cisco/Huawei/Fortinet/MikroTik | Generadores separados, tabla física y descargas |
+| 10 | Comparación | `compareFourEntries`, extractos nativos y equivalencia IOS/VRP explícita |
+| 11 | Ciberdefensa | `securityWarnings`, `securityView`, validaciones y políticas |
+| 12 | Planificación IPv6 | `allocateIPv6`, `confirmIPv6`, plan independiente |
+| 13 | Consola SSH | Simulación local; conexión real opcional y explícita |
+
+Flujo: proyecto → sedes → inventario → VLAN/intenciones → plan IPv4/IPv6 → aprobación efectiva → fabricantes/roles → grafo/modelos/puertos → cuatro adaptadores → CLI revisable → JSON/localStorage. `go` y `render` aplican barreras de módulos dependientes; calculadora y SSH manual no se subordinan a VLSM. Cambiar idioma reconstruye presentación conservando borradores/estado; una conexión real se cierra para no dejar terminales ocultos.
+
+## Algoritmos, explicados paso a paso
+
+### 1. Subnetting IPv4
+
+1. `subnet` separa dirección/prefijo y valida ambos con `ipNum` y `num`.
+2. Calcula tamaño como 2 elevado a 32−prefijo; red mediante división entera alineada y último valor como red+tamaño−1.
+3. Obtiene máscara, broadcast y extremos utilizables; trata /31 y /32 según reglas del cálculo existente.
+4. `addressCalculation` selecciona la familia; `calculate` solo muestra resultado válido. Una entrada errónea conserva el cálculo previo.
+
+### 2. VLSM y pools independientes
+
+1. `allocationPools` valida fallback, bloques propios de sede y tránsito sin obligar a contener sedes dentro del fallback.
+2. `manualVlanNetworks` valida alineación, capacidad, pertenencia al pool efectivo, gateway y solapamientos; reserva manuales antes de las automáticas.
+3. `allocate` conserva filas previas que siguen válidas en su pool y cuya demanda/intención no cambió.
+4. Ordena solicitudes por tamaño y clave estable. `findIPv4Space` busca huecos alineados, excluyendo reservas, asignaciones y bloques de otras sedes.
+5. Calcula required/size, máscara, rango, broadcast y gateway/reservas. /30 de tránsito respeta el pool dedicado o fallback libre.
+6. Si no hay espacio contiguo suficiente, falla con sede/VLAN y demanda: no amplía ni mueve redes manuales. El plan candidato se devuelve completo antes de adoptarlo.
+
+### 3. Planificación IPv6
+
+1. `ipv6Number` interpreta grupos/comprensión y produce BigInt solo en memoria; `ipv6String` representa canónicamente.
+2. `ipv6Blocks` valida global ULA y bloques /56 manuales, contención y solapamientos.
+3. `allocateIPv6` reserva manuales y asigna /56 por sede ordenada por ID.
+4. Dentro de cada sede ordena VLAN por clave, asigna /64 y comprueba capacidad.
+5. `ipv6Row` reserva dirección completa +1 como router, o +1 virtual y +2/+3 físicas con redundancia. No configura protocolos ni tránsitos IPv6.
+6. Persistencia usa cadenas: nunca se serializa BigInt; IPv4 y CLI permanecen separados.
+
+### 4. VLAN, inventario y confirmaciones
+
+`proposeVlans` deriva segmentos de servicios e inventario sin tratar una propuesta como confirmación. `readVlans` valida todas las filas visibles; `deleteVlan` lo reutiliza antes de retirar la seleccionada. Cancelar o un error conserva lo escrito. `confirmVlans` lee intención candidata, llama al asignador y solo después sustituye datos e invalida derivados. `confirmedPlan` comprueba coherencia efectiva; una bandera aislada no basta. Inventario y fichas sin cambios reales conservan diseños; `invalidateSite` delimita dependencias locales y vecinos WAN afectados.
+
+### 5. Creación y edición de topología
+
+`buildTopology` exige plan confirmado, valida perfiles de fabricante y estima límites antes de construir. Genera equipos por rol y enlaza redes efectivas; conserva IDs automáticos, overrides, modelos y equipos manuales. `siteCode` deriva nombres únicos. `arrangeTopology` cambia coordenadas, no redes/IDs. `svgTopology`, `deviceIcon` y `bindDrag` separan dibujo de datos. `saveNode`/`saveLink` validan candidatos antes de adoptarlos. Imagen cargada es referencia manual, sin OCR; exportar SVG no conecta equipos.
+
+### 6. Asignación automática de interfaces
+
+1. `modelsFor` filtra por marca/rol y `validateNodeModel` confirma IDs conocidos.
+2. `assignCatalogInterfaces` copia enlaces y construye conjuntos de puertos usados por equipo.
+3. Comprueba capacidad y modos; conserva asociaciones previas válidas de su enlace.
+4. Ordena enlaces por cantidad de alternativas y clave. `catalogPurpose` prioriza WAN/LAN/uplink/access; `catalogPair` exige medio/velocidad común.
+5. `solve` retrocede sobre clases equivalentes y mantiene un límite explícito. Si no existe asignación, falla sin inventar puertos ni adoptar estado parcial.
+6. `validateCatalogBindings` comprueba importaciones sin reasignar silenciosamente. `requireCatalogReady` verifica funciones activas contra capacidades conservadoras.
+
+### 7. Validación de fabricante y modelo
+
+`validateVendorProfile` verifica elecciones por función; `validateNodeVendor` evita convertir roles para forzar una marca. Dos cores redundantes no se tratan como una redundancia interoperable entre HSRP/VRRP. `validateNodeModel` relaciona rol/marca/ficha exacta; `setNodeModel` adopta solo después de comprobar todo el grafo afectado. AP continúa como dispositivo gestionable sin adaptador CLI genérico. Un modelo ausente mantiene Modo genérico con advertencia; uno desconocido se rechaza.
+
+### 8. Cisco IOS/IOS XE
+
+`generate` excluye AP y valida catálogo, marca y `assertReady`. Resuelve LAN, enlaces, rol y opciones comunes, y elige únicamente la rama Cisco. Emite hostname/seguridad, VLAN y puertos, SVI o enlaces enrutados, gateway/reservas y opciones de OSPF/DHCP/relay/rutas según rol. `trunkCommands` y `wildcard` suministran sintaxis propia. Los nombres efectivos vienen de enlaces/modelo; no se reemplazan por ejemplos universales.
+
+### 9. Huawei VRP
+
+La otra rama explícita de `generate` emite system-view/sysname, VLAN y puertos VRP, Vlanif y opciones pertinentes. El perfil Huawei LI del laboratorio es L2 y no hereda capacidades del adaptador L3 genérico. `requireCatalogReady` bloquea funciones no respaldadas. Una equivalencia de Comparación no reclasifica hardware ni certifica modelos. La CLI no se traduce al cambiar ES/EN.
+
+### 10. Fortinet FortiOS
+
+`generateFortinet` acepta Firewall nativo, confirma plan/topología y valida nombre/opciones. `fortinetInterfaces` deriva direcciones del plan y enlaces; `fortinetPath`/`fortinetRoute` resuelven caminos reales. Se construyen interfaces, objetos y funciones pertinentes, administración restringida y políticas sin permisos implícitos. No se inventan NAT/Internet/VDOM, HA o LACP. El texto no es un respaldo idempotente ni se aplica automáticamente.
+
+### 11. MikroTik RouterOS
+
+`generateMikroTik` exige Router nativo y plan coherente. `mikrotikInterfaces` distingue puertos, LAN y enlaces enrutados; `mikrotikRoute` determina siguientes saltos y `mikrotikDhcpRanges` excluye reservas. Emite identidad, puertos, bridge/VLAN cuando procede, IPv4, rutas, OSPF v7, DHCP/relay y endurecimiento. Revisa objetos/puertos previos; forward no se vuelve permisivo sin intención. No asume VRF/CAPsMAN/VRRP/LACP/IPv6.
+
+### 12. Comparación de configuraciones
+
+`compareFourEntries` extrae propuestas reales compatibles para interfaces, VLAN/LAN, OSPF, DHCP/relay y administración; no crea equipos ficticios ni cambia fabricantes/opciones. `compareFourView` muestra límites o ausencia de un rol/función. `generateCompare` conserva una equivalencia lógica IOS/VRP explícita, separada de la propuesta nativa.
+
+### 13. Ciberdefensa y errores
+
+Validadores numéricos, textos, hostnames, interfaces, CIDR y listas cerradas limitan entradas en su frontera. `esc` (función flecha existente) presenta texto seguro; no evalúa el JSON. `fail` aborta y `safe` presenta errores de acciones. `topologyIssues` distingue incoherencias bloqueantes de avisos; `securityWarnings` no es una auditoría exhaustiva. Marcadores técnicos no son credenciales. Las propuestas requieren revisión de plataforma y autorización externa.
+
+### 14. Guardado e importación JSON
+
+`exportJSON` serializa state/imageData v4, no sesiones SSH. `saveLocal` usa clave v4; `loadLocal` prioriza v4 y, cuando no existe, busca v3/v2 sin sobrescribirlas automáticamente. `validateImport` reconstruye estructura conocida, ejecuta `migrateV2`/`migrateV3` y verifica tipos, límites, IDs, redes, modelos, puertos y CLI válida. `applyImport` recibe solo el candidato completo validado: no llama a asignadores durante carga. Un error no sustituye el proyecto.
+
+### 15. Simulación SSH
+
+`sshCommands` define la lista cerrada por marca. `sshRunSimulation` normaliza solo espacios/capitalización de consultas de lectura y devuelve datos/propuestas del proyecto. No hay conexión ni running-config real, rutas aprendidas o ping. Limpiar/reiniciar cambia únicamente el historial educativo; el manual integrado es local y bilingüe.
+
+### 16. Servicio SSH real opcional
+
+El HTML solicita conexión explícita con `sshConnect`, carga xterm local y descarta recursos/credenciales con `sshDispose`. En Python, `create_app` registra boundary y rutas fijas; bootstrap autoriza navegador local con cookie/token efímeros. `destination` aplica allowlist y DNS fijado; `trust_host` exige huella explícita y no reemplaza claves modificadas. `connect_for_socket` cancela negociación si cierra WS. `websocket` valida autenticación/mensajes, crea PTY y transporta entrada manual; `output` aplica ACK y backpressure. finally/shutdown cierran tareas, SSH, WS y estado efímero. Nada envía automáticamente la configuración generada.
+
+### 17. Laboratorio automático
+
+`demo` pide autorización, captura proyecto/borradores y ejecuta los mismos validadores del flujo real. Inicializa sedes privadas independientes, confirma inventario/VLAN/fabricantes, construye grafo y elige modelos con capacidad. Asigna puertos y genera propuestas nativas; si falla restaura la instantánea completa. Resultado del escenario: 21 redes, 42 nodos, 48 enlaces y 16 CLI. No se marcan aprobaciones ficticias ni se sobrescribe localStorage sin acción.
+
+### 18. Internacionalización ES/EN
+
+`I18N`, `t` y `localizeMessage` resuelven presentación/mensajes con parámetros. `setLanguage` captura y restaura borradores, foco y scroll; conserva valores internos, planes y CLI. La preferencia local no es parte de state. Traducir no confirma formularios, no consulta IA ni modifica nombres de usuario/JSON. El catálogo generado y los bloques CLI no se formatean como contenido traducible.
+
+## Contratos de estado y mantenimiento
+
+- Proyecto v4: datos, base IPv4 fallback, transitBase opcional, ipv6Base opcional y opciones. Sedes: IDs estables, inventario, servicios, redundancia, bloques propios y perfil de fabricantes. VLAN: clave, sede, ID, rol, hosts, DHCP, CIDR manual opcional.
+- `plan`: resultado IPv4 efectivo y sus relaciones; `ipv6Plan`: resultado independiente por clave VLAN con cadenas IPv6. `nodes`: roles/marcas/modelId opcional y coordenadas. `links`: extremos, tipo/red y nombres efectivos por marca. `configs`: textos derivados/revisión/opciones.
+- Importaciones v2/v3 migran sin asignar redes nuevas. No se promete que la aplicación antigua lea extensiones v4. LocalStorage/JSON no están cifrados.
+- Ampliar catálogo exige fuentes oficiales, ficha independiente, sincronización y pruebas; no editar el bloque generado manualmente. No usar un nombre de marca nuevo como rama genérica.
+- Para cambios funcionales: capturar línea base, modificar un módulo acotado y sus validadores, comprobar atomicidad/derivados/persistencia, ejecutar suites y revisar diff/secretos. No actualizar fixtures para ocultar regresiones.
+- Los contratos de comentarios se revisan junto al código si cambia una firma, retorno, validación o efecto. El índice siguiente evita depender de números de línea. Los anexos previos se conservan como contexto histórico identificado.
+
+## Índice completo de funciones JavaScript documentadas
+
+| Función | Propósito | Entradas | Dependencias directas de aplicación |
+| --- | --- | --- | --- |
+| `accessPoint()` | Reconoce AP para conservarlos en diseño y excluir su CLI genérica. | `n` |  |
+| `addressCalculation()` | Selecciona el cálculo IPv4 o IPv6 según la entrada validada. | `value` | `ipv6Subnet`, `subnet` |
+| `addressResult()` | Renderiza el resultado de la familia de direcciones sin mezclar sus modelos. | `r` | `subnetResult`, `t` |
+| `addVlan()` | Añade una fila de segmentación manteniendo claves estables y valores pendientes válidos. | `sin parámetros` | `invalidate`, `render`, `safe`, `siteName`, `t`, `toast` |
+| `allocate()` | Resuelve un plan IPv4 candidato completo sin adoptarlo antes de validar capacidad y conflictos. | `vlans, base, growth, transits, project = state.project` | `allocationPools`, `fail`, `findIPv4Space`, `ipStr`, `isHost`, `manualVlanNetworks`, `siteName`, `subnet`, `t` |
+| `allocateIPv6()` | Asigna bloques de sede y redes VLAN de forma determinista en un plan IPv6 separado. | `project, sites, vlans` | `fail`, `ipv6Blocks`, `ipv6Row`, `ipv6String`, `ipv6Subnet`, `t` |
+| `allocationPools()` | Construye pools y reservas independientes para sedes, fallback global y tránsito. | `base, project = state.project, siteList = state.sites` | `fail`, `privateIPv4Block`, `subnet`, `t`, `validateSiteBlocks` |
+| `applyImport()` | Adopta un candidato ya validado y reinicia solo presentación/sesiones correspondientes. | `data` | `render` |
+| `arrangeTopology()` | Reorganiza coordenadas jerárquicas sin borrar nodos, enlaces ni identificadores. | `refresh=true` | `render` |
+| `assertReady()` | Comprueba plan, topología, roles e interfaces antes de generar CLI. | `n` | `configurable`, `connected`, `endpoint`, `fail`, `hostname`, `isHost`, `requireConfirmedPlan`, `switching`, `t`, `topologyIssues` |
+| `assignCatalogInterfaces()` | Asigna puertos en una copia del grafo con reservas, capacidad y búsqueda determinista. | `data` | `catalogPair`, `catalogPurpose`, `fail`, `solve`, `t`, `validateNodeModel` |
+| `availableIPs()` | Obtiene direcciones utilizables del plan respetando reservas y dispositivos existentes. | `r, n, excluded = []` | `fail`, `ipStr`, `t` |
+| `badge()` | Representa visualmente un estado sin cambiar su valor interno. | `ok, yes = "Cumplido", no = "Pendiente"` | `t` |
+| `bindDrag()` | Conecta arrastre del diagrama con las coordenadas de los nodos. | `sin parámetros` | `editNode`, `node`, `render` |
+| `bool()` | Exige un booleano real para evitar coerciones silenciosas en importación. | `v` | `fail`, `t` |
+| `buildTopology()` | Deriva el grafo desde redes y roles confirmados conservando IDs y equipos manuales. | `sin parámetros` | `arrangeTopology`, `assignCatalogInterfaces`, `availableIPs`, `counts`, `endpoint`, `fail`, `hostname`, `proposal`, `refreshPhysicalProfiles`, `render`, `requireConfirmedPlan`, `row`, `safe`, `siteCode`, `t`, `toast`, `topologyIssues`, `validateCatalogBindings`, `vendorProfile` |
+| `calculate()` | Valida la entrada y muestra el cálculo IPv4/IPv6 conservando el resultado previo ante error. | `sin parámetros` | `addressCalculation`, `addressResult`, `safe` |
+| `captureDraft()` | Guarda valores visibles de una vista antes de cambiar su presentación. | `sin parámetros` |  |
+| `catalogControls()` | Muestra selección de modelos exclusivamente en la vista de Topología. | `vendor=''` | `accessPoint`, `catalogInventory`, `configNodes`, `configurable`, `fortinetNode`, `mikrotikNode`, `modelOptions`, `modelsFor`, `t` |
+| `catalogInventory()` | Presenta puertos, límites y fuentes del modelo seleccionado. | `n` | `connected`, `endpoint`, `t` |
+| `catalogPair()` | Comprueba medio y velocidad común entre ambos extremos sin inventar ópticas. | `a, b` |  |
+| `catalogPurpose()` | Deriva prioridad WAN/LAN/uplink/access para asignar puertos compatibles. | `l, n, data` |  |
+| `catalogSavedSummary()` | Renderiza inventario físico de siete columnas desde nodos y enlaces reales. | `vendor` | `configNodes`, `connected`, `endpoint`, `t` |
+| `changeFortinetOpts()` | Valida y guarda opciones Fortinet retirando textos que ya no correspondan. | `sin parámetros` | `fail`, `ipNum`, `safe`, `t`, `text` |
+| `changeOpts()` | Valida opciones comunes y retira propuestas obsoletas cuando cambian realmente. | `sin parámetros` | `fail`, `ipNum`, `ipStr`, `render`, `safe`, `t` |
+| `closeModal()` | Cierra el diálogo sin confirmar por sí mismo cambios pendientes. | `sin parámetros` |  |
+| `commandName()` | Restringe identificadores que se interpolan en comandos o nombres internos. | `v` |  |
+| `compareFourEntries()` | Obtiene extractos reales de cuatro marcas por función sin cambiar el proyecto. | `key` | `configNodes`, `enumVal`, `fortinetNode`, `generate`, `mikrotikNode`, `routed`, `switching`, `t` |
+| `compareFourView()` | Presenta diferencias y límites de los extractos de cuatro fabricantes. | `sin parámetros` | `compareFourEntries`, `t` |
+| `compareView()` | Ofrece comparación nativa y equivalencia lógica adicional IOS/VRP diferenciadas. | `sin parámetros` | `compareFourView`, `configBlock`, `configControls`, `node`, `t`, `title` |
+| `configBlock()` | Presenta el texto guardado de un equipo y sus acciones de copia/descarga. | `n, v` | `t` |
+| `configControls()` | Presenta opciones reales de generación y dependencias DHCP/relay/ruta. | `sin parámetros` | `field`, `t` |
+| `configNodes()` | Filtra equipos nativos configurables de una marca y excluye AP. | `vendor` | `configurable` |
+| `configurable()` | Limita los roles admitidos por el adaptador genérico de router/switch. | `n` | `accessPoint`, `fortinetNode`, `mikrotikNode`, `routed`, `switching` |
+| `configView()` | Muestra controles compartidos, inventario físico y propuestas de la marca solicitada. | `vendor` | `catalogSavedSummary`, `configBlock`, `configControls`, `configNodes`, `siteName`, `t`, `title` |
+| `confirmedPlan()` | Valida la aprobación efectiva: una bandera aislada no demuestra un VLSM coherente. | `sin parámetros` | `allocationPools`, `initialTransits`, `isHost`, `pendingVlans`, `subnet` |
+| `confirmIPv6()` | Adopta un plan IPv6 válido sin cambiar el plan IPv4 ni la CLI de fabricantes. | `sin parámetros` | `allocateIPv6`, `fail`, `ipv6Subnet`, `render`, `safe`, `t`, `toast` |
+| `confirmVlans()` | Confirma VLAN y sustituye plan/derivados solo después de una asignación completa válida. | `sin parámetros` | `allocate`, `fail`, `initialTransits`, `ipNum`, `ipStr`, `num`, `projectValid`, `readVlans`, `refreshPhysicalProfiles`, `render`, `safe`, `t`, `toast`, `updateVlanStatus` |
+| `connected()` | Obtiene los enlaces incidentes de un dispositivo para interfaces y rutas. | `n` |  |
+| `copyConfig()` | Copia CLI exacta al portapapeles y ofrece alternativa cuando el navegador lo bloquea. | `id, v` | `modal`, `t`, `toast` |
+| `coreAddress()` | Resuelve la dirección física de core sin duplicar el gateway virtual. | `n, r` | `availableIPs`, `fail`, `t` |
+| `counts()` | Resuelve inventario personalizado o estimado sin sumar terminales dos veces. | `s` | `estimated` |
+| `dashboard()` | Resume datos, estimaciones y estados reales de aprobación del proyecto. | `sin parámetros` | `badge`, `counts`, `proposal`, `securityWarnings`, `t`, `title`, `topologyIssues` |
+| `deleteLink()` | Retira el enlace seleccionado y las configuraciones que dependían de él. | `id` | `invalidate`, `render`, `t` |
+| `deleteNode()` | Elimina un equipo autorizado por el usuario y sus referencias relacionadas. | `id` | `invalidate`, `render`, `t` |
+| `deleteVlan()` | Lee primero las ediciones visibles válidas y elimina únicamente la fila confirmada. | `i` | `invalidate`, `readVlans`, `render`, `safe`, `t` |
+| `demo()` | Construye el laboratorio completo mediante validaciones reales y rollback ante error. | `sin parámetros` | `assignCatalogInterfaces`, `buildTopology`, `captureDraft`, `configNodes`, `configurable`, `confirmVlans`, `confirmedPlan`, `connected`, `fail`, `fortinetNode`, `fresh`, `generateAll`, `mikrotikNode`, `modelsFor`, `proposeVlans`, `render`, `safe`, `saveCounts`, `saveProject`, `saveSite`, `saveVendorProfiles`, `siteDefault`, `t`, `toast`, `validateCatalogBindings`, `validateImport`, `validateNodeModel` |
+| `dependentPage()` | Clasifica qué vistas requieren direccionamiento confirmado sin bloquear las independientes. | `index` |  |
+| `deviceIcon()` | Construye iconografía SVG local y original según la función del dispositivo. | `type` |  |
+| `download()` | Crea una descarga local de contenido y libera el recurso temporal del navegador. | `name, content, mime` |  |
+| `downloadAll()` | Descarga las propuestas disponibles de una marca validando que existan. | `v` | `download`, `t`, `toast` |
+| `downloadConfig()` | Descarga la propuesta guardada de un equipo sin ejecutarla. | `id, v` | `download`, `node`, `t`, `toast` |
+| `downloadPlan()` | Exporta las filas del plan efectivo en formato tabular sin recalcular redes. | `sin parámetros` | `download`, `siteName`, `t` |
+| `downloadReport()` | Produce un resumen HTML local del diseño actual y sus límites. | `sin parámetros` | `dashboard`, `download`, `localizeMessage`, `planTable`, `securityWarnings`, `svgTopology`, `t` |
+| `downloadSVG()` | Exporta la topología real como archivo SVG sin configurar equipos. | `sin parámetros` | `download`, `svgTopology`, `t`, `toast` |
+| `editCounts()` | Abre la edición del inventario sin sustituir sus cantidades confirmadas. | `i` | `render` |
+| `editGateway()` | Valida un gateway explícito y retira derivados que dependerían de una dirección obsoleta. | `key` | `fail`, `ipNum`, `ipStr`, `isHost`, `render`, `safe`, `t`, `toast` |
+| `editLink()` | Abre la edición de un enlace real y sus interfaces de cada extremo. | `id = ""` | `field`, `lockCatalogLinkFields`, `modal`, `optsHTML`, `siteName`, `t`, `toast` |
+| `editNode()` | Abre el editor de dispositivo y la selección filtrada de fabricante/modelo. | `id = ""` | `accessPoint`, `catalogInventory`, `field`, `modal`, `modelOptions`, `node`, `optsHTML`, `row`, `siteName`, `t` |
+| `editProject()` | Habilita edición del proyecto sin invalidar el diseño por abrir el formulario. | `sin parámetros` | `render` |
+| `editSite()` | Abre la ficha de una sede para modificarla conservando su instantánea previa. | `sin parámetros` | `render`, `siteFormSnapshot` |
+| `editVendorProfiles()` | Abre la selección de marcas sin cambiar redes ni invalidar por mera navegación. | `sin parámetros` | `render` |
+| `endpoint()` | Deriva dirección e interfaz de un extremo de enlace para su adaptador. | `l, n, vendor` | `node`, `row` |
+| `enumVal()` | Restringe un valor importado a la lista de opciones admitidas. | `v, arr, label` | `fail`, `t` |
+| `estimated()` | Obtiene las cantidades estimadas de terminales según los servicios de la sede. | `s` |  |
+| `estimateView()` | Muestra inventario editable o confirmado y dimensionamiento preliminar. | `sin parámetros` | `counts`, `field`, `proposal`, `t`, `title` |
+| `excludeAccessPoint()` | Bloquea explícitamente CLI genérica de AP conservando su representación de red. | `n` | `accessPoint`, `fail`, `t` |
+| `exportJSON()` | Serializa el proyecto v4 y su imagen sin credenciales de sesión SSH. | `sin parámetros` | `download`, `t`, `toast` |
+| `fail()` | Interrumpe la transacción con un error de validación que la interfaz puede presentar. | `msg` |  |
+| `field()` | Renderiza un campo con su etiqueta y valor de interfaz. | `label, id, value, type = "text", extra = ""` | `t` |
+| `findIPv4Space()` | Busca un hueco CIDR alineado: direcciones libres totales no garantizan continuidad. | `pool, size, blocked` |  |
+| `fortinetControls()` | Presenta opciones específicas y límites de laboratorio FortiOS. | `sin parámetros` | `field`, `t` |
+| `fortinetInterfaceName()` | Valida el nombre de puerto que se utilizará en la propuesta Fortinet. | `value, optional = false` | `fail`, `t` |
+| `fortinetInterfaces()` | Deriva interfaces físicas/VLAN y direcciones FortiOS del plan y enlaces. | `n` | `connected`, `endpoint`, `fail`, `fortinetInterfaceName`, `fortinetNode`, `isHost`, `t` |
+| `fortinetNode()` | Determina si el rol del equipo admite el adaptador FortiOS. | `n` |  |
+| `fortinetPath()` | Busca un camino real de topología para resolver el siguiente salto. | `n, target` | `connected`, `endpoint`, `fortinetInterfaceName`, `routed` |
+| `fortinetRoute()` | Obtiene una ruta FortiOS compatible con el grafo y direccionamiento del proyecto. | `n, r` | `connected`, `fortinetNode`, `fortinetPath` |
+| `fortinetView()` | Presenta equipos Fortinet nativos, inventario y CLI correspondiente. | `sin parámetros` | `catalogSavedSummary`, `configBlock`, `configNodes`, `fortinetControls`, `t`, `title` |
+| `fresh()` | Construye un proyecto v4 vacío con valores iniciales explícitos y sin datos de laboratorio. | `sin parámetros` | `siteDefault` |
+| `generate()` | Produce propuesta Cisco o Huawei mediante ramas separadas a partir del mismo modelo. | `n, vendor` | `assertReady`, `availableIPs`, `commandName`, `connected`, `coreAddress`, `endpoint`, `excludeAccessPoint`, `fail`, `fortinetNode`, `generateFortinet`, `generateMikroTik`, `mikrotikNode`, `requireCatalogReady`, `routed`, `routerId`, `row`, `siteName`, `switching`, `t`, `trunkCommands`, `wildcard` |
+| `generateAll()` | Genera propuestas de todos los equipos compatibles de una marca. | `vendor` | `changeOpts`, `configNodes`, `fail`, `generate`, `generateFortinetFromForm`, `generateMikroTikFromForm`, `render`, `safe`, `t`, `toast` |
+| `generateCompare()` | Construye equivalencias explícitas sin reclasificar el fabricante físico del equipo. | `id` | `changeOpts`, `fail`, `generate`, `node`, `render`, `safe`, `t` |
+| `generateFortinet()` | Genera una propuesta FortiOS separada sin inventar NAT ni políticas permisivas. | `n` | `connected`, `excludeAccessPoint`, `fail`, `fortinetInterfaces`, `fortinetNode`, `fortinetRoute`, `hostname`, `idVal`, `ipNum`, `ipStr`, `isHost`, `num`, `requireCatalogReady`, `requireConfirmedPlan`, `routerId`, `subnet`, `t`, `text`, `topologyIssues` |
+| `generateFortinetFromForm()` | Conecta la selección de interfaz con generación Fortinet validada. | `all` | `changeFortinetOpts`, `configNodes`, `fail`, `generateFortinet`, `node`, `render`, `safe`, `t`, `toast` |
+| `generateMikroTik()` | Genera propuesta RouterOS 7 con controles conservadores y sin NAT/Internet implícitos. | `n` | `connected`, `excludeAccessPoint`, `fail`, `hostname`, `ipNum`, `ipStr`, `isHost`, `mikrotikDhcpRanges`, `mikrotikInterfaces`, `mikrotikNode`, `mikrotikRoute`, `requireCatalogReady`, `requireConfirmedPlan`, `routerId`, `t`, `text`, `topologyIssues` |
+| `generateMikroTikFromForm()` | Genera RouterOS desde la selección nativa y muestra errores de validación. | `all` | `configNodes`, `fail`, `generateMikroTik`, `ipNum`, `node`, `render`, `safe`, `t`, `text`, `toast` |
+| `generateSelected()` | Genera únicamente el dispositivo seleccionado en el módulo de su marca. | `vendor` | `changeOpts`, `fail`, `generate`, `generateFortinetFromForm`, `generateMikroTikFromForm`, `node`, `render`, `safe`, `t`, `toast` |
+| `go()` | Controla la navegación y evita el acceso programático a dependencias no confirmadas. | `i` | `captureDraft`, `dependentPage`, `render`, `safe` |
+| `hostname()` | Rechaza nombres que podrían introducir sintaxis ajena en una configuración. | `v` | `fail`, `t`, `text` |
+| `idVal()` | Valida identificadores estables que relacionan estructuras del proyecto. | `v` | `fail`, `t` |
+| `importJSON()` | Lee un archivo limitado y solo aplica el resultado de una validación completa. | `input` | `applyImport`, `fail`, `t`, `toast`, `validateImport` |
+| `initialTransits()` | Calcula las solicitudes de tránsito requeridas por roles y enlaces del diseño. | `sin parámetros` | `vendorProfile` |
+| `inspectSubnet()` | Abre el cálculo de una red del plan sin modificar su asignación. | `i` | `go` |
+| `interfaceName()` | Valida nomenclatura de interfaz antes de interpolarla en comandos. | `v` | `fail`, `t` |
+| `invalidate()` | Invalida derivados que ya no corresponden a los datos primarios modificados. | `level = "project"` | `refreshPhysicalProfiles` |
+| `invalidateSite()` | Retira dependencias de una sede y CLI de vecinos afectados, conservando otras sedes. | `siteId, dropVlans = false` | `refreshPhysicalProfiles` |
+| `ipNum()` | Convierte IPv4 decimal en entero para operar sobre prefijos sin comparar cadenas. | `ip` | `fail`, `t` |
+| `ipStr()` | Reconstruye una IPv4 decimal a partir del valor numérico calculado. | `n` |  |
+| `ipType()` | Clasifica la dirección IPv4 para distinguir el espacio privado del público/especial. | `n` |  |
+| `ipv6Block()` | Comprueba alineación y prefijo del bloque ULA que utilizará la planificación. | `value, label, min, max` | `fail`, `ipv6In`, `ipv6Number`, `ipv6Subnet`, `t` |
+| `ipv6Blocks()` | Resuelve bloques de sede IPv6 y valida contención y ausencia de solapamiento. | `project, sites` | `fail`, `ipv6Block`, `ipv6Intent`, `t` |
+| `ipv6In()` | Comprueba pertenencia a un prefijo IPv6 mediante su máscara de 128 bits. | `n, address, prefix` | `ipv6Number` |
+| `ipv6Intent()` | Valida la intención opcional de prefijo IPv6 guardada como cadena. | `value, label` | `fail`, `t` |
+| `ipv6Number()` | Interpreta IPv6 comprimido o completo mediante enteros de 128 bits en memoria. | `value` | `fail`, `t` |
+| `ipv6Row()` | Construye una fila IPv6 por clave VLAN con router y reservas completas. | `v, site, pool, net` | `ipv6String` |
+| `ipv6String()` | Produce representación canónica IPv6 sin serializar valores BigInt. | `n` | `fail`, `t` |
+| `ipv6Subnet()` | Calcula límites y capacidad IPv6 sin inventar broadcast ni descontar dos direcciones. | `value` | `fail`, `ipv6Number`, `ipv6String`, `ipv6Type`, `t` |
+| `ipv6Type()` | Clasifica IPv6 por espacio de direcciones sin atribuir conectividad al resultado. | `n` | `ipv6In` |
+| `ipv6View()` | Presenta prefijos, estados y resultados IPv6 como módulo independiente. | `sin parámetros` | `field`, `siteName`, `t`, `title` |
+| `isHost()` | Comprueba si una dirección pertenece al rango utilizable de la subred. | `ip, row` | `ipNum` |
+| `loadImage()` | Carga una imagen limitada y validada como referencia manual, sin ejecutar OCR. | `input` | `fail`, `render`, `safe`, `t`, `toast` |
+| `loadLocal()` | Prioriza v4 y permite migración no destructiva desde almacenamiento v3/v2. | `sin parámetros` | `applyImport`, `fail`, `safe`, `t`, `toast`, `validateImport` |
+| `localizeMessage()` | Localiza mensajes con parámetros conservando los valores internos del proyecto. | `message` | `t` |
+| `lockCatalogLinkFields()` | Protege campos de puertos gobernados por el catálogo frente a edición incompatible. | `sin parámetros` | `node` |
+| `manualVlanNetworks()` | Valida todas las subredes manuales antes de reservar espacio para las automáticas. | `project, sites, vlans, nodes = [], pools = null` | `allocationPools`, `fail`, `isHost`, `privateIPv4Block`, `t` |
+| `migrateV2()` | Añade intenciones v3 vacías conservando plan y datos IPv4 sin reasignar. | `src` |  |
+| `migrateV3()` | Añade contrato IPv6 vacío v4 sin cambiar resultados IPv4 ya importados. | `src` |  |
+| `mikrotikControls()` | Presenta opciones de RouterOS y límites de funciones admitidas. | `sin parámetros` | `field`, `t` |
+| `mikrotikDhcpRanges()` | Obtiene rangos DHCP utilizables excluyendo direcciones reservadas del plan. | `r` | `fail`, `ipStr`, `t` |
+| `mikrotikInterfaceName()` | Valida nombres de puertos RouterOS antes de construir comandos. | `value, optional = false` | `fail`, `t` |
+| `mikrotikInterfaces()` | Deriva puertos, bridge/VLAN y direcciones RouterOS de enlaces reales. | `n` | `connected`, `endpoint`, `fail`, `fortinetNode`, `isHost`, `mikrotikInterfaceName`, `mikrotikNode`, `switching`, `t` |
+| `mikrotikNode()` | Restringe el adaptador RouterOS al rol de router implementado. | `n` |  |
+| `mikrotikRoute()` | Calcula rutas RouterOS usando caminos y siguientes saltos del proyecto. | `n, r` | `connected`, `endpoint`, `fortinetNode`, `mikrotikInterfaceName`, `mikrotikNode`, `node`, `routed`, `row` |
+| `mikrotikView()` | Presenta equipos RouterOS nativos, inventario físico y texto generado. | `sin parámetros` | `catalogSavedSummary`, `configBlock`, `configNodes`, `mikrotikControls`, `t`, `title` |
+| `modal()` | Presenta un diálogo reutilizable y accesible para acciones de edición. | `content` |  |
+| `modelOptions()` | Construye la lista filtrada de modelos conservando sus IDs internos. | `vendor, type, id=''` | `modelsFor`, `t` |
+| `modelsFor()` | Filtra fichas locales por fabricante y tipo de dispositivo compatibles. | `vendor, type` |  |
+| `newProject()` | Solicita autorización antes de reemplazar el proyecto actual por uno vacío. | `sin parámetros` | `fresh`, `render`, `t` |
+| `newULAPrefix()` | Propone un prefijo local ULA sin afirmar conectividad pública ni asignarlo automáticamente. | `sin parámetros` | `ipv6String` |
+| `node()` | Resuelve un dispositivo por su identificador estable. | `id` |  |
+| `num()` | Convierte y limita una cantidad numérica antes de usarla en dimensionamiento. | `v, min, max, label, integer = true` | `fail`, `t` |
+| `optionalAddressIntent()` | Valida el tipo y longitud de una intención opcional guardada como cadena. | `value, label` | `fail`, `t` |
+| `optsHTML()` | Construye opciones escapadas conservando los códigos internos de selección. | `arr, val` | `t` |
+| `pendingVlans()` | Detecta pendientes de VLAN para proteger los módulos que dependen del plan. | `sin parámetros` | `vlanFormChanged` |
+| `physicalBinding()` | Describe la asociación de extremo y enlace utilizada por perfiles físicos históricos. | `l, n` |  |
+| `physicalName()` | Resuelve la interfaz efectiva del extremo y fabricante del enlace. | `value, vendor` | `fail`, `fortinetInterfaceName`, `mikrotikInterfaceName`, `t` |
+| `planTable()` | Presenta redes efectivas, capacidad y gateways que usarán topología y adaptadores. | `sin parámetros` | `siteName`, `t` |
+| `previewNodeModel()` | Actualiza la previsualización del editor sin confirmar el proyecto. | `id` | `accessPoint`, `catalogInventory`, `node` |
+| `privateIPv4Block()` | Valida CIDR alineado completamente privado antes de usarlo como pool. | `value, label` | `fail`, `subnet`, `t` |
+| `projectValid()` | Determina si los datos primarios del proyecto cumplen los requisitos mínimos. | `sin parámetros` | `fail`, `t`, `text` |
+| `projectView()` | Presenta proyecto y fichas de sede con estados confirmados y edición explícita. | `sin parámetros` | `field`, `optsHTML`, `t`, `title` |
+| `proposal()` | Dimensiona infraestructura sugerida a partir del inventario y parámetros vigentes. | `s` | `counts` |
+| `proposeVlans()` | Deriva segmentos por servicio y sede sin reemplazar silenciosamente redes manuales. | `replaceAll = false` | `counts`, `go`, `invalidate`, `projectValid`, `proposal`, `safe`, `t`, `toast` |
+| `readVlans()` | Reconstruye filas VLAN desde el formulario y valida relaciones antes de adoptarlas. | `sin parámetros` | `fail`, `manualVlanNetworks`, `num`, `t`, `text`, `vlanGatewayIntent` |
+| `refreshPhysicalProfiles()` | Actualiza relaciones de perfiles históricos ante cambios de enlaces compatibles. | `sin parámetros` | `connected`, `physicalBinding` |
+| `removeSite()` | Elimina una sede confirmada por el usuario e invalida sus relaciones dependientes. | `sin parámetros` | `invalidate`, `render`, `t`, `toast` |
+| `render()` | Reconstruye la vista activa y sincroniza navegación, progreso y eventos asociados. | `sin parámetros` | `bindDrag`, `captureDraft`, `configView`, `confirmedPlan`, `dependentPage`, `pendingVlans`, `restoreDraft`, `siteFormSnapshot`, `sshDispose`, `t`, `toast`, `updateVlanStatus`, `vlanFormChanged` |
+| `requireCatalogReady()` | Bloquea funciones activas no respaldadas por la ficha del modelo. | `n, vendor` | `connected`, `fail`, `routed`, `switching`, `t`, `validateCatalogBindings`, `validateNodeModel` |
+| `requireConfirmedPlan()` | Detiene una acción dependiente cuando el plan no está realmente confirmado. | `sin parámetros` | `confirmedPlan`, `fail`, `t` |
+| `resetCounts()` | Restaura la estimación tras confirmar el reemplazo de cantidades personalizadas. | `i` | `estimated`, `invalidateSite`, `render`, `t` |
+| `resizeSites()` | Ajusta la cantidad de sedes mediante una acción explícita de usuario. | `sin parámetros` | `captureDraft`, `invalidate`, `num`, `render`, `safe`, `siteDefault`, `t`, `toast` |
+| `restoreDraft()` | Restaura el borrador visible sin confundirlo con datos ya confirmados. | `sin parámetros` |  |
+| `routed()` | Identifica el rol enrutado que requiere direcciones en extremos. | `n` | `fortinetNode` |
+| `routerId()` | Obtiene el identificador de enrutamiento propuesto para el dispositivo. | `n` |  |
+| `row()` | Busca una fila del plan por clave, evitando relacionar redes por posición visual. | `key` |  |
+| `safe()` | Canaliza errores de acciones de interfaz hacia un aviso sin ocultar la validación. | `fn` | `t`, `toast` |
+| `saveCounts()` | Confirma cantidades válidas de inventario y reconoce cuándo no hubo cambios reales. | `i` | `counts`, `fail`, `invalidateSite`, `num`, `render`, `safe`, `t`, `toast` |
+| `saveLink()` | Confirma extremos, puertos y red de enlace sin adoptar inconsistencias parciales. | `id` | `assignCatalogInterfaces`, `closeModal`, `fail`, `fortinetInterfaceName`, `fortinetNode`, `interfaceName`, `invalidate`, `ipStr`, `mikrotikInterfaceName`, `mikrotikNode`, `node`, `num`, `render`, `safe`, `subnet`, `t`, `validateCatalogBindings`, `validateLink` |
+| `saveLocal()` | Guarda el proyecto en la clave v4 del origen actual sin cifrar datos. | `sin parámetros` | `safe`, `t`, `toast` |
+| `saveNode()` | Valida un candidato de equipo y puertos antes de sustituir datos y CLI dependientes. | `id` | `assignCatalogInterfaces`, `availableIPs`, `closeModal`, `connected`, `enumVal`, `fail`, `fortinetInterfaceName`, `fortinetNode`, `hostname`, `interfaceName`, `invalidate`, `ipNum`, `ipStr`, `isHost`, `mikrotikInterfaceName`, `mikrotikNode`, `node`, `render`, `routed`, `row`, `safe`, `switching`, `t`, `validateCatalogBindings`, `validateNodeModel`, `validateNodeVendor` |
+| `saveProject()` | Valida datos de proyecto y aplica solamente sus cambios efectivos. | `sin parámetros` | `enumVal`, `fail`, `invalidate`, `num`, `render`, `safe`, `t`, `text`, `toast` |
+| `saveSite()` | Adopta una ficha válida de sede con invalidación selectiva y conservación por igualdad. | `sin parámetros` | `fail`, `invalidateSite`, `manualVlanNetworks`, `num`, `render`, `safe`, `t`, `text`, `toast`, `validateSiteBlocks` |
+| `saveVendorProfiles()` | Confirma fabricantes y resuelve dependencias afectadas de manera transaccional. | `sin parámetros` | `allocate`, `assignCatalogInterfaces`, `fail`, `initialTransits`, `proposal`, `render`, `safe`, `t`, `toast`, `validateCatalogBindings`, `validateNodeModel`, `validateNodeVendor`, `validateVendorProfile` |
+| `securityView()` | Muestra controles de ciberdefensa y políticas de uso responsable de IA. | `sin parámetros` | `localizeMessage`, `securityWarnings`, `t`, `title` |
+| `securityWarnings()` | Identifica riesgos concretos sin presentar el resultado como auditoría exhaustiva. | `sin parámetros` | `t`, `topologyIssues` |
+| `selectSite()` | Cambia la sede seleccionada preservando los borradores correspondientes. | `index` | `captureDraft`, `render` |
+| `setLanguage()` | Cambia la presentación y restaura borradores sin confirmar ni alterar el proyecto. | `language` | `render`, `t`, `toast` |
+| `setNodeModel()` | Aplica la selección de modelo solo después de validar todas las asignaciones afectadas. | `id, modelId` | `assignCatalogInterfaces`, `fail`, `invalidate`, `node`, `render`, `safe`, `t`, `toast`, `validateCatalogBindings`, `validateNodeModel` |
+| `showSSHManual()` | Abre ayuda integrada bilingüe sin depender de Python ni internet. | `sin parámetros` | `modal`, `sshCommands`, `t` |
+| `siteCode()` | Deriva un código de sede para nombres de equipos, desambiguando colisiones. | `site` |  |
+| `siteDefault()` | Crea la estructura inicial de una sede para mantener un contrato uniforme. | `n` |  |
+| `siteFormSnapshot()` | Obtiene los valores relevantes de la ficha para comparar cambios reales. | `sin parámetros` |  |
+| `siteName()` | Resuelve el nombre legible de una sede desde su identificador estable. | `id` |  |
+| `solve()` | Explora asignaciones de puertos compatibles con retroceso acotado y restauración de alternativas. | `index` | `catalogPair`, `fail`, `solve`, `t` |
+| `sshAuthMethod()` | Alterna campos de autenticación de sesión sin persistir sus secretos. | `sin parámetros` |  |
+| `sshChooseDevice()` | Actualiza la selección educativa o manual sin iniciar una conexión automáticamente. | `id` | `render` |
+| `sshClearReal()` | Limpia la pantalla del terminal sin enviar comandos al equipo remoto. | `sin parámetros` |  |
+| `sshClearSimulation()` | Limpia únicamente el historial educativo mostrado. | `sin parámetros` |  |
+| `sshCommands()` | Entrega la lista cerrada de consultas simuladas admitidas por fabricante. | `n` |  |
+| `sshConnect()` | Autoriza y autentica una conexión explícita al servicio SSH local permitido. | `sin parámetros` | `sshDispose`, `sshLoadTerminal`, `sshSetStatus`, `t`, `toast` |
+| `sshConsoleView()` | Presenta simulador o conexión real diferenciados y con estados de sesión. | `sin parámetros` | `confirmedPlan`, `connected`, `endpoint`, `field`, `sshCommands`, `sshManagementAddress`, `sshSelected`, `t`, `title` |
+| `sshDisconnect()` | Solicita cierre de la conexión real mediante una acción explícita. | `sin parámetros` | `sshDispose`, `sshSetStatus` |
+| `sshDispose()` | Libera terminal, WebSocket y credenciales efímeras al cerrar la sesión. | `sin parámetros` |  |
+| `sshLoadTerminal()` | Carga recursos xterm locales cuando se necesita la conexión real opcional. | `sin parámetros` | `t` |
+| `sshManagementAddress()` | Propone solo una dirección de gestión explícita sin confundirla con WAN/gateway. | `n` | `row` |
+| `sshResetSimulation()` | Reinicia el simulador tras la acción explícita sin alterar el diseño. | `sin parámetros` | `sshClearSimulation`, `t`, `toast` |
+| `sshRunSimulation()` | Interpreta consultas de lectura del proyecto sin abrir red ni ejecutar CLI remota. | `sin parámetros` | `confirmedPlan`, `connected`, `coreAddress`, `endpoint`, `generate`, `sshCommands`, `sshSelected`, `t` |
+| `sshSelected()` | Resuelve el equipo elegido para consulta o conexión explícita. | `sin parámetros` |  |
+| `sshSetStatus()` | Actualiza estados de conexión sin confundir negociación con autenticación completada. | `code` | `t` |
+| `sshTab()` | Cambia modalidad SSH cerrando sesiones reales que no deben quedar ocultas. | `mode` | `render` |
+| `subnet()` | Calcula límites, máscara, broadcast y capacidad de una subred IPv4. | `value` | `fail`, `ipNum`, `ipStr`, `ipType`, `num`, `t` |
+| `subnetResult()` | Muestra el resultado IPv4 calculado sin alterar su precisión matemática. | `r` | `t` |
+| `subnetView()` | Presenta la calculadora independiente de las confirmaciones del diseño. | `sin parámetros` | `addressCalculation`, `addressResult`, `field`, `siteName`, `t`, `title` |
+| `svgTopology()` | Renderiza sedes, dispositivos y enlaces del grafo sin depender de recursos externos. | `sin parámetros` | `connected`, `deviceIcon`, `endpoint`, `node`, `row`, `t` |
+| `switching()` | Identifica funciones de conmutación antes de emitir sintaxis de switch. | `n` |  |
+| `t()` | Resuelve el texto de interfaz en el idioma activo sin traducir datos ni comandos. | `key, values = []` |  |
+| `text()` | Restringe longitud y contenido de texto que entrará al contrato del proyecto. | `v, label, max = 100` | `fail`, `t` |
+| `title()` | Construye el encabezado común de una vista para mantener consistencia de presentación. | `n, desc` | `t` |
+| `toast()` | Presenta un aviso temporal accesible y distingue errores de confirmaciones. | `msg, error = false` | `t` |
+| `toggleIPv6()` | Cambia la disponibilidad visual de la planificación opcional. | `sin parámetros` | `newULAPrefix` |
+| `topologyIssues()` | Inspecciona incoherencias del grafo y distingue bloqueos de advertencias. | `sin parámetros` | `availableIPs`, `connected`, `isHost`, `mikrotikInterfaces`, `mikrotikNode`, `row`, `siteName`, `validateLink` |
+| `topologyView()` | Presenta diagrama, modelos, editores y tablas que describen el grafo real. | `sin parámetros` | `catalogControls`, `connected`, `endpoint`, `node`, `row`, `siteName`, `svgTopology`, `t`, `title`, `vendorProfilesView` |
+| `trunkCommands()` | Emite sintaxis de enlace trunk propia del fabricante y VLAN permitidas. | `c, lan` |  |
+| `unique()` | Rechaza claves repetidas que harían ambiguas las referencias del proyecto. | `values, label` | `fail`, `t` |
+| `updateNodeModels()` | Sincroniza las opciones de modelo del editor con la selección de marca y rol. | `id=''` | `modelOptions`, `modelsFor`, `previewNodeModel` |
+| `updateVlanStatus()` | Actualiza disponibilidad y estado visual de la confirmación ante cambios del formulario. | `sin parámetros` | `confirmedPlan`, `t` |
+| `validateCatalogBindings()` | Valida puertos persistidos sin reasignarlos silenciosamente durante importación. | `data` | `catalogPair`, `fail`, `t`, `validateNodeModel` |
+| `validateImport()` | Reconstruye contratos v2/v3/v4 conocidos y rechaza relaciones incoherentes atómicamente. | `data` | `addressCalculation`, `bool`, `configurable`, `enumVal`, `fail`, `fortinetInterfaceName`, `fortinetNode`, `fresh`, `generate`, `hostname`, `idVal`, `interfaceName`, `ipNum`, `ipStr`, `ipv6Intent`, `ipv6Subnet`, `isHost`, `manualVlanNetworks`, `migrateV2`, `migrateV3`, `mikrotikInterfaceName`, `mikrotikNode`, `num`, `optionalAddressIntent`, `subnet`, `t`, `text`, `topologyIssues`, `unique`, `validateCatalogBindings`, `validateIPv6Plan`, `validateLink`, `validateNodeModel`, `validateNodeVendor`, `validatePhysicalProfile`, `validateSiteBlocks`, `validateVendorProfile` |
+| `validateIPv6Plan()` | Comprueba que un plan IPv6 importado concuerda con intenciones y relaciones. | `src, out` | `fail`, `ipv6Block`, `ipv6Blocks`, `ipv6Row`, `t` |
+| `validateLink()` | Comprueba relaciones, direcciones y duplicados de un enlace candidato. | `l, others` | `fail`, `fortinetInterfaceName`, `fortinetNode`, `mikrotikInterfaceName`, `mikrotikNode`, `node`, `routed`, `row`, `switching`, `t` |
+| `validateNodeModel()` | Comprueba que el modelo pertenece al catálogo y admite la marca y el rol. | `n` | `fail`, `modelsFor`, `t` |
+| `validateNodeVendor()` | Rechaza asociaciones de rol y marca no soportadas por los adaptadores. | `n` | `fail`, `t` |
+| `validatePhysicalProfile()` | Valida metadatos físicos históricos sin reintroducir el formulario obligatorio retirado. | `n, vendor, p` | `bool`, `connected`, `enumVal`, `fail`, `physicalBinding`, `physicalName`, `t`, `text` |
+| `validateSiteBlocks()` | Comprueba bloques independientes de sede y tránsito sin exigir contención en fallback. | `project, sites` | `fail`, `privateIPv4Block`, `t` |
+| `validateVendorProfile()` | Valida marcas y funciones compatibles sin convertir roles para forzar generación. | `value` | `enumVal`, `fail`, `t` |
+| `vendorProfile()` | Obtiene la selección de fabricantes por función de una sede. | `site` |  |
+| `vendorProfilesView()` | Presenta perfiles de fabricantes con edición y confirmación explícitas. | `sin parámetros` | `optsHTML`, `t`, `vendorProfile` |
+| `vlanFormChanged()` | Detecta diferencias reales entre formulario VLAN y último estado confirmado. | `sin parámetros` |  |
+| `vlanGatewayIntent()` | Distingue un gateway automático anterior de una elección manual que debe conservarse. | `v, previousPlan = state.plan` |  |
+| `vlanView()` | Muestra intención de VLAN y plan efectivo distinguiendo edición de aprobación. | `sin parámetros` | `confirmedPlan`, `field`, `optsHTML`, `planTable`, `t`, `title` |
+| `wildcard()` | Calcula la máscara inversa IPv4 que requieren determinados comandos. | `mask` | `ipNum`, `ipStr` |
+| `zoomTopology()` | Ajusta la escala visual del diagrama sin cambiar la red modelada. | `factor` |  |
+
+## Funciones del servicio Python documentadas
+
+`integer`, `load_config`, `destination`, `public_error`, `connect_for_socket`, `opening`, `create_app`, `boundary`, `index`, `asset`, `bootstrap`, `websocket`, `output`, `shutdown`, `favicon`, `manual`, `interface_catalog`, `trust_host`, `main`. Incluye funciones anidadas de sesión/servicio. Sus docstrings no cambian transporte ni política; la comparación AST excluye únicamente documentación, no instrucciones.
+
+## Evidencia de conservación y límites
+
+Comparación anterior/posterior del laboratorio con IPv6 confirmado: estado, intenciones, planes, topología y cuatro CLI exactamente iguales; 56 pantallas (14 vistas × ES/EN × 1440/390) idénticas píxel por píxel. No se cambian colores, tamaños ni distribución. La revisión no certifica todos los datos/navegadores/hardware. Los reportes actuales y comandos de reproducción se enlazan en [pruebas de normalización](pruebas-normalizacion.md).
+
+## Anexos técnicos anteriores conservados
+
+El contenido siguiente procede de tareas anteriores; las referencias a su base y conteos corresponden a aquellas versiones. La edición final y su índice superior son la referencia de organización; no se vuelve a introducir el formulario físico retirado ni un recurso externo obligatorio para el catálogo.
+
 # Documentación del código — revisión integral WAN Architect
 
 ## Laboratorio y tabla física: actualización del PR #11

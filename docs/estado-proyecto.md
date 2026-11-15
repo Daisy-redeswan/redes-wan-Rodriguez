@@ -1,5 +1,9 @@
 # Estado de WAN Architect
 
+## Normalización final conservadora
+
+Desde main `3e3ed118544be32e32aa7cd6f74ca61b3eb74665`: HTML/CSS/JavaScript organizados sin modificar operaciones, datos, apariencia ni salidas. 222 funciones JavaScript y 19 Python con contratos documentados en español; [mapa y algoritmos](documentacion-codigo.md). Catálogo, JSON v2/v3/v4, cuatro fabricantes, AP sin CLI, IPv4/IPv6, simulación/SSH real y ES/EN conservados. Nueva ejecución **114/114 UI + 26/26 SSH = 140/140**, [reportes y comparación](pruebas-normalizacion.md). Estado/CLI exactos y 56 capturas idénticas. Los resultados y comentarios de auditorías anteriores permanecen históricos; AGENTS e informes/capturas no se modifican en la normalización.
+
 ## Estado de entrega auditado · 2026-11-15
 
 Código estable en main `1b46af32c8217a1f9bcea686151b1f070ac38352`; PR #11 fusionado, rama de origen conservada y repositorio público. Esta revisión solo actualiza documentación, informes y evidencias; `WAN_v4.html`, pruebas, catálogo y `AGENTS.md` permanecen intactos.

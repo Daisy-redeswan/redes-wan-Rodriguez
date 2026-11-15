@@ -1,5 +1,11 @@
 # Pruebas reproducibles de WAN Architect — Corte 3 y revisión integral
 
+## Normalización final: ejecución nueva de ambas suites
+
+Base `3e3ed118544be32e32aa7cd6f74ca61b3eb74665`; **114/114 UI + 26/26 SSH = 140/140 (100%)**, cero fallidas dentro de ambos conjuntos. Esta fase sí repitió los tests tras normalizar/comentar código; no cambió runners, fixtures o expectativas. [Resultados, entorno, incidencias y límites](pruebas-normalizacion.md), [UI](../tests/reporte-normalizacion.html), [SSH](../tests/reporte-normalizacion-ssh.json), [equivalencia estática y visual](../tests/reporte-normalizacion-equivalencia.json). Estado/planes/16 CLI idénticos y 56/56 pantallas idénticas por píxel. Las secciones inferiores conservan las ejecuciones/auditorías anteriores con sus hashes: sus menciones a «sin repetir» describen aquella tarea documental, no esta ejecución.
+
+Sustentación y pruebas en vivo realizadas según confirmación del estudiante; evaluación presencial no verificada independientemente por Codex. El 140/140 se acredita mediante reportes de laboratorio, sin atribuir fecha, nota o porcentaje a la sustentación.
+
 ## Auditoría documental 2026-11-15: resultado vigente y evidencia 09
 
 Se verificaron los dos reportes originales, **sin ejecutar otra vez la suite**: **114/114 aplicación + 26/26 SSH = 140/140 = 100% del conjunto ejecutado**. Sus hashes de HTML, runner, casos K/F/L, semilla y catálogo coinciden con main `1b46af32c8217a1f9bcea686151b1f070ac38352`. El HEAD `0927969` registrado en los reportes identifica la base del árbol de trabajo probado antes de los commits; el squash no cambió esos archivos. No se presenta como una ejecución nueva sobre main.
