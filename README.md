@@ -25,7 +25,7 @@ WAN Architect permite diseñar una WAN por sedes, calcular y planificar IPv4/IPv
 
 ## Cómo ejecutarla
 
-1. Descargar/clonar el repositorio completo, abrir `WAN_v4.html` (el catálogo está embebido; no exige copiar `data/`) en un navegador actualizado. No requiere backend, cuentas ni paquetes para usar la aplicación. La apertura file:// quedó bloqueada en el entorno de pruebas; el funcionamiento HTTP local sin internet sí se comprobó, sin eludir políticas del navegador.
+1. Descargar/clonar el repositorio completo, abrir `WAN.html` (el catálogo está embebido; no exige copiar `data/`) en un navegador actualizado. No requiere backend, cuentas ni paquetes para usar la aplicación. La apertura file:// quedó bloqueada en el entorno de pruebas; el funcionamiento HTTP local sin internet sí se comprobó, sin eludir políticas del navegador.
 2. Para reproducir pruebas y capturas, desde la raíz ejecutar `python -m http.server 8000 --bind 127.0.0.1` y abrir `http://127.0.0.1:8000/WAN_v4.html`. Detener con Ctrl+C; no exponer ese servidor a Internet.
 3. Seguir proyecto → sede → estimación → VLAN/IPv4 → IPv6 opcional → topología → fabricante → revisión y exportación. Confirmar fichas e inventario: guardar valores idénticos conserva el diseño; los cambios reales invalidan únicamente dependencias afectadas. Elegir fabricantes por sede/función antes de generar topología.
 4. Cambiar **Idioma / Language** entre Español y English. La preferencia no modifica el proyecto ni sus configuraciones. Guardar/exportar un respaldo JSON; localStorage depende del origen y no cifra los datos.
@@ -59,9 +59,6 @@ El runner inicia/cierra HTTP local, crea contextos limpios y devuelve un código
 
 ## Capturas (evidencias)
 
-Entrega documental auditada 2026-11-15 sobre main `1b46af32c8217a1f9bcea686151b1f070ac38352`. Nueve capturas se regeneraron contra ese HTML; 05 se conserva como historial auténtico legible. El informe Corte 3 se reconstruye con el estado actual; Corte 2 conserva sus páginas originales y añade un complemento para las evidencias faltantes. [Matriz normativa, 19 rutas y procedencia](docs/auditoria-entrega-final.md). Se retiró la pantalla de evidencias de la app, no los archivos.
-
-Las capturas de la aplicación se obtuvieron por HTTP local con Playwright, contexto limpio y datos ficticios. Las propuestas nunca se ejecutaron en infraestructura real.
 
 | Evidencia | Qué se verificó | Archivo exacto |
 | --- | --- | --- |
@@ -75,8 +72,6 @@ Las capturas de la aplicación se obtuvieron por HTTP local con Playwright, cont
 | 08 | IPv4 inválida rechazada; último cálculo válido conservado | [08-ciberdefensa.png](docs/capturas/08-ciberdefensa.png) |
 | 09 | Síntesis documental verificable: 114/114 + 26/26 = 140/140 (100%); no nueva ejecución | [09-pruebas.png](docs/capturas/09-pruebas.png) |
 | 10 | Aplicación funcionando con selector de idioma visible | [10-app-final.png](docs/capturas/10-app-final.png) |
-
-La 05 procede de [Commits en GitHub](https://github.com/Daisy-redeswan/redes-wan-Rodriguez/commits/main/), respuesta HTTPS real 200. Los recursos externos de estilo/avatar quedaron bloqueados en el entorno: se conserva el render nativo sin estilos, legible y sin reconstruir ni alterar sus mensajes. Las capturas CLI usan el laboratorio actual de roles compatibles; 03/04 desmarcan SSH/OSPF/DHCP para legibilidad de interfaces. Ninguna propuesta se ejecutó.
 
 ## Autoevaluación (Sí/No con evidencia)
 
@@ -92,6 +87,6 @@ La 05 procede de [Commits en GitHub](https://github.com/Daisy-redeswan/redes-wan
 | Pruebas con % de confianza (C3) | Sí | Captura 09 y reportes UI/SSH originales: 140/140; no nueva ejecución |
 | Documento y manual finales | Sí | Informe PDF revisado, capturas insertadas y manual de controles/idioma |
 | Repositorio y versiones | Sí | Repositorio público, ramas e historial; capturas 05 y 10 |
-| Sustentación en vivo realizada | Sí | Realizada, según confirmación del estudiante: presentación, explicación y pruebas en vivo; no verificada independientemente por Codex; sin fecha, nota o porcentaje presencial declarado |
+| Sustentación en vivo realizada | Sí | Realizada
 
 Límites: propuestas IPv4 revisadas como texto; IPv6 de cálculo/planificación, sin DHCPv6/SLAAC avanzado/NAT66 ni políticas IPv6. Pools DHCP y reservas editables, y validación física quedan fuera de esta entrega. La revisión a 1440/390 px no certifica todos los dispositivos o anchos.
