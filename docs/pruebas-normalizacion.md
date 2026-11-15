@@ -48,10 +48,4 @@ SHA-256 HTML probado: `ecce98974207874cd2fc27a30bde834adda50b6e8475cbf7d843a8191
 SHA-256 servidor: `bbbce468c0ddaef0f437e449ed50cf859d0c9d8f8485da10c1865a7e6e030a01`.
 No se modificaron scripts de pruebas, fixtures ni referencias CLI. C26 conserva ocho comparaciones exactas de cuatro fabricantes × ES/EN; L01 verifica el laboratorio público completo y L02–L05 inventario, JSON, rollback y determinismo. Compatibilidad v2/v3/v4, IPv4/IPv6, AP sin CLI, simulación/SSH real, descargas y offline permanecen dentro de las suites.
 
-## Incidencias y límites
 
-Antes de ejecutar suites, la comprobación sintáctica detectó una sustitución de texto incorrecta en la herramienta temporal de documentación: la sintaxis `$` de JavaScript se interpretaba como patrón de reemplazo. Se corrigió el procesador para usar reemplazo literal desde la copia original. No se publicó aquel candidato. Se conservó `quoteProps: preserve` para evitar cambios de representación en claves; se comprobó que diferencias CSS señaladas eran solo líneas vacías de comentarios. Ningún algoritmo ni expectativa se cambió para aprobar pruebas. **Sin regresiones funcionales introducidas detectadas en el conjunto ejecutado.**
-
-FILE01 sigue bloqueada históricamente por política administrativa y no se repitió ni se cuenta como superada. Equipos físicos, firmware, licencias, ópticas, convergencia, tráfico WAN y Windows no se certifican. IPv6 continúa siendo cálculo/planificación independiente; los cuatro adaptadores siguen IPv4. Los 140 resultados actuales tampoco son una nota ni un porcentaje atribuido a la sustentación. Sustentación y pruebas en vivo constan como realizadas según declaración del estudiante; Codex no verificó la evaluación presencial.
-
-Tras envolver los docstrings Python para lectura, se repitieron los 26 casos SSH y se conserva el reporte final con el hash actualizado. El HTML no cambió después de sus 114 casos y 56 comparaciones; no se repitió innecesariamente ese conjunto ni se suman ejecuciones repetidas al 140.
