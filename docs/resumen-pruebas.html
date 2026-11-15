@@ -1,0 +1,162 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><title>WAN Architect · síntesis documental de pruebas</title><style>body{font:18px Arial,sans-serif;margin:0;background:#eef3f8;color:#183149}main{max-width:1200px;margin:24px auto}header{background:#17334b;color:white;padding:24px;border-radius:12px}h1{font-size:27px}.score{font-size:44px;color:#77edcf;font-weight:bold}table{width:100%;border-collapse:collapse;background:white;margin:20px 0}td,th{padding:12px;border-bottom:1px solid #cbd5df;text-align:left}th{background:#dfeaf1}p{line-height:1.5}code{font-size:13px;overflow-wrap:anywhere}.notice{background:#fff4d5;padding:15px;border-left:5px solid #be861c}details{margin-top:24px}</style>
+<main><section id="resumen"><header><h1>WAN Architect · Evidencia 09 · Corte 3</h1><div class="score">140/140 · 100%</div><p>114/114 aplicación + 26/26 SSH local<br>0 fallidas en estos conjuntos ejecutados</p>
+</header>
+<p class="notice"><b>Síntesis documental de dos reportes reales.</b> No es una nueva ejecución ni una ejecución única. Actualización: 2026-11-15.</p>
+<table><tr><th>Casos</th><th>Grupo registrado</th><th>Resultado</th><th>Estado</th></tr>
+<tr><td>C</td><td>Núcleo IPv4/IPv6, idioma y controles</td><td>31/31</td><td>Superadas</td></tr>
+<tr><td>N</td><td>Revisión integral y fabricantes mixtos</td><td>19/19</td><td>Superadas</td></tr>
+<tr><td>P</td><td>SSH educativo y acceso a funciones</td><td>8/8</td><td>Superadas</td></tr>
+<tr><td>Q</td><td>Interfaces automáticas y navegación</td><td>15/15</td><td>Superadas</td></tr>
+<tr><td>K</td><td>Catálogo de doce modelos</td><td>23/23</td><td>Superadas</td></tr>
+<tr><td>F</td><td>Flujos y compatibilidad</td><td>13/13</td><td>Superadas</td></tr>
+<tr><td>L</td><td>Laboratorio completo e inventario</td><td>5/5</td><td>Superadas</td></tr>
+<tr><td>SSH</td><td>Servicio SSH · laboratorio exclusivamente loopback</td><td>26/26</td><td>Superadas</td></tr>
+</table>
+<p><b>Porcentaje:</b> (114 + 26) / (114 + 26) × 100 = 100% del conjunto ejecutado.<br>FILE01: bloqueada por política del navegador; fuera de estos 140. Validación física: no realizada.</p>
+<p>Aplicación: 2026-11-14T15:30:12-05:00 · SSH: 2026-11-14T20:26:44.932703+00:00<br>Python 3.12.14 · Playwright 1.62.0 · Chromium 154.0.8037.57</p>
+<p>Fuentes: <a href="../tests/reporte-laboratorio.html">reporte-laboratorio.html</a> y <a href="../tests/reporte-laboratorio-ssh.json">reporte-laboratorio-ssh.json</a>; <a href="pruebas.md">metodología y límites</a>.<br>SHA-256 HTML: <code>0f81e95a6380a5cf04087e0df3f02a9a70b7bd3c8ee65bdacb12ef69d1eba0a5</code><br>El HTML y los tests coinciden con los hashes de la ejecución previa al squash del PR #11.<br>No acredita conectividad, firmware ni certificación física.</p>
+</section>
+<details><summary>114 casos originales: esperado/obtenido en el reporte fuente</summary><table><tr><td>C01</td><td>Calculadora IPv4</td><td>Red 192.168.10.0/26, broadcast .63, 62 hosts; límites /31 y /32 verificados.</td><td>superada</td></tr>
+<tr><td>C02</td><td>Calculadora IPv6</td><td>6 vectores frente a ipaddress, 8 categorías y /64 = 18446744073709551616 direcciones.</td><td>superada</td></tr>
+<tr><td>C03</td><td>Migración v2 → v3 → v4</td><td>v2→v4 sin asignar; 15 VLAN, 28 nodos, 34 enlaces y 4 CLI preservados.</td><td>superada</td></tr>
+<tr><td>C04</td><td>Migración v3 → v4 y JSON</td><td>v3→v4 e ida/vuelta JSON exactos; cero llamadas a allocate/allocateIPv6.</td><td>superada</td></tr>
+<tr><td>C05</td><td>Persistencia local v2/v3/v4</td><td>v4 prioritario y restaurado; fallback v3/v2 en memoria; contenido antiguo intacto.</td><td>superada</td></tr>
+<tr><td>C06</td><td>Eliminar VLAN sin perder ediciones</td><td>Solo se eliminó la tercera VLAN; nombre/hosts conservados; cancelar e inválido atómicos.</td><td>superada</td></tr>
+<tr><td>C07</td><td>IPv4 por sede y CIDR manual</td><td>19 redes disjuntas; manuales 10.20.20.0/24 y 10.20.35.0/24 conservadas.</td><td>superada</td></tr>
+<tr><td>C08</td><td>Error IPv4 atómico</td><td>CIDR fuera del bloque rechazado: estado/CLI/DOM/localStorage intactos.</td><td>superada</td></tr>
+<tr><td>C09</td><td>Planificación IPv6</td><td>15 /64 disjuntas; /56 manual reservado; orden estable, reservas e ida/vuelta exactos.</td><td>superada</td></tr>
+<tr><td>C10</td><td>Error IPv6 atómico</td><td>Capacidad /56 insuficiente y sedes solapadas rechazadas sin pérdidas.</td><td>superada</td></tr>
+<tr><td>C11</td><td>Topología e interfaces</td><td>40 nodos, 46 enlaces; 4 /30 coherentes y sin bloqueos.</td><td>superada</td></tr>
+<tr><td>C12</td><td>Cisco IOS / IOS XE (texto)</td><td>14 textos Cisco; VLAN, gateways, OSPF y DHCP del plan, sin gramáticas ajenas.</td><td>superada</td></tr>
+<tr><td>C13</td><td>Huawei VRP (texto)</td><td>14 textos Huawei; VLAN, gateways, OSPF y DHCP del plan, sin gramáticas ajenas.</td><td>superada</td></tr>
+<tr><td>C14</td><td>Fortinet FortiOS 7.4 (texto)</td><td>IP/máscaras reales; estructura CLI balanceada; DHCP, relay, OSPF, rutas y local-in verificados.</td><td>superada</td></tr>
+<tr><td>C15</td><td>MikroTik RouterOS 7 (texto)</td><td>Bridge/VLAN y gateways reales; OSPF v7, DHCP/relay, servicios/MAC y forward drop verificados.</td><td>superada</td></tr>
+<tr><td>C16</td><td>Separación de cuatro fabricantes</td><td>IOS, VRP, FortiOS y RouterOS separados; MikroTik excluido de equivalencias Cisco/Huawei.</td><td>superada</td></tr>
+<tr><td>C17</td><td>Entradas inseguras e importación</td><td>4 payloads inseguros/futuros rechazados; estado y almacenamiento intactos.</td><td>superada</td></tr>
+<tr><td>C18</td><td>Sintaxis JavaScript y consola</td><td>2 script compilado por Chromium; consola/página limpias; sin solicitudes externas.</td><td>superada</td></tr>
+<tr><td>C19</td><td>Descargas reales</td><td>CLI individual exacta, 14 propuestas en descarga conjunta y JSON v4 exacto.</td><td>superada</td></tr>
+<tr><td>C20</td><td>Responsive 1440 / 390 px</td><td>12 combinaciones etapa/viewport sin desbordamiento de página; avisos IPv4 visibles.</td><td>superada</td></tr>
+<tr><td>C21</td><td>Español predeterminado</td><td>Español inicial, selector accesible y preferencia todavía no escrita.</td><td>superada</td></tr>
+<tr><td>C22</td><td>Vistas ES/EN</td><td>14 vistas × 2 idiomas y 4 variantes de editor × 2; títulos y navegación con Enter.</td><td>superada</td></tr>
+<tr><td>C23</td><td>Mensajes y confirmaciones bilingües</td><td>Validación IPv4/IPv6, guardado, cancelación y advertencias dinámicas comprobados en ES/EN.</td><td>superada</td></tr>
+<tr><td>C24</td><td>Persistencia independiente del idioma</td><td>Clave WAN-Architect-language independiente; recarga/carga/nuevo conservan la preferencia.</td><td>superada</td></tr>
+<tr><td>C25</td><td>Cambio de idioma atómico</td><td>Estado e imageData idénticos; nombres iguales a claves de catálogo, CLI y ediciones inválidas conservados.</td><td>superada</td></tr>
+<tr><td>C26</td><td>Salidas de cuatro fabricantes contra main</td><td>8 comparaciones exactas: 4 fabricantes × ES/EN, referencias de main 6ac46f9.</td><td>superada</td></tr>
+<tr><td>C27</td><td>Inventario de controles</td><td>77 plantillas button con handler; 2 importadores de archivo y 1 selector de idioma accesibles; 0 controles decorativos detectados.</td><td>superada</td></tr>
+<tr><td>C28</td><td>Acciones observables de botones</td><td>61 familias/objetivos activados con Enter; 48 handlers, descargas, impresión invocada y validaciones observables.</td><td>superada</td></tr>
+<tr><td>C29</td><td>Portapapeles e importadores con teclado</td><td>Clipboard/CLI exactos; fallback e importadores por teclado; HTML, CSV y SVG con interfaz/nombres en inglés.</td><td>superada</td></tr>
+<tr><td>C30</td><td>Responsive bilingüe</td><td>52 combinaciones vista/idioma/ancho sin desbordamiento de página; selector visible.</td><td>superada</td></tr>
+<tr><td>C31</td><td>Catálogo y atributos traducibles</td><td>616 claves literales cubiertas; placeholder, aria-label y valores de opciones comprobados.</td><td>superada</td></tr>
+<tr><td>N01</td><td>Pools RFC1918 independientes</td><td>15 VLAN en 192.168.64.0/22 y 10.20.0.0/22; /30 en 192.168.200.0/24; JSON conserva el plan.</td><td>superada</td></tr>
+<tr><td>N02</td><td>Errores de bloque atómicos</td><td>CIDR desalineado/público/prefijo inválido y solapamiento rechazados; insuficiencia /24 conserva estado.</td><td>superada</td></tr>
+<tr><td>N03</td><td>VLAN manual independiente y fallback</td><td>Manual en sede independiente, automáticas en pools correctos; manual exterior rechazada sin perder texto/plan.</td><td>superada</td></tr>
+<tr><td>N04</td><td>Inventario confirmado sin invalidación superflua</td><td>Formulario→resumen→editar; mismas cantidades conservan plan, nodos y CLI.</td><td>superada</td></tr>
+<tr><td>N05</td><td>Inventario editado y borradores</td><td>Borrador conservado al navegar; cambio s1 conserva VLAN, LAN y equipos de s2.</td><td>superada</td></tr>
+<tr><td>N06</td><td>Restauración de inventario confirmada</td><td>Cancelación intacta; restauración explícita vuelve a 100 PCs estimados.</td><td>superada</td></tr>
+<tr><td>N07</td><td>Confirmación VLAN y dependencias</td><td>Confirmación idéntica conserva todo; edición pendiente bloquea dependencias y conserva formulario.</td><td>superada</td></tr>
+<tr><td>N08</td><td>Componentes retirados y navegación</td><td>14 módulos navegables, explicaciones ausentes; red/broadcast /26 correctos.</td><td>superada</td></tr>
+<tr><td>N09</td><td>Topología mixta real</td><td>Cuatro fabricantes reales generados; perfiles, autoKey, puertos y equipos conservados en JSON.</td><td>superada</td></tr>
+<tr><td>N10</td><td>Perfiles y roles inválidos</td><td>Sin perfil explícito no genera; firewall/switch, core/RouterOS y campos arbitrarios rechazados.</td><td>superada</td></tr>
+<tr><td>N11</td><td>Regeneración estable y equipos manuales</td><td>Manual conservado; IDs automáticos y enlaces estables tras regenerar y reorganizar.</td><td>superada</td></tr>
+<tr><td>N12</td><td>Lienzo, zoom, arrastre y SVG</td><td>Sin cajas superpuestas; zoom y arrastre reales; SVG con iconos inline; 1440/390 sin desborde de página.</td><td>superada</td></tr>
+<tr><td>N13</td><td>Bilingüismo de nuevos controles</td><td>Perfiles, zoom/reorganización y confirmación en inglés; proyecto intacto.</td><td>superada</td></tr>
+<tr><td>N14</td><td>Sede sin cambios y dependencias locales</td><td>Guardar sin cambios conserva todo; nuevo pool solo invalida dependencias de la sede.</td><td>superada</td></tr>
+<tr><td>N15</td><td>Recalcular sin renumerar otra sede</td><td>Redes/tránsito, IDs y CLI no afectadas de s2 idénticas; vecino WAN se invalida por enlace afectado, JSON conserva las restantes.</td><td>superada</td></tr>
+<tr><td>N16</td><td>Nombres únicos y gran diagrama</td><td>140 equipos sin superposición de cajas; códigos desambiguados y posiciones deterministas.</td><td>superada</td></tr>
+<tr><td>N17</td><td>Borradores aislados entre proyectos</td><td>Borradores preservados en navegación y eliminados solo al reemplazar proyecto; idioma conservado.</td><td>superada</td></tr>
+<tr><td>N18</td><td>Editar sede conserva intención manual válida</td><td>Cambio de pool incompatible con manual rechazado; estado, plan y texto conservados.</td><td>superada</td></tr>
+<tr><td>N19</td><td>Repropuesta parcial conserva otras sedes</td><td>Solo se completaron VLAN de s1; claves/CIDR manual/plan de s2 intactos y VLSM válido.</td><td>superada</td></tr>
+<tr><td>P01</td><td>Sede confirmada, edición y persistencia</td><td>Confirmada/resumen/bloqueo, Editar, navegación, JSON y localStorage; plan/nodos conservados.</td><td>superada</td></tr>
+<tr><td>P02</td><td>Previsualización y pools de dos sedes</td><td>LAN en 192.168.32.0/22 y 172.16.0.0/22; tránsito separado; placeholder pendiente/efectivo correctos.</td><td>superada</td></tr>
+<tr><td>P03</td><td>Capacidad detallada y bloqueo de dependencias</td><td>Error contextual completo, estado pendiente/foco hosts, plan intacto; topología bloqueada y SSH manual accesible.</td><td>superada</td></tr>
+<tr><td>P04</td><td>Simulación basada en proyecto</td><td>Configuración exacta, interfaces del proyecto, comando no soportado rechazado, reinicio/limpieza sin mutar ni conectar.</td><td>superada</td></tr>
+<tr><td>P05</td><td>Consola sin Python y bilingüe</td><td>Help/simulación sin servicio; conexión real deshabilitada e informativa ES/EN, proyecto intacto.</td><td>superada</td></tr>
+<tr><td>P06</td><td>Gestión explícita y credenciales efímeras</td><td>No infiere gestión; campo secreto fuera de JSON/localStorage y eliminado al cambiar idioma/vista.</td><td>superada</td></tr>
+<tr><td>P07</td><td>Importación antigua y confirmación estricta</td><td>v2 sin flag no se confirma por inferencia; cadena true rechazada sin sustituir estado.</td><td>superada</td></tr>
+<tr><td>P08</td><td>Edición sin cambios y bloqueo selectivo</td><td>Sede pendiente bloquea topología; revertir/confirmar conserva diseño y calculadora permanece independiente.</td><td>superada</td></tr>
+<tr><td>Q01</td><td>Navegación dependiente protegida</td><td>Seis destinos protegidos por menú/go; siguiente y render protegidos; cuatro módulos independientes disponibles.</td><td>superada</td></tr>
+<tr><td>Q02</td><td>Confirmación reconocida y borradores</td><td>Aprobación reconocida tras bandera histórica, reversión y carga; borrador bloqueado sin cambiar DOM/estado.</td><td>superada</td></tr>
+<tr><td>Q03</td><td>AP conservados y excluidos de CLI</td><td>6 AP conservados con IP, máscara, gateway y enlaces; cuatro adaptadores y llamadas directas bloqueados.</td><td>superada</td></tr>
+<tr><td>Q04</td><td>Generación sin confirmación física</td><td>Cisco por botón y API sin perfil; formulario/guardián ausentes; archivo v2 y sus cuatro CLI preservados.</td><td>superada</td></tr>
+<tr><td>Q05</td><td>Cisco automático</td><td>Cisco: 3 interfaces derivadas de enlaces y presentes en CLI; ningún perfil ni confirmación adicional.</td><td>superada</td></tr>
+<tr><td>Q06</td><td>Huawei automático</td><td>Huawei: 3 interfaces derivadas de enlaces y presentes en CLI; ningún perfil ni confirmación adicional.</td><td>superada</td></tr>
+<tr><td>Q07</td><td>Fortinet automático</td><td>Fortinet: 2 interfaces derivadas de enlaces y presentes en CLI; ningún perfil ni confirmación adicional.</td><td>superada</td></tr>
+<tr><td>Q08</td><td>MikroTik automático</td><td>MikroTik: 2 interfaces derivadas de enlaces y presentes en CLI; ningún perfil ni confirmación adicional.</td><td>superada</td></tr>
+<tr><td>Q09</td><td>Interfaces inseguras siguen rechazadas</td><td>Cuatro nombres maliciosos rechazados sin mutar DOM, proyecto, CLI ni localStorage; sin formulario de confirmación física.</td><td>superada</td></tr>
+<tr><td>Q10</td><td>JSON anterior con perfiles archivados</td><td>v4 conserva metadatos/CLI archivados y CLI automática nueva; localStorage exacto; v2/v3 sin asignar ni crear perfiles.</td><td>superada</td></tr>
+<tr><td>Q11</td><td>Editar enlaces sin reconfirmación física</td><td>Edición usa el puerto del enlace y eliminación mantiene JSON coherente; generación inmediata sin confirmaciones adicionales.</td><td>superada</td></tr>
+<tr><td>Q12</td><td>Comparación automática sin perfiles</td><td>Comparación IOS/VRP automática y separada; fabricante real intacto; cero perfiles requeridos.</td><td>superada</td></tr>
+<tr><td>Q13</td><td>Advertencia visual bilingüe y responsive</td><td>16 combinaciones vista/idioma/ancho sin formulario ni desborde; advertencia física ES/EN informativa, Cancelar con teclado.</td><td>superada</td></tr>
+<tr><td>Q14</td><td>Aprobación incoherente rechazada</td><td>Red ausente, intención de hosts desactualizada, números de red incoherentes y pool cambiado bloquean Topología sin mutar datos.</td><td>superada</td></tr>
+<tr><td>Q15</td><td>Orden y navegación de fabricantes</td><td>Seis módulos en orden ES/EN, Enter, anterior/siguiente y 14 indicadores coherentes; seguridad independiente y proyecto intacto.</td><td>superada</td></tr>
+<tr><td>K01</td><td>Catálogo contra fichas oficiales</td><td>12 fichas (3 por marca), conteos/rangos/velocidades y fuentes oficiales; JSON y JS empaquetado coinciden.</td><td>superada</td></tr>
+<tr><td>K02</td><td>Fabricante y modelos filtrados</td><td>Listas por marca/rol; AP y roles no soportados sin modelos; cancelación intacta.</td><td>superada</td></tr>
+<tr><td>K03</td><td>Carga automática de inventario</td><td>28 puertos de ficha visibles inmediatamente; guardar equipo asigna enlaces; sin entrada manual de puertos.</td><td>superada</td></tr>
+<tr><td>K04</td><td>Cisco con modelo</td><td>Catalyst: 8 puertos de ficha en CLI, HSRP/IP conservados; cero nombres físicos genéricos.</td><td>superada</td></tr>
+<tr><td>K05</td><td>Huawei con modelo</td><td>Huawei L2: nombres del banco RJ45 de ficha; sin SFP no verificados ni routing de core.</td><td>superada</td></tr>
+<tr><td>K06</td><td>Fortinet con modelos</td><td>Tres modelos FortiGate: puertos exactos de tablas oficiales; internal1–5 y a/b no asignados automáticamente.</td><td>superada</td></tr>
+<tr><td>K07</td><td>MikroTik con modelos</td><td>Tres routers RouterOS 7: nombres en guardas Ethernet, bridge e interfaces OSPF; sin sintaxis ajena.</td><td>superada</td></tr>
+<tr><td>K08</td><td>Asignación determinista</td><td>Mismas asociaciones al repetir/invertir nodos y enlaces; puertos físicos únicos.</td><td>superada</td></tr>
+<tr><td>K09</td><td>Puertos insuficientes y atomicidad</td><td>Tres enlaces frente a dos GE reales: rechazo atómico, sin puerto ficticio ni pérdida de plan, CLI, DOM o localStorage.</td><td>superada</td></tr>
+<tr><td>K10</td><td>Duplicados y referencias importadas</td><td>Puerto duplicado y puerto 99 inexistente rechazados sin asignación automática durante importación.</td><td>superada</td></tr>
+<tr><td>K11</td><td>Cambio de modelo</td><td>24T→48T mantiene puertos válidos y todo el direccionamiento/identidad; cambia únicamente modelo e invalida CLI derivada.</td><td>superada</td></tr>
+<tr><td>K12</td><td>Regeneración con modelos</td><td>Modelo, identificadores, puertos y plan conservados al reconstruir desde el mismo plan.</td><td>superada</td></tr>
+<tr><td>K13</td><td>JSON v4 y almacenamiento</td><td>v4/CLI/modelId/enlaces exactos en JSON y localStorage; no se reasignan redes al cargar.</td><td>superada</td></tr>
+<tr><td>K14</td><td>Proyectos antiguos y advertencia</td><td>v2/v3 migran a v4 sin modelo inferido; CLI genérica permanece y aviso exacto visible; referencias históricas en C26.</td><td>superada</td></tr>
+<tr><td>K15</td><td>Fabricantes mixtos con catálogo</td><td>Cisco core, Huawei acceso, Fortinet firewall y MikroTik router con modelos documentados; cuatro CLI y plan común intacto.</td><td>superada</td></tr>
+<tr><td>K16</td><td>AP excluidos con vecinos modelados</td><td>AP sin modelos/CLI genéricos; nodos/IP/VLAN/enlaces siguen intactos al seleccionar modelos vecinos.</td><td>superada</td></tr>
+<tr><td>K17</td><td>Funcionamiento sin internet</td><td>Selección, VLSM, topología, asignación, CLI y JSON operan con red desactivada tras cargar activos locales; cero consultas externas.</td><td>superada</td></tr>
+<tr><td>K18</td><td>Catálogo ES/EN y responsive</td><td>Catálogo y avisos en ES/EN, 1440/390 sin desborde nuevo; modelo, redes y CLI conservados.</td><td>superada</td></tr>
+<tr><td>K19</td><td>Entradas inseguras y modelos incompatibles</td><td>Selección de ID desconocido, inyección y fabricante/tipo incompatible bloqueados; JSON inválido conserva estado.</td><td>superada</td></tr>
+<tr><td>K20</td><td>ISR4321 y función no respaldada</td><td>ISR4321 usa sus dos GE sin switchport; LACP no respaldado en perfil Huawei bloquea generación con mensaje concreto.</td><td>superada</td></tr>
+<tr><td>K21</td><td>Medios y velocidades compatibles</td><td>SFP1↔uplink SFP Catalyst con 1G común; fibra↔RJ45 incoherente rechazada sin inventar transceptor ni cambiar estado.</td><td>superada</td></tr>
+<tr><td>K22</td><td>Catálogo ausente y modo legado</td><td>Sin catálogo: flujo genérico y CLI permanecen; aviso local visible, sin descarga ni consulta externa.</td><td>superada</td></tr>
+<tr><td>K23</td><td>Crear enlaces sin escribir puertos</td><td>Enlace Fortinet↔Catalyst añadido sin escribir puertos; conserva enlaces anteriores y no duplica interfaces.</td><td>superada</td></tr>
+<tr><td>F01</td><td>Datos confirmados y persistencia</td><td>Datos bloqueados/Editar; igualdad conserva plan y CLI; confirmación v4 restaurada desde JSON y almacenamiento.</td><td>superada</td></tr>
+<tr><td>F02</td><td>Proyecto: validación atómica y metadatos</td><td>Error atómico, metadatos sin pérdida de redes; misma cantidad no invalida; cambio de sedes conserva identificación pendiente; tipo de bandera inválido rechazado.</td><td>superada</td></tr>
+<tr><td>F03</td><td>Fabricantes sin perder VLAN/VLSM</td><td>Topología permanece accesible y aprobada; plan/IPv6 intactos; marcas automáticas y cachés dependientes actualizadas; JSON conserva estado.</td><td>superada</td></tr>
+<tr><td>F04</td><td>Funciones opcionales y nuevas /30</td><td>Nuevas funciones reservan /30 libres sin cambiar redes anteriores; misma selección no reasigna ni desconfirma.</td><td>superada</td></tr>
+<tr><td>F05</td><td>HTML autónomo sin carpeta data</td><td>Doce fichas disponibles con data/ bloqueada y sin internet; cero solicitudes de catálogo; CLI Catalyst usa nombres guardados.</td><td>superada</td></tr>
+<tr><td>F06</td><td>Selección efectiva de doce modelos</td><td>12/12 modelos seleccionados por UI Topología/editor y usados por su adaptador; puertos coinciden con fichas sin alterar datos oficiales.</td><td>superada</td></tr>
+<tr><td>F07</td><td>Modelo único en Topología</td><td>Cisco/Huawei/Fortinet/MikroTik sin selectores repetidos: leen modelos/enlaces guardados en Topología.</td><td>superada</td></tr>
+<tr><td>F08</td><td>Comparación real de cuatro marcas</td><td>Cinco funciones × cuatro fabricantes; extractos reales/diferencias y límites; estado/CLI guardada intactos.</td><td>superada</td></tr>
+<tr><td>F09</td><td>Comparación sin equivalencias falsas</td><td>Sin equipo/función: avisos sin CLI ficticia; equivalencia adicional IOS/VRP existente conservada.</td><td>superada</td></tr>
+<tr><td>F10</td><td>Comandos simulados por fabricante</td><td>19 comandos anunciados (4 fabricantes) respondieron, con espacios/mayúsculas; cero conexiones reales.</td><td>superada</td></tr>
+<tr><td>F11</td><td>Simulación rechaza comandos ajenos</td><td>Comandos ajenos, escritura e inyección rechazados; solo buffer simulado cambia; proyecto y servicio real intactos.</td><td>superada</td></tr>
+<tr><td>F12</td><td>Manual integrado offline ES/EN</td><td>Manual en diálogo local ES/EN con comandos y límites de las cuatro marcas; sin Python, solicitudes ni ventanas externas.</td><td>superada</td></tr>
+<tr><td>F13</td><td>Revisión visual de flujos</td><td>16 vistas (8 × 2 anchos) sin desbordes; capturas reales de Topología, comparación y manual en /tmp/wan-pr11-visual.</td><td>superada</td></tr>
+<tr><td>L01</td><td>Laboratorio público: 15 pasos integrales</td><td>15/15 pasos: proyecto, dos sedes, RFC1918 distintos, VLAN/VLSM/capacidad/gateway, sin solapamientos, topología, modelos compatibles, interfaces suficientes, cuatro marcas, CLI y rutas del plan, tabla física exacta, comparación, SSH simulado, JSON v4 exacto, offline; 21 redes, 42 nodos, 48 enlaces y 16 configuraciones nativas; AP conservados.</td><td>superada</td></tr>
+<tr><td>L02</td><td>Inventario físico ES/EN responsive</td><td>16 combinaciones marca/idioma/ancho; tablas agrupadas y CLI debajo; capturas reales en /tmp/wan-laboratorio-visual; proyecto intacto.</td><td>superada</td></tr>
+<tr><td>L03</td><td>Modo genérico y datos reales</td><td>Modo genérico visible ES/EN, nombres/puertos/enlaces del proyecto anterior; generación y datos preservados.</td><td>superada</td></tr>
+<tr><td>L04</td><td>Carga cancelada y fallo atómico</td><td>Cancelar sin mutación; catálogo sin candidatos revierte el reemplazo y conserva borrador/localStorage; guardar/cargar laboratorio e importar usuario preservan redes.</td><td>superada</td></tr>
+<tr><td>L05</td><td>Laboratorio determinista y regenerable</td><td>Dos cargas y regeneración: redes/orden, IDs, modelos, enlaces/puertos y configuraciones estables; validación de capacidad y exclusión AP vigentes.</td><td>superada</td></tr>
+</table>
+</details>
+<details><summary>26 casos SSH registrados</summary><ul><li>test_authorization_deadline — passed</li>
+<li>test_bootstrap_and_host_boundary — passed</li>
+<li>test_browser_xterm_real — passed</li>
+<li>test_cancel_during_negotiation — passed</li>
+<li>test_changed_host_key — passed</li>
+<li>test_closed_port_network_error — passed</li>
+<li>test_credentials_never_persist_or_log — passed</li>
+<li>test_destination_and_dns_pinning — passed</li>
+<li>test_invalid_password — passed</li>
+<li>test_key_registration_never_replaces_changed_key — passed</li>
+<li>test_malformed_and_input_limits — passed</li>
+<li>test_network_timeout — passed</li>
+<li>test_output_backpressure — passed</li>
+<li>test_password_interactive_and_unicode — passed</li>
+<li>test_peer_drop_and_cleanup — passed</li>
+<li>test_private_key_authentication — passed</li>
+<li>test_pty_refusal_never_marks_connected — passed</li>
+<li>test_pty_resize_disconnect_reconnect — passed</li>
+<li>test_register_key_requires_exact_fingerprint — passed</li>
+<li>test_scalar_and_oversized_frames — passed</li>
+<li>test_service_shutdown_closes_ssh — passed</li>
+<li>test_session_token_isolation — passed</li>
+<li>test_simultaneous_session_isolation_and_limit — passed</li>
+<li>test_stderr_and_remote_eof — passed</li>
+<li>test_unknown_host_key — passed</li>
+<li>test_ws_requires_origin_cookie_and_csrf — passed</li>
+</ul></details>
+</main></html>
