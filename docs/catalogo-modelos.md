@@ -1,5 +1,10 @@
 # Catálogo local de modelos e interfaces
 
+## Correspondencia con la entrega final
+
+Auditado 2026-11-15 contra main `1b46af32c8217a1f9bcea686151b1f070ac38352`: doce fichas, tres por fabricante; datos oficiales y algoritmos sin cambios en esta tarea. El laboratorio elige C9200L-24T-4G, S5700-28P-LI-AC, FortiGate 60F y RB750Gr3, con puertos suficientes según los reportes K/F/L. Capturas 02/03/04/06/07/10 renovadas reflejan esos modelos; 140/140 es resultado local/textual, no certificación física. [Auditoría y procedencia](auditoria-entrega-final.md). La fecha de verificación documental original que sigue no se modifica para fingir una nueva investigación de fuentes.
+
+
 Verificación documental: **14 de noviembre de 2026**. Base de código: `6466c9494cefdb5423d95e1bc04175304a4e248d`. No se conectaron equipos ni se ejecutó CLI; «verificado» significa contrastado con documentación oficial, no certificación física, de firmware o de licencias.
 
 ## Uso y distribución sin internet

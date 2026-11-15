@@ -1,5 +1,16 @@
 # Pruebas reproducibles de WAN Architect — Corte 3 y revisión integral
 
+## Auditoría documental 2026-11-15: resultado vigente y evidencia 09
+
+Se verificaron los dos reportes originales, **sin ejecutar otra vez la suite**: **114/114 aplicación + 26/26 SSH = 140/140 = 100% del conjunto ejecutado**. Sus hashes de HTML, runner, casos K/F/L, semilla y catálogo coinciden con main `1b46af32c8217a1f9bcea686151b1f070ac38352`. El HEAD `0927969` registrado en los reportes identifica la base del árbol de trabajo probado antes de los commits; el squash no cambió esos archivos. No se presenta como una ejecución nueva sobre main.
+
+[Resumen documental verificable](resumen-pruebas.html) y [captura 09](capturas/09-pruebas.png) reúnen ambos reportes, con fechas y límites visibles; no simulan una única ejecución. C/N/P/Q/K/F/L: 31+19+8+15+23+13+5 = 114; SSH: 26. Cero fallidas dentro de esos conjuntos. FILE01 permanece bloqueada y separada; Windows, equipos físicos y sustentación no ejecutados. No se suman los resultados históricos 31/50/73/99/122/135 al total actual.
+
+En esta tarea solo se recorrieron los flujos necesarios para capturar: cálculo /26; rechazo de IPv4 inválida conservando estado; botón público de laboratorio; topología completa; generación Cisco/Huawei con SSH/OSPF/DHCP desmarcados en esos dos ejemplos; lectura de Fortinet/MikroTik del laboratorio original; restauración del laboratorio y resumen. HTTP loopback, Chromium 154.0.8037.57 y Playwright 1.62.0; contextos limpios y sin solicitudes externas ni errores de página/consola en esos recorridos. No se abrió SSH real ni se ejecutó CLI.
+
+Para la sustentación, instalar dependencias y ejecutar `python tests/test_corte3.py` (114 casos) y `python tests/test_ssh_service.py` (26 casos loopback); contar los resultados realmente obtenidos ese día. El comando de UI por sí solo no ejecuta los 26 SSH. Registrar fallidas/bloqueadas/no ejecutadas por separado. Véanse [auditoría completa](auditoria-entrega-final.md) y [manual SSH](manual-ssh.md).
+
+
 ## Laboratorio e inventario físico: ejecución vigente
 
 Base `09279698084fa166b937ae7d5450fedf4827017e`, rama `feature/catalogo-interfaces-fabricantes`. Fecha de aplicación: `2026-11-14T15:30:12-05:00`; Linux-6.18.57-x86_64-with-glibc2.41; Python 3.12.14, Playwright 1.62.0, Chromium 154.0.8037.57. Duración 185.8 s; HTTP local, contexto limpio y datos ficticios. SSH exclusivamente loopback: `2026-11-14T20:26:44.932703+00:00`, AsyncSSH 2.24.1, aiohttp 3.14.5; 10.8 s.
@@ -45,7 +56,7 @@ L03 conserva Modo genérico; L04 verifica cancelación, rollback ante catálogo 
 
 Los resultados siguientes son registros anteriores.
 
-## Verificación vigente: correcciones funcionales del PR #11
+## Registro histórico: correcciones funcionales iniciales del PR #11
 
 Base `89a5a2a948c965129ca28f40cb57f5f303f587b2`; rama `feature/catalogo-interfaces-fabricantes`. Aplicación: `2026-11-14T14:10:45-05:00`; Python 3.12.14, Playwright 1.62.0, Chromium 154.0.8037.57, Linux-6.18.57-x86_64-with-glibc2.41. HTTP local y un contexto limpio por caso; 164.9 s. SSH real exclusivamente loopback: 2026-11-14T19:01:54.471527+00:00, AsyncSSH 2.24.1, aiohttp 3.14.5; 11.4 s. No se ejecutó CLI en equipos físicos.
 
@@ -192,7 +203,7 @@ python tests/test_corte3.py
 
 No se añaden dependencias del proyecto. El runner inicia/cierra servidor y navegador, devuelve no cero si falla y produce reporte temporal por defecto. Para registrar expresamente esta revisión: `python tests/test_corte3.py --report tests/reporte-revision-integral.html`. No sustituir la captura 09 histórica con un resultado no renderizado.
 
-### Esperado, obtenido y estado de la ejecución actual
+### Esperado, obtenido y estado de aquella ejecución histórica
 
 | Caso | Esperado | Obtenido / evidencia | Estado |
 | --- | --- | --- | --- |
