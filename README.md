@@ -92,6 +92,6 @@ La 05 procede de [Commits en GitHub](https://github.com/Daisy-redeswan/redes-wan
 | Pruebas con % de confianza (C3) | Sí | Captura 09 y reportes UI/SSH originales: 140/140; no nueva ejecución |
 | Documento y manual finales | Sí | Informe PDF revisado, capturas insertadas y manual de controles/idioma |
 | Repositorio y versiones | Sí | Repositorio público, ramas e historial; capturas 05 y 10 |
-| Sustentación en vivo realizada | No | Debe demostrarse ante evaluación; esta entrega no la simula |
+| Sustentación en vivo realizada | Sí | Realizada, según confirmación del estudiante: presentación, explicación y pruebas en vivo; no verificada independientemente por Codex; sin fecha, nota o porcentaje presencial declarado |
 
 Límites: propuestas IPv4 revisadas como texto; IPv6 de cálculo/planificación, sin DHCPv6/SLAAC avanzado/NAT66 ni políticas IPv6. Pools DHCP y reservas editables, y validación física quedan fuera de esta entrega. La revisión a 1440/390 px no certifica todos los dispositivos o anchos.
