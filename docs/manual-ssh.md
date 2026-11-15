@@ -1,5 +1,10 @@
 # Manual de consola SSH
 
+## Edición documental de entrega · 2026-11-15
+
+Corresponde a main `1b46af32c8217a1f9bcea686151b1f070ac38352`. UI 114/114 y servicio SSH 26/26 loopback: 140/140 registrados, sin nueva ejecución en esta auditoría. [Reportes](pruebas.md), [resumen documental](resumen-pruebas.html). Python es opcional para la app/simulación y obligatorio solo para el puente de conexión real. Ni seleccionar fabricante/modelo ni generar/copiar CLI inicia conexiones. La sustentación y compatibilidad con equipos físicos permanecen pendientes.
+
+
 ## Manual integrado y consultas vigentes del PR #11
 
 El botón **Manual de consola SSH** abre un diálogo dentro de WAN Architect, disponible en ES/EN y sin iniciar Python, abrir Markdown ni consultar internet. Esta página conserva el detalle de instalación y seguridad de la conexión real.

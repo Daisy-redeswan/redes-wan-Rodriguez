@@ -35,23 +35,15 @@ Base `89a5a2a948c965129ca28f40cb57f5f303f587b2`. Esta sección sustituye los com
 5. **Comparación:** cinco funciones (interfaces IPv4, VLAN/LAN, OSPF, DHCP/relay y administración) × cuatro marcas. Se extraen líneas de los adaptadores de equipos reales compatibles; no se fabrican equipos ni se cambia state/configuraciones. Cada tarjeta explica diferencias o ausencia/limitación. Los extractos no son configuraciones completas. Se conserva adicionalmente la comparación IOS/VRP por rol lógico cuando es válida, con advertencia de interfaces genéricas para la marca alternativa.
 6. **Simulación y manual SSH:** comandos de lectura normalizados en espacios/capitalización, listas cerradas por marca y 19 comandos anunciados probados. `show running-config` y equivalentes muestran CLI vigente guardada o una propuesta actual generada sin guardarla, nunca running-config remoto. Las consultas no abren red ni modifican el proyecto. Interfaces/VLAN/rutas son del plan, no estado operativo; comandos desconocidos/de otra marca/escritura/inyección se rechazan. El manual es un diálogo integrado, consultable sin Python, archivos Markdown externos ni internet. La conexión SSH real y sus límites de seguridad permanecen sin cambios.
 
-## Ajuste vigente del PR #10: generación automática y menú
+## Versión y límites de esta edición
 
-- **VLAN/VLSM sigue requiriendo un plan válido y confirmado** antes de Topología, fabricantes o Comparación. Revertir borradores reconoce la aprobación anterior. Subnetting, Ciberdefensa, IPv6 y SSH manual conservan su acceso independiente y sus validaciones.
-- **Se retiró el formulario Confirmar interfaces físicas** y sus campos obligatorios. Tras generar la topología y seleccionar marcas compatibles, pulse Generar equipo o Generar todos: no se solicitan modelo, versión, URL ni confirmación adicional de puertos. Las interfaces se derivan automáticamente de los enlaces por fabricante. El editor normal de enlaces sigue disponible para ajustar sus nombres y valida entradas inseguras/duplicadas.
-- Los nombres son propuestas de laboratorio: **verifique puertos, modelo, versión y configuración existente antes de aplicar CLI a un equipo físico**. Es una advertencia visual, no un requisito de generación ni una certificación física.
-- **AP**: permanecen en inventario, topología, VLAN y enlaces, con IP, máscara y gateway de gestión en su editor. Ninguno de los cuatro adaptadores genera CLI genérica para AP; sus comandos específicos requieren modelo, firmware y modalidad de administración. El switch vecino conserva su puerto hacia el AP.
-- **Menú consecutivo**: 06 Configuración Cisco, 07 Configuración Huawei, 08 Configuración Fortinet, 09 Configuración MikroTik, 10 Comparación, 11 Ciberdefensa y uso de IA. Los demás módulos permanecen; IPv6 conserva 12 y SSH 13. Numeración desde 00, flechas y progreso usan ese mismo orden en Español/English.
-- **Comparación** produce ambas sintaxis automáticamente sin pedir perfiles ni cambiar el fabricante real. La selección de fabricantes mixtos por sede/función/dispositivo continúa disponible.
-- **Guardado y carga**: JSON v2/v3/v4 y localStorage conservan sus migraciones. Si un v4 anterior contiene perfiles de interfaces, se preservan como metadatos históricos, pero no dirigen la CLI nueva. Sus textos canónicos archivados pueden restaurarse sin perderlos; al regenerar se usan los puertos del enlace. No se asignan redes durante la carga.
+Actualizado 2026-11-15, contrastado con main `1b46af32c8217a1f9bcea686151b1f070ac38352`. Daisy Jurleny Rodriguez · Fundación Universitaria Compensar. El formulario obligatorio de interfaces del PR #10 permanece retirado. Ahora se selecciona modelo solo en Topología; el catálogo asigna los puertos sin pedir nombres manuales. Los proyectos antiguos sin modelo conservan modo genérico con advertencia. El código de producción no cambia en esta edición documental.
 
-Detalle del contrato: [perfiles históricos y compatibilidad](documentacion-codigo.md#perfiles-físicos-opcionales-y-compatibilidad). Resultados y límites: [pruebas del ajuste](pruebas-interfaces.md).
-
-Versión documental de la interfaz bilingüe; base main `6ac46f9257143f88ec8cb7b47c020bb3739adbfa`, aplicación `WAN_v4.html`, esquema v4. Estudiante: Daisy Jurleny Rodriguez · Fundación Universitaria Compensar. Las configuraciones son propuestas para revisión manual; **no se ejecutan sobre equipos**. Usar exclusivamente datos ficticios o infraestructura de laboratorio autorizada.
+Menú real 00–13: Resumen; Datos del proyecto; Estimación e infraestructura; VLAN y VLSM; Subnetting IPv4/IPv6; Topología; Cisco; Huawei; Fortinet; MikroTik; Comparación; Ciberdefensa y uso de IA; Planificación IPv6; Consola SSH. No existe el módulo Evidencias Corte 2; los archivos académicos sí se conservan.
 
 ## 1. Instalación y apertura
 
-Descargar/clonar el repositorio completo. Para usar la app basta un navegador actualizado: abrir `WAN_v4.html`, no los nombres antiguos `WAN.html` o `Versión3.html`. No hay backend, cuentas ni paquetes que instalar para su funcionamiento principal.
+Descargar/clonar el repositorio completo. Para usar la app basta un navegador actualizado: abrir `WAN_v4.html`, no los nombres antiguos `WAN.html` o `Versión3.html`. No hay backend, cuentas ni paquetes que instalar para su funcionamiento principal. La carga HTTP aislada fue verificada; file:// quedó bloqueada por política administrativa en este entorno, sin certificar su apertura local. No desactive políticas de seguridad para eludir ese bloqueo.
 
 Para reproducir el entorno de las capturas y disponer de un origen estable:
 
@@ -113,9 +105,9 @@ La topología automática sirve para el flujo de routers/switches y cores. Elegi
 
 ### Fortinet FortiOS
 
-Supuesto autorizado: FortiGate genérico de laboratorio, FortiOS 7.4, sin multi-VDOM. Crear un nodo **Firewall / Fortinet**, con IP/red del nodo vacíos: los enlaces y el plan aportan las direcciones. Mapear puertos propios `af`/`bf`, por ejemplo `port1` y `port2`. Usar /30 existentes para routed. Un trunk a switch puede hacer que el firewall asuma los gateways LAN, por lo que no debe competir con cores u otros gateways; no hay HA/LACP modelados.
+Supuesto autorizado: FortiGate genérico de laboratorio, FortiOS 7.4, sin multi-VDOM. Crear un nodo **Firewall / Fortinet**, con IP/red del nodo vacíos: los enlaces y el plan aportan las direcciones. Elegir el modelo en Topología; FortiGate 60F/61F/70F usa únicamente los puertos asignables documentados `wan1`, `wan2` y `dmz`. Sin modelo, revisar los nombres genéricos antes de aplicar CLI. Usar /30 existentes para routed. Un trunk a switch puede hacer que el firewall asuma los gateways LAN, por lo que no debe competir con cores u otros gateways; no hay HA/LACP modelados.
 
-En **Configuración Fortinet**, generar la propuesta y revisar interfaces/VLAN, IP, objetos, administración restringida, DHCP/relay y rutas/OSPF. `root` es el contexto interno de VLAN, no la habilitación de multi-VDOM. No se inventan NAT ni permisos de tránsito; revisar políticas, objetos e IDs antes de una futura aplicación autorizada. La [captura 06](capturas/06-config-fortinet.png) corresponde a este escenario perimetral independiente, sin cores en su sede.
+En **Configuración Fortinet**, generar la propuesta y revisar interfaces/VLAN, IP, objetos, administración restringida, DHCP/relay y rutas/OSPF. `root` es el contexto interno de VLAN, no la habilitación de multi-VDOM. No se inventan NAT ni permisos de tránsito; revisar políticas, objetos e IDs antes de una futura aplicación autorizada. La [captura 06](capturas/06-config-fortinet.png) muestra el FortiGate 60F del laboratorio público actual, conectado mediante tránsito /30; no reclama gateways de los cores.
 
 ### MikroTik RouterOS
 
@@ -123,7 +115,7 @@ Supuesto: router genérico RouterOS 7.x, sin VRF/CAPsMAN. Crear **Router / Mikro
 
 En **Configuración MikroTik**, revisar identidad, puertos, bridge/VLAN, IPv4, rutas, OSPF v7 y DHCP/relay. SSH se restringe a Gestión; servicios innecesarios y acceso MAC se deshabilitan. **Forward queda bloqueado por defecto** hasta definir permisos explícitos. No se supone NAT/Internet ni se entrega una configuración de producción lista sin revisión. La [captura 07](capturas/07-config-mikrotik.png) no demuestra compatibilidad física.
 
-No combinar el laboratorio automático con cores y el escenario perimetral que reclama sus gateways. Son alternativas de laboratorio compatibles con el mismo modelo, no un único diseño de gateways duplicados.
+Un escenario alternativo donde firewall/router termina VLAN no debe duplicar gateways de cores. El ejemplo público utiliza cores Cisco, acceso Huawei, firewall Fortinet en tránsito y routers MikroTik; cada rol conserva sus límites.
 
 ## 7. Guardar, importar y exportar
 
@@ -136,16 +128,18 @@ No combinar el laboratorio automático con cores y el escenario perimetral que r
 
 ## 8. Pruebas, seguridad y evidencia
 
-Revisión integral actual: **50/50**, C01–C31 y N01–N19, en [reporte actual](../tests/reporte-revision-integral.html). Los reportes/capturas académicos anteriores siguen siendo históricos, sin sobrescribirlos. La navegación tiene 13 módulos: Fortinet 10, MikroTik 11, IPv6 12; se retiró exclusivamente la pantalla Evidencias Corte 2.
-
-
-Seguir [docs/pruebas.md](pruebas.md) para instalar Playwright/Chromium y ejecutar:
+Resultado vigente registrado: **114/114 aplicación + 26/26 SSH loopback = 140/140 (100%)**. En esta auditoría no se repitió la suite. [Pruebas y entorno](pruebas.md), [resumen verificable](resumen-pruebas.html) y captura 09 distinguen las dos ejecuciones reales, sus fechas y el bloqueo FILE01 separado.
 
 ```bash
+python -m pip install -r tests/requirements.txt
+python -m playwright install chromium
 python tests/test_corte3.py
+# Para las 26 pruebas del servicio opcional, instalar sus dependencias:
+python -m pip install -r ssh_service/requirements.txt
+python tests/test_ssh_service.py
 ```
 
-El runner abre/cierra HTTP local y contextos limpios, imprime C01–C31/N01–N19 y el porcentaje real. Detener la publicación si devuelve no cero. El 50/50 actual es del conjunto ejecutado, no certificación de toda la app ni hardware. La captura 09 y el reporte anterior conservan el resultado histórico de 31 casos, con su commit y hashes originales.
+El runner UI abre/cierra HTTP y contextos limpios, imprime casos y porcentaje y devuelve no cero ante fallos. El segundo comando prueba SSH real solo contra loopback controlado; no exige equipos físicos. Para usar la aplicación o su simulador no hace falta instalar Python/SSH. No presentar los reportes existentes como resultados de una ejecución nueva.
 
 Antes de compartir: usar datos ficticios, revisar nombres/IP/configuraciones, no introducir secretos y conservar `<CAMBIAR_EN_PRODUCCION>` como marcador externo. Consultar [seguridad](seguridad.md) y [políticas IA](politicas-ia.md). La [captura 08](capturas/08-ciberdefensa.png) muestra una IPv4 rechazada conservando el último resultado válido.
 
@@ -189,26 +183,17 @@ La auditoría histórica de main 1956d18 inventarió **58 plantillas `<button>` 
 
 La prueba de impresión comprueba la llamada al navegador mediante un sustituto de la API; no afirma haber impreso una hoja física. Las opciones checkbox/select editan valores; no son botones decorativos. El inventario no certifica todas las combinaciones de datos posibles.
 
-## 11. Evidencias históricas 01–10 y laboratorios
+## 11. Evidencias actuales y procedencia
 
-| Archivo | Lectura correcta |
-| --- | --- |
-| [01-subnetting.png](capturas/01-subnetting.png) | Calculadora actual con IP /26, red .0, broadcast .63 y 62 hosts |
-| [02-topologia.png](capturas/02-topologia.png) | Laboratorio pequeño: dos sedes, dispositivos/enlaces completos |
-| [03-config-cisco.png](capturas/03-config-cisco.png) | Core Cisco real: hostname, VLAN y direcciones visibles |
-| [04-config-huawei.png](capturas/04-config-huawei.png) | Core Huawei equivalente: sysname, VLAN e IP visibles |
-| [05-github-commits.png](capturas/05-github-commits.png) | Página HTTPS real de commits de main, al menos cinco mensajes |
-| [06-config-fortinet.png](capturas/06-config-fortinet.png) | Propuesta perimetral real FortiOS; no forwarding probado |
-| [07-config-mikrotik.png](capturas/07-config-mikrotik.png) | Propuesta perimetral real RouterOS; no comandos ejecutados |
-| [08-ciberdefensa.png](capturas/08-ciberdefensa.png) | Rechazo real de IPv4 conservando resultado válido anterior |
-| [09-pruebas.png](capturas/09-pruebas.png) | Nueva ejecución de 31 casos con X/Y y porcentaje reales |
-| [10-app-final.png](capturas/10-app-final.png) | Resumen funcionando y selector de idioma visible |
+Las diez rutas y sus hashes, fechas, escenarios y métodos se registran en [auditoria-entrega-final.md](auditoria-entrega-final.md). 01: cálculo /26; 02: laboratorio completo de dos sedes, 42 nodos y 48 enlaces; 03: core Cisco C9200L; 04: acceso Huawei S5700 con IP de Gestión; 06: FortiGate 60F; 07: router MikroTik hEX; 08: rechazo IPv4 real; 09: síntesis documental 114+26, sin ejecutar de nuevo; 10: resumen actual con selector de idioma.
 
-01–04 usan una calculadora o un laboratorio reducido de dos sedes con 12 usuarios por sede, sin WiFi/voz/CCTV/impresión/servidor y sin redundancia: permite mostrar el diagrama completo y ambos cores con VLAN e IP. En 03/04 SSH, OSPF y DHCP se desmarcaron para destacar interfaces; **no son plantillas de seguridad listas para producción**. 06/07 usan el laboratorio perimetral alternativo explicado en §6. 10 usa el laboratorio integrado de 15 VLAN, plan IPv4 por pools y plan IPv6. Cada escenario consume el mismo contrato v4; no se mezclan gateways duplicados.
+En 03/04 se desmarcaron SSH/OSPF/DHCP para mostrar interfaces; no son plantillas de seguridad recomendadas. Se expandió temporalmente el contenedor desplazable de CLI/SVG solo para capturar su contenido íntegro, sin cambiar código, datos ni resultados. Las propuestas completas y sus restricciones siguen en la app. 05 conserva la página auténtica de GitHub de la entrega anterior: cinco o más commits legibles, sin CSS externo; es evidencia histórica, no del HEAD nuevo.
 
-05 se obtuvo de `https://github.com/Daisy-redeswan/redes-wan-Rodriguez/commits/main/`, respuesta 200; TLS verificado mediante el proxy de confianza del entorno. Chromium renderizó los bytes auténticos recibidos. Recursos externos de estilos/avatares bloqueados: la imagen conserva el render nativo legible y no reconstruye mensajes ni DOM. Las capturas de la app usan HTTP local y contextos limpios; el informe identifica fuentes y resultados.
+Los AP permanecen en inventario, topología, VLAN, IP/máscara/gateway de Gestión y enlaces. Los cuatro adaptadores los excluyen de CLI genérica; el switch vecino conserva su interfaz. La tabla física tiene siete columnas y usa dispositivos, modelos, enlaces y vecinos reales; desplácela horizontalmente en móvil.
 
-Pendientes: modelos/firmware y validación física, aclaración de configuraciones IPv6, pools DHCP/reservas editables y cobertura completa de combinaciones masivas. La revisión responsive 1440/390 px no certifica todos los anchos o dispositivos. No se aplicaron configuraciones a infraestructura real.
+La [consola SSH](manual-ssh.md) ofrece dos modalidades independientes. Simulación: seleccionar un equipo, `help`, consultar comandos de lectura y propuestas del proyecto, sin conexión real. Manual integrado accesible sin Python. Real: instalar el servicio opcional según su README, configurar destinos autorizados y huellas, abrir su HTTP local, autenticar expresamente y escribir comandos manualmente. Credenciales solo en memoria, no en JSON/localStorage. No hay envío automático de configuraciones.
+
+La sustentación sigue pendiente. Ensayar el recorrido público, explicar cálculos y adaptadores, ejecutar ambos runners ante el docente y registrar el resultado real. No declarar conectividad o certificación física. Los conteos históricos de botones que siguen se refieren a sus commits; el número de instancias dinámicas depende del proyecto y no constituye un inventario estático vigente.
 
 ## Anexo histórico: 58 plantillas de la base main 1956d18
 

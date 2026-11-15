@@ -10,12 +10,12 @@
 
 ## Qué hace esta herramienta
 
-WAN Architect permite diseñar una WAN por sedes, calcular y planificar IPv4/IPv6 y representar dispositivos, enlaces e interfaces. Genera **propuestas IPv4** separadas para Cisco IOS/IOS XE, Huawei VRP, Fortinet FortiOS y MikroTik RouterOS. Funciona localmente en [WAN_v4.html](WAN_v4.html); no aplica comandos sobre equipos.
+WAN Architect permite diseñar una WAN por sedes, calcular y planificar IPv4/IPv6 y representar dispositivos, enlaces e interfaces. Genera **propuestas IPv4** separadas para Cisco IOS/IOS XE, Huawei VRP, Fortinet FortiOS y MikroTik RouterOS. Funciona localmente en [WAN_v4.html](WAN_v4.html); no aplica configuraciones automáticamente sobre equipos.
 
 ## Funciones
 
 - **Subnetting / IP Planning:** calculadora IPv4 pública/privada e IPv6; VLSM con fallback y bloques privados independientes por sede/tránsito y subred CIDR manual por VLAN. IPv6 se planifica separadamente con ULA /48, /56 por sede y /64 por VLAN; no tiene broadcast.
-- **Topología:** generación desde el plan, edición de dispositivos/enlaces e interfaces y exportación SVG. El [catálogo local](docs/catalogo-modelos.md) permite elegir fabricante/modelo y asignar puertos documentados sin escribir sus nombres; doce modelos, tres por marca, con restricciones explícitas. Una imagen importada es referencia manual, no reconocimiento automático.
+- **Topología:** generación desde el plan, edición de dispositivos/enlaces e interfaces, representación de ISP y exportación SVG. El [catálogo local](docs/catalogo-modelos.md) permite elegir fabricante/modelo y asignar puertos documentados sin escribir sus nombres; doce modelos, tres por marca, con restricciones explícitas. Una imagen importada es referencia manual, no reconocimiento automático.
 - **Laboratorio completo:** el botón del módulo 01 valida dos sedes con LAN 192.168/172.16 y tránsito 10.250, elige modelos del catálogo con puertos suficientes y deja listas las cuatro marcas. Las configuraciones muestran una tabla física agrupada con interfaces, función y vecino reales; [flujo y capacidades](docs/manual.md).
 - **Cuatro fabricantes:** Cisco, Huawei, Fortinet y MikroTik consumen el mismo modelo validado. FortiOS 7.4 y RouterOS 7.x son supuestos genéricos de laboratorio; ninguna marca está certificada físicamente.
 - **Ciberdefensa y uso de IA:** validación de entradas, importación atómica, contenido escapado, administración restringida y marcadores de secretos; [políticas](docs/politicas-ia.md) y [límites](docs/seguridad.md). `.env` y sus variantes quedan excluidos por [.gitignore](.gitignore).
@@ -25,7 +25,7 @@ WAN Architect permite diseñar una WAN por sedes, calcular y planificar IPv4/IPv
 
 ## Cómo ejecutarla
 
-1. Descargar/clonar el repositorio completo, abrir `WAN_v4.html` (el catálogo está embebido; no exige copiar `data/`) en un navegador actualizado. No requiere backend, cuentas ni paquetes para usar la aplicación.
+1. Descargar/clonar el repositorio completo, abrir `WAN_v4.html` (el catálogo está embebido; no exige copiar `data/`) en un navegador actualizado. No requiere backend, cuentas ni paquetes para usar la aplicación. La apertura file:// quedó bloqueada en el entorno de pruebas; el funcionamiento HTTP local sin internet sí se comprobó, sin eludir políticas del navegador.
 2. Para reproducir pruebas y capturas, desde la raíz ejecutar `python -m http.server 8000 --bind 127.0.0.1` y abrir `http://127.0.0.1:8000/WAN_v4.html`. Detener con Ctrl+C; no exponer ese servidor a Internet.
 3. Seguir proyecto → sede → estimación → VLAN/IPv4 → IPv6 opcional → topología → fabricante → revisión y exportación. Confirmar fichas e inventario: guardar valores idénticos conserva el diseño; los cambios reales invalidan únicamente dependencias afectadas. Elegir fabricantes por sede/función antes de generar topología.
 4. Cambiar **Idioma / Language** entre Español y English. La preferencia no modifica el proyecto ni sus configuraciones. Guardar/exportar un respaldo JSON; localStorage depende del origen y no cifra los datos.
@@ -44,20 +44,22 @@ python -m playwright install chromium
 python tests/test_corte3.py
 ```
 
+Para las 26 pruebas SSH, instalar también `python -m pip install -r ssh_service/requirements.txt` y ejecutar `python tests/test_ssh_service.py`; el comando UI anterior ejecuta 114 casos, no 140 por sí solo. No se repitió ninguna suite en esta auditoría.
+
 El runner inicia/cierra HTTP local, crea contextos limpios y devuelve un código no cero ante fallos. El reporte normal es temporal y su ruta se imprime; [casos, resultados, hashes y entorno](docs/pruebas.md), [reporte UI actual](tests/reporte-laboratorio.html), [resultado SSH actual](tests/reporte-laboratorio-ssh.json) y [pruebas SSH](docs/pruebas-ssh.md). El porcentaje no certifica toda la aplicación ni hardware, conectividad o seguridad integral.
 
 ## Documentos
 
-- [Informe Corte 2](docs/informe-corte2.pdf) · [Informe Corte 3](docs/informe-corte3.pdf).
+- [Informe Corte 2](docs/informe-corte2.pdf) · [Informe Corte 3](docs/informe-corte3.pdf) (24 páginas).
 - [Manual](docs/manual.md) · [Seguridad](docs/seguridad.md) · [Políticas IA](docs/politicas-ia.md) · [Pruebas](docs/pruebas.md).
 - [Documentación del código](docs/documentacion-codigo.md) · [Modelos, interfaces y fuentes oficiales](docs/catalogo-modelos.md).
 - [Estado del proyecto](docs/estado-proyecto.md) · [Trazabilidad Corte 3](docs/trazabilidad-corte3.md) · [Matriz de fabricantes](docs/matriz-fabricantes.md).
-- La matriz conserva antecedentes de soporte por plataforma; el inventario vigente de pruebas y capturas es el de esta entrega.
+- [Auditoría normativa final](docs/auditoria-entrega-final.md) · [Síntesis documental de resultados](docs/resumen-pruebas.html).
 - Fuente de requisitos: [Guía Docente.html](<docs/requisitos/Guía Docente.html>).
 
 ## Capturas (evidencias)
 
-Las capturas 01–10 y los PDF se conservan intactos como evidencia histórica de main 1956d18 (31 casos); no muestran el rediseño actual. El resultado actual 140/140 está en los reportes enlazados arriba; las capturas no se presentan como evidencia de esta ampliación del catálogo. Se retiró la pantalla de evidencias de la app, no estos archivos.
+Entrega documental auditada 2026-11-15 sobre main `1b46af32c8217a1f9bcea686151b1f070ac38352`. Nueve capturas se regeneraron contra ese HTML; 05 se conserva como historial auténtico legible. El informe Corte 3 se reconstruye con el estado actual; Corte 2 conserva sus páginas originales y añade un complemento para las evidencias faltantes. [Matriz normativa, 19 rutas y procedencia](docs/auditoria-entrega-final.md). Se retiró la pantalla de evidencias de la app, no los archivos.
 
 Las capturas de la aplicación se obtuvieron por HTTP local con Playwright, contexto limpio y datos ficticios. Las propuestas nunca se ejecutaron en infraestructura real.
 
@@ -66,15 +68,15 @@ Las capturas de la aplicación se obtuvieron por HTTP local con Playwright, cont
 | 01 | IP, prefijo /26, red, broadcast y 62 hosts visibles | [01-subnetting.png](docs/capturas/01-subnetting.png) |
 | 02 | Diagrama completo de dos sedes; dispositivos y enlaces sin recorte | [02-topologia.png](docs/capturas/02-topologia.png) |
 | 03 | Core Cisco: hostname, VLAN e IP visibles | [03-config-cisco.png](docs/capturas/03-config-cisco.png) |
-| 04 | Core Huawei: sysname, VLAN e IP visibles | [04-config-huawei.png](docs/capturas/04-config-huawei.png) |
+| 04 | Acceso Huawei: sysname, VLAN e IP visibles | [04-config-huawei.png](docs/capturas/04-config-huawei.png) |
 | 05 | Página real de commits de main, con al menos cinco mensajes claros | [05-github-commits.png](docs/capturas/05-github-commits.png) |
 | 06 | Propuesta Fortinet generada por la aplicación | [06-config-fortinet.png](docs/capturas/06-config-fortinet.png) |
 | 07 | Propuesta MikroTik generada por la aplicación | [07-config-mikrotik.png](docs/capturas/07-config-mikrotik.png) |
 | 08 | IPv4 inválida rechazada; último cálculo válido conservado | [08-ciberdefensa.png](docs/capturas/08-ciberdefensa.png) |
-| 09 | Ejecución histórica: 31/31 y 100% visibles | [09-pruebas.png](docs/capturas/09-pruebas.png) |
+| 09 | Síntesis documental verificable: 114/114 + 26/26 = 140/140 (100%); no nueva ejecución | [09-pruebas.png](docs/capturas/09-pruebas.png) |
 | 10 | Aplicación funcionando con selector de idioma visible | [10-app-final.png](docs/capturas/10-app-final.png) |
 
-La 05 procede de [Commits en GitHub](https://github.com/Daisy-redeswan/redes-wan-Rodriguez/commits/main/), respuesta HTTPS real 200. Los recursos externos de estilo/avatar quedaron bloqueados en el entorno: se conserva el render nativo sin estilos, legible y sin reconstruir ni alterar sus mensajes. Las otras capturas muestran laboratorios identificados en el manual; no representan un único despliegue de gateways duplicados.
+La 05 procede de [Commits en GitHub](https://github.com/Daisy-redeswan/redes-wan-Rodriguez/commits/main/), respuesta HTTPS real 200. Los recursos externos de estilo/avatar quedaron bloqueados en el entorno: se conserva el render nativo sin estilos, legible y sin reconstruir ni alterar sus mensajes. Las capturas CLI usan el laboratorio actual de roles compatibles; 03/04 desmarcan SSH/OSPF/DHCP para legibilidad de interfaces. Ninguna propuesta se ejecutó.
 
 ## Autoevaluación (Sí/No con evidencia)
 
@@ -87,7 +89,7 @@ La 05 procede de [Commits en GitHub](https://github.com/Daisy-redeswan/redes-wan
 | Config Cisco y Huawei | Sí | Capturas 03/04; C12/C13/C26: generación y texto exacto |
 | Config Fortinet y MikroTik (C3) | Sí | Capturas 06/07; C14/C15/C26; validación textual |
 | Ciberdefensa (`politicas-ia.md`) | Sí | Captura 08; C08/C10/C17; `.gitignore` y políticas documentadas |
-| Pruebas con % de confianza (C3) | Sí | Captura 09 histórica (31/31); suite/reporte actual y `docs/pruebas.md`: 140/140 ejecutadas |
+| Pruebas con % de confianza (C3) | Sí | Captura 09 y reportes UI/SSH originales: 140/140; no nueva ejecución |
 | Documento y manual finales | Sí | Informe PDF revisado, capturas insertadas y manual de controles/idioma |
 | Repositorio y versiones | Sí | Repositorio público, ramas e historial; capturas 05 y 10 |
 | Sustentación en vivo realizada | No | Debe demostrarse ante evaluación; esta entrega no la simula |

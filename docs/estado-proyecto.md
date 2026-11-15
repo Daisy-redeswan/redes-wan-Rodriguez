@@ -1,16 +1,29 @@
 # Estado de WAN Architect
 
+## Estado de entrega auditado · 2026-11-15
+
+Código estable en main `1b46af32c8217a1f9bcea686151b1f070ac38352`; PR #11 fusionado, rama de origen conservada y repositorio público. Esta revisión solo actualiza documentación, informes y evidencias; `WAN_v4.html`, pruebas, catálogo y `AGENTS.md` permanecen intactos.
+
+**Implementado y respaldado por reportes:** esquema v4, migración v2/v3 sin reasignar; IPv4 automático/mixto en bloques privados independientes por sede y tránsito; gateway separado; IPv6 ULA separado; topología editable, doce fichas locales (tres por marca), puertos automáticos e inventario físico de siete columnas; cuatro generadores IPv4, comparación y SSH educativo/real opcional. AP conservados sin CLI genérica. El laboratorio público produce 21 redes, 42 nodos, 48 enlaces y 16 CLI nativas.
+
+**Resultado vigente verificado documentalmente:** 114/114 aplicación + 26/26 SSH loopback = 140/140, 100% del conjunto ejecutado. No se repitió la suite en esta auditoría. Nueve capturas se renuevan; 05 auténtica se conserva como historial, no como fotografía del HEAD actual. 09 es síntesis de dos reportes reales. Los informes y el manual se contrastan con la guía, con [matriz de cumplimiento](auditoria-entrega-final.md).
+
+**Pendiente/no verificable:** sustentación en vivo y ejecución ante docente; 2FA de la cuenta; validación física/firmware/licencias/ópticas; configuraciones IPv6 por fabricante (alcance docente por aclarar); pools DHCP y reservas editables. FILE01 fue bloqueada por política del navegador y no se cuenta como aprobada. La calculadora admite IP públicas; la planificación automática se limita a RFC1918/ULA. La guía no define el alcance público con precisión suficiente para afirmar planificación pública completa.
+
+Los registros inferiores conservan fechas, versiones y resultados de sus respectivas tareas; sus menciones a capturas pendientes, menús retirados o invalidación antigua no describen el comportamiento actual. `saveSite()` ya tiene invalidación selectiva e igualdad conservadora, comprobadas en las revisiones posteriores; no se repite como defecto vigente la destrucción histórica general. La revisión responsive cubre 1440/390 px; no certifica todos los anchos.
+
+
 ## Laboratorio e inventario físico vigentes
 
 Base `09279698084fa166b937ae7d5450fedf4827017e`; rama del PR #11. El botón público construye un laboratorio completo mediante validaciones reales, con LAN `192.168.32.0/21` y `172.16.64.0/21`, tránsito `10.250.0.0/24` y DNS privado obtenido del servidor del plan. Selecciona modelos compatibles del catálogo existente: C9200L-24T-4G, S5700-28P-LI-AC, FortiGate 60F y RB750Gr3. Resultado: 21 redes, 42 nodos, 48 enlaces, 16 CLI nativas y AP conservados sin CLI genérica.
 
 Los cuatro módulos muestran tabla de interfaces agrupada por dispositivo, con marca/modelo, puerto, función y vecino reales; las configuraciones permanecen debajo. Proyectos sin modelo se identifican como Modo genérico. Datos detallados/capacidad: [manual](manual.md); funciones: [documentación del código](documentacion-codigo.md); evidencia real y límites: [pruebas](pruebas.md). **Prueba vigente:** 114/114 aplicación + 26/26 SSH = 140/140, 100% del conjunto ejecutado; L01 recorre quince pasos y L02–L05 cubren tabla ES/EN, rollback, compatibilidad y determinismo. Verificación estática/local, sin certificar equipos físicos. Los apartados siguientes son antecedentes, no sustituyen la ejecución actual.
 
-## Correcciones funcionales vigentes del PR #11
+## Antecedente: correcciones funcionales iniciales del PR #11
 
 Base `89a5a2a948c965129ca28f40cb57f5f303f587b2`. Datos del proyecto y fabricantes muestran confirmación persistida/Editar; confirmar igualdad no destruye diseños. Cambiar solo una marca conserva VLAN/VLSM/IPv6 y retira CLI dependientes; nuevas funciones agregan únicamente /30 necesarias sin mover redes previas. El catálogo de doce fichas está embebido en el HTML y se selecciona exclusivamente en Topología. Las cuatro vistas CLI muestran datos guardados, sin selectores repetidos.
 
-Comparación incorpora cinco funciones × cuatro marcas reales, con extractos y límites; conserva adicionalmente IOS/VRP cuando corresponde. La simulación normaliza comandos de lectura de cada marca, muestra propuestas/plan y abre un manual integrado sin Python. SSH real, exclusión CLI de AP y JSON v2/v3/v4 se conservan. Detalle operativo: [manual](manual.md); contrato: [documentación del código](documentacion-codigo.md); resultados reales y limitación file://: [pruebas](pruebas.md). **Prueba vigente:** 109/109 aplicación + 26/26 SSH = 135/135 ejecutadas, 100%; FILE01 adicional bloqueada por política del navegador, sin certificar apertura file://. Doce modelos y 19 comandos de lectura comprobados mediante HTTP; revisión visual 1440/390 px. Los registros siguientes son históricos.
+Comparación incorpora cinco funciones × cuatro marcas reales, con extractos y límites; conserva adicionalmente IOS/VRP cuando corresponde. La simulación normaliza comandos de lectura de cada marca, muestra propuestas/plan y abre un manual integrado sin Python. SSH real, exclusión CLI de AP y JSON v2/v3/v4 se conservan. Detalle operativo: [manual](manual.md); contrato: [documentación del código](documentacion-codigo.md); resultados reales y limitación file://: [pruebas](pruebas.md). **Prueba histórica:** 109/109 aplicación + 26/26 SSH = 135/135 ejecutadas, 100%; FILE01 adicional bloqueada por política del navegador, sin certificar apertura file://. Doce modelos y 19 comandos de lectura comprobados mediante HTTP; revisión visual 1440/390 px. Los registros siguientes son históricos.
 
 ## Registro anterior: primera versión del catálogo local
 
