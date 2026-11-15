@@ -33,7 +33,12 @@ class PolicyError(ValueError):
 
 
 def integer(value, low, high):
-    """Exige entero real en límites; bool y cadenas no son puertos/tamaños válidos."""
+    """Exige entero real en límites; bool y cadenas no son puertos/tamaños válidos.
+
+    Contrato documentado: Entradas: value, low, high: entero y límites inclusive. Salida,
+    validaciones, efectos y dependencias: Devuelve el entero; PolicyError si bool, tipo o
+    intervalo no son válidos. No modifica estado.
+    """
     if type(value) is not int or not low <= value <= high:
         raise PolicyError("invalid_request")
     return value
@@ -42,8 +47,13 @@ def integer(value, low, high):
 def load_config(path=None):
     """Valida la configuración local. Lista vacía prohíbe TODOS los destinos.
 
-    Cada target fija host, puerto y direcciones IP exactas aprobadas. No hay
-    comodines ni redes abiertas; un hostname que cambie a otra IP se rechaza.
+    Cada target fija host, puerto y direcciones IP exactas aprobadas. No hay comodines ni
+    redes abiertas; un hostname que cambie a otra IP se rechaza.
+
+     Contrato documentado: Entradas: path: ruta opcional de configuración local no servida.
+    Salida, validaciones, efectos y dependencias: Devuelve opciones y destinos validados.
+    Lee JSON; rechaza claves/tipos/límites y direcciones peligrosas. Depende de integer e
+    ipaddress.
     """
     raw = json.loads(Path(path).read_text(encoding="utf-8")) if path else {}
     if not isinstance(raw, dict) or set(raw) - {"http_port", "max_sessions", "idle_seconds", "connect_seconds", "targets"}:
@@ -72,7 +82,13 @@ def load_config(path=None):
 
 
 async def destination(config, host, port):
-    """Resuelve solo nombres autorizados y conecta a una IP fijada, evitando rebinding."""
+    """Resuelve solo nombres autorizados y conecta a una IP fijada, evitando rebinding.
+
+    Contrato documentado: Entradas: config, host, port: política y destino solicitado.
+    Salida, validaciones, efectos y dependencias: Devuelve IP fijada y puerto autorizado;
+    puede lanzar PolicyError, timeout o error DNS. No amplía allowlist. Depende de integer y
+    resolución asyncio.
+    """
     if not isinstance(host, str):
         raise PolicyError("destination_denied")
     port = integer(port, 1, 65535)
@@ -87,7 +103,13 @@ async def destination(config, host, port):
 
 
 async def public_error(ws, code):
-    """Envía un código estable; cerrar transporte nunca produce un traceback sensible."""
+    """Envía un código estable; cerrar transporte nunca produce un traceback sensible.
+
+    Contrato documentado: Entradas: ws, code: socket de la sesión y código público sin datos
+    sensibles. Salida, validaciones, efectos y dependencias: Devuelve None; escribe un
+    mensaje de error si WS sigue abierto. Suprime errores de cierre para no filtrar
+    contenido.
+    """
     if not ws.closed:
         with contextlib.suppress(ConnectionError, RuntimeError):
             await ws.send_json({"type": "error", "code": code})
@@ -96,10 +118,22 @@ async def public_error(ws, code):
 async def connect_for_socket(ws, host, port, options, timeout):
     """Cancela negociación SSH si se cierra WS; no abre un PTY después de cancelar.
 
-    Las dos tareas pertenecen a esta solicitud y se recogen siempre. Si la conexión
-    terminó al mismo tiempo que el cierre, también se cierra antes de devolver.
+    Las dos tareas pertenecen a esta solicitud y se recogen siempre. Si la conexión terminó
+    al mismo tiempo que el cierre, también se cierra antes de devolver.
+
+     Contrato documentado: Entradas: ws, host, port, options, timeout: sesión, destino y
+    credenciales efímeras. Salida, validaciones, efectos y dependencias: Devuelve conexión o
+    None al cancelar; recoge ambas tareas en finally. Puede propagar errores
+    AsyncSSH/timeout. Depende de opening y asyncio; no aplica CLI.
     """
     async def opening():
+        """Contrato de opening.
+
+        Contrato documentado: Entradas: Sin parámetros; captura host, port y options de la
+        solicitud propietaria. Salida, validaciones, efectos y dependencias: Espera
+        asyncssh.connect y devuelve la conexión; errores de red/autenticación se propagan al
+        supervisor. No crea PTY por sí sola.
+        """
         return await asyncssh.connect(host, port, **options)
     connecting = asyncio.create_task(opening())
     closing = asyncio.create_task(ws.receive())
@@ -125,8 +159,13 @@ async def connect_for_socket(ws, host, port, options, timeout):
 def create_app(config, state_dir=DEFAULT_STATE):
     """Construye el servicio sin iniciarlo: facilita pruebas reales en loopback.
 
-    Estado de confianza queda fuera de JSON del proyecto. Cookie HttpOnly + token
-    CSRF en RAM vinculan el WS a una pestaña autorizada del mismo origen.
+    Estado de confianza queda fuera de JSON del proyecto. Cookie HttpOnly + token CSRF en
+    RAM vinculan el WS a una pestaña autorizada del mismo origen.
+
+     Contrato documentado: Entradas: config, state_dir: política validada y directorio
+    privado de confianza. Salida, validaciones, efectos y dependencias: Devuelve aplicación
+    aiohttp sin arrancar servidor. Crea known_hosts con permisos privados y registra
+    rutas/middleware/shutdown. Sus closures comparten sessions y browsers.
     """
     state_dir = Path(state_dir)
     state_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -138,7 +177,13 @@ def create_app(config, state_dir=DEFAULT_STATE):
 
     @web.middleware
     async def boundary(request, handler):
-        """Bloquea DNS rebinding, orígenes ajenos y caché; no registra URLs ni cuerpos."""
+        """Bloquea DNS rebinding, orígenes ajenos y caché; no registra URLs ni cuerpos.
+
+        Contrato documentado: Entradas: request, handler: petición local y siguiente
+        manejador aiohttp. Salida, validaciones, efectos y dependencias: Devuelve respuesta
+        con cabeceras restrictivas; rechaza Host/Origin ajenos con HTTPForbidden. No
+        registra cuerpos ni secretos.
+        """
         if request.host != f"127.0.0.1:{config['http_port']}":
             raise web.HTTPForbidden()
         incoming = request.headers.get("Origin")
@@ -154,12 +199,23 @@ def create_app(config, state_dir=DEFAULT_STATE):
     app["config"], app["sessions"], app["known_hosts"] = config, sessions, known
 
     async def index(request):
-        """Sirve solo la aplicación autorizada, sin directorio de archivos arbitrarios."""
+        """Sirve solo la aplicación autorizada, sin directorio de archivos arbitrarios.
+
+        Contrato documentado: Entradas: request: petición aceptada por boundary. Salida,
+        validaciones, efectos y dependencias: Devuelve HTML de ROOT con una marca de
+        disponibilidad del puente. Lee únicamente WAN_v4.html; no permite elegir rutas.
+        """
         html = (ROOT / "WAN_v4.html").read_text(encoding="utf-8")
         return web.Response(text=html.replace("</head>", '<meta name="wan-ssh-service" content="1"></head>', 1), content_type="text/html")
 
     async def asset(request):
-        """Lista explícita de recursos vendorizados; no admite traversal ni fuentes remotas."""
+        """Lista explícita de recursos vendorizados; no admite traversal ni fuentes remotas.
+
+        Contrato documentado: Entradas: request: nombre de recurso vendorizado en
+        match_info. Salida, validaciones, efectos y dependencias: Devuelve FileResponse solo
+        para la lista cerrada; HTTPNotFound para nombres ajenos. Depende de STATIC y
+        boundary.
+        """
         name = request.match_info["name"]
         if name not in {"xterm.js", "xterm.css", "addon-fit.js"}:
             raise web.HTTPNotFound()
@@ -168,8 +224,13 @@ def create_app(config, state_dir=DEFAULT_STATE):
     async def bootstrap(request):
         """Autoriza únicamente fetch del mismo origen con cabecera no simple.
 
-        Otra página no puede leer el token mediante SOP ni superar el preflight;
-        la cookie es HttpOnly/SameSite Strict y caduca al cerrar/reiniciar el servicio.
+        Otra página no puede leer el token mediante SOP ni superar el preflight; la cookie
+        es HttpOnly/SameSite Strict y caduca al cerrar/reiniciar el servicio.
+
+         Contrato documentado: Entradas: request: fetch del navegador local con cabecera
+        explícita. Salida, validaciones, efectos y dependencias: Devuelve token asociado a
+        cookie HttpOnly/SameSite; limpia autorizaciones vencidas y limita browsers.
+        HTTPForbidden/TooManyRequests ante acceso incompatible.
         """
         if request.headers.get("X-WAN-Client") != "ssh-ui" or request.headers.get("Sec-Fetch-Site", "same-origin") not in {"same-origin", "none"}:
             raise web.HTTPForbidden()
@@ -188,7 +249,14 @@ def create_app(config, state_dir=DEFAULT_STATE):
         return response
 
     async def websocket(request):
-        """Una sesión = un WS autenticado + un shell SSH/PTY. Nunca exec de shell local."""
+        """Una sesión = un WS autenticado + un shell SSH/PTY. Nunca exec de shell local.
+
+        Contrato documentado: Entradas: request: actualización WS del origen y sesión local
+        autorizados. Salida, validaciones, efectos y dependencias: Devuelve ws tras
+        gestionar conexión manual y cierre. Valida token, límites, destino, usuario, método
+        y mensajes; limpia credenciales/tareas/sockets en finally. Usa destination,
+        connect_for_socket, integer y public_error.
+        """
         if request.headers.get("Origin") != origin:
             raise web.HTTPForbidden()
         session = browsers.get(request.cookies.get(COOKIE, ""))
@@ -251,7 +319,14 @@ def create_app(config, state_dir=DEFAULT_STATE):
             await ws.send_json({"type": "status", "status": "connected"})
 
             async def output():
-                """Backpressure y EOF/error remoto: cerrar WS sin conservar historial."""
+                """Backpressure y EOF/error remoto: cerrar WS sin conservar historial.
+
+                Contrato documentado: Entradas: Sin parámetros; captura process, ws y
+                output_ack de la sesión. Salida, validaciones, efectos y dependencias:
+                Transporta bytes PTY con Base64, un fragmento en vuelo y ACK acotado.
+                Devuelve None y cierra WS al terminar. Errores remotos/timeout se presentan
+                como códigos públicos.
+                """
                 import base64
                 try:
                     while True:
@@ -321,22 +396,43 @@ def create_app(config, state_dir=DEFAULT_STATE):
         return ws
 
     async def shutdown(_app):
-        """Cerrar WebSockets provoca el finally de cada sesión antes de apagar HTTP."""
+        """Cerrar WebSockets provoca el finally de cada sesión antes de apagar HTTP.
+
+        Contrato documentado: Entradas: _app: aplicación que inicia el cierre. Salida,
+        validaciones, efectos y dependencias: Devuelve None al cerrar WS activos y limpiar
+        autorizaciones locales; finally de cada sesión recoge SSH y tareas.
+        """
         await asyncio.gather(*(ws.close(code=1001) for ws in list(sessions)), return_exceptions=True)
         browsers.clear()
 
     app.router.add_get("/", index)
     app.router.add_get("/WAN_v4.html", index)
     async def favicon(request):
-        """Evita peticiones de icono sin servir archivos adicionales."""
+        """Evita peticiones de icono sin servir archivos adicionales.
+
+        Contrato documentado: Entradas: request: petición de icono local. Salida,
+        validaciones, efectos y dependencias: Devuelve HTTP 204 sin leer archivos ni exponer
+        rutas adicionales.
+        """
         return web.Response(status=204)
 
     async def manual(request):
-        """Documento local explícito; no expone un directorio arbitrario."""
+        """Documento local explícito; no expone un directorio arbitrario.
+
+        Contrato documentado: Entradas: request: petición del manual local predefinido.
+        Salida, validaciones, efectos y dependencias: Devuelve texto de docs/manual-ssh.md;
+        no admite nombres de archivo del cliente. Puede propagar error de lectura local.
+        """
         return web.Response(text=(ROOT/"docs/manual-ssh.md").read_text(encoding="utf-8"), content_type="text/plain")
 
     async def interface_catalog(request):
-        """Un único recurso de datos local; no admite rutas ni nombres suministrados por el cliente."""
+        """Un único recurso de datos local; no admite rutas ni nombres suministrados por el
+        cliente.
+
+        Contrato documentado: Entradas: request: petición del recurso de catálogo permitido.
+        Salida, validaciones, efectos y dependencias: Devuelve el script local canónico
+        mediante FileResponse; no acepta rutas libres ni modifica fichas.
+        """
         return web.FileResponse(ROOT / "data" / "catalogo-interfaces.js")
 
     app.router.add_get("/data/catalogo-interfaces.js", interface_catalog)
@@ -352,8 +448,14 @@ def create_app(config, state_dir=DEFAULT_STATE):
 async def trust_host(config, host, port, fingerprint, state_dir=DEFAULT_STATE):
     """Confianza explícita fuera de banda: nunca aceptar TOFU silencioso ni cambios.
 
-    Sin fingerprint solo muestra SHA256. Con él, exige coincidencia y no permite
-    reemplazar una entrada previa; rotaciones requieren revisión manual del archivo.
+    Sin fingerprint solo muestra SHA256. Con él, exige coincidencia y no permite reemplazar
+    una entrada previa; rotaciones requieren revisión manual del archivo.
+
+     Contrato documentado: Entradas: config, host, port, fingerprint, state_dir: destino
+    autorizado y huella fuera de banda. Salida, validaciones, efectos y dependencias:
+    Devuelve huella observada; solo registra una clave cuando coincide expresamente y nunca
+    reemplaza una distinta. Lee/escribe known_hosts privado; usa destination y AsyncSSH.
+    PolicyError ante discrepancia/cambio.
     """
     address, port = await destination(config, host, port)
     key = await asyncio.wait_for(asyncssh.get_server_host_key(address, port, config=None), config["connect_seconds"])
@@ -381,7 +483,14 @@ async def trust_host(config, host, port, fingerprint, state_dir=DEFAULT_STATE):
 
 
 def main():
-    """CLI Windows/Linux; validación previa y errores públicos sin tracebacks sensibles."""
+    """CLI Windows/Linux; validación previa y errores públicos sin tracebacks sensibles.
+
+    Contrato documentado: Entradas: Sin parámetros de función; argparse interpreta
+    argumentos CLI del operador. Salida, validaciones, efectos y dependencias: Devuelve None
+    o finaliza con código de error público. Valida configuración antes de sondear confianza
+    o arrancar loopback. Usa load_config, integer, trust_host y create_app; no configura
+    equipos.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path)
     parser.add_argument("--http-port", type=int)
